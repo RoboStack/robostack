@@ -28,11 +28,6 @@ packages_exclude:
 
   - if: win
     then:
-      - gz_ros2_control
-      - gz_ros2_control_demos
-      - robot_localization
-      - ros_gz_sim
-      - ros_gz_sim_demos
       - ros_ign_gazebo
       - ros_ign_gazebo_demos
       - ros_ign_image
@@ -90,39 +85,7 @@ packages_skip:
 
   - if: win
     then:
-      - diagnostic_remote_logging
-      - kinematics_interface
-      - kinematics_interface_kdl
-      - laser_segmentation
-      - libg2o
-      - mavlink
-      - mavros
-      - mavros_extras
-      - microstrain_inertial_description
-      - microstrain_inertial_driver
-      - microstrain_inertial_examples
-      - microstrain_inertial_msgs
-      - microstrain_inertial_rqt
-      - mocap4r2_control
-      - mocap4r2_control_msgs
-      - mocap4r2_dummy_driver
-      - mocap4r2_marker_publisher
-      - mocap4r2_marker_viz
-      - mocap4r2_marker_viz_srvs
-      - mocap4r2_robot_gt
-      - mocap4r2_robot_gt_msgs
-      - motion_capture_tracking
-      - moveit_hybrid_planning
-      - moveit_py
-      - moveit_task_constructor_demo
-      - odom_to_tf_ros2
-      - ouster_ros
-      - pinocchio
-      - realsense2_camera
-      - realsense2_description
-      - rmw_stats_shim
       - rosgraph_monitor
-      - rosgraph_monitor_msgs
 
 packages_select_by_deps:
 
