@@ -1,0 +1,70 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 71deedd..f08c969 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -25,7 +25,7 @@ macro(enable_strict_compiler_warnings target)
+   if (MSVC)
+     target_compile_options(${target} PRIVATE /WX /W4)
+   elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+-    target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic -Werror -Wold-style-cast -Wfloat-equal -Wmost -Wunused-exception-parameter)
++    target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic -Werror -Wold-style-cast -Wfloat-equal -Wmost -Wunused-exception-parameter -Wno-error=format)
+   else()
+     target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic -Werror -Wold-style-cast -Wfloat-equal)
+   endif()
+@@ -63,6 +63,12 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_SYSTEM_PROCESSOR STREQUAL "aarc
+ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+   set(FOXGLOVE_SDK_PLATFORM "x86_64-unknown-linux-gnu")
+   set(FOXGLOVE_SDK_SHA "b949295e80eb1a9bb356e657b9c2579c886717fac290c4e48a5e9846063bf2e8")
++elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64")
++  set(FOXGLOVE_SDK_PLATFORM "aarch64-apple-darwin")
++  set(FOXGLOVE_SDK_SHA "1c6a32fc25c3a29eb9f3c5156f9c82970a8714523ffc3893ea4e852b977ee1e5")
++elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
++  set(FOXGLOVE_SDK_PLATFORM "x86_64-apple-darwin")
++  set(FOXGLOVE_SDK_SHA "12249d4b2f16c3ff661f21d19603fb33a82888f0391576269f31f9cc1a4cb7a8")
+ else()
+   message(FATAL_ERROR "Unsupported platform/architecture combination: ${CMAKE_SYSTEM_PROCESSOR}-${CMAKE_SYSTEM_NAME}")
+ endif()
+@@ -84,14 +90,20 @@ target_include_directories(foxglove_cpp_shared SYSTEM
+     $<INSTALL_INTERFACE:include>
+ )
+ target_sources(foxglove_cpp_shared PRIVATE ${FOXGLOVE_SDK_SOURCES})
++# $ORIGIN is ELF-only; macOS' equivalent is @loader_path
++if(APPLE)
++  set(FOXGLOVE_BRIDGE_RPATH "@loader_path")
++else()
++  set(FOXGLOVE_BRIDGE_RPATH "$ORIGIN")
++endif()
+ # Import the prebuilt C shared library from the fetched SDK
+ add_library(foxglove-shared SHARED IMPORTED)
+ set_target_properties(foxglove-shared PROPERTIES
+-  IMPORTED_LOCATION ${foxglove_sdk_SOURCE_DIR}/lib/libfoxglove.so
++  IMPORTED_LOCATION ${foxglove_sdk_SOURCE_DIR}/lib/libfoxglove${CMAKE_SHARED_LIBRARY_SUFFIX}
+ )
+ target_link_libraries(foxglove_cpp_shared PRIVATE foxglove-shared)
+ set_target_properties(foxglove_cpp_shared PROPERTIES
+-  INSTALL_RPATH "$ORIGIN"
++  INSTALL_RPATH "${FOXGLOVE_BRIDGE_RPATH}"
+   BUILD_WITH_INSTALL_RPATH TRUE
+ )
+ 
+@@ -168,7 +180,7 @@ target_link_libraries(foxglove_bridge_component
+ rclcpp_components_register_nodes(foxglove_bridge_component "foxglove_bridge::FoxgloveBridge")
+ enable_strict_compiler_warnings(foxglove_bridge_component)
+ set_target_properties(foxglove_bridge_component PROPERTIES
+-  INSTALL_RPATH "$ORIGIN"
++  INSTALL_RPATH "${FOXGLOVE_BRIDGE_RPATH}"
+   BUILD_WITH_INSTALL_RPATH TRUE
+ )
+ 
+diff --git a/src/message_definition_cache.cpp b/src/message_definition_cache.cpp
+index ef72c9c..ed85745 100644
+--- a/src/message_definition_cache.cpp
++++ b/src/message_definition_cache.cpp
+@@ -3,6 +3,7 @@
+ #include <filesystem>
+ #include <fstream>
+ #include <functional>
++#include <map>
+ #include <optional>
+ #include <regex>
+ #include <set>

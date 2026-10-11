@@ -107,3 +107,5 @@ ros2cli:
 rosidl_cli:
   # Rebuild with the shell completions installed under the names bash and zsh load (patch).
   build_number: 21
+turtlebot4_node:
+  build_number: 21

@@ -48,45 +48,9 @@ packages_exclude:
 packages_skip:
   - as2_behaviors_trajectory_generation  # nested FetchContent'd NLopt violates CMake 4's minimum version floor; too fragile to patch, skip for now
 
-  - if: not (linux and x86_64)
-    then:
-      - ublox_ubx_interfaces
-
   - if: not linux
     then:
-      - event_camera_codecs
-      - event_camera_renderer
-      - foxglove_bridge
       - joy_linux
-      - moveit_ros_perception
-      - moveit_runtime
-      - orbbec_camera_msgs
-      - orbbec_description
-      - plotjuggler
-      - plotjuggler_ros
-      - point_cloud_transport_plugins
-      - random_numbers
-      - robotiq_controllers
-      - robotiq_description
-      - ros_gz
-      - rqt_mocap4r2_control
-      - rqt_tf_tree
-      - rviz_2d_overlay_plugins
-      - rviz_satellite
-      - sick_safetyscanners_base
-      - turtlebot4_description
-      - turtlebot4_desktop
-      - turtlebot4_msgs
-      - turtlebot4_navigation
-      - turtlebot4_node
-      - turtlebot4_simulator
-      - turtlebot4_viz
-      - twist_stamper
-      - ublox
-      - ublox_dgnss
-      - ublox_dgnss_node
-      - ur_simulation_gz
-      - velodyne_simulator
 
   - if: win
     then:
