@@ -66,7 +66,6 @@ packages_skip:
       - plotjuggler_ros
       - point_cloud_transport_plugins
       - random_numbers
-      - rmw_stats_shim
       - robotiq_controllers
       - robotiq_description
       - ros_gz
@@ -121,6 +120,7 @@ packages_skip:
       - pinocchio
       - realsense2_camera
       - realsense2_description
+      - rmw_stats_shim
       - rosgraph_monitor
       - rosgraph_monitor_msgs
 
