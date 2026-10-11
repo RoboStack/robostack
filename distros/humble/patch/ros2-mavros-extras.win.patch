@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 3ee4347..9786c81 100644
+index 3ee4347..1975bcd 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -10,13 +10,17 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -29,3 +29,15 @@ index 3ee4347..9786c81 100644
  )
  pluginlib_export_plugin_description_file(mavros mavros_plugins.xml)
  # Link GeographicLib - not handled by ament_target_dependencies
+@@ -191,8 +196,9 @@ target_link_libraries(mavros_extras PUBLIC
+ )
+ rclcpp_components_register_node(mavros_extras PLUGIN "mavros::extras::ServoStatePublisher" EXECUTABLE servo_state_publisher)
+ 
+-# yaml-cpp is required for Jazzy and newer
+-if(rclcpp_VERSION VERSION_GREATER_EQUAL 22.0.0)
++# yaml-cpp is required for Jazzy and newer; on Windows the bare yaml-cpp name
++# doesn't resolve to the library (LNK1181), the imported target does
++if(WIN32 OR rclcpp_VERSION VERSION_GREATER_EQUAL 22.0.0)
+   find_package(yaml-cpp REQUIRED)
+   target_link_libraries(mavros_extras_plugins PUBLIC yaml-cpp::yaml-cpp)
+   target_link_libraries(mavros_extras PUBLIC yaml-cpp::yaml-cpp)
