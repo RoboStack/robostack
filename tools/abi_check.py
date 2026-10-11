@@ -297,8 +297,9 @@ RUNTIMES = {"libgcc", "libgcc-ng", "libstdcxx", "libstdcxx-ng", "libcxx", "vc", 
 
 
 def pin_changes(old: dict, new: dict, distro: str) -> list[str]:
-    """Non-ROS dependencies whose pin differs between the two builds, e.g. a changed
-    libboost: then the ABI comparison mixes the package's change with the pin's."""
+    """Non-ROS dependencies that differ between the two builds (changed pins, new and
+    dropped dependencies), e.g. a changed libboost: then the ABI comparison mixes the
+    package's change with the pin's."""
     def pins(rec):
         out = {}
         for dep in rec.get("depends", []):
@@ -309,7 +310,25 @@ def pin_changes(old: dict, new: dict, distro: str) -> list[str]:
         return out
 
     a, b = pins(old), pins(new)
-    return [f"{n} {a.get(n, '(none)')} → {b.get(n, '(none)')}" for n in sorted(set(a) | set(b)) if a.get(n) != b.get(n)]
+
+    def show(spec):
+        return spec.replace(".0a0", "") or "any"
+
+    def names(found):
+        # a -devel package travels with its library: list only the library
+        return [n for n in sorted(found) if not (n.endswith("-devel") and n[:-len("-devel")] in found)]
+
+    changed = names({n for n in set(a) & set(b) if a[n] != b[n]})
+    added = names(set(b) - set(a))
+    dropped = names(set(a) - set(b))
+    out = []
+    if changed:
+        out.append("pins changed: " + ", ".join(f"{n} {show(a[n])} → {show(b[n])}" for n in changed))
+    if added:
+        out.append("new dependencies: " + ", ".join(f"{n} {show(b[n])}" for n in added))
+    if dropped:
+        out.append("dropped dependencies: " + ", ".join(dropped))
+    return out
 
 
 def channel_for(distro: str) -> list[str]:
@@ -451,8 +470,7 @@ def _row(name: str, res: dict) -> str:
         details.append(f"{len(headers)} headers changed (check for layout/inline changes): {shown}")
     elif headers is not None:
         details.append("headers unchanged")
-    if res.get("pins"):
-        details.append("changed pins (part of the comparison): " + ", ".join(res["pins"]))
+    details.extend(res.get("pins") or [])
     verdict = f"**{res['verdict']}**: {VERDICT_NOTE.get(res['verdict'], '')}"
     return f"| {name} | {res.get('old', '')} → {res.get('new', '')} | {verdict} | {'<br>'.join(details)} |"
 
