@@ -128,6 +128,8 @@ gz_gui_vendor:
   build_number: 28
 gz_sim_vendor:
   build_number: 28
+livox_ros_driver2:
+  build_number: 29
 ros2cli:
   # Rebuild with the shell completions under the names bash/zsh/fish load (patch).
   build_number: 28
