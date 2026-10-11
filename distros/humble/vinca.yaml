@@ -52,9 +52,15 @@ packages_skip:
     then:
       - joy_linux
 
+  # rosgraph_monitor: no distro builds it on Windows; the rest need Ignition Fortress (libignition-gazebo6), not installable on win-64
   - if: win
     then:
+      - irobot_create_ignition_bringup
+      - irobot_create_ignition_plugins
       - rosgraph_monitor
+      - turtlebot4_ignition_bringup
+      - turtlebot4_ignition_gui_plugins
+      - turtlebot4_simulator
 
 packages_select_by_deps:
 
