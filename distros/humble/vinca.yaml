@@ -66,14 +66,10 @@ packages_skip:
       - plotjuggler_ros
       - point_cloud_transport_plugins
       - random_numbers
-      - realsense2_camera
-      - realsense2_description
       - rmw_stats_shim
       - robotiq_controllers
       - robotiq_description
       - ros_gz
-      - rosgraph_monitor
-      - rosgraph_monitor_msgs
       - rqt_mocap4r2_control
       - rqt_tf_tree
       - rviz_2d_overlay_plugins
@@ -123,6 +119,10 @@ packages_skip:
       - odom_to_tf_ros2
       - ouster_ros
       - pinocchio
+      - realsense2_camera
+      - realsense2_description
+      - rosgraph_monitor
+      - rosgraph_monitor_msgs
 
 packages_select_by_deps:
 

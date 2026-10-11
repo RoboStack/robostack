@@ -399,7 +399,6 @@ packages_select_by_deps:
       - easynav_costmap_planner
       - easynav_diagnostic_recovery
       - easynav_fusion_localizer
-      - easynav_gps_localizer
       - easynav_interfaces
       - easynav_localizer
       - easynav_maps_manager
