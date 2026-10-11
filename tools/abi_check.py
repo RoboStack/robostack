@@ -377,12 +377,14 @@ def check_pr_builds(pr_dir: Path, channel: str, platform: str, distro: str, tmp:
     downloads = tmp / "downloads"
     downloads.mkdir(exist_ok=True)
     results = {}
+    built = set()  # everything the pull request rebuilt: those dependents are taken care of
     for pkg in sorted([*pr_dir.glob("*.conda"), *pr_dir.glob("*.tar.bz2")]):
         index = read_index(pkg)
         short = short_name(index["name"], distro)
         # check_patches_clean_apply.py's patch-check packages can share the output directory
         if short is None or _is_compatibility_package(index) or "-check-patches-" in short:
             continue
+        built.add(short)
         if short not in by_name:
             results[short] = {"verdict": "new package", "new": index["version"], "libraries": {}, "removed_libraries": []}
             continue
@@ -401,7 +403,17 @@ def check_pr_builds(pr_dir: Path, channel: str, platform: str, distro: str, tmp:
             )
         results[short] = res
         print(f"  -> {res['verdict']}", flush=True)
+    drop_rebuilt(results, built)
     return results, next_build_number(by_name, distro)
+
+
+def drop_rebuilt(results: dict, built: set[str]) -> None:
+    """Dependents the pull request rebuilt anyway don't need a build number bump."""
+    for res in results.values():
+        deps = res.get("dependents")
+        if deps:
+            deps["rebuilt"] = sorted(d for d in deps["rebuild"] if d in built)
+            deps["rebuild"] = [d for d in deps["rebuild"] if d not in built]
 
 
 VERDICT_NOTE = {
@@ -431,6 +443,8 @@ def _row(name: str, res: dict) -> str:
         else:
             details.append(f"**{len(deps['rebuild'])} released dependents** (too many to check which link to it; "
                            f"rebuild those with compiled code): {listed}")
+        if deps.get("rebuilt"):
+            details.append(f"{len(deps['rebuilt'])} more already rebuilt in this pull request: {', '.join(deps['rebuilt'])}")
     headers = res.get("headers")
     if headers:
         shown = ", ".join(f"`{h}`" for h in headers[:8]) + (f" and {len(headers) - 8} more" if len(headers) > 8 else "")

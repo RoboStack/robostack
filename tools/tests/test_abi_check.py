@@ -27,6 +27,18 @@ def test_unchecked_dependents_get_a_hint():
     assert "couldn't be checked" in abi_check.rebuild_snippet({"foo": _soname(["bar"], checked=False)}, "jazzy", 26)[0]
 
 
+def test_dependents_rebuilt_in_the_pull_request_need_no_bump():
+    results = {"foo": _soname(["bar", "qux"]), "foo2": _soname(["bar"])}
+    abi_check.drop_rebuilt(results, {"foo", "bar"})
+    assert results["foo"]["dependents"]["rebuild"] == ["qux"]
+    assert results["foo2"]["dependents"]["rebuild"] == []
+    lines = abi_check.rebuild_snippet(results, "jazzy", 26)
+    assert lines[lines.index("```yaml") + 1:lines.index("```", lines.index("```yaml") + 1)] == ["qux:", "  build_number: 26"]
+    assert "1 more already rebuilt in this pull request: bar" in abi_check._row("foo", results["foo"])
+    abi_check.drop_rebuilt(results, {"qux"})
+    assert abi_check.rebuild_snippet(results, "jazzy", 26) == []
+
+
 def test_summary_puts_the_snippet_under_the_table():
     results = {"foo": _soname(["bar"]),
                "ok": {"verdict": "compatible", "old": "1", "new": "2", "libraries": {}, "removed_libraries": [],
