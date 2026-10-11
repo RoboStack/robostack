@@ -124,11 +124,121 @@ zenoh_cpp_vendor:
 # Remove build_number fields below on new full rebuild
 # Rebuild with qt6-main 6.11: b27 of these was built against qt6-main 6.12 on at
 # least one platform, which can't be installed together with pyqt6 6.11.
+easynav:
+  build_number: 29
+easynav_bonxai_maps_manager:
+  build_number: 29
+easynav_common:
+  build_number: 29
+easynav_controller:
+  build_number: 29
+easynav_core:
+  build_number: 29
+easynav_costmap_common:
+  build_number: 29
+easynav_costmap_localizer:
+  build_number: 29
+easynav_costmap_maps_manager:
+  build_number: 29
+easynav_costmap_planner:
+  build_number: 29
+easynav_diagnostic_recovery:
+  build_number: 29
+easynav_fusion_localizer:
+  build_number: 29
+easynav_interfaces:
+  build_number: 29
+easynav_localizer:
+  build_number: 29
+easynav_maps_manager:
+  build_number: 29
+easynav_mhamcl_localizer:
+  build_number: 29
+easynav_mpc_controller:
+  build_number: 29
+easynav_mppi_controller:
+  build_number: 29
+easynav_navmap_localizer:
+  build_number: 29
+easynav_navmap_maps_manager:
+  build_number: 29
+easynav_navmap_planner:
+  build_number: 29
+easynav_octomap_maps_manager:
+  build_number: 29
+easynav_planner:
+  build_number: 29
+easynav_playground_kobuki:
+  build_number: 29
+easynav_playground_kobuki_description:
+  build_number: 29
+easynav_playground_kobuki_worlds:
+  build_number: 29
+easynav_playground_omni:
+  build_number: 29
+easynav_playground_omni_description:
+  build_number: 29
+easynav_playground_omni_worlds:
+  build_number: 29
+easynav_playground_summit:
+  build_number: 29
+easynav_playground_summit_description:
+  build_number: 29
+easynav_playground_summit_worlds:
+  build_number: 29
+easynav_playground_tiago:
+  build_number: 29
+easynav_playground_tiago_description:
+  build_number: 29
+easynav_playground_tiago_worlds:
+  build_number: 29
+easynav_recovery:
+  build_number: 29
+easynav_regulated_pp_controller:
+  build_number: 29
+easynav_routes_maps_manager:
+  build_number: 29
+easynav_sensors:
+  build_number: 29
+easynav_serest_controller:
+  build_number: 29
+easynav_simple_common:
+  build_number: 29
+easynav_simple_controller:
+  build_number: 29
+easynav_simple_localizer:
+  build_number: 29
+easynav_simple_maps_manager:
+  build_number: 29
+easynav_simple_planner:
+  build_number: 29
+easynav_simple_recovery:
+  build_number: 29
+easynav_support_py:
+  build_number: 29
+easynav_system:
+  build_number: 29
+easynav_tools:
+  build_number: 29
+easynav_vff_controller:
+  build_number: 29
 gz_gui_vendor:
   build_number: 28
 gz_sim_vendor:
   build_number: 28
 livox_ros_driver2:
+  build_number: 29
+navmap_core:
+  build_number: 29
+navmap_examples:
+  build_number: 29
+navmap_ros:
+  build_number: 29
+navmap_ros_interfaces:
+  build_number: 29
+navmap_rviz_plugin:
+  build_number: 29
+navmap_tools:
   build_number: 29
 ros2cli:
   # Rebuild with the shell completions under the names bash/zsh/fish load (patch).
@@ -168,4 +278,6 @@ turtlesim:
   build_number: 28
 visp:
   # the published build depends on visp 3.6 (OpenCV 4 / protobuf < 7); rebuild for 3.7.0
+  build_number: 29
+yaets:
   build_number: 29

@@ -297,8 +297,9 @@ RUNTIMES = {"libgcc", "libgcc-ng", "libstdcxx", "libstdcxx-ng", "libcxx", "vc", 
 
 
 def pin_changes(old: dict, new: dict, distro: str) -> list[str]:
-    """Non-ROS dependencies whose pin differs between the two builds, e.g. a changed
-    libboost: then the ABI comparison mixes the package's change with the pin's."""
+    """Non-ROS dependencies that differ between the two builds (changed pins, new and
+    dropped dependencies), e.g. a changed libboost: then the ABI comparison mixes the
+    package's change with the pin's."""
     def pins(rec):
         out = {}
         for dep in rec.get("depends", []):
@@ -309,7 +310,25 @@ def pin_changes(old: dict, new: dict, distro: str) -> list[str]:
         return out
 
     a, b = pins(old), pins(new)
-    return [f"{n} {a.get(n, '(none)')} → {b.get(n, '(none)')}" for n in sorted(set(a) | set(b)) if a.get(n) != b.get(n)]
+
+    def show(spec):
+        return spec.replace(".0a0", "") or "any"
+
+    def names(found):
+        # a -devel package travels with its library: list only the library
+        return [n for n in sorted(found) if not (n.endswith("-devel") and n[:-len("-devel")] in found)]
+
+    changed = names({n for n in set(a) & set(b) if a[n] != b[n]})
+    added = names(set(b) - set(a))
+    dropped = names(set(a) - set(b))
+    out = []
+    if changed:
+        out.append("pins changed: " + ", ".join(f"{n} {show(a[n])} → {show(b[n])}" for n in changed))
+    if added:
+        out.append("new dependencies: " + ", ".join(f"{n} {show(b[n])}" for n in added))
+    if dropped:
+        out.append("dropped dependencies: " + ", ".join(dropped))
+    return out
 
 
 def channel_for(distro: str) -> list[str]:
@@ -377,12 +396,14 @@ def check_pr_builds(pr_dir: Path, channel: str, platform: str, distro: str, tmp:
     downloads = tmp / "downloads"
     downloads.mkdir(exist_ok=True)
     results = {}
+    built = set()  # everything the pull request rebuilt: those dependents are taken care of
     for pkg in sorted([*pr_dir.glob("*.conda"), *pr_dir.glob("*.tar.bz2")]):
         index = read_index(pkg)
         short = short_name(index["name"], distro)
         # check_patches_clean_apply.py's patch-check packages can share the output directory
         if short is None or _is_compatibility_package(index) or "-check-patches-" in short:
             continue
+        built.add(short)
         if short not in by_name:
             results[short] = {"verdict": "new package", "new": index["version"], "libraries": {}, "removed_libraries": []}
             continue
@@ -401,7 +422,17 @@ def check_pr_builds(pr_dir: Path, channel: str, platform: str, distro: str, tmp:
             )
         results[short] = res
         print(f"  -> {res['verdict']}", flush=True)
+    drop_rebuilt(results, built)
     return results, next_build_number(by_name, distro)
+
+
+def drop_rebuilt(results: dict, built: set[str]) -> None:
+    """Dependents the pull request rebuilt anyway don't need a build number bump."""
+    for res in results.values():
+        deps = res.get("dependents")
+        if deps:
+            deps["rebuilt"] = sorted(d for d in deps["rebuild"] if d in built)
+            deps["rebuild"] = [d for d in deps["rebuild"] if d not in built]
 
 
 VERDICT_NOTE = {
@@ -431,14 +462,15 @@ def _row(name: str, res: dict) -> str:
         else:
             details.append(f"**{len(deps['rebuild'])} released dependents** (too many to check which link to it; "
                            f"rebuild those with compiled code): {listed}")
+        if deps.get("rebuilt"):
+            details.append(f"{len(deps['rebuilt'])} more already rebuilt in this pull request: {', '.join(deps['rebuilt'])}")
     headers = res.get("headers")
     if headers:
         shown = ", ".join(f"`{h}`" for h in headers[:8]) + (f" and {len(headers) - 8} more" if len(headers) > 8 else "")
         details.append(f"{len(headers)} headers changed (check for layout/inline changes): {shown}")
     elif headers is not None:
         details.append("headers unchanged")
-    if res.get("pins"):
-        details.append("changed pins (part of the comparison): " + ", ".join(res["pins"]))
+    details.extend(res.get("pins") or [])
     verdict = f"**{res['verdict']}**: {VERDICT_NOTE.get(res['verdict'], '')}"
     return f"| {name} | {res.get('old', '')} → {res.get('new', '')} | {verdict} | {'<br>'.join(details)} |"
 
