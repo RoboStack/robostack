@@ -26,8 +26,13 @@ packages_exclude:
       - rclc_examples
       - rmw_connextdds
 
+  # humble's Gazebo is Ignition Fortress (libignition-gazebo6), not installable on win-64 (libode)
   - if: win
     then:
+      - gz_ros2_control
+      - gz_ros2_control_demos
+      - ros_gz_sim
+      - ros_gz_sim_demos
       - ros_ign_gazebo
       - ros_ign_gazebo_demos
       - ros_ign_image
