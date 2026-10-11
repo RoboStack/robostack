@@ -3,14 +3,15 @@ name: Auto-merge
 # Adding the "automerge" label to a pull request turns on GitHub's auto-merge: the
 # pull request is merged as soon as the required checks ("All green") pass.
 # Removing the label turns it off again. Pull requests without the label are never
-# merged automatically.
+# merged automatically. New commits pushed after the label was added remove it (and
+# turn auto-merge off), so what gets merged is always what was looked at.
 #
 # pull_request_target so that the token can merge pull requests from forks too; the
 # pull request's code is never checked out or run here.
 
 on:
   pull_request_target:
-    types: [labeled, unlabeled]
+    types: [labeled, unlabeled, synchronize]
 
 permissions:
   contents: write
@@ -18,7 +19,7 @@ permissions:
 
 jobs:
   automerge:
-    if: github.event.label.name == 'automerge'
+    if: github.event.action != 'synchronize' && github.event.label.name == 'automerge'
     concurrency:
       group: automerge-${{ github.event.pull_request.number }}
       cancel-in-progress: false
@@ -51,3 +52,25 @@ jobs:
           else
             gh pr merge "$PR" --disable-auto
           fi
+
+  drop-on-push:
+    if: >-
+      github.event.action == 'synchronize' &&
+      contains(github.event.pull_request.labels.*.name, 'automerge')
+    concurrency:
+      group: automerge-${{ github.event.pull_request.number }}
+      cancel-in-progress: false
+    runs-on: ubuntu-latest
+    steps:
+      # removing the label with this token doesn't start the unlabeled run above, so
+      # turn auto-merge off here as well
+      - name: Remove the automerge label
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.html_url }}
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.event.after }}
+        run: |
+          gh pr edit "$PR" --remove-label automerge
+          gh pr merge "$PR" --disable-auto || true
+          gh pr comment "$PR" --body "New commits (${BEFORE:0:7}..${AFTER:0:7}) arrived after the \`automerge\` label was added, so the label was removed and auto-merge turned off. Add the label again once the new commits are reviewed."
