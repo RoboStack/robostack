@@ -69,6 +69,7 @@ libyaml_vendor:
   add_run: ["yaml-cpp", "yaml"]
 livox_ros_driver2:
   add_host: ["livox-sdk2"]
+  add_run: ["livox-sdk2"]
 moveit:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
 moveit2_tutorials:

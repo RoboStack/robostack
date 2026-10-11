@@ -84,6 +84,8 @@ gz_gui_vendor:
   build_number: 30
 gz_sim_vendor:
   build_number: 30
+livox_ros_driver2:
+  build_number: 31
 plotjuggler:
   # Rebuild with the refreshed patch (b29 was built before it; 3.17.2 already wraps the message in a Span).
   build_number: 30

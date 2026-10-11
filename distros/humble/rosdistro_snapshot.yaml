@@ -2039,6 +2039,834 @@ dynamixel_workbench_toolbox:
   tag: release/humble/dynamixel_workbench_toolbox/2.2.5-1
   url: https://github.com/ros2-gbp/dynamixel_workbench-release.git
   version: 2.2.5
+easynav:
+  dependencies:
+  - ament_cmake
+  - easynav_common
+  - easynav_controller
+  - easynav_core
+  - easynav_interfaces
+  - easynav_localizer
+  - easynav_maps_manager
+  - easynav_planner
+  - easynav_recovery
+  - easynav_sensors
+  - easynav_support_py
+  - easynav_system
+  - easynav_tools
+  repository: https://github.com/EasyNavigation/EasyNavigation
+  tag: release/humble/easynav/0.5.0-1
+  url: https://github.com/EasyNavigation/EasyNavigation-release.git
+  version: 0.5.0
+easynav_bonxai_maps_manager:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_index_cpp
+  - ament_lint_auto
+  - ament_lint_common
+  - easynav_common
+  - easynav_core
+  - nav_msgs
+  - pcl_conversions
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - sensor_msgs
+  - std_srvs
+  - tf2
+  - tf2_geometry_msgs
+  - tf2_ros
+  - yaets
+  - yaml_cpp_vendor
+  repository: https://github.com/EasyNavigation/easynav_plugins
+  tag: release/humble/easynav_bonxai_maps_manager/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_common:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_index_cpp
+  - ament_lint_auto
+  - ament_lint_common
+  - geometry_msgs
+  - rclcpp
+  - rclcpp_lifecycle
+  - rcutils
+  - tf2_msgs
+  - tf2_ros
+  - yaets
+  repository: https://github.com/EasyNavigation/EasyNavigation
+  tag: release/humble/easynav_common/0.5.0-1
+  url: https://github.com/EasyNavigation/EasyNavigation-release.git
+  version: 0.5.0
+easynav_controller:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_lint_auto
+  - ament_lint_common
+  - diagnostic_msgs
+  - easynav_common
+  - easynav_core
+  - geometry_msgs
+  - lifecycle_msgs
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  repository: https://github.com/EasyNavigation/EasyNavigation
+  tag: release/humble/easynav_controller/0.5.0-1
+  url: https://github.com/EasyNavigation/EasyNavigation-release.git
+  version: 0.5.0
+easynav_core:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_lint_auto
+  - ament_lint_common
+  - diagnostic_msgs
+  - easynav_common
+  - easynav_sensors
+  - geometry_msgs
+  - nav_msgs
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - tf2_geometry_msgs
+  - tf2_ros
+  repository: https://github.com/EasyNavigation/EasyNavigation
+  tag: release/humble/easynav_core/0.5.0-1
+  url: https://github.com/EasyNavigation/EasyNavigation-release.git
+  version: 0.5.0
+easynav_costmap_common:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_lint_auto
+  - ament_lint_common
+  - easynav_common
+  - geometry_msgs
+  - nav_msgs
+  - rclcpp
+  - tf2_geometry_msgs
+  repository: https://github.com/EasyNavigation/easynav_plugins
+  tag: release/humble/easynav_costmap_common/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_costmap_localizer:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_lint_auto
+  - ament_lint_common
+  - diagnostic_msgs
+  - easynav_common
+  - easynav_core
+  - easynav_costmap_common
+  - easynav_diagnostic_recovery
+  - easynav_localizer
+  - easynav_sensors
+  - geometry_msgs
+  - nav_msgs
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - std_srvs
+  - tf2
+  - tf2_geometry_msgs
+  - tf2_ros
+  repository: https://github.com/EasyNavigation/easynav_plugins
+  tag: release/humble/easynav_costmap_localizer/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_costmap_maps_manager:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_index_cpp
+  - ament_lint_auto
+  - ament_lint_common
+  - easynav_common
+  - easynav_core
+  - easynav_costmap_common
+  - easynav_sensors
+  - nav_msgs
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - std_srvs
+  - tf2
+  - tf2_ros
+  - yaets
+  - yaml_cpp_vendor
+  repository: https://github.com/EasyNavigation/easynav_plugins
+  tag: release/humble/easynav_costmap_maps_manager/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_costmap_planner:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_lint_auto
+  - ament_lint_common
+  - easynav_common
+  - easynav_core
+  - easynav_costmap_common
+  - geometry_msgs
+  - nav_msgs
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  repository: https://github.com/EasyNavigation/easynav_plugins
+  tag: release/humble/easynav_costmap_planner/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_diagnostic_recovery:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_lint_auto
+  - ament_lint_common
+  - diagnostic_msgs
+  - easynav_common
+  - easynav_core
+  - easynav_planner
+  - easynav_recovery
+  - easynav_sensors
+  - geometry_msgs
+  - lifecycle_msgs
+  - nav_msgs
+  - pluginlib
+  - rcl_interfaces
+  - rclcpp
+  - rclcpp_lifecycle
+  - visualization_msgs
+  repository: https://github.com/EasyNavigation/easynav_plugins
+  tag: release/humble/easynav_diagnostic_recovery/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_fusion_localizer:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_lint_auto
+  - ament_lint_common
+  - angles
+  - diagnostic_msgs
+  - diagnostic_updater
+  - easynav_common
+  - easynav_core
+  - easynav_localizer
+  - easynav_sensors
+  - geometry_msgs
+  - nav_msgs
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - robot_localization
+  - sensor_msgs
+  - std_srvs
+  - tf2
+  - tf2_geometry_msgs
+  - tf2_ros
+  - yaets
+  repository: https://github.com/EasyNavigation/easynav_plugins
+  tag: release/humble/easynav_fusion_localizer/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_interfaces:
+  dependencies:
+  - ament_cmake
+  - ament_lint_auto
+  - ament_lint_common
+  - builtin_interfaces
+  - geometry_msgs
+  - nav_msgs
+  - rosidl_default_generators
+  - std_msgs
+  repository: https://github.com/EasyNavigation/EasyNavigation
+  tag: release/humble/easynav_interfaces/0.5.0-1
+  url: https://github.com/EasyNavigation/EasyNavigation-release.git
+  version: 0.5.0
+easynav_localizer:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_lint_auto
+  - ament_lint_common
+  - easynav_common
+  - easynav_core
+  - lifecycle_msgs
+  - nav_msgs
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - tf2
+  - tf2_ros
+  repository: https://github.com/EasyNavigation/EasyNavigation
+  tag: release/humble/easynav_localizer/0.5.0-1
+  url: https://github.com/EasyNavigation/EasyNavigation-release.git
+  version: 0.5.0
+easynav_maps_manager:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_lint_auto
+  - ament_lint_common
+  - easynav_common
+  - easynav_core
+  - lifecycle_msgs
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  repository: https://github.com/EasyNavigation/EasyNavigation
+  tag: release/humble/easynav_maps_manager/0.5.0-1
+  url: https://github.com/EasyNavigation/EasyNavigation-release.git
+  version: 0.5.0
+easynav_mhamcl_localizer:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_lint_auto
+  - ament_lint_common
+  - easynav_common
+  - easynav_core
+  - easynav_costmap_common
+  - easynav_localizer
+  - easynav_sensors
+  - geometry_msgs
+  - nav_msgs
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - std_srvs
+  - tf2
+  - tf2_geometry_msgs
+  - tf2_ros
+  - visualization_msgs
+  repository: https://github.com/EasyNavigation/easynav_plugins
+  tag: release/humble/easynav_mhamcl_localizer/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_mpc_controller:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_lint_auto
+  - ament_lint_common
+  - easynav_common
+  - easynav_controller
+  - easynav_core
+  - easynav_sensors
+  - easynav_system
+  - geometry_msgs
+  - lifecycle_msgs
+  - nav_msgs
+  - pcl_conversions
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - sensor_msgs
+  - tf2
+  - tf2_ros
+  repository: https://github.com/EasyNavigation/easynav_plugins
+  tag: release/humble/easynav_mpc_controller/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_mppi_controller:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_lint_auto
+  - ament_lint_common
+  - easynav_common
+  - easynav_controller
+  - easynav_core
+  - easynav_sensors
+  - easynav_system
+  - geometry_msgs
+  - lifecycle_msgs
+  - nav_msgs
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - tf2
+  - tf2_geometry_msgs
+  - tf2_ros
+  - visualization_msgs
+  repository: https://github.com/EasyNavigation/easynav_plugins
+  tag: release/humble/easynav_mppi_controller/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_nav2_bridge:
+  dependencies:
+  - action_msgs
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_lint_auto
+  - ament_lint_common
+  - easynav_common
+  - easynav_interfaces
+  - easynav_system
+  - geometry_msgs
+  - nav2_msgs
+  - nav_msgs
+  - rclcpp
+  - rclcpp_action
+  - rclcpp_lifecycle
+  repository: https://github.com/EasyNavigation/easynav_nav2_bridge
+  tag: release/humble/easynav_nav2_bridge/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_nav2_bridge-release.git
+  version: 0.5.0
+easynav_navmap_localizer:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_lint_auto
+  - ament_lint_common
+  - easynav_bonxai_maps_manager
+  - easynav_common
+  - easynav_core
+  - easynav_localizer
+  - easynav_sensors
+  - geometry_msgs
+  - nav_msgs
+  - navmap_core
+  - navmap_ros
+  - navmap_ros_interfaces
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - std_srvs
+  - tf2
+  - tf2_geometry_msgs
+  - tf2_ros
+  repository: https://github.com/EasyNavigation/easynav_plugins
+  tag: release/humble/easynav_navmap_localizer/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_navmap_maps_manager:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_index_cpp
+  - ament_lint_auto
+  - ament_lint_common
+  - easynav_common
+  - easynav_core
+  - easynav_sensors
+  - geometry_msgs
+  - nav_msgs
+  - navmap_core
+  - navmap_ros
+  - navmap_ros_interfaces
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - sensor_msgs
+  - std_srvs
+  - tf2
+  - tf2_geometry_msgs
+  - tf2_ros
+  - yaets
+  - yaml_cpp_vendor
+  repository: https://github.com/EasyNavigation/easynav_plugins
+  tag: release/humble/easynav_navmap_maps_manager/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_navmap_planner:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_lint_auto
+  - ament_lint_common
+  - easynav_common
+  - easynav_core
+  - geometry_msgs
+  - nav_msgs
+  - navmap_core
+  - navmap_ros
+  - navmap_ros_interfaces
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  repository: https://github.com/EasyNavigation/easynav_plugins
+  tag: release/humble/easynav_navmap_planner/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_octomap_maps_manager:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_index_cpp
+  - ament_lint_auto
+  - ament_lint_common
+  - easynav_common
+  - easynav_core
+  - nav_msgs
+  - octomap_msgs
+  - pcl_conversions
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - sensor_msgs
+  - std_srvs
+  - tf2
+  - tf2_geometry_msgs
+  - tf2_ros
+  - yaets
+  - yaml_cpp_vendor
+  repository: https://github.com/EasyNavigation/easynav_plugins
+  tag: release/humble/easynav_octomap_maps_manager/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_planner:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_lint_auto
+  - ament_lint_common
+  - diagnostic_msgs
+  - easynav_common
+  - easynav_core
+  - lifecycle_msgs
+  - nav_msgs
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  repository: https://github.com/EasyNavigation/EasyNavigation
+  tag: release/humble/easynav_planner/0.5.0-1
+  url: https://github.com/EasyNavigation/EasyNavigation-release.git
+  version: 0.5.0
+easynav_recovery:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_lint_auto
+  - ament_lint_common
+  - easynav_common
+  - easynav_core
+  - lifecycle_msgs
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  repository: https://github.com/EasyNavigation/EasyNavigation
+  tag: release/humble/easynav_recovery/0.5.0-1
+  url: https://github.com/EasyNavigation/EasyNavigation-release.git
+  version: 0.5.0
+easynav_regulated_pp_controller:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_lint_auto
+  - ament_lint_common
+  - easynav_common
+  - easynav_controller
+  - easynav_core
+  - easynav_planner
+  - easynav_sensors
+  - easynav_system
+  - geometry_msgs
+  - lifecycle_msgs
+  - nav_msgs
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - std_msgs
+  - tf2
+  - tf2_geometry_msgs
+  - tf2_ros
+  repository: https://github.com/EasyNavigation/easynav_plugins
+  tag: release/humble/easynav_regulated_pp_controller/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_routes_maps_manager:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_index_cpp
+  - ament_lint_auto
+  - ament_lint_common
+  - easynav_common
+  - easynav_core
+  - easynav_costmap_common
+  - geometry_msgs
+  - interactive_markers
+  - nav_msgs
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - rosidl_default_generators
+  - rosidl_default_runtime
+  - std_srvs
+  - tf2_ros
+  - visualization_msgs
+  - yaets
+  repository: https://github.com/EasyNavigation/easynav_plugins
+  tag: release/humble/easynav_routes_maps_manager/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_sensors:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_lint_auto
+  - ament_lint_common
+  - cv_bridge
+  - diagnostic_msgs
+  - easynav_common
+  - geometry_msgs
+  - lifecycle_msgs
+  - nav_msgs
+  - pcl_conversions
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - sensor_msgs
+  - std_msgs
+  - tf2
+  - tf2_geometry_msgs
+  - tf2_ros
+  - vision_msgs
+  repository: https://github.com/EasyNavigation/EasyNavigation
+  tag: release/humble/easynav_sensors/0.5.0-1
+  url: https://github.com/EasyNavigation/EasyNavigation-release.git
+  version: 0.5.0
+easynav_serest_controller:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_lint_auto
+  - ament_lint_common
+  - easynav_common
+  - easynav_controller
+  - easynav_core
+  - easynav_sensors
+  - geometry_msgs
+  - lifecycle_msgs
+  - nav_msgs
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - tf2
+  - tf2_geometry_msgs
+  - tf2_ros
+  repository: https://github.com/EasyNavigation/easynav_plugins
+  tag: release/humble/easynav_serest_controller/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_simple_common:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_lint_auto
+  - ament_lint_common
+  - easynav_common
+  - nav_msgs
+  repository: https://github.com/EasyNavigation/easynav_plugins
+  tag: release/humble/easynav_simple_common/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_simple_controller:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_lint_auto
+  - ament_lint_common
+  - easynav_common
+  - easynav_controller
+  - easynav_core
+  - easynav_simple_common
+  - geometry_msgs
+  - lifecycle_msgs
+  - nav_msgs
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - std_srvs
+  - tf2
+  - tf2_geometry_msgs
+  - tf2_ros
+  repository: https://github.com/EasyNavigation/easynav_plugins
+  tag: release/humble/easynav_simple_controller/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_simple_localizer:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_lint_auto
+  - ament_lint_common
+  - easynav_common
+  - easynav_core
+  - easynav_localizer
+  - easynav_sensors
+  - easynav_simple_common
+  - geometry_msgs
+  - nav_msgs
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - std_srvs
+  - tf2
+  - tf2_geometry_msgs
+  - tf2_ros
+  repository: https://github.com/EasyNavigation/easynav_plugins
+  tag: release/humble/easynav_simple_localizer/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_simple_maps_manager:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_index_cpp
+  - ament_lint_auto
+  - ament_lint_common
+  - easynav_common
+  - easynav_core
+  - easynav_sensors
+  - easynav_simple_common
+  - nav_msgs
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - std_srvs
+  - tf2_ros
+  - yaets
+  repository: https://github.com/EasyNavigation/easynav_plugins
+  tag: release/humble/easynav_simple_maps_manager/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_simple_planner:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_lint_auto
+  - ament_lint_common
+  - easynav_common
+  - easynav_core
+  - easynav_simple_common
+  - geometry_msgs
+  - nav_msgs
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  repository: https://github.com/EasyNavigation/easynav_plugins
+  tag: release/humble/easynav_simple_planner/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_simple_recovery:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_lint_auto
+  - ament_lint_common
+  - easynav_common
+  - easynav_core
+  - easynav_recovery
+  - easynav_sensors
+  - geometry_msgs
+  - lifecycle_msgs
+  - nav_msgs
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  repository: https://github.com/EasyNavigation/easynav_plugins
+  tag: release/humble/easynav_simple_recovery/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_support_py:
+  dependencies:
+  - ament_cmake_pytest
+  - ament_copyright
+  - ament_flake8
+  - ament_pep257
+  - ament_xmllint
+  - easynav_interfaces
+  - geometry_msgs
+  - nav_msgs
+  - rclpy
+  repository: https://github.com/EasyNavigation/EasyNavigation
+  tag: release/humble/easynav_support_py/0.5.0-1
+  url: https://github.com/EasyNavigation/EasyNavigation-release.git
+  version: 0.5.0
+easynav_system:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_lint_auto
+  - ament_lint_common
+  - diagnostic_msgs
+  - easynav_common
+  - easynav_controller
+  - easynav_core
+  - easynav_interfaces
+  - easynav_localizer
+  - easynav_maps_manager
+  - easynav_planner
+  - easynav_recovery
+  - easynav_sensors
+  - geometry_msgs
+  - lifecycle_msgs
+  - nav_msgs
+  - rcl_logging_interface
+  - rclcpp
+  - rclcpp_lifecycle
+  - rcutils
+  - sensor_msgs
+  - std_msgs
+  - tf2
+  - tf2_geometry_msgs
+  - tf2_ros
+  repository: https://github.com/EasyNavigation/EasyNavigation
+  tag: release/humble/easynav_system/0.5.0-1
+  url: https://github.com/EasyNavigation/EasyNavigation-release.git
+  version: 0.5.0
+easynav_tools:
+  dependencies:
+  - ament_cmake_pytest
+  - ament_copyright
+  - ament_flake8
+  - ament_index_python
+  - ament_pep257
+  - ament_xmllint
+  - builtin_interfaces
+  - diagnostic_msgs
+  - easynav_interfaces
+  - easynav_support_py
+  - geometry_msgs
+  - nav_msgs
+  - rcl_interfaces
+  - rclpy
+  - ros2cli
+  - rosidl_runtime_py
+  - std_msgs
+  repository: https://github.com/EasyNavigation/EasyNavigation
+  tag: release/humble/easynav_tools/0.5.0-1
+  url: https://github.com/EasyNavigation/EasyNavigation-release.git
+  version: 0.5.0
+easynav_vff_controller:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_lint_auto
+  - ament_lint_common
+  - easynav_common
+  - easynav_controller
+  - easynav_core
+  - easynav_sensors
+  - geometry_msgs
+  - nav_msgs
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - tf2
+  - visualization_msgs
+  repository: https://github.com/EasyNavigation/easynav_plugins
+  tag: release/humble/easynav_vff_controller/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
 ecal:
   tag: release/humble/ecal/5.12.0-3
   url: https://github.com/ros2-gbp/ecal-release.git
@@ -4771,6 +5599,108 @@ navigation2:
   tag: release/humble/navigation2/1.1.20-1
   url: https://github.com/SteveMacenski/navigation2-release.git
   version: 1.1.20
+navmap_core:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_lint_auto
+  - ament_lint_common
+  - eigen3_cmake_module
+  repository: https://github.com/EasyNavigation/NavMap
+  tag: release/humble/navmap_core/0.6.0-1
+  url: https://github.com/EasyNavigation/NavMap-release.git
+  version: 0.6.0
+navmap_examples:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_lint_auto
+  - ament_lint_common
+  - launch_ros
+  - nav_msgs
+  - navmap_core
+  - navmap_ros
+  - navmap_ros_interfaces
+  - rclcpp
+  repository: https://github.com/EasyNavigation/NavMap
+  tag: release/humble/navmap_examples/0.6.0-1
+  url: https://github.com/EasyNavigation/NavMap-release.git
+  version: 0.6.0
+navmap_ros:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_lint_auto
+  - geometry_msgs
+  - nav_msgs
+  - navmap_core
+  - navmap_ros_interfaces
+  - pcl_conversions
+  - rclcpp
+  - sensor_msgs
+  - std_msgs
+  - std_srvs
+  repository: https://github.com/EasyNavigation/NavMap
+  tag: release/humble/navmap_ros/0.6.0-1
+  url: https://github.com/EasyNavigation/NavMap-release.git
+  version: 0.6.0
+navmap_ros_interfaces:
+  dependencies:
+  - ament_cmake
+  - builtin_interfaces
+  - rosidl_default_generators
+  - std_msgs
+  repository: https://github.com/EasyNavigation/NavMap
+  tag: release/humble/navmap_ros_interfaces/0.6.0-1
+  url: https://github.com/EasyNavigation/NavMap-release.git
+  version: 0.6.0
+navmap_rviz_plugin:
+  dependencies:
+  - ament_cmake
+  - ament_lint_auto
+  - geometry_msgs
+  - navmap_core
+  - navmap_ros
+  - navmap_ros_interfaces
+  - pluginlib
+  - rclcpp
+  - rviz_common
+  - rviz_default_plugins
+  - rviz_rendering
+  - sensor_msgs
+  - std_msgs
+  - visualization_msgs
+  repository: https://github.com/EasyNavigation/NavMap
+  tag: release/humble/navmap_rviz_plugin/0.6.0-1
+  url: https://github.com/EasyNavigation/NavMap-release.git
+  version: 0.6.0
+navmap_tools:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_cmake_pytest
+  - ament_cmake_python
+  - ament_copyright
+  - ament_flake8
+  - ament_index_python
+  - ament_lint_auto
+  - ament_lint_common
+  - ament_pep257
+  - ament_xmllint
+  - nav_msgs
+  - navmap_core
+  - navmap_ros
+  - navmap_ros_interfaces
+  - pcl_conversions
+  - rclcpp
+  - rclpy
+  - sensor_msgs
+  - sensor_msgs_py
+  - tf2_ros_py
+  repository: https://github.com/EasyNavigation/NavMap
+  tag: release/humble/navmap_tools/0.6.0-1
+  url: https://github.com/EasyNavigation/NavMap-release.git
+  version: 0.6.0
 ndt_omp:
   tag: release/humble/ndt_omp/0.0.0-1
   url: https://github.com/ros2-gbp/ndt_omp-release.git
@@ -8675,6 +9605,16 @@ xacro:
   tag: release/humble/xacro/2.1.1-1
   url: https://github.com/ros2-gbp/xacro-release.git
   version: 2.1.1
+yaets:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_lint_auto
+  - ament_lint_common
+  repository: https://github.com/fmrico/yaets
+  tag: release/humble/yaets/1.2.0-1
+  url: https://github.com/fmrico/yaets-release.git
+  version: 1.2.0
 yaml_cpp_vendor:
   tag: release/humble/yaml_cpp_vendor/8.0.2-1
   url: https://github.com/ros2-gbp/yaml_cpp_vendor-release.git
