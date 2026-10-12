@@ -23,8 +23,4 @@ full_rebuild: false
 #
 # Remember that dependents are not rebuilt automatically: evict them as well if
 # they must pick up the change.
-evict_cache:
-  - sick_safetyscanners_base  # TEMPORARY (#83): rebuild on Windows with symbol export; reset before merging
-  - rosidlcpp_generator_core  # TEMPORARY (#83): same
-  - ros_image_to_qimage  # TEMPORARY (#83): the cached build predates the Qt6 patch
-  - rqt_image_overlay_layer  # TEMPORARY (#83): same
+evict_cache: []
