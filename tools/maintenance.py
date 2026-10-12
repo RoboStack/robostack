@@ -181,6 +181,9 @@ def bump_rebuild(distro: str) -> list[str]:
         if dropped:
             with info.open("w") as fh:
                 ry.dump(data, fh)
+            from vinca.sort_yaml_keys import sort_mapping_keys
+
+            sort_mapping_keys(info)  # `pixi run sort` order, or rs check fails
             lines.append(f"removed {len(dropped)} per-package build numbers: " + ", ".join(dropped))
     return lines
 
