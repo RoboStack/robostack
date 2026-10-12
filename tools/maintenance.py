@@ -456,75 +456,86 @@ def _set_pinning(distro: str, version: str, migrations: list[str]) -> str:
     return "shared/pinning/conda_forge.yaml"
 
 
+def uses_shared_pinning(distro: str) -> bool:
+    """Whether the distribution takes its conda-forge pinning from shared/pinning/conda_forge.yaml
+    (rather than conda_forge_pinning_version / conda_forge_migrations in its distro.yaml)."""
+    return not rs.settings(distro).get("conda_forge_pinning_version")
+
+
 def update_pinning(distro: str) -> Result:
     """Move the distribution's conda-forge pinning to the latest version, with the
     migrations that are done for its dependencies. Only the packages that use a changed
-    pin (and what depends on them) are rebuilt, unless that is most of them."""
+    pin (and what depends on them) are rebuilt, unless that is most of them. A
+    distribution on the shared pinning moves together with every other one on it."""
+    if uses_shared_pinning(distro):
+        return update_shared_pinning()
     from vinca import pinning
 
     settings = rs.settings(distro)
     before = (settings.get("conda_forge_pinning_version"), list(settings.get("conda_forge_migrations") or []))
-    if not before[0]:
-        shared = yaml.safe_load((rs.SHARED / "pinning" / "conda_forge.yaml").read_text()) or {}
-        before = (shared.get("conda_forge_pinning_version"), list(shared.get("migrations") or []))
     print(f"Collecting dependencies of {distro}", flush=True)
     work = rs.prepare(distro)
     dependencies = pinning.dependencies_from_vinca(work, pinning.DEFAULT_PLATFORMS)
     version, migrations, reports = pinning.update_pinning(work / "vinca_pinning.yaml", dependencies=dependencies)
     if str(before[0]) == str(version) and before[1] == list(migrations):
         return Result(f"{distro}: pinning is up to date", f"{distro} is on conda-forge-pinning {version}.")
-    where = _set_pinning(distro, str(version), list(migrations))
+    return _move_pinning([distro], before, str(version), list(migrations), reports)
 
-    cbc = rs.DISTROS / distro / "conda_build_config.yaml"
-    before_cbc = cbc.read_text() if cbc.is_file() else ""
-    print(f"Checking the dependencies of {distro} with the current pins", flush=True)
-    conflicts_before = dependency_conflicts(distro)
-    if rs.task(distro, "render-pinning", []):
-        return Result(f"{distro}: pinning update failed", "`render-pinning` failed, see the log.", ok=False)
+
+def update_shared_pinning() -> Result:
+    """update_pinning for every distribution on the shared pinning at once: the
+    migrations have to be done for all of their dependencies, and the shared file is
+    written once (one pull request instead of one per distribution)."""
+    from vinca import pinning
+
+    distros = [d for d in rs.distros() if uses_shared_pinning(d)]
+    shared = yaml.safe_load((rs.SHARED / "pinning" / "conda_forge.yaml").read_text()) or {}
+    before = (shared.get("conda_forge_pinning_version"), list(shared.get("migrations") or []))
+    dependencies: set[str] = set()
+    works = {}
+    for distro in distros:
+        print(f"Collecting dependencies of {distro}", flush=True)
+        works[distro] = rs.prepare(distro)
+        dependencies |= pinning.dependencies_from_vinca(works[distro], pinning.DEFAULT_PLATFORMS)
+    version, migrations, reports = pinning.update_pinning(works[distros[0]] / "vinca_pinning.yaml",
+                                                          dependencies=dependencies)
+    if str(before[0]) == str(version) and before[1] == list(migrations):
+        return Result("conda-forge pinning is up to date", f"{', '.join(distros)}: on conda-forge-pinning {version}.")
+    return _move_pinning(distros, before, str(version), list(migrations), reports)
+
+
+def _move_pinning(distros: list[str], before: tuple, version: str, migrations: list[str], reports) -> Result:
+    """Write the new pinning (once: the distributions share it, or it is one), render
+    each distribution's pins and plan its rebuild."""
+    before_cbc, conflicts_before = {}, {}
+    for distro in distros:
+        cbc = rs.DISTROS / distro / "conda_build_config.yaml"
+        before_cbc[distro] = cbc.read_text() if cbc.is_file() else ""
+        print(f"Checking the dependencies of {distro} with the current pins", flush=True)
+        conflicts_before[distro] = dependency_conflicts(distro)
+    where = _set_pinning(distros[0], version, migrations)
+    who = ", ".join(distros)
+
     added = sorted(set(migrations) - set(before[1]))
     candidates = {name for name, _ in reports}
     finished = sorted(set(before[1]) - set(migrations) - candidates)
     removed = sorted(set(before[1]) - set(migrations) - set(finished))
     lines = [
-        f"Moves **{distro}** from conda-forge-pinning `{before[0]}` to `{version}` (`{where}`).",
+        f"Moves **{who}** from conda-forge-pinning `{before[0]}` to `{version}` (`{where}`).",
         "",
         "Migrations: " + (", ".join(f"`{m}`" for m in migrations) or "none")
         + (f"; new: {', '.join(f'`{m}`' for m in added)}" if added else "")
         + (f"; finished (now part of the base pinning): {', '.join(f'`{m}`' for m in finished)}" if finished else "")
         + (f"; dropped: {', '.join(f'`{m}`' for m in removed)}" if removed else ""),
-        "",
     ]
     conflicts = False
-    if cbc.read_text() == before_cbc:
-        lines.append("The rendered pins don't change: nothing to rebuild.")
-    else:
-        print(f"Planning the rebuild of {distro}", flush=True)
-        packages, total = plan_rebuild(distro, before_cbc)
-        if not packages:
-            lines.append("The pins change, but no package uses them: nothing to rebuild.")
-        elif total and len(packages) > FULL_REBUILD_SHARE * total:
-            lines.append(f"**Full rebuild**: {len(packages)} of {total} packages use a changed pin or depend "
-                         "on one. " + "; ".join(bump_rebuild(distro)))
-        else:
-            lines.append(f"**Rebuild {len(packages)} of {total} packages** (they use a changed pin or depend "
-                         "on one): " + "; ".join(bump_partial(distro, packages)))
-            if packages:
-                lines += ["", *_details(f"Packages to rebuild ({len(packages)})", [
-                    f"- `{name}`: {reason}" for name, reason in sorted(packages.items())])]
-        conflicts_after = dependency_conflicts(distro)
-        if conflicts_after is None or conflicts_before is None:
-            conflicts = conflicts_after is None
-            lines += ["", "Dependency check (linux-64): ❌ the check failed, see the workflow log"
-                      if conflicts else "Dependency check (linux-64): no comparison (the check with the old pins failed)"]
-        else:
-            new_conflicts = sorted(conflicts_after - conflicts_before)
-            conflicts = bool(new_conflicts)
-            lines += ["", "Dependency check (linux-64): " + (
-                "❌ new conflicts: " + ", ".join(f"`{n}`" for n in new_conflicts) if new_conflicts
-                else "✅ no new conflicts")]
-            if conflicts_before:
-                lines += ["", *_details(f"Conflicts that already exist with the current pins ({len(conflicts_before)})",
-                                        [", ".join(f"`{n}`" for n in sorted(conflicts_before))])]
+    for distro in distros:
+        if rs.task(distro, "render-pinning", []):
+            return Result(f"{distro}: pinning update failed", "`render-pinning` failed, see the log.", ok=False)
+        lines += ["", f"#### {distro}", ""] if len(distros) > 1 else [""]
+        lines_d, conflicts_d = _rebuild_for_pins(distro, before_cbc[distro], conflicts_before[distro])
+        lines += lines_d
+        conflicts = conflicts or conflicts_d
 
     groups: dict[str, list[str]] = {"selected": [], "waiting": [], "other": []}
     for name, text in reports:
@@ -537,10 +548,48 @@ def update_pinning(distro: str) -> Result:
         *_details(f"Migrations waiting for our dependencies' feedstocks ({len(groups['waiting'])})",
                   groups["waiting"] or ["none"]),
         "",
-        *_details(f"Migrations that don't concern {distro} ({len(groups['other'])})", groups["other"] or ["none"]),
+        *_details(f"Migrations that don't concern {who} ({len(groups['other'])})", groups["other"] or ["none"]),
     ]
-    return Result(f"{distro}: update conda-forge pinning to {version}", "\n".join(lines), changed=True,
-                  labels=["dependency-conflict"] if conflicts else [])
+    title = (f"{distros[0]}: update conda-forge pinning to {version}" if len(distros) == 1
+             else f"Update the shared conda-forge pinning to {version}")
+    return Result(title, "\n".join(lines), changed=True, labels=["dependency-conflict"] if conflicts else [])
+
+
+def _rebuild_for_pins(distro: str, before_cbc: str, conflicts_before) -> tuple[list[str], bool]:
+    """The rebuild a distribution's newly rendered pins need (build numbers bumped), and
+    the dependency check against the pins before."""
+    cbc = rs.DISTROS / distro / "conda_build_config.yaml"
+    if cbc.read_text() == before_cbc:
+        return ["The rendered pins don't change: nothing to rebuild."], False
+    lines = []
+    print(f"Planning the rebuild of {distro}", flush=True)
+    packages, total = plan_rebuild(distro, before_cbc)
+    if not packages:
+        lines.append("The pins change, but no package uses them: nothing to rebuild.")
+    elif total and len(packages) > FULL_REBUILD_SHARE * total:
+        lines.append(f"**Full rebuild**: {len(packages)} of {total} packages use a changed pin or depend "
+                     "on one. " + "; ".join(bump_rebuild(distro)))
+    else:
+        lines.append(f"**Rebuild {len(packages)} of {total} packages** (they use a changed pin or depend "
+                     "on one): " + "; ".join(bump_partial(distro, packages)))
+        if packages:
+            lines += ["", *_details(f"Packages to rebuild ({len(packages)})", [
+                f"- `{name}`: {reason}" for name, reason in sorted(packages.items())])]
+    conflicts_after = dependency_conflicts(distro)
+    if conflicts_after is None or conflicts_before is None:
+        conflicts = conflicts_after is None
+        lines += ["", "Dependency check (linux-64): ❌ the check failed, see the workflow log"
+                  if conflicts else "Dependency check (linux-64): no comparison (the check with the old pins failed)"]
+    else:
+        new_conflicts = sorted(conflicts_after - conflicts_before)
+        conflicts = bool(new_conflicts)
+        lines += ["", "Dependency check (linux-64): " + (
+            "❌ new conflicts: " + ", ".join(f"`{n}`" for n in new_conflicts) if new_conflicts
+            else "✅ no new conflicts")]
+        if conflicts_before:
+            lines += ["", *_details(f"Conflicts that already exist with the current pins ({len(conflicts_before)})",
+                                    [", ".join(f"`{n}`" for n in sorted(conflicts_before))])]
+    return lines, conflicts
 
 
 def new_distro(name: str, source: str) -> Result:
@@ -1306,7 +1355,8 @@ def main(command: str, argv: list[str], distro: str | None = None) -> int:
     if command == "update-pinning":
         if distro:
             return report(update_pinning(distro), args.summary)
-        results = [update_pinning(d) for d in rs.distros()]
+        own = [d for d in rs.distros() if not uses_shared_pinning(d)]
+        results = ([update_shared_pinning()] if len(own) < len(rs.distros()) else []) + [update_pinning(d) for d in own]
         return report(Result("Update conda-forge pinning", "\n\n---\n\n".join(r.summary for r in results),
                              changed=any(r.changed for r in results), ok=all(r.ok for r in results),
                              labels=sorted({label for r in results for label in r.labels})), args.summary)

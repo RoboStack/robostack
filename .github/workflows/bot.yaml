@@ -93,8 +93,9 @@ jobs:
                 echo "jobs=$jobs" | tee -a "$GITHUB_OUTPUT"
                 exit 0
               fi
-              # rosdistro syncs, and the conda-forge pinning of every distribution
-              jobs=$(pixi run -q rs rosdistro-syncs | python3 -c 'import json,sys; print(json.dumps(json.load(sys.stdin) + [{"command":"update-conda-forge-pinning","distro":d,"args":"","preview":False} for d in sys.argv[1:]]))' $(ls distros)) ;;
+              # rosdistro syncs, and the conda-forge pinning: one job for all distributions
+              # (they share it; one with its own pinning is updated in the same pull request)
+              jobs=$(pixi run -q rs rosdistro-syncs | python3 -c 'import json,sys; print(json.dumps(json.load(sys.stdin) + [{"command":"update-conda-forge-pinning","distro":"","args":"","preview":False}]))') ;;
             workflow_dispatch)  # only people with write access can dispatch
               jobs=$(ROBOSTACK_BOT_BODY="@robostack-bot $COMMAND $PACKAGES $DISTRO" ROBOSTACK_BOT_ASSOCIATION=OWNER pixi run -q rs parse-command) ;;
             *)
@@ -152,7 +153,8 @@ jobs:
               pixi run rs add-package $ARGS "${extra[@]}" --summary "$RUNNER_TEMP/summary.md" ;;
             update-rosdistro-snapshot) pixi run rs "$DISTRO" update-snapshot --summary "$RUNNER_TEMP/summary.md" ;;
             find-stale-packages) pixi run rs "$DISTRO" find-stale --summary "$RUNNER_TEMP/summary.md" ;;
-            update-conda-forge-pinning) pixi run rs "$DISTRO" update-pinning --summary "$RUNNER_TEMP/summary.md" ;;
+            # no distribution: all of them (rs update-pinning)
+            update-conda-forge-pinning) pixi run rs ${DISTRO:+"$DISTRO"} update-pinning --summary "$RUNNER_TEMP/summary.md" ;;
             rebuild) pixi run rs rebuild $ARGS --summary "$RUNNER_TEMP/summary.md" ;;
             # pushes to the pull request's branch itself (with this job's checkout token)
             rebuild-dependents) pixi run rs rebuild-dependents "$ARGS" --summary "$RUNNER_TEMP/summary.md" ;;
