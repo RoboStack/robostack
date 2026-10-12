@@ -1,13 +1,19 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 27c03e6..614038c 100644
+index 27c03e6..e4c827d 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -352,6 +352,8 @@ file(GLOB_RECURSE POINTMATCHER_HEADERS "pointmatcher/*.h")
+@@ -351,7 +351,13 @@ file(GLOB_RECURSE POINTMATCHER_HEADERS "pointmatcher/*.h")
+ # In CMake >=3.4 we can easily build shared libraries in Mac and Windows.
  # No need to distinguish between operating systems while building targets
  
- add_library(pointmatcher ${POINTMATCHER_SRC} ${POINTMATCHER_HEADERS} )
-+# no dllexport annotations: export everything so MSVC writes pointmatcher.lib (LNK1181)
-+set_target_properties(pointmatcher PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
+-add_library(pointmatcher ${POINTMATCHER_SRC} ${POINTMATCHER_HEADERS} )
++if(WIN32)
++  # no dllexport annotations, and too many symbols to export them all (LNK1189):
++  # a static library on Windows
++  add_library(pointmatcher STATIC ${POINTMATCHER_SRC} ${POINTMATCHER_HEADERS} )
++else()
++  add_library(pointmatcher ${POINTMATCHER_SRC} ${POINTMATCHER_HEADERS} )
++endif()
  
  target_include_directories(pointmatcher PUBLIC
    $<INSTALL_INTERFACE:>

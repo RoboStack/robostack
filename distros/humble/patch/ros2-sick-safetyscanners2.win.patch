@@ -6,9 +6,9 @@ index 2bccbdf..9ce9859 100644
  cmake_minimum_required(VERSION 3.5)
  project(sick_safetyscanners2)
  
-+# M_PI, and no min/max macros from the Windows headers
++# M_PI, and no min/max or ERROR (wingdi.h) macros from the Windows headers
 +if(MSVC)
-+  add_compile_definitions(_USE_MATH_DEFINES NOMINMAX)
++  add_compile_definitions(_USE_MATH_DEFINES NOMINMAX NOGDI)
 +endif()
 +
  # Default to C99
