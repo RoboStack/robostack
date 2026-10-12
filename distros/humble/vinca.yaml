@@ -15,16 +15,9 @@ packages_exclude:
 
   - if: not linux
     then:
-      - ament_cmake_xmllint
-      - ament_xmllint
-      - mimick_vendor
-      - mujoco_ros2_control
-      - mujoco_ros2_control_demos
-      - mujoco_vendor
-      - osrf_testing_tools_cpp
-      - performance_test_fixture
-      - rclc_examples
-      - rmw_connextdds
+      - mujoco_ros2_control  # runtime uses Linux-specific files (as everywhere)
+      - mujoco_ros2_control_demos  # readlink and Linux-specific files at runtime (as everywhere)
+      - rclc_examples  # MSVC C2055 on rcl_timer_t callbacks; macOS humble-only (no reason recorded)
 
   - if: win
     then:
@@ -35,15 +28,15 @@ packages_exclude:
       - ros_gz_sim_demos  # Ignition Fortress (libignition-gazebo6) isn't installable on win-64
       - ros_ign_gazebo  # Ignition Fortress (libignition-gazebo6) isn't installable on win-64
       - ros_ign_gazebo_demos  # Ignition Fortress (libignition-gazebo6) isn't installable on win-64
-      - ros_ign_image
-      - test_ros_gz_bridge
-      - velodyne_gazebo_plugins
+      - ros_ign_image  # Fortress-based gz integration isn't supported on humble Windows (old ros-humble#68)
+      - test_ros_gz_bridge  # Fortress-based gz integration isn't supported on humble Windows (old ros-humble#68)
+      - velodyne_gazebo_plugins  # links Gazebo Classic's Ogre libraries; win-64 has no OgreBites.lib
 
 packages_skip:
 
   - if: not linux
     then:
-      - joy_linux
+      - joy_linux  # Linux joystick interfaces
 
   - if: win
     then:
