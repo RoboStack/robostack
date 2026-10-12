@@ -13,10 +13,6 @@ mutex_package:
 
 packages_exclude:
 
-  - if: osx
-    then:
-      - mujoco_vendor  # humble's 0.0.8 rejects macOS ("not supported"); jazzy's 0.1.0 builds there
-
   - if: not linux
     then:
       - mujoco_ros2_control  # runtime uses Linux-specific files (as everywhere)

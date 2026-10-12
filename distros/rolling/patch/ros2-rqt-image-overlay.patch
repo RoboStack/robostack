@@ -53,7 +53,7 @@ index 9ca7c70..fb7d276 100644
  pluginlib_export_plugin_description_file(rqt_gui plugin.xml)  # This must be rqt_gui and not rqt_gui_cpp
  
 diff --git a/src/image_manager.cpp b/src/image_manager.cpp
-index 2ea3935..3ad24e1 100644
+index 2ea3935..be3af18 100644
 --- a/src/image_manager.cpp
 +++ b/src/image_manager.cpp
 @@ -18,7 +18,7 @@
@@ -65,6 +65,33 @@ index 2ea3935..3ad24e1 100644
  #include "ros_image_to_qimage/ros_image_to_qimage.hpp"
  
  namespace rqt_image_overlay
+@@ -50,9 +50,9 @@ void ImageManager::onTopicChanged(int index)
+     ImageTopic & imageTopic = imageTopics.at(index - 1);
+     try {
+       subscriber = image_transport::create_subscription(
+-        node.get(), imageTopic.topic,
++        *node, imageTopic.topic,
+         std::bind(&ImageManager::callbackImage, this, std::placeholders::_1),
+-        imageTopic.transport, rmw_qos_profile_sensor_data);
++        imageTopic.transport, rclcpp::SensorDataQoS());
+       qDebug(
+         "ImageManager::onTopicChanged() to topic '%s' with transport '%s'",
+         imageTopic.topic.c_str(), imageTopic.transport.c_str());
+diff --git a/src/list_image_topics.cpp b/src/list_image_topics.cpp
+index 9bebeaa..763648e 100644
+--- a/src/list_image_topics.cpp
++++ b/src/list_image_topics.cpp
+@@ -69,7 +69,9 @@ std::vector<ImageTopic> ListImageTopics(rclcpp::Node & node)
+   for (auto & imageTopic : imageTopicCandidates) {
+     try {
+       auto subscriber = image_transport::create_subscription(
+-        &node, imageTopic.topic, image_transport::Subscriber::Callback{}, imageTopic.transport);
++        node, imageTopic.topic, image_transport::Subscriber::Callback{}, imageTopic.transport,
++        rclcpp::QoS(rclcpp::QoSInitialization::from_rmw(rmw_qos_profile_default),
++          rmw_qos_profile_default));
+ 
+       // Check if the image subscriber managed to successfully connect to any publishers
+       // This considers cases where the msg type of publisher and subscriber don't match.
 diff --git a/src/overlay_manager.cpp b/src/overlay_manager.cpp
 index a85f9b5..49684cc 100644
 --- a/src/overlay_manager.cpp
