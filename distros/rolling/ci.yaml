@@ -25,3 +25,5 @@ full_rebuild: false
 # they must pick up the change.
 evict_cache:
   - sick_safetyscanners_base  # TEMPORARY (#83): rebuild on Windows with symbol export; reset before merging
+  - ros_image_to_qimage  # TEMPORARY (#83): the cached build predates the Qt6 patch
+  - rqt_image_overlay_layer  # TEMPORARY (#83): same

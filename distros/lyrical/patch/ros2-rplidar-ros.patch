@@ -124,3 +124,16 @@ index f7ddfbf..153de6d 100644
      virtual u_result recvFrom(void *buf, size_t len, size_t & recv_len, SocketAddress * sourceAddr)
      {
          struct sockaddr * addr = (sourceAddr?reinterpret_cast<struct sockaddr *>(const_cast<void *>(sourceAddr->getPlatformData())):NULL);
+diff --git a/sdk/src/arch/win32/net_socket.cpp b/sdk/src/arch/win32/net_socket.cpp
+index de7a48c..24afe33 100644
+--- a/sdk/src/arch/win32/net_socket.cpp
++++ b/sdk/src/arch/win32/net_socket.cpp
+@@ -244,7 +244,7 @@ u_result SocketAddress::getAddressAsString(char * buffer, size_t buffersize) con
+ 
+         break;
+     }
+-    return ans<=0?RESULT_OPERATION_FAIL:RESULT_OK;
++    return ans == nullptr ? RESULT_OPERATION_FAIL : RESULT_OK;  // inet_ntop returns a pointer (MSVC C7664 on <=0)
+ }
+ 
+ 
