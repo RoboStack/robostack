@@ -27,3 +27,4 @@ packages_exclude:
   - if: win
     then:
       - moveit2_tutorials
+
