@@ -1,13 +1,17 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 0da52adc..35b5b185 100644
+index a33326e..864ea23 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -100,6 +100,8 @@ target_link_libraries(${library_name} PRIVATE
+@@ -102,6 +102,12 @@ target_link_libraries(
    ${GeographicLib_LIBRARIES}
-   yaml-cpp::yaml-cpp
+   ${EIGEN3_LIBRARIES}
  )
-+target_compile_definitions(${library_name} PRIVATE _USE_MATH_DEFINES)
-+set_target_properties(${library_name} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
++if(MSVC)
++  target_compile_definitions(${library_name} PRIVATE _USE_MATH_DEFINES)
++  set_target_properties(${library_name} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
++  # ros_filter.cpp instantiates enough templates to exceed the default COFF section limit (C1128)
++  target_compile_options(${library_name} PRIVATE /bigobj)
++endif()
  
- add_executable(
-   ekf_node
+ ament_target_dependencies(
+   ${library_name}

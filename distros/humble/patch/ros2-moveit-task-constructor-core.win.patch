@@ -1,0 +1,89 @@
+diff --git a/include/moveit/task_constructor/introspection.h b/include/moveit/task_constructor/introspection.h
+index 10652d3..b5f9b91 100644
+--- a/include/moveit/task_constructor/introspection.h
++++ b/include/moveit/task_constructor/introspection.h
+@@ -111,7 +111,7 @@ private:
+ 	/// retrieve or set id of given stage
+ 	uint32_t stageId(const moveit::task_constructor::Stage* const s);
+ 	/// retrieve solution with given id
+-	const SolutionBase* solutionFromId(uint id) const;
++	const SolutionBase* solutionFromId(unsigned int id) const;
+ };
+ }  // namespace task_constructor
+ }  // namespace moveit
+diff --git a/include/moveit/task_constructor/properties.h b/include/moveit/task_constructor/properties.h
+index e217ad6..d6e332f 100644
+--- a/include/moveit/task_constructor/properties.h
++++ b/include/moveit/task_constructor/properties.h
+@@ -90,7 +90,7 @@ public:
+ 	/// exception thrown when trying to set a value not matching the declared type
+ 	class type_error;
+ 
+-	using SourceFlags = uint;
++	using SourceFlags = unsigned int;
+ 	/// function callback used to initialize property value from another PropertyMap
+ 	using InitializerFunction = std::function<boost::any(const PropertyMap&)>;
+ 
+diff --git a/src/introspection.cpp b/src/introspection.cpp
+index 9f297c6..4cbe05e 100644
+--- a/src/introspection.cpp
++++ b/src/introspection.cpp
+@@ -214,7 +214,7 @@ void Introspection::publishAllSolutions(bool wait) {
+ 	};
+ }
+ 
+-const SolutionBase* Introspection::solutionFromId(uint id) const {
++const SolutionBase* Introspection::solutionFromId(unsigned int id) const {
+ 	auto it = impl->id_solution_bimap_.left.find(id);
+ 	if (it == impl->id_solution_bimap_.left.end())
+ 		return nullptr;
+diff --git a/src/solvers/pipeline_planner.cpp b/src/solvers/pipeline_planner.cpp
+index d0d44e7..d034dcd 100644
+--- a/src/solvers/pipeline_planner.cpp
++++ b/src/solvers/pipeline_planner.cpp
+@@ -116,7 +116,7 @@ PipelinePlanner::PipelinePlanner(const rclcpp::Node::SharedPtr& node, const std:
+ 	auto& p = properties();
+ 	p.declare<std::string>("planner", "", "planner id");
+ 
+-	p.declare<uint>("num_planning_attempts", 1u, "number of planning attempts");
++	p.declare<unsigned int>("num_planning_attempts", 1u, "number of planning attempts");
+ 	p.declare<moveit_msgs::msg::WorkspaceParameters>("workspace_parameters", moveit_msgs::msg::WorkspaceParameters(),
+ 	                                                 "allowed workspace of mobile base?");
+ 
+@@ -159,7 +159,7 @@ void initMotionPlanRequest(moveit_msgs::msg::MotionPlanRequest& req, const Prope
+ 	req.allowed_planning_time = std::min(timeout, p.get<double>("timeout"));
+ 	req.start_state.is_diff = true;  // we don't specify an extra start state
+ 
+-	req.num_planning_attempts = p.get<uint>("num_planning_attempts");
++	req.num_planning_attempts = p.get<unsigned int>("num_planning_attempts");
+ 	req.max_velocity_scaling_factor = p.get<double>("max_velocity_scaling_factor");
+ 	req.max_acceleration_scaling_factor = p.get<double>("max_acceleration_scaling_factor");
+ 	req.workspace_parameters = p.get<moveit_msgs::msg::WorkspaceParameters>("workspace_parameters");
+diff --git a/src/stages/generate_place_pose.cpp b/src/stages/generate_place_pose.cpp
+index 42a3205..fb0ef16 100644
+--- a/src/stages/generate_place_pose.cpp
++++ b/src/stages/generate_place_pose.cpp
+@@ -113,11 +113,11 @@ void GeneratePlacePose::compute() {
+ 	scene->getTransforms().transformPose(pose_msg.header.frame_id, target_pose, target_pose);
+ 
+ 	// spawn the nominal target object pose, considering flip about z and rotations about z-axis
+-	auto spawner = [&s, &scene, &ik_frame, this](const Eigen::Isometry3d& nominal, uint z_flips, uint z_rotations = 10) {
+-		for (uint flip = 0; flip <= z_flips; ++flip) {
++	auto spawner = [&s, &scene, &ik_frame, this](const Eigen::Isometry3d& nominal, unsigned int z_flips, unsigned int z_rotations = 10) {
++		for (unsigned int flip = 0; flip <= z_flips; ++flip) {
+ 			// flip about object's x-axis
+ 			Eigen::Isometry3d object = nominal * Eigen::AngleAxisd(flip * M_PI, Eigen::Vector3d::UnitX());
+-			for (uint i = 0; i < z_rotations; ++i) {
++			for (unsigned int i = 0; i < z_rotations; ++i) {
+ 				// rotate object at target pose about world's z-axis
+ 				Eigen::Vector3d pos = object.translation();
+ 				object.pretranslate(-pos)
+@@ -143,7 +143,7 @@ void GeneratePlacePose::compute() {
+ 		}
+ 	};
+ 
+-	uint z_flips = props.get<bool>("allow_z_flip") ? 1 : 0;
++	unsigned int z_flips = props.get<bool>("allow_z_flip") ? 1 : 0;
+ 	if (object && object->getShapes().size() == 1) {
+ 		switch (object->getShapes()[0]->type) {
+ 			case shapes::CYLINDER:
