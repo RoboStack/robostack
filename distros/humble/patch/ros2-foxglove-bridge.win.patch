@@ -1,0 +1,97 @@
+diff --git a/include/foxglove_bridge/generic_client.hpp b/include/foxglove_bridge/generic_client.hpp
+index 9478fae..ff1f017 100644
+--- a/include/foxglove_bridge/generic_client.hpp
++++ b/include/foxglove_bridge/generic_client.hpp
+@@ -23,7 +23,7 @@ public:
+ 
+   std::shared_ptr<void> create_response() override;
+   std::shared_ptr<rmw_request_id_t> create_request_header() override;
+-#if RCLCPP_VERSION_GTE(31, 0, 0)
++#if (RCLCPP_VERSION_MAJOR > 31 || (RCLCPP_VERSION_MAJOR == 31 && (RCLCPP_VERSION_MINOR > 0 || (RCLCPP_VERSION_MINOR == 0 && RCLCPP_VERSION_PATCH >= 0))))
+   void handle_response(const std::shared_ptr<rmw_request_id_t>& request_header,
+                        const std::shared_ptr<void>& response) override;
+ #else
+diff --git a/src/generic_client.cpp b/src/generic_client.cpp
+index 51ed180..a78c3c1 100644
+--- a/src/generic_client.cpp
++++ b/src/generic_client.cpp
+@@ -70,7 +70,7 @@ std::string getTypeIntrospectionSymbolName(const std::string& serviceType) {
+ 
+ const rosidl_service_type_support_t* GenericClient::getServiceTypeSupportHandle(
+   const std::string& serviceType) {
+-#if RCLCPP_VERSION_GTE(25, 0, 0)
++#if (RCLCPP_VERSION_MAJOR > 25 || (RCLCPP_VERSION_MAJOR == 25 && (RCLCPP_VERSION_MINOR > 0 || (RCLCPP_VERSION_MINOR == 0 && RCLCPP_VERSION_PATCH >= 0))))
+   // Jazzy and newer can use the built-in rclcpp call.
+   return rclcpp::get_service_typesupport_handle(serviceType, TYPESUPPORT_LIB_NAME,
+                                                 *_typeSupportLib);
+@@ -120,7 +120,7 @@ GenericClient::GenericClient(rclcpp::node_interfaces::NodeBaseInterface* nodeBas
+ 
+   // get_typesupport_handle is deprecated since rclcpp 25.0.0
+   // (https://github.com/ros2/rclcpp/pull/2209)
+-#if RCLCPP_VERSION_GTE(25, 0, 0)
++#if (RCLCPP_VERSION_MAJOR > 25 || (RCLCPP_VERSION_MAJOR == 25 && (RCLCPP_VERSION_MINOR > 0 || (RCLCPP_VERSION_MINOR == 0 && RCLCPP_VERSION_PATCH >= 0))))
+   _requestTypeSupportHdl =
+     rclcpp::get_message_typesupport_handle(requestTypeName, TYPESUPPORT_LIB_NAME, *_typeSupportLib);
+   _responseTypeSupportHdl = rclcpp::get_message_typesupport_handle(
+@@ -155,7 +155,7 @@ std::shared_ptr<rmw_request_id_t> GenericClient::create_request_header() {
+   return std::shared_ptr<rmw_request_id_t>(new rmw_request_id_t);
+ }
+ 
+-#if RCLCPP_VERSION_GTE(31, 0, 0)
++#if (RCLCPP_VERSION_MAJOR > 31 || (RCLCPP_VERSION_MAJOR == 31 && (RCLCPP_VERSION_MINOR > 0 || (RCLCPP_VERSION_MINOR == 0 && RCLCPP_VERSION_PATCH >= 0))))
+ void GenericClient::handle_response(const std::shared_ptr<rmw_request_id_t>& request_header,
+                                     const std::shared_ptr<void>& response) {
+ #else
+diff --git a/src/message_definition_cache.cpp b/src/message_definition_cache.cpp
+index ed85745..212e5df 100644
+--- a/src/message_definition_cache.cpp
++++ b/src/message_definition_cache.cpp
+@@ -12,7 +12,7 @@
+ #include <utility>
+ 
+ #include <ament_index_cpp/version.h>
+-#if AMENT_INDEX_CPP_VERSION_GTE(1, 13, 2)
++#if (AMENT_INDEX_CPP_VERSION_MAJOR > 1 || (AMENT_INDEX_CPP_VERSION_MAJOR == 1 && (AMENT_INDEX_CPP_VERSION_MINOR > 13 || (AMENT_INDEX_CPP_VERSION_MINOR == 13 && AMENT_INDEX_CPP_VERSION_PATCH >= 2))))
+ #include <ament_index_cpp/get_package_share_path.hpp>
+ #else
+ #include <ament_index_cpp/get_package_share_directory.hpp>
+@@ -221,7 +221,7 @@ const MessageSpec& MessageDefinitionCache::load_message_spec(
+ 
+   // Get the package share directory, or throw a PackageNotFoundError
+   std::filesystem::path share_dir;
+-#if AMENT_INDEX_CPP_VERSION_GTE(1, 13, 2)
++#if (AMENT_INDEX_CPP_VERSION_MAJOR > 1 || (AMENT_INDEX_CPP_VERSION_MAJOR == 1 && (AMENT_INDEX_CPP_VERSION_MINOR > 13 || (AMENT_INDEX_CPP_VERSION_MINOR == 13 && AMENT_INDEX_CPP_VERSION_PATCH >= 2))))
+   share_dir = ament_index_cpp::get_package_share_path(package);
+ #else
+   share_dir = ament_index_cpp::get_package_share_directory(package);
+@@ -229,7 +229,7 @@ const MessageSpec& MessageDefinitionCache::load_message_spec(
+ 
+   // Get the rosidl_interfaces index contents for this package
+   std::string index_contents;
+-#if AMENT_INDEX_CPP_VERSION_GTE(1, 13, 0)
++#if (AMENT_INDEX_CPP_VERSION_MAJOR > 1 || (AMENT_INDEX_CPP_VERSION_MAJOR == 1 && (AMENT_INDEX_CPP_VERSION_MINOR > 13 || (AMENT_INDEX_CPP_VERSION_MINOR == 13 && AMENT_INDEX_CPP_VERSION_PATCH >= 0))))
+   ament_index_cpp::PathWithResource path_with_resource =
+     ament_index_cpp::get_resource("rosidl_interfaces", package);
+   if (path_with_resource.resourcePath == std::nullopt) {
+diff --git a/src/ros2_foxglove_bridge.cpp b/src/ros2_foxglove_bridge.cpp
+index 2229aad..73d3d3e 100644
+--- a/src/ros2_foxglove_bridge.cpp
++++ b/src/ros2_foxglove_bridge.cpp
+@@ -59,7 +59,7 @@ inline std::vector<std::byte> readFile(const std::string& filepath) {
+   return buffer;
+ }
+ 
+-#if !RCLCPP_VERSION_GTE(28, 0, 0)
++#if !(RCLCPP_VERSION_MAJOR > 28 || (RCLCPP_VERSION_MAJOR == 28 && (RCLCPP_VERSION_MINOR > 0 || (RCLCPP_VERSION_MINOR == 0 && RCLCPP_VERSION_PATCH >= 0))))
+ // Prior to Jazzy, GenericSubscription drops MessageInfo from the callback.
+ // This subclass overrides handle_serialized_message to forward it.
+ class GenericSubscriptionWithMessageInfo : public rclcpp::GenericSubscription {
+@@ -833,7 +833,7 @@ Subscription FoxgloveBridge::createRosSubscription(ChannelId channelId, const st
+   subscriptionOptions.event_callbacks = eventCallbacks;
+   subscriptionOptions.callback_group = _subscriptionCallbackGroup;
+ 
+-#if RCLCPP_VERSION_GTE(28, 0, 0)
++#if (RCLCPP_VERSION_MAJOR > 28 || (RCLCPP_VERSION_MAJOR == 28 && (RCLCPP_VERSION_MINOR > 0 || (RCLCPP_VERSION_MINOR == 0 && RCLCPP_VERSION_PATCH >= 0))))
+   return this->create_generic_subscription(
+     topic, datatype, qos,
+     [this, channelId](std::shared_ptr<const rclcpp::SerializedMessage> msg,

@@ -15,115 +15,59 @@ packages_exclude:
 
   - if: not linux
     then:
-      - ament_cmake_xmllint
-      - ament_xmllint
-      - mimick_vendor
-      - mujoco_ros2_control
-      - mujoco_ros2_control_demos
-      - mujoco_vendor
-      - osrf_testing_tools_cpp
-      - performance_test_fixture
-      - rclc_examples
-      - rmw_connextdds
+      - ament_cmake_xmllint  # humble only (no reason recorded); the other distributions build it everywhere: to try in #83
+      - ament_xmllint  # humble only (no reason recorded); the other distributions build it everywhere: to try in #83
+      - mimick_vendor  # humble only (no reason recorded); the other distributions build it everywhere: to try in #83
+      - mujoco_ros2_control  # runtime uses Linux-specific files (as everywhere)
+      - mujoco_ros2_control_demos  # readlink and Linux-specific files at runtime (as everywhere)
+      - mujoco_vendor  # humble only (no reason recorded); the other distributions build it everywhere: to try in #83
+      - osrf_testing_tools_cpp  # humble only (no reason recorded); the other distributions build it everywhere: to try in #83
+      - performance_test_fixture  # humble only (no reason recorded); the other distributions build it everywhere: to try in #83
+      - rclc_examples  # MSVC C2055 on rcl_timer_t callbacks; macOS humble-only (no reason recorded)
+      - rmw_connextdds  # humble only (no reason recorded); the other distributions build it everywhere: to try in #83
 
   - if: win
     then:
-      - gz_ros2_control
-      - gz_ros2_control_demos
-      - robot_localization
-      - ros_gz_sim
-      - ros_gz_sim_demos
-      - ros_ign_gazebo
-      - ros_ign_gazebo_demos
-      - ros_ign_image
-      - test_ros_gz_bridge
-      - velodyne_gazebo_plugins
-
-# These are the packages that are built on all platforms (only a subset, to reduce maintainer load)
-
-
-# Shared selections that humble doesn't build on some platforms (see also
-# packages_skip_by_deps / packages_remove_from_deps).
+      - gz_ros2_control  # Ignition Fortress (libignition-gazebo6) isn't installable on win-64
+      - gz_ros2_control_demos  # Ignition Fortress (libignition-gazebo6) isn't installable on win-64
+      - hpp-fcl  # no ros2-hpp-fcl recipe for win-64; pinocchio wraps conda-forge's pinocchio (coal) anyway
+      - ros_gz_sim  # Ignition Fortress (libignition-gazebo6) isn't installable on win-64
+      - ros_gz_sim_demos  # Ignition Fortress (libignition-gazebo6) isn't installable on win-64
+      - ros_ign_gazebo  # Ignition Fortress (libignition-gazebo6) isn't installable on win-64
+      - ros_ign_gazebo_demos  # Ignition Fortress (libignition-gazebo6) isn't installable on win-64
+      - ros_ign_image  # Fortress-based gz integration isn't supported on humble Windows (old ros-humble#68)
+      - test_ros_gz_bridge  # Fortress-based gz integration isn't supported on humble Windows (old ros-humble#68)
+      - velodyne_gazebo_plugins  # links Gazebo Classic's Ogre libraries; win-64 has no OgreBites.lib
 
 packages_skip:
-  - as2_behaviors_trajectory_generation  # nested FetchContent'd NLopt violates CMake 4's minimum version floor; too fragile to patch, skip for now
+  - as2_behaviors_trajectory_generation  # its FetchContent'd NLopt fails with CMake 4 (being fixed in #83)
 
   - if: not linux
     then:
-      - joy_linux
+      - joy_linux  # Linux joystick interfaces
 
   - if: win
     then:
-      - diagnostic_remote_logging
-      - foxglove_bridge
-      - kinematics_interface
-      - kinematics_interface_kdl
-      - laser_segmentation
-      - libg2o
-      - mavlink
-      - mavros
-      - mavros_extras
-      - microstrain_inertial_description
-      - microstrain_inertial_driver
-      - microstrain_inertial_examples
-      - microstrain_inertial_msgs
-      - microstrain_inertial_rqt
-      - mocap4r2_control
-      - mocap4r2_control_msgs
-      - mocap4r2_dummy_driver
-      - mocap4r2_marker_publisher
-      - mocap4r2_marker_viz
-      - mocap4r2_marker_viz_srvs
-      - mocap4r2_robot_gt
-      - mocap4r2_robot_gt_msgs
-      - motion_capture_tracking
-      - moveit_hybrid_planning
-      - moveit_py
-      - moveit_ros_perception
-      - moveit_runtime
-      - moveit_task_constructor_demo
-      - odom_to_tf_ros2
-      - ouster_ros
-      - pinocchio
-      - plotjuggler
-      - plotjuggler_ros
-      - point_cloud_transport_plugins
-      - random_numbers
-      - realsense2_camera
-      - realsense2_description
-      - rmw_stats_shim
-      - robotiq_controllers
-      - robotiq_description
-      - ros_gz
-      - rosgraph_monitor
-      - rosgraph_monitor_msgs
-      - turtlebot4_description
-      - turtlebot4_desktop
-      - turtlebot4_msgs
-      - turtlebot4_navigation
-      - turtlebot4_node
-      - turtlebot4_simulator
-      - turtlebot4_viz
-      - twist_stamper
-      - ublox
-      - ur_simulation_gz
-      - velodyne_simulator
+      - irobot_create_ignition_bringup  # needs Ignition Fortress (libignition-gazebo6), not installable on win-64
+      - irobot_create_ignition_plugins  # needs Ignition Fortress (libignition-gazebo6), not installable on win-64
+      - rosgraph_monitor  # no distribution builds it on Windows yet
+      - turtlebot4_ignition_bringup  # needs Ignition Fortress (libignition-gazebo6), not installable on win-64
+      - turtlebot4_ignition_gui_plugins  # needs Ignition Fortress (libignition-gazebo6), not installable on win-64
+      - turtlebot4_simulator  # needs Ignition Fortress (libignition-gazebo6), not installable on win-64
 
 packages_select_by_deps:
 
-  # Not on win-64 elsewhere (MSVC C1083 in its _msgs), but humble's 0.15 builds there
   - if: win
     then:
-      - cartographer_ros
-      - rosbag2_performance_benchmarking
-      - rplidar_ros
+      - cartographer_ros  # builds on humble's win-64; shared selection is not-Windows (unified in #83)
+      - rosbag2_performance_benchmarking  # MSVC C1083 in its _msgs on newer distros; humble's 0.15 builds
+      - rplidar_ros  # humble's 2.1.4 builds on win-64 (POSIX-only SDK in older versions)
       - serial_driver  # humble's builds there (LNK1181 on rolling)
-      - udp_driver
+      - udp_driver  # humble's win patch; unified in #83
 
-  # humble's popf has a macOS patch (patch/ros2-popf.patch); elsewhere plansys2 is Linux only
   - if: osx
     then:
-      - plansys2_bringup
-      - plansys2_bt_actions
-      - smacc2
+      - plansys2_bringup  # with humble's popf patch; Linux only elsewhere
+      - plansys2_bt_actions  # needs popf, see plansys2_bringup
+      - smacc2  # humble's patch makes LTTng Linux-only; unified in #83
 

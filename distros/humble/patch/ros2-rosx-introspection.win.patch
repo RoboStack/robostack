@@ -10,3 +10,47 @@ index 76462e6..cd0f75c 100644
  
  # create compile_commands.json
  set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+diff --git a/include/rosx_introspection/ros_utils/ros2_helpers.hpp b/include/rosx_introspection/ros_utils/ros2_helpers.hpp
+index 847ec9d..c01d544 100644
+--- a/include/rosx_introspection/ros_utils/ros2_helpers.hpp
++++ b/include/rosx_introspection/ros_utils/ros2_helpers.hpp
+@@ -57,7 +57,7 @@ inline std::vector<uint8_t> BuildMessageBuffer(const T& msg, const std::string&
+   {
+     throw std::runtime_error("Failed to load typesupport library");
+   }
+-#if RCLCPP_VERSION_GTE(25, 0, 0)
++#if RCLCPP_VERSION_MAJOR >= 25
+   auto typesupport =
+       rclcpp::get_message_typesupport_handle(topic_type, ts_identifier, *ts_library);
+ #else
+@@ -82,7 +82,7 @@ inline T BufferToMessage(const void* bufferPtr, size_t bufferSize) {
+   {
+     throw std::runtime_error("Failed to load typesupport library");
+   }
+-#if RCLCPP_VERSION_GTE(25, 0, 0)
++#if RCLCPP_VERSION_MAJOR >= 25
+   auto type_support =
+       rclcpp::get_message_typesupport_handle(topic_type, ts_identifier, *ts_library);
+ #else
+diff --git a/src/ros_utils/message_definition_cache.cpp b/src/ros_utils/message_definition_cache.cpp
+index 5fcb8bf..e7b0ae3 100644
+--- a/src/ros_utils/message_definition_cache.cpp
++++ b/src/ros_utils/message_definition_cache.cpp
+@@ -15,7 +15,7 @@
+ #include "message_definition_cache.hpp"
+ 
+ #include <ament_index_cpp/version.h>
+-#if AMENT_INDEX_CPP_VERSION_GTE(1, 13, 2)
++#if AMENT_INDEX_CPP_VERSION_MAJOR > 1 || (AMENT_INDEX_CPP_VERSION_MAJOR == 1 && (AMENT_INDEX_CPP_VERSION_MINOR > 13 || (AMENT_INDEX_CPP_VERSION_MINOR == 13 && AMENT_INDEX_CPP_VERSION_PATCH >= 2)))
+ #include <ament_index_cpp/get_package_share_path.hpp>
+ #else
+ #include <ament_index_cpp/get_package_share_directory.hpp>
+@@ -72,7 +72,7 @@ const MessageSpec& MessageDefinitionCache::load_message_spec(const std::string&
+   }
+   std::string package = match[1];
+   std::string share_dir;
+-#if AMENT_INDEX_CPP_VERSION_GTE(1, 13, 2)
++#if AMENT_INDEX_CPP_VERSION_MAJOR > 1 || (AMENT_INDEX_CPP_VERSION_MAJOR == 1 && (AMENT_INDEX_CPP_VERSION_MINOR > 13 || (AMENT_INDEX_CPP_VERSION_MINOR == 13 && AMENT_INDEX_CPP_VERSION_PATCH >= 2)))
+   share_dir = ament_index_cpp::get_package_share_path(package);
+ #else
+   share_dir = ament_index_cpp::get_package_share_directory(package);

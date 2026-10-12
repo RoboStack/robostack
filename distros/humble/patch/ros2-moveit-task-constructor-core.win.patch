@@ -1,0 +1,253 @@
+diff --git a/include/moveit/task_constructor/introspection.h b/include/moveit/task_constructor/introspection.h
+index 10652d3..b5f9b91 100644
+--- a/include/moveit/task_constructor/introspection.h
++++ b/include/moveit/task_constructor/introspection.h
+@@ -111,7 +111,7 @@ private:
+ 	/// retrieve or set id of given stage
+ 	uint32_t stageId(const moveit::task_constructor::Stage* const s);
+ 	/// retrieve solution with given id
+-	const SolutionBase* solutionFromId(uint id) const;
++	const SolutionBase* solutionFromId(unsigned int id) const;
+ };
+ }  // namespace task_constructor
+ }  // namespace moveit
+diff --git a/include/moveit/task_constructor/properties.h b/include/moveit/task_constructor/properties.h
+index e217ad6..d6e332f 100644
+--- a/include/moveit/task_constructor/properties.h
++++ b/include/moveit/task_constructor/properties.h
+@@ -90,7 +90,7 @@ public:
+ 	/// exception thrown when trying to set a value not matching the declared type
+ 	class type_error;
+ 
+-	using SourceFlags = uint;
++	using SourceFlags = unsigned int;
+ 	/// function callback used to initialize property value from another PropertyMap
+ 	using InitializerFunction = std::function<boost::any(const PropertyMap&)>;
+ 
+diff --git a/python/bindings/CMakeLists.txt b/python/bindings/CMakeLists.txt
+index 1bd444f..0888c00 100644
+--- a/python/bindings/CMakeLists.txt
++++ b/python/bindings/CMakeLists.txt
+@@ -11,6 +11,12 @@ pybind11_add_module(pymoveit_mtc
+ )
+ target_include_directories(pymoveit_mtc PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>)
+ target_link_libraries(pymoveit_mtc PUBLIC ${PROJECT_NAME} ${PROJECT_NAME}_stages py_binding_tools::py_binding_tools)
++if(WIN32)
++  # py_binding_tools brings conda's own pybind11 include directory along; MSVC must
++  # see the vendored pybind11 first, or both copies end up in one translation unit
++  target_include_directories(pymoveit_mtc BEFORE PUBLIC
++    $<TARGET_PROPERTY:pybind11::pybind11,INTERFACE_INCLUDE_DIRECTORIES>)
++endif()
+ 
+ # install python libs
+ install(TARGETS pymoveit_mtc
+diff --git a/python/bindings/src/core.h b/python/bindings/src/core.h
+index 84dd634..911af67 100644
+--- a/python/bindings/src/core.h
++++ b/python/bindings/src/core.h
+@@ -51,35 +51,38 @@ namespace solvers {
+ class PlannerInterface;
+ }
+ 
+-template <class Stage = moveit::task_constructor::Stage>
+-class PyStage : public Stage, public pybind11::trampoline_self_life_support
++// The template parameters used to be named after the classes they default to
++// (Stage, Generator, ...): MSVC then looks those names up as the namespace's
++// classes, not as the parameters (C3881 / C3210 on the inheriting constructors).
++template <class T = moveit::task_constructor::Stage>
++class PyStage : public T, public pybind11::trampoline_self_life_support
+ {
+ public:
+-	using Stage::Stage;
++	using T::T;
+ 
+ 	void init(const moveit::core::RobotModelConstPtr& robot_model) override {
+-		PYBIND11_OVERRIDE(void, Stage, init, robot_model);
++		PYBIND11_OVERRIDE(void, T, init, robot_model);
+ 	}
+-	void reset() override { PYBIND11_OVERRIDE(void, Stage, reset, ); }
++	void reset() override { PYBIND11_OVERRIDE(void, T, reset, ); }
+ };
+ 
+-template <class Generator = moveit::task_constructor::Generator>
+-class PyGenerator : public PyStage<Generator>
++template <class T = moveit::task_constructor::Generator>
++class PyGenerator : public PyStage<T>
+ {
+ public:
+-	using PyStage<Generator>::PyStage;
+-	bool canCompute() const override { PYBIND11_OVERRIDE_PURE(bool, Generator, canCompute, ); }
+-	void compute() override { PYBIND11_OVERRIDE_PURE(void, Generator, compute, ); }
++	using PyStage<T>::PyStage;
++	bool canCompute() const override { PYBIND11_OVERRIDE_PURE(bool, T, canCompute, ); }
++	void compute() override { PYBIND11_OVERRIDE_PURE(void, T, compute, ); }
+ };
+ 
+-template <class MonitoringGenerator = moveit::task_constructor::MonitoringGenerator>
+-class PyMonitoringGenerator : public PyGenerator<MonitoringGenerator>
++template <class T = moveit::task_constructor::MonitoringGenerator>
++class PyMonitoringGenerator : public PyGenerator<T>
+ {
+ public:
+-	using PyGenerator<MonitoringGenerator>::PyGenerator;
++	using PyGenerator<T>::PyGenerator;
+ 	void onNewSolution(const SolutionBase& s) override {
+ 		// pass solution as pointer to trigger passing by reference
+-		PYBIND11_OVERRIDE_PURE(void, MonitoringGenerator, onNewSolution, &s);
++		PYBIND11_OVERRIDE_PURE(void, T, onNewSolution, &s);
+ 	}
+ };
+ 
+@@ -91,18 +94,18 @@ public:
+ 	using MonitoringGenerator::onNewSolution;
+ };
+ 
+-template <class PropagatingEitherWay = moveit::task_constructor::PropagatingEitherWay>
+-class PyPropagatingEitherWay : public PyStage<PropagatingEitherWay>
++template <class T = moveit::task_constructor::PropagatingEitherWay>
++class PyPropagatingEitherWay : public PyStage<T>
+ {
+ public:
+-	using PyStage<PropagatingEitherWay>::PyStage;
++	using PyStage<T>::PyStage;
+ 	void computeForward(const InterfaceState& from_state) override {
+ 		// pass InterfaceState as pointer to trigger passing by reference
+-		PYBIND11_OVERRIDE_PURE(void, PropagatingEitherWay, computeForward, &from_state);
++		PYBIND11_OVERRIDE_PURE(void, T, computeForward, &from_state);
+ 	}
+ 	void computeBackward(const InterfaceState& to_state) override {
+ 		// pass InterfaceState as pointer to trigger passing by reference
+-		PYBIND11_OVERRIDE_PURE(void, PropagatingEitherWay, computeBackward, &to_state);
++		PYBIND11_OVERRIDE_PURE(void, T, computeBackward, &to_state);
+ 	}
+ };
+ 
+diff --git a/python/bindings/src/solvers.cpp b/python/bindings/src/solvers.cpp
+index 9845223..6f978b7 100644
+--- a/python/bindings/src/solvers.cpp
++++ b/python/bindings/src/solvers.cpp
+@@ -75,7 +75,7 @@ void export_solvers(py::module& m) {
+ 				pipelinePlanner.num_planning_attempts = 10
+ 			)")
+ 	    .property<std::string>("planner", "str: Planner ID")
+-	    .property<uint>("num_planning_attempts", "int: Number of planning attempts")
++	    .property<unsigned int>("num_planning_attempts", "int: Number of planning attempts")
+ 	    .property<moveit_msgs::msg::WorkspaceParameters>(
+ 	        "workspace_parameters",
+ 	        ":moveit_msgs:`WorkspaceParameters`: Specifies workspace box to be used for Cartesian sampling")
+diff --git a/python/bindings/src/stages.cpp b/python/bindings/src/stages.cpp
+index 5082251..3fce4c9 100644
+--- a/python/bindings/src/stages.cpp
++++ b/python/bindings/src/stages.cpp
+@@ -192,7 +192,7 @@ void export_stages(pybind11::module& m) {
+ 			int: Set the maximum number of inverse
+ 			kinematic solutions thats should be generated.
+ 		)")
+-	    .property<uint32_t>("max_ik_solutions", "uint: max number of solutions to return")
++	    .property<uint32_t>("max_ik_solutions", "unsigned int: max number of solutions to return")
+ 	    .property<bool>("ignore_collisions", R"(
+ 			bool: Specify if collisions with other members of
+ 			the planning scene are allowed.
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index bbd1c27..6b6a4a0 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -48,6 +48,10 @@ ament_target_dependencies(${PROJECT_NAME}
+ 	rviz_marker_tools
+ 	visualization_msgs
+ )
++if(WIN32)
++  # introspection.cpp's gethostname() is declared via <winsock.h> but implemented in ws2_32
++  target_link_libraries(${PROJECT_NAME} ws2_32)
++endif()
+ target_include_directories(${PROJECT_NAME}
+ 	PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+ 	       $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+diff --git a/src/container.cpp b/src/container.cpp
+index 78efe75..cff2be7 100644
+--- a/src/container.cpp
++++ b/src/container.cpp
+@@ -57,7 +57,7 @@ namespace moveit {
+ namespace task_constructor {
+ 
+ // for debugging of how children interfaces evolve over time
+-__attribute__((unused))  // silent unused-function warning
++[[maybe_unused]]  // silent unused-function warning
+ static void
+ printChildrenInterfaces(const ContainerBasePrivate& container, bool success, const Stage& creator,
+                         std::ostream& os = std::cerr) {
+diff --git a/src/introspection.cpp b/src/introspection.cpp
+index 9f297c6..9711a65 100644
+--- a/src/introspection.cpp
++++ b/src/introspection.cpp
+@@ -49,6 +49,11 @@
+ #include <sstream>
+ #include <boost/bimap.hpp>
+ #include <rcutils/isalnum_no_locale.h>
++#ifdef _WIN32
++#include <winsock2.h>  // gethostname
++#else
++#include <unistd.h>
++#endif
+ 
+ static auto LOGGER = rclcpp::get_logger("introspection");
+ 
+@@ -214,7 +219,7 @@ void Introspection::publishAllSolutions(bool wait) {
+ 	};
+ }
+ 
+-const SolutionBase* Introspection::solutionFromId(uint id) const {
++const SolutionBase* Introspection::solutionFromId(unsigned int id) const {
+ 	auto it = impl->id_solution_bimap_.left.find(id);
+ 	if (it == impl->id_solution_bimap_.left.end())
+ 		return nullptr;
+diff --git a/src/solvers/pipeline_planner.cpp b/src/solvers/pipeline_planner.cpp
+index d0d44e7..d034dcd 100644
+--- a/src/solvers/pipeline_planner.cpp
++++ b/src/solvers/pipeline_planner.cpp
+@@ -116,7 +116,7 @@ PipelinePlanner::PipelinePlanner(const rclcpp::Node::SharedPtr& node, const std:
+ 	auto& p = properties();
+ 	p.declare<std::string>("planner", "", "planner id");
+ 
+-	p.declare<uint>("num_planning_attempts", 1u, "number of planning attempts");
++	p.declare<unsigned int>("num_planning_attempts", 1u, "number of planning attempts");
+ 	p.declare<moveit_msgs::msg::WorkspaceParameters>("workspace_parameters", moveit_msgs::msg::WorkspaceParameters(),
+ 	                                                 "allowed workspace of mobile base?");
+ 
+@@ -159,7 +159,7 @@ void initMotionPlanRequest(moveit_msgs::msg::MotionPlanRequest& req, const Prope
+ 	req.allowed_planning_time = std::min(timeout, p.get<double>("timeout"));
+ 	req.start_state.is_diff = true;  // we don't specify an extra start state
+ 
+-	req.num_planning_attempts = p.get<uint>("num_planning_attempts");
++	req.num_planning_attempts = p.get<unsigned int>("num_planning_attempts");
+ 	req.max_velocity_scaling_factor = p.get<double>("max_velocity_scaling_factor");
+ 	req.max_acceleration_scaling_factor = p.get<double>("max_acceleration_scaling_factor");
+ 	req.workspace_parameters = p.get<moveit_msgs::msg::WorkspaceParameters>("workspace_parameters");
+diff --git a/src/stages/generate_place_pose.cpp b/src/stages/generate_place_pose.cpp
+index 42a3205..fb0ef16 100644
+--- a/src/stages/generate_place_pose.cpp
++++ b/src/stages/generate_place_pose.cpp
+@@ -113,11 +113,11 @@ void GeneratePlacePose::compute() {
+ 	scene->getTransforms().transformPose(pose_msg.header.frame_id, target_pose, target_pose);
+ 
+ 	// spawn the nominal target object pose, considering flip about z and rotations about z-axis
+-	auto spawner = [&s, &scene, &ik_frame, this](const Eigen::Isometry3d& nominal, uint z_flips, uint z_rotations = 10) {
+-		for (uint flip = 0; flip <= z_flips; ++flip) {
++	auto spawner = [&s, &scene, &ik_frame, this](const Eigen::Isometry3d& nominal, unsigned int z_flips, unsigned int z_rotations = 10) {
++		for (unsigned int flip = 0; flip <= z_flips; ++flip) {
+ 			// flip about object's x-axis
+ 			Eigen::Isometry3d object = nominal * Eigen::AngleAxisd(flip * M_PI, Eigen::Vector3d::UnitX());
+-			for (uint i = 0; i < z_rotations; ++i) {
++			for (unsigned int i = 0; i < z_rotations; ++i) {
+ 				// rotate object at target pose about world's z-axis
+ 				Eigen::Vector3d pos = object.translation();
+ 				object.pretranslate(-pos)
+@@ -143,7 +143,7 @@ void GeneratePlacePose::compute() {
+ 		}
+ 	};
+ 
+-	uint z_flips = props.get<bool>("allow_z_flip") ? 1 : 0;
++	unsigned int z_flips = props.get<bool>("allow_z_flip") ? 1 : 0;
+ 	if (object && object->getShapes().size() == 1) {
+ 		switch (object->getShapes()[0]->type) {
+ 			case shapes::CYLINDER:
