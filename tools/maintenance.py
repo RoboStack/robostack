@@ -404,7 +404,7 @@ def update_snapshot(distro: str) -> Result:
         title = f"{distro}: rosdistro sync {date}"
         if ahead:
             source[-1:] = ["", "Kept at their newer versions (the previous snapshot is ahead of the sync for these "
-                           "repositories): " + ", ".join(f"<{r}>" for r in ahead) + ".", ""]
+                           "repositories): " + ", ".join(f"<{r}>" for r in ahead) + ".", "", ""]
     else:
         source, title = ["rosdistro master (this distribution doesn't follow syncs).", ""], f"{distro}: update rosdistro snapshot"
     if old == new:
