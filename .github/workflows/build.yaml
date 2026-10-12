@@ -1,0 +1,111 @@
+jobs:
+  stage_0_job_0:
+    name: ros2-rosidlcpp-parser ros2-rplidar-ros ros2-sick-safetyscanners-base ros2-rosidlcpp-generator-core
+      ros2-sick-safetyscanners2 sick-safetyscanners-base rplidar-ros rosidlcpp-parser
+      ros2-rosidlcpp-typesupport-introspection-cpp ros2-rosidlcpp-typesupport-introspection-c
+      ros2-rosidlcpp-typesupport-fastrtps-cpp ros2-rosidlcpp-typesupport-fastrtps-c
+      ros2-rosidlcpp-typesupport-cpp ros2-rosidlcpp-typesupport-c ros2-rosidlcpp-generator-type-description
+      ros2-rosidlcpp-generator-py ros2-rosidlcpp-generator-cpp ros2-rosidlcpp-generator-c
+      sick-safetyscanners2 rosidlcpp-generator-core
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    needs: []
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v7
+    - name: Disable git auto-maintenance
+      run: git config --global maintenance.auto false && git config --global gc.auto
+        0
+    - name: Setup pixi
+      uses: prefix-dev/setup-pixi@v0.11.0
+      with:
+        pixi-version: v0.81.0
+        cache: 'true'
+        log-level: v
+        frozen: 'true'
+    - name: Build ros2-rosidlcpp-parser ros2-rplidar-ros ros2-sick-safetyscanners-base
+        ros2-rosidlcpp-generator-core ros2-sick-safetyscanners2 ros-jazzy-sick-safetyscanners-base
+        ros-jazzy-rplidar-ros ros-jazzy-rosidlcpp-parser ros2-rosidlcpp-typesupport-introspection-cpp
+        ros2-rosidlcpp-typesupport-introspection-c ros2-rosidlcpp-typesupport-fastrtps-cpp
+        ros2-rosidlcpp-typesupport-fastrtps-c ros2-rosidlcpp-typesupport-cpp ros2-rosidlcpp-typesupport-c
+        ros2-rosidlcpp-generator-type-description ros2-rosidlcpp-generator-py ros2-rosidlcpp-generator-cpp
+        ros2-rosidlcpp-generator-c ros-jazzy-sick-safetyscanners2 ros-jazzy-rosidlcpp-generator-core
+      env:
+        CURRENT_RECIPES: ros2-rosidlcpp-parser ros2-rplidar-ros ros2-sick-safetyscanners-base
+          ros2-rosidlcpp-generator-core ros2-sick-safetyscanners2 ros-jazzy-sick-safetyscanners-base
+          ros-jazzy-rplidar-ros ros-jazzy-rosidlcpp-parser ros2-rosidlcpp-typesupport-introspection-cpp
+          ros2-rosidlcpp-typesupport-introspection-c ros2-rosidlcpp-typesupport-fastrtps-cpp
+          ros2-rosidlcpp-typesupport-fastrtps-c ros2-rosidlcpp-typesupport-cpp ros2-rosidlcpp-typesupport-c
+          ros2-rosidlcpp-generator-type-description ros2-rosidlcpp-generator-py ros2-rosidlcpp-generator-cpp
+          ros2-rosidlcpp-generator-c ros-jazzy-sick-safetyscanners2 ros-jazzy-rosidlcpp-generator-core
+        BUILD_TARGET: ''
+      run: |
+        export CI=github
+        export GIT_BRANCH=${GITHUB_REF_NAME}
+        export FEEDSTOCK_NAME=${GITHUB_REPOSITORY##*/}
+        .scripts/build_unix.sh --target $BUILD_TARGET
+    permissions:
+      id-token: write
+      contents: read
+      attestations: write
+  stage_1_job_1:
+    name: ros2-rosidlcpp rosidlcpp-typesupport-introspection-cpp rosidlcpp-typesupport-introspection-c
+      rosidlcpp-typesupport-fastrtps-cpp rosidlcpp-typesupport-fastrtps-c rosidlcpp-typesupport-cpp
+      rosidlcpp-typesupport-c rosidlcpp-generator-type-description rosidlcpp-generator-py
+      rosidlcpp-generator-cpp rosidlcpp-generator-c rosidlcpp
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+    needs:
+    - stage_0_job_0
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v7
+    - name: Disable git auto-maintenance
+      run: git config --global maintenance.auto false && git config --global gc.auto
+        0
+    - name: Setup pixi
+      uses: prefix-dev/setup-pixi@v0.11.0
+      with:
+        pixi-version: v0.81.0
+        cache: 'true'
+        log-level: v
+        frozen: 'true'
+    - name: Build ros2-rosidlcpp ros-jazzy-rosidlcpp-typesupport-introspection-cpp
+        ros-jazzy-rosidlcpp-typesupport-introspection-c ros-jazzy-rosidlcpp-typesupport-fastrtps-cpp
+        ros-jazzy-rosidlcpp-typesupport-fastrtps-c ros-jazzy-rosidlcpp-typesupport-cpp
+        ros-jazzy-rosidlcpp-typesupport-c ros-jazzy-rosidlcpp-generator-type-description
+        ros-jazzy-rosidlcpp-generator-py ros-jazzy-rosidlcpp-generator-cpp ros-jazzy-rosidlcpp-generator-c
+        ros-jazzy-rosidlcpp
+      env:
+        CURRENT_RECIPES: ros2-rosidlcpp ros-jazzy-rosidlcpp-typesupport-introspection-cpp
+          ros-jazzy-rosidlcpp-typesupport-introspection-c ros-jazzy-rosidlcpp-typesupport-fastrtps-cpp
+          ros-jazzy-rosidlcpp-typesupport-fastrtps-c ros-jazzy-rosidlcpp-typesupport-cpp
+          ros-jazzy-rosidlcpp-typesupport-c ros-jazzy-rosidlcpp-generator-type-description
+          ros-jazzy-rosidlcpp-generator-py ros-jazzy-rosidlcpp-generator-cpp ros-jazzy-rosidlcpp-generator-c
+          ros-jazzy-rosidlcpp
+        BUILD_TARGET: ''
+      run: |
+        export CI=github
+        export GIT_BRANCH=${GITHUB_REF_NAME}
+        export FEEDSTOCK_NAME=${GITHUB_REPOSITORY##*/}
+        .scripts/build_unix.sh --target $BUILD_TARGET
+    permissions:
+      id-token: write
+      contents: read
+      attestations: write
+name: build
+run-name: jazzy linux-64
+concurrency:
+  group: build-jazzy-linux-64
+  cancel-in-progress: false
+on:
+  push:
+    branches:
+    - buildbranch_jazzy_linux_64
+env:
+  ROBOSTACK_DISTRO: jazzy
+  # optional repository variable: upload to this prefix.dev channel instead
+  # (e.g. a test channel), or 'none' to only build
+  ROBOSTACK_UPLOAD_CHANNEL: ${{ vars.ROBOSTACK_UPLOAD_CHANNEL }}
