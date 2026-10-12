@@ -15,16 +15,16 @@ packages_exclude:
 
   - if: not linux
     then:
-      - ament_cmake_xmllint
-      - ament_xmllint
-      - mimick_vendor
-      - mujoco_ros2_control
-      - mujoco_ros2_control_demos
-      - mujoco_vendor
-      - osrf_testing_tools_cpp
-      - performance_test_fixture
-      - rclc_examples
-      - rmw_connextdds
+      - ament_cmake_xmllint  # humble only (no reason recorded); the other distributions build it everywhere: to try in #83
+      - ament_xmllint  # humble only (no reason recorded); the other distributions build it everywhere: to try in #83
+      - mimick_vendor  # humble only (no reason recorded); the other distributions build it everywhere: to try in #83
+      - mujoco_ros2_control  # runtime uses Linux-specific files (as everywhere)
+      - mujoco_ros2_control_demos  # readlink and Linux-specific files at runtime (as everywhere)
+      - mujoco_vendor  # humble only (no reason recorded); the other distributions build it everywhere: to try in #83
+      - osrf_testing_tools_cpp  # humble only (no reason recorded); the other distributions build it everywhere: to try in #83
+      - performance_test_fixture  # humble only (no reason recorded); the other distributions build it everywhere: to try in #83
+      - rclc_examples  # MSVC C2055 on rcl_timer_t callbacks; macOS humble-only (no reason recorded)
+      - rmw_connextdds  # humble only (no reason recorded); the other distributions build it everywhere: to try in #83
 
   - if: win
     then:
@@ -35,15 +35,16 @@ packages_exclude:
       - ros_gz_sim_demos  # Ignition Fortress (libignition-gazebo6) isn't installable on win-64
       - ros_ign_gazebo  # Ignition Fortress (libignition-gazebo6) isn't installable on win-64
       - ros_ign_gazebo_demos  # Ignition Fortress (libignition-gazebo6) isn't installable on win-64
-      - ros_ign_image
-      - test_ros_gz_bridge
-      - velodyne_gazebo_plugins
+      - ros_ign_image  # Fortress-based gz integration isn't supported on humble Windows (old ros-humble#68)
+      - test_ros_gz_bridge  # Fortress-based gz integration isn't supported on humble Windows (old ros-humble#68)
+      - velodyne_gazebo_plugins  # links Gazebo Classic's Ogre libraries; win-64 has no OgreBites.lib
 
 packages_skip:
+  - as2_behaviors_trajectory_generation  # its FetchContent'd NLopt fails with CMake 4 (being fixed in #83)
 
   - if: not linux
     then:
-      - joy_linux
+      - joy_linux  # Linux joystick interfaces
 
   - if: win
     then:
@@ -58,15 +59,15 @@ packages_select_by_deps:
 
   - if: win
     then:
-      - cartographer_ros
+      - cartographer_ros  # builds on humble's win-64; shared selection is not-Windows (unified in #83)
       - rosbag2_performance_benchmarking  # MSVC C1083 in its _msgs on newer distros; humble's 0.15 builds
-      - rplidar_ros
+      - rplidar_ros  # humble's 2.1.4 builds on win-64 (POSIX-only SDK in older versions)
       - serial_driver  # humble's builds there (LNK1181 on rolling)
-      - udp_driver
+      - udp_driver  # humble's win patch; unified in #83
 
   - if: osx
     then:
       - plansys2_bringup  # with humble's popf patch; Linux only elsewhere
-      - plansys2_bt_actions
-      - smacc2
+      - plansys2_bt_actions  # needs popf, see plansys2_bringup
+      - smacc2  # humble's patch makes LTTng Linux-only; unified in #83
 

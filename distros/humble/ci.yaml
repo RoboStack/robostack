@@ -23,6 +23,4 @@ full_rebuild: false
 #
 # Remember that dependents are not rebuilt automatically: evict them as well if
 # they must pick up the change.
-evict_cache:
-  - ublox_msgs  # TEMPORARY (#78): rebuild with its new win patch; reset before merging
-  - ublox_serialization  # TEMPORARY (#78): same
+evict_cache: []
