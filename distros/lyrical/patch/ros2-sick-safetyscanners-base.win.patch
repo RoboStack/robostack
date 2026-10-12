@@ -1,8 +1,15 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 38f1a17..0857a4d 100644
+index 38f1a17..415c0e7 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -5,7 +5,9 @@ project(sick_safetyscanners_base CXX)
+@@ -1,11 +1,16 @@
+ cmake_minimum_required(VERSION 3.5) 
+ project(sick_safetyscanners_base CXX)
+ 
++# no dllexport annotations: export everything so MSVC writes the import library (LNK1181)
++set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
++
+ ## Use C++11
  #add_definitions(-std=c++11 -Wall)
  ## By adding -Wall and -Werror, the compiler does not ignore warnings anymore,
  ## enforcing cleaner code.

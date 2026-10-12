@@ -1,11 +1,11 @@
 diff --git a/include/rosidlcpp_generator_core/generator_utils.hpp b/include/rosidlcpp_generator_core/generator_utils.hpp
-index 5df2be6..801d1f4 100644
+index ddc18f0..339db75 100644
 --- a/include/rosidlcpp_generator_core/generator_utils.hpp
 +++ b/include/rosidlcpp_generator_core/generator_utils.hpp
-@@ -20,7 +20,18 @@
- #include <string_view>
+@@ -21,7 +21,18 @@
  #include <vector>
  
+ #include <nlohmann/json.hpp>
 -#include <nlohmann/json_fwd.hpp>
 +#include <nlohmann/json.hpp>
 +
@@ -20,21 +20,13 @@ index 5df2be6..801d1f4 100644
 +  }
 +};
  
- namespace rosidlcpp_core {
+ namespace nlohmann {
  
 diff --git a/src/rosidlcpp_generator_core/generator_utils.cpp b/src/rosidlcpp_generator_core/generator_utils.cpp
-index f639efc..153c601 100644
+index 2aef5dd..7460a7e 100644
 --- a/src/rosidlcpp_generator_core/generator_utils.cpp
 +++ b/src/rosidlcpp_generator_core/generator_utils.cpp
-@@ -30,6 +30,7 @@
- 
- #include <fmt/core.h>
- #include <fmt/format.h>
-+#include <fmt/ranges.h>  // fmt::join on ranges (fmt 12)
- #include <fmt/ranges.h>
- 
- namespace rosidlcpp_core {
-@@ -275,7 +276,7 @@ auto is_service_type(const nlohmann::json& type) -> bool {
+@@ -287,7 +287,7 @@ auto is_service_type(const nlohmann::json& type) -> bool {
   */
  
  auto type_to_c_typename(const nlohmann::json& type) -> std::string {

@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 48123e6..f0cecc7 100644
+index 48123e6..3050154 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -21,18 +21,25 @@ endif()
@@ -39,6 +39,43 @@ index 48123e6..f0cecc7 100644
  endif()
  
  ################################################################################
+@@ -54,24 +61,24 @@ include_directories(
+ 
+ add_executable(rplidar_node	src/rplidar_node.cpp ${RPLIDAR_SDK_SRC})
+ # target_link_libraries(rplidar_node ${ament_cmake_LIBRARIES})
+-ament_target_dependencies(rplidar_node
+-  rclcpp
+-  std_srvs
+-  sensor_msgs
++target_link_libraries(rplidar_node
++  ${rclcpp_TARGETS}
++  ${std_srvs_TARGETS}
++  ${sensor_msgs_TARGETS}
+ )
+ 
+ add_executable(rplidar_composition src/rplidar_node.cpp ${RPLIDAR_SDK_SRC})
+-ament_target_dependencies(rplidar_composition
+-  rclcpp
+-  std_srvs
+-  sensor_msgs
++target_link_libraries(rplidar_composition
++  ${rclcpp_TARGETS}
++  ${std_srvs_TARGETS}
++  ${sensor_msgs_TARGETS}
+ )
+ 
+ add_executable(rplidar_client src/rplidar_client.cpp)
+-ament_target_dependencies(rplidar_client
+-  rclcpp
+-  std_srvs
+-  sensor_msgs
++target_link_libraries(rplidar_client
++  ${rclcpp_TARGETS}
++  ${std_srvs_TARGETS}
++  ${sensor_msgs_TARGETS}
+ )
+ ################################################################################
+ # Install
 diff --git a/sdk/Makefile b/sdk/Makefile
 index 81215d9..69aec97 100644
 --- a/sdk/Makefile
