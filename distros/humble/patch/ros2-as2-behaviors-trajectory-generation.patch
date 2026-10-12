@@ -1,15 +1,18 @@
 diff --git a/generate_polynomial_trajectory_behavior/CMakeLists.txt b/generate_polynomial_trajectory_behavior/CMakeLists.txt
-index 67bb76d..62dfe10 100644
+index 67bb76d..2340822 100644
 --- a/generate_polynomial_trajectory_behavior/CMakeLists.txt
 +++ b/generate_polynomial_trajectory_behavior/CMakeLists.txt
-@@ -7,6 +7,10 @@ if(${dynamic_trajectory_generator_FOUND})
+@@ -7,6 +7,13 @@ if(${dynamic_trajectory_generator_FOUND})
    message(STATUS "dynamic_trajectory_generator found")
  else()
    message(STATUS "dynamic_trajectory_generator not found")
 +  # The fetched dynamic_trajectory_generator runs find_package(nlopt) but checks NLopt_FOUND,
 +  # so it never sees conda-forge's NLopt and FetchContents NLopt 2.7.1 (which fails with
-+  # CMake 4). Finding NLopt here sets NLopt_FOUND for it.
++  # CMake 4). Finding NLopt here sets NLopt_FOUND for it; it also expects the "nlopt"
++  # target that bundled build would have defined.
 +  find_package(NLopt CONFIG REQUIRED)
++  add_library(nlopt INTERFACE IMPORTED GLOBAL)
++  target_link_libraries(nlopt INTERFACE NLopt::nlopt)
    include(FetchContent)
    fetchcontent_declare(
      dynamic_trajectory_generator
