@@ -1,0 +1,15 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 38f1a17..0857a4d 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -5,7 +5,9 @@ project(sick_safetyscanners_base CXX)
+ #add_definitions(-std=c++11 -Wall)
+ ## By adding -Wall and -Werror, the compiler does not ignore warnings anymore,
+ ## enforcing cleaner code.
+-add_definitions(-std=c++11 -Wall -Werror)
++if(NOT MSVC)  # GCC flags; cl rejects -Werror (D8021)
++  add_definitions(-std=c++11 -Wall -Werror)
++endif()
+ 
+ 
+ ## Find system libraries

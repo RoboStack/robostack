@@ -2,7 +2,7 @@ diff --git a/generate_polynomial_trajectory_behavior/CMakeLists.txt b/generate_p
 index 67bb76d..4aece6b 100644
 --- a/generate_polynomial_trajectory_behavior/CMakeLists.txt
 +++ b/generate_polynomial_trajectory_behavior/CMakeLists.txt
-@@ -7,6 +7,16 @@ if(${dynamic_trajectory_generator_FOUND})
+@@ -7,6 +7,20 @@ if(${dynamic_trajectory_generator_FOUND})
    message(STATUS "dynamic_trajectory_generator found")
  else()
    message(STATUS "dynamic_trajectory_generator not found")
@@ -16,6 +16,10 @@ index 67bb76d..4aece6b 100644
 +  find_package(Eigen3 REQUIRED NO_MODULE)
 +  get_target_property(_as2_eigen_include Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORIES)
 +  include_directories(${_as2_eigen_include})
++  # ... whose mav_msgs headers use assert() without including <cassert>
++  if(NOT MSVC)
++    add_compile_options(-include cassert)
++  endif()
    include(FetchContent)
    fetchcontent_declare(
      dynamic_trajectory_generator

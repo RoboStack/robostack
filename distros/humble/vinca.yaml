@@ -13,6 +13,10 @@ mutex_package:
 
 packages_exclude:
 
+  - if: osx
+    then:
+      - mujoco_vendor  # humble's 0.0.8 rejects macOS ("not supported"); jazzy's 0.1.0 builds there
+
   - if: not linux
     then:
       - mujoco_ros2_control  # runtime uses Linux-specific files (as everywhere)
@@ -46,4 +50,10 @@ packages_skip:
       - turtlebot4_ignition_bringup  # needs Ignition Fortress (libignition-gazebo6), not installable on win-64
       - turtlebot4_ignition_gui_plugins  # needs Ignition Fortress (libignition-gazebo6), not installable on win-64
       - turtlebot4_simulator  # needs Ignition Fortress (libignition-gazebo6), not installable on win-64
+
+packages_select_by_deps:
+
+  - if: win
+    then:
+      - rplidar_ros  # humble's 2.1.4 builds on win-64; older versions' SDK is POSIX-only
 
