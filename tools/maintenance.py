@@ -255,15 +255,10 @@ ROSDISTRO = "https://github.com/ros/rosdistro"
 def latest_sync(distro: str) -> str | None:
     """Newest sync tag of the distribution in ros/rosdistro, e.g. jazzy/2026-10-05.
     The ROS release team tags every sync from ros-testing to the main repositories."""
-    import urllib.request
-
-    headers = {"User-Agent": "robostack-bot", "Accept": "application/vnd.github+json"}
-    if token := os.environ.get("GITHUB_TOKEN"):
-        headers["Authorization"] = f"Bearer {token}"
-    url = f"https://api.github.com/repos/ros/rosdistro/git/matching-refs/tags/{distro}/"
-    with urllib.request.urlopen(urllib.request.Request(url, headers=headers), timeout=60) as response:
-        refs = json.load(response)
-    tags = [r["ref"].removeprefix("refs/tags/") for r in refs]
+    # git, not the GitHub API: no rate limit without a token
+    out = subprocess.run(["git", "ls-remote", "--tags", ROSDISTRO, f"refs/tags/{distro}/*"],
+                         capture_output=True, text=True, check=True).stdout
+    tags = [line.split("\t")[1].removeprefix("refs/tags/") for line in out.splitlines() if "\t" in line]
     tags = [t for t in tags if (m := SYNC_TAG.match(t)) and m["distro"] == distro]
     return max(tags, key=lambda t: t.split("/")[1], default=None)
 
