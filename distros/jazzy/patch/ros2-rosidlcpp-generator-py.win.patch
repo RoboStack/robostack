@@ -1,0 +1,14 @@
+diff --git a/src/rosidlcpp_generator_py/rosidlcpp_generator_py.cpp b/src/rosidlcpp_generator_py/rosidlcpp_generator_py.cpp
+index 813ad6d..d2a747b 100644
+--- a/src/rosidlcpp_generator_py/rosidlcpp_generator_py.cpp
++++ b/src/rosidlcpp_generator_py/rosidlcpp_generator_py.cpp
+@@ -107,7 +107,8 @@ auto get_imports(const nlohmann::json& members) -> nlohmann::json {
+     if (rosidlcpp_core::is_nestedtype(type)) {
+       type = member["type"]["value_type"];
+     }
+-    if (member["name"] !=
++    // compare as std::string: json != string_view is ambiguous for MSVC (C2666)
++    if (member["name"].get<std::string>() !=
+         rosidlcpp_core::EMPTY_STRUCTURE_REQUIRED_MEMBER_NAME) {
+       if (!result.contains("import builtins"))
+         result["import builtins"] = nlohmann::json::array();
