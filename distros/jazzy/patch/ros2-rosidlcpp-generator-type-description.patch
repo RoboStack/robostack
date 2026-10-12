@@ -1,0 +1,14 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index f87adb8..08d6cda 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.12)
+ 
+ project(rosidlcpp_generator_type_description)
+ 
++# rosidlcpp_generator_core's headers need C++20 (abbreviated function templates); it builds as C++23
++set(CMAKE_CXX_STANDARD 23)
++
+ find_package(ament_cmake REQUIRED)
+ 
+ find_package(nlohmann_json REQUIRED)

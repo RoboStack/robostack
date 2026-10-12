@@ -246,6 +246,8 @@ ros2cli:
 rosidl_cli:
   # Rebuild with the shell completions installed under the names bash/zsh/fish load (patch).
   build_number: 28
+rplidar_ros:
+  build_number: 29
 rqt_plot:
   build_number: 28
 rqt_py_common:

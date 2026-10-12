@@ -120,6 +120,11 @@ ros2_easy_test:
   url: https://github.com/felixdivo/ros2-easy-test.git
   version: 0.3.0
   additional_folder: ros2_easy_test
+rplidar_ros:
+  # 2.1.4 (as humble) for its win32 SDK arch; the released 2.1.0 is POSIX only
+  tag: 2.1.4
+  url: https://github.com/Slamtec/rplidar_ros.git
+  version: 2.1.4
 topic_based_ros2_control:
   url: https://github.com/PickNikRobotics/topic_based_ros2_control.git
   rev: 6bd8d55e1c4ad3188770fe5c8b93b942bcede4a2

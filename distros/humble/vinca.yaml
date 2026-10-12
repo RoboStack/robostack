@@ -15,16 +15,9 @@ packages_exclude:
 
   - if: not linux
     then:
-      - ament_cmake_xmllint  # humble only (no reason recorded); the other distributions build it everywhere: to try in #83
-      - ament_xmllint  # humble only (no reason recorded); the other distributions build it everywhere: to try in #83
-      - mimick_vendor  # humble only (no reason recorded); the other distributions build it everywhere: to try in #83
       - mujoco_ros2_control  # runtime uses Linux-specific files (as everywhere)
       - mujoco_ros2_control_demos  # readlink and Linux-specific files at runtime (as everywhere)
-      - mujoco_vendor  # humble only (no reason recorded); the other distributions build it everywhere: to try in #83
-      - osrf_testing_tools_cpp  # humble only (no reason recorded); the other distributions build it everywhere: to try in #83
-      - performance_test_fixture  # humble only (no reason recorded); the other distributions build it everywhere: to try in #83
       - rclc_examples  # MSVC C2055 on rcl_timer_t callbacks; macOS humble-only (no reason recorded)
-      - rmw_connextdds  # humble only (no reason recorded); the other distributions build it everywhere: to try in #83
 
   - if: win
     then:
@@ -40,7 +33,6 @@ packages_exclude:
       - velodyne_gazebo_plugins  # links Gazebo Classic's Ogre libraries; win-64 has no OgreBites.lib
 
 packages_skip:
-  - as2_behaviors_trajectory_generation  # its FetchContent'd NLopt fails with CMake 4 (being fixed in #83)
 
   - if: not linux
     then:
@@ -54,20 +46,4 @@ packages_skip:
       - turtlebot4_ignition_bringup  # needs Ignition Fortress (libignition-gazebo6), not installable on win-64
       - turtlebot4_ignition_gui_plugins  # needs Ignition Fortress (libignition-gazebo6), not installable on win-64
       - turtlebot4_simulator  # needs Ignition Fortress (libignition-gazebo6), not installable on win-64
-
-packages_select_by_deps:
-
-  - if: win
-    then:
-      - cartographer_ros  # builds on humble's win-64; shared selection is not-Windows (unified in #83)
-      - rosbag2_performance_benchmarking  # MSVC C1083 in its _msgs on newer distros; humble's 0.15 builds
-      - rplidar_ros  # humble's 2.1.4 builds on win-64 (POSIX-only SDK in older versions)
-      - serial_driver  # humble's builds there (LNK1181 on rolling)
-      - udp_driver  # humble's win patch; unified in #83
-
-  - if: osx
-    then:
-      - plansys2_bringup  # with humble's popf patch; Linux only elsewhere
-      - plansys2_bt_actions  # needs popf, see plansys2_bringup
-      - smacc2  # humble's patch makes LTTng Linux-only; unified in #83
 

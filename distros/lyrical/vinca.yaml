@@ -11,4 +11,3 @@ mutex_package:
   name: ros2-distro-mutex
   version: 0.21.0
   upper_bound: x.x
-

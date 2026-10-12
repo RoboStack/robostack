@@ -82,3 +82,10 @@ med7_moveit_config:
   rev: 2e932d4e062966afe216710a7cc2fe50a8099365
   version: 0.3.0
   additional_folder: lbr_moveit_config/med7_moveit_config
+mujoco_vendor:
+  # jazzy's 0.1.0: unlike humble's 0.0.8 it honours AMENT_VENDOR_POLICY, so it uses
+  # conda-forge's libmujoco (shared pkg_additional_info) instead of downloading MuJoCo
+  # and symlinking it (rejected on Windows; macOS isn't supported by the download)
+  tag: release/jazzy/mujoco_vendor/0.1.0-1
+  url: https://github.com/ros2-gbp/mujoco_vendor-release.git
+  version: 0.1.0

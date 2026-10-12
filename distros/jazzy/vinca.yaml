@@ -12,27 +12,3 @@ mutex_package:
   # new build without run_constraints (same version as the published ones)
   build_number: 26
   version: "0.19.0"
-
-packages_exclude:
-
-  # rosidlcpp 0.5.0 formats nlohmann::json ranges with fmt::join, which fmt 12 rejects;
-  # jazzy never built it
-  - rosidlcpp
-  # its published sick_safetyscanners_base 1.0.4 still requires Boost's system component,
-  # gone in Boost 1.89+ (patch/ros2-sick-safetyscanners-base.patch is for 1.0.3); jazzy
-  # never built it
-  - sick_safetyscanners2
-  # POSIX sleep() and C++20 designated initializers in its tutorial code (MSVC C3861,
-  # C7555); no other distro builds it on Windows either
-  - if: win
-    then:
-      - moveit2_tutorials
-
-packages_select_by_deps:
-
-  # not on win-64 elsewhere (GCC-only compile flags), but jazzy's 1.0.4 builds there
-  - if: win
-    then:
-      - cartographer_ros
-      - sick_safetyscanners_base
-

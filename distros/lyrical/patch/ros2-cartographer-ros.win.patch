@@ -1,0 +1,26 @@
+diff --git a/src/node_main.cpp b/src/node_main.cpp
+index bdf33b8..c678fd3 100644
+--- a/src/node_main.cpp
++++ b/src/node_main.cpp
+@@ -56,7 +56,7 @@ void Run() {
+       std::make_shared<tf2_ros::Buffer>(
+         cartographer_node->get_clock(),
+         tf2::durationFromSec(kTfBufferCacheTimeInSeconds),
+-        cartographer_node);
++        *cartographer_node);  // the exported NodeInterfaces constructor, not the inline template (LNK2019 on MSVC)
+ 
+   std::shared_ptr<tf2_ros::TransformListener> tf_listener =
+       std::make_shared<tf2_ros::TransformListener>(*tf_buffer);
+diff --git a/src/offline_node.cpp b/src/offline_node.cpp
+index 4b3f60e..cc4902b 100644
+--- a/src/offline_node.cpp
++++ b/src/offline_node.cpp
+@@ -152,7 +152,7 @@ void RunOfflineNode(const MapBuilderFactory& map_builder_factory,
+       std::make_shared<tf2_ros::Buffer>(
+         cartographer_offline_node->get_clock(),
+         tf2::durationFromSec(10),
+-        cartographer_offline_node);
++        *cartographer_offline_node);  // the exported NodeInterfaces constructor, not the inline template (LNK2019 on MSVC)
+ 
+   std::vector<geometry_msgs::msg::TransformStamped> urdf_transforms;
+ 
