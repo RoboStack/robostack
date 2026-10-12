@@ -1,0 +1,28 @@
+diff --git a/src/plansys2_node.cpp b/src/plansys2_node.cpp
+index dd05c52..e5e8ef7 100644
+--- a/src/plansys2_node.cpp
++++ b/src/plansys2_node.cpp
+@@ -16,6 +16,10 @@
+ #include <memory>
+ #include <string>
+ #include <map>
++#include <cerrno>
++#include <cstring>
++#include <pthread.h>
++#include <sched.h>
+ 
+ #include "rclcpp/rclcpp.hpp"
+ 
+@@ -84,7 +88,12 @@ int main(int argc, char ** argv)
+         sched_param sch;
+         sch.sched_priority = 80;
+ 
++#ifdef __linux__
+         if (sched_setscheduler(0, SCHED_FIFO, &sch) == -1) {
++#else
++        // no sched_setscheduler() outside Linux: set the policy of this (the spinning) thread
++        if ((errno = pthread_setschedparam(pthread_self(), SCHED_FIFO, &sch)) != 0) {
++#endif
+           RCLCPP_ERROR(main_node->get_logger(), "Failed to tet PlanSys2 to execute in Real Time.");
+           RCLCPP_ERROR(main_node->get_logger(), "Set use_real_time param to false");
+           RCLCPP_ERROR(main_node->get_logger(), "or set your system to have permissions.");
