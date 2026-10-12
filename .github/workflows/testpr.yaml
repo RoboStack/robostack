@@ -183,6 +183,9 @@ jobs:
         extra=()
         # shorter work dirs for MAX_PATH on Windows
         [ "$PLATFORM" == "win-64" ] && extra+=(--no-build-id)
+        # TEMPORARY (humble Windows trial, #78): report every failing package in one run.
+        # Remove before merging.
+        extra+=(--continue-on-failure)
         pixi run rs "$DISTRO" build --target-platform "$PLATFORM" "${extra[@]}" 2>&1 | tee rattler-build.log
         status=${PIPESTATUS[0]}
         echo "exit-code=${status}" >> "$GITHUB_OUTPUT"
