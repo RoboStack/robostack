@@ -256,5 +256,9 @@ ros2cli:
 rosidl_cli:
   # Rebuild with the shell completions installed under the names bash and zsh load (patch).
   build_number: 26
+rplidar_ros:
+  build_number: 26
+sick_safetyscanners_base:
+  build_number: 26
 yaets:
   build_number: 26

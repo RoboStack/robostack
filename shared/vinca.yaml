@@ -317,6 +317,8 @@ packages_select_by_deps:
   - rosidl_runtime_cpp
   - rosidl_typesupport_introspection_c
   - rosidl_typesupport_introspection_cpp
+  - rosidlcpp
+  - rplidar_ros
   - rqt
   - rqt_controller_manager
   - rqt_gui
@@ -335,6 +337,8 @@ packages_select_by_deps:
   - sbg_driver
   - sdl2_vendor
   - serial_driver
+  - sick_safetyscanners2
+  - sick_safetyscanners2_interfaces
   - sick_safetyscanners_base
   - sick_scan_xd
   - simulation
@@ -486,12 +490,9 @@ packages_select_by_deps:
       - ros2_medkit_sovd_service_interface
       - ros2_medkit_topic_beacon
       - ros2_socketcan # Depends on socketcan
-      - rosidlcpp
       - rot_conv
       - rqt_image_overlay
       - septentrio_gnss_driver
-      - sick_safetyscanners2
-      - sick_safetyscanners2_interfaces
       - slider_publisher
       - spatio_temporal_voxel_layer # Uses linux-specific flags in  https://github.com/SteveMacenski/spatio_temporal_voxel_layer/blob/e23d730d35407bd8e2bf9c33d10388a6a07c735d/spatio_temporal_voxel_layer/CMakeLists.txt#L124,; Uses linux-specific flags (CMakeLists.txt#L124), should be easy to fix
       - turtlebot4_base
@@ -572,7 +573,6 @@ packages_select_by_deps:
       - popf
       - rclc_examples # MSVC C2055 on rcl_timer_t in callback signatures; root cause unresolved, already excluded on humble too
       - rosgraph_monitor
-      - rplidar_ros # POSIX-only SDK (unistd.h, sys/socket.h) up to 2.1.0; humble's 2.1.4 builds on win-64 (distros/humble/vinca.yaml)
       - rqt_action
       - rqt_bag
       - rqt_image_view

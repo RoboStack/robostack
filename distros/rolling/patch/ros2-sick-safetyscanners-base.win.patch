@@ -13,3 +13,19 @@ index 38f1a17..0857a4d 100644
  
  
  ## Find system libraries
+diff --git a/include/sick_safetyscanners_base/Exceptions.h b/include/sick_safetyscanners_base/Exceptions.h
+index bdc42f4..da4da9b 100644
+--- a/include/sick_safetyscanners_base/Exceptions.h
++++ b/include/sick_safetyscanners_base/Exceptions.h
+@@ -40,6 +40,11 @@
+ #include <exception>
+ #include <sstream>
+ #include <stdexcept>
++#ifdef _WIN32
++#include <winsock2.h>  // timeval
++#else
++#include <sys/time.h>
++#endif
+ 
+ namespace sick {
+ 

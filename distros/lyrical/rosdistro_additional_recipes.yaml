@@ -386,6 +386,16 @@ grid_map_rviz_plugin:
   tag: release/kilted/grid_map_rviz_plugin/2.4.0-1
   url: https://github.com/ros2-gbp/grid_map-release.git
   version: 2.4.0
+libnabo:
+  # released for humble/jazzy only; jazzy's release (dependency of libpointmatcher)
+  tag: release/jazzy/libnabo/1.1.1-2
+  url: https://github.com/ros2-gbp/libnabo-release.git
+  version: 1.1.1
+libpointmatcher:
+  # released for humble/jazzy only; jazzy's release (optional rtabmap dependency)
+  tag: release/jazzy/libpointmatcher/1.4.2-1
+  url: https://github.com/ros2-gbp/libpointmatcher-release.git
+  version: 1.4.2
 livox_ros_driver2:
   tag: 1.2.4
   url: https://github.com/Livox-SDK/livox_ros_driver2.git
@@ -443,6 +453,11 @@ ros2_easy_test:  # Until: https://github.com/felixdivo/ros2-easy-test/issues/53
   url: https://github.com/felixdivo/ros2-easy-test.git
   version: 0.3.0
   additional_folder: ros2_easy_test
+rplidar_ros:
+  # 2.1.4 (as humble) for its win32 SDK arch; the released 2.1.0 is POSIX only
+  tag: 2.1.4
+  url: https://github.com/Slamtec/rplidar_ros.git
+  version: 2.1.4
 rqt_mocap4r2_control:
   tag: 0.0.7
   url: https://github.com/MOCAP4ROS2-Project/mocap4r2.git

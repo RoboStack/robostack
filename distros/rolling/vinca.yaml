@@ -11,17 +11,7 @@ mutex_package:
   build_number: 30
   version: "0.22.0"
 
-packages_exclude:
-
-  # needs ros_image_to_qimage, which rolling doesn't have
-  - rqt_image_overlay
-
 packages_skip:
-  - rplidar_ros
-  - rviz_visual_tools
-
-  # not yet released for rolling; rtabmap builds fine without it (disables the optional dependent feature)
-  - libpointmatcher
 
   - if: osx or win
     then:

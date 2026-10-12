@@ -11,10 +11,3 @@ mutex_package:
   name: ros2-distro-mutex
   version: 0.21.0
   upper_bound: x.x
-
-packages_skip:
-
-  - if: win
-    then:
-      - cartographer_ros  # unresolved tf2_ros::Buffer vftable (LNK2019) against lyrical's tf2_ros; rolling builds it
-

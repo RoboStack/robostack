@@ -51,9 +51,3 @@ packages_skip:
       - turtlebot4_ignition_gui_plugins  # needs Ignition Fortress (libignition-gazebo6), not installable on win-64
       - turtlebot4_simulator  # needs Ignition Fortress (libignition-gazebo6), not installable on win-64
 
-packages_select_by_deps:
-
-  - if: win
-    then:
-      - rplidar_ros  # humble's 2.1.4 builds on win-64; older versions' SDK is POSIX-only
-
