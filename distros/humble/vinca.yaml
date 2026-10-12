@@ -13,11 +13,6 @@ mutex_package:
 
 packages_exclude:
 
-  # pinocchio's package.xml still names hpp_fcl, which humble's snapshot no longer has: nothing
-  # builds ros2-hpp-fcl (win-64 never had one). pinocchio wraps conda-forge's pinocchio, which uses coal.
-  - hpp_fcl
-  - hpp-fcl
-
   - if: not linux
     then:
       - ament_cmake_xmllint
@@ -31,27 +26,20 @@ packages_exclude:
       - rclc_examples
       - rmw_connextdds
 
-  # humble's Gazebo is Ignition Fortress (libignition-gazebo6), not installable on win-64 (libode)
   - if: win
     then:
-      - gz_ros2_control
-      - gz_ros2_control_demos
-      - ros_gz_sim
-      - ros_gz_sim_demos
-      - ros_ign_gazebo
-      - ros_ign_gazebo_demos
+      - gz_ros2_control  # Ignition Fortress (libignition-gazebo6) isn't installable on win-64
+      - gz_ros2_control_demos  # Ignition Fortress (libignition-gazebo6) isn't installable on win-64
+      - hpp-fcl  # no ros2-hpp-fcl recipe for win-64; pinocchio wraps conda-forge's pinocchio (coal) anyway
+      - ros_gz_sim  # Ignition Fortress (libignition-gazebo6) isn't installable on win-64
+      - ros_gz_sim_demos  # Ignition Fortress (libignition-gazebo6) isn't installable on win-64
+      - ros_ign_gazebo  # Ignition Fortress (libignition-gazebo6) isn't installable on win-64
+      - ros_ign_gazebo_demos  # Ignition Fortress (libignition-gazebo6) isn't installable on win-64
       - ros_ign_image
       - test_ros_gz_bridge
       - velodyne_gazebo_plugins
 
-# These are the packages that are built on all platforms (only a subset, to reduce maintainer load)
-
-
-# Shared selections that humble doesn't build on some platforms (see also
-# packages_skip_by_deps / packages_remove_from_deps).
-
 packages_skip:
-  - as2_behaviors_trajectory_generation  # nested FetchContent'd NLopt violates CMake 4's minimum version floor; too fragile to patch, skip for now
 
   - if: not linux
     then:
@@ -68,19 +56,17 @@ packages_skip:
 
 packages_select_by_deps:
 
-  # Not on win-64 elsewhere (MSVC C1083 in its _msgs), but humble's 0.15 builds there
   - if: win
     then:
       - cartographer_ros
-      - rosbag2_performance_benchmarking
+      - rosbag2_performance_benchmarking  # MSVC C1083 in its _msgs on newer distros; humble's 0.15 builds
       - rplidar_ros
       - serial_driver  # humble's builds there (LNK1181 on rolling)
       - udp_driver
 
-  # humble's popf has a macOS patch (patch/ros2-popf.patch); elsewhere plansys2 is Linux only
   - if: osx
     then:
-      - plansys2_bringup
+      - plansys2_bringup  # with humble's popf patch; Linux only elsewhere
       - plansys2_bt_actions
       - smacc2
 
