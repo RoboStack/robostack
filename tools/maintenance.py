@@ -148,7 +148,12 @@ def bump_rebuild(distro: str) -> list[str]:
     text = path.read_text()
     current = int(re.search(r"(?m)^build_number:\s*(\d+)", text).group(1))
     released = released_build_number(distro)
-    number = current + 1 if released is None else released + 1
+    # per-package build numbers (dropped below) may not be on the channel yet, but
+    # their builds can be in CI caches: stay above them as well
+    info = rs.DISTROS / distro / "pkg_additional_info.yaml"
+    overrides = [e["build_number"] for e in ((yaml.safe_load(info.read_text()) if info.is_file() else None) or {}).values()
+                 if isinstance(e, dict) and isinstance(e.get("build_number"), int)]
+    number = max([current if released is None else released, *overrides]) + 1
     text = re.sub(r"(?m)^(build_number:\s*)\d+", rf"\g<1>{number}", text, count=1)
     m = re.search(r"(?m)^mutex_package:\n(?:[ \t]+.*\n|\n)*?[ \t]+version:[ \t]*[\"']?(\d+)\.(\d+)\.(\d+)", text)
     if not m:
@@ -157,10 +162,11 @@ def bump_rebuild(distro: str) -> list[str]:
     new_mutex = f"{m.group(1)}.{int(m.group(2)) + 1}.0"
     text = text[:m.start(1)] + new_mutex + text[m.end(3):]
     path.write_text(text)
-    source = "channel unreadable, current + 1" if released is None else f"highest released build {released} + 1"
-    lines = [f"`build_number` {current} → {number} ({source}), mutex {old_mutex} → {new_mutex} (rebuilds every package)"]
+    source = "channel unreadable, current" if released is None else f"highest released build {released}"
+    if overrides and max(overrides) >= (current if released is None else released):
+        source = f"highest per-package build number {max(overrides)}"
+    lines = [f"`build_number` {current} → {number} ({source} + 1), mutex {old_mutex} → {new_mutex} (rebuilds every package)"]
 
-    info = rs.DISTROS / distro / "pkg_additional_info.yaml"
     if info.is_file():
         ry = _ruamel()
         data = ry.load(info.read_text()) or {}
@@ -323,15 +329,68 @@ def rosdistro_syncs() -> list[dict]:
     return jobs
 
 
+def _newer(a: str, b: str) -> bool:
+    from packaging.version import InvalidVersion, Version
+
+    try:
+        return Version(a) > Version(b)
+    except InvalidVersion:
+        return False
+
+
+def released_on_master(distro: str) -> set[str] | None:
+    """Packages released in the distribution on rosdistro master (None if unreadable)."""
+    import urllib.request
+
+    try:
+        with urllib.request.urlopen(f"https://raw.githubusercontent.com/ros/rosdistro/master/{distro}/distribution.yaml",
+                                    timeout=60) as resp:
+            repos = (yaml.safe_load(resp.read()) or {}).get("repositories") or {}
+    except OSError:
+        return None
+    released = set()
+    for name, repo in repos.items():
+        release = (repo or {}).get("release") or {}
+        if release.get("version"):
+            released.update(release.get("packages") or [name])
+    return released
+
+
+def keep_newer(old: dict, new: dict, on_master: set[str] = frozenset()) -> tuple[dict, list[str]]:
+    """The new snapshot, except that repositories the old one has ahead of it keep all
+    their old entries, including packages the new one drops or adds: a sync never
+    downgrades. A repository is ahead when one of its packages has a newer version, or
+    when the sync drops a package that rosdistro master (`on_master`) still releases
+    (the old snapshot was taken from master, or entries were spliced in from it)."""
+    def repo(entry) -> str | None:
+        return entry.get("repository") or entry.get("url") if isinstance(entry, dict) else None
+
+    ahead = sorted({repo(old[k]) for k in set(old) & set(new)
+                    if repo(old[k]) and _newer(str(old[k].get("version")), str(new[k].get("version")))}
+                   | {repo(old[k]) for k in set(old) - set(new) if k in on_master and repo(old[k])})
+    if not ahead:
+        return new, []
+    merged = {k: v for k, v in new.items() if repo(v) not in ahead}
+    merged.update({k: v for k, v in old.items() if repo(v) in ahead})
+    return dict(sorted(merged.items())), ahead
+
+
 def update_snapshot(distro: str) -> Result:
     """Snapshot the distribution's latest rosdistro sync (rosdistro master with
     `rosdistro_sync: manual`), then bump for a full rebuild."""
     snapshot = rs.DISTROS / distro / "rosdistro_snapshot.yaml"
     recorded = rs.settings(distro).get("rosdistro_sync")
     ref = None if recorded == "manual" else latest_sync(distro)
+    old_text = snapshot.read_text() if snapshot.is_file() else ""
     old = _versions(snapshot)
     if rs.task(distro, "create-snapshot", ["--rosdistro-ref", ref] if ref else []):
         return Result(f"{distro}: snapshot update failed", "`vinca-snapshot` failed, see the log.", ok=False)
+    text = snapshot.read_text()
+    data, ahead = keep_newer(yaml.safe_load(old_text) or {}, yaml.safe_load(text) or {},
+                             (released_on_master(distro) or set()) if ref else set())
+    if ahead:
+        header = "".join(l for l in text.splitlines(True) if l.startswith("#"))
+        snapshot.write_text(header + yaml.safe_dump(data, sort_keys=True, default_flow_style=False))
     new = _versions(snapshot)
     if ref:
         _set_setting(distro, "rosdistro_sync", ref)
@@ -343,6 +402,9 @@ def update_snapshot(distro: str) -> Result:
             "",
         ]
         title = f"{distro}: rosdistro sync {date}"
+        if ahead:
+            source[-1:] = ["", "Kept at their newer versions (the previous snapshot is ahead of the sync for these "
+                           "repositories): " + ", ".join(f"<{r}>" for r in ahead) + ".", ""]
     else:
         source, title = ["rosdistro master (this distribution doesn't follow syncs).", ""], f"{distro}: update rosdistro snapshot"
     if old == new:

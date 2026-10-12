@@ -204,3 +204,22 @@ def test_publish_report(monkeypatch):
                    {"number": 7, "state": "open", "html_url": "https://7"}]
     assert maintenance.publish_report("o/r", "jazzy", "body", conflicts=False) == "https://7"
     assert calls[-1][:4] == ["api", "-X", "PATCH", "repos/o/r/issues/7"] and "state=closed" in calls[-1]
+
+
+def test_sync_keeps_repositories_ahead_of_it():
+    def entry(repo, version):
+        return {"repository": f"https://github.com/x/{repo}", "version": version}
+
+    old = {"easynav": entry("easynav", "0.5.0"), "easynav_tiago": entry("easynav", "0.5.0"),
+           "rclcpp": entry("rclcpp", "30.1.0"), "dropped": entry("other", "1.0.0")}
+    new = {"easynav": entry("easynav", "0.4.2"), "easynav_gps": entry("easynav", "0.4.2"),
+           "rclcpp": entry("rclcpp", "30.2.0"), "added": entry("added", "0.1.0")}
+    merged, ahead = maintenance.keep_newer(old, new)
+    # the whole easynav repository stays at 0.5.0 (gps is gone there, tiago kept); the rest follows the sync
+    assert ahead == ["https://github.com/x/easynav"]
+    assert merged == {"added": new["added"], "easynav": old["easynav"], "easynav_tiago": old["easynav_tiago"],
+                      "rclcpp": new["rclcpp"]}
+    assert maintenance.keep_newer(new, new) == (new, [])
+    # dropped by the sync but still released on master: released after the sync, kept
+    merged, ahead = maintenance.keep_newer(old, new, {"dropped"})
+    assert "https://github.com/x/other" in ahead and merged["dropped"] == old["dropped"]
