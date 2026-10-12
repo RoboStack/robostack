@@ -1,17 +1,20 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 71deedd..f08c969 100644
+index 71deedd..0d1e717 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -25,7 +25,7 @@ macro(enable_strict_compiler_warnings target)
+@@ -23,9 +23,9 @@ option(FOXGLOVE_BRIDGE_REMOTE_ACCESS "Build with remote access gateway support"
+ 
+ macro(enable_strict_compiler_warnings target)
    if (MSVC)
-     target_compile_options(${target} PRIVATE /WX /W4)
+-    target_compile_options(${target} PRIVATE /WX /W4)
++    target_compile_options(${target} PRIVATE /W4)
    elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 -    target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic -Werror -Wold-style-cast -Wfloat-equal -Wmost -Wunused-exception-parameter)
 +    target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic -Werror -Wold-style-cast -Wfloat-equal -Wmost -Wunused-exception-parameter -Wno-error=format)
    else()
      target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic -Werror -Wold-style-cast -Wfloat-equal)
    endif()
-@@ -63,6 +63,12 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_SYSTEM_PROCESSOR STREQUAL "aarc
+@@ -63,6 +63,15 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_SYSTEM_PROCESSOR STREQUAL "aarc
  elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
    set(FOXGLOVE_SDK_PLATFORM "x86_64-unknown-linux-gnu")
    set(FOXGLOVE_SDK_SHA "b949295e80eb1a9bb356e657b9c2579c886717fac290c4e48a5e9846063bf2e8")
@@ -21,10 +24,13 @@ index 71deedd..f08c969 100644
 +elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin" AND CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
 +  set(FOXGLOVE_SDK_PLATFORM "x86_64-apple-darwin")
 +  set(FOXGLOVE_SDK_SHA "12249d4b2f16c3ff661f21d19603fb33a82888f0391576269f31f9cc1a4cb7a8")
++elseif(WIN32 AND CMAKE_SYSTEM_PROCESSOR STREQUAL "AMD64")
++  set(FOXGLOVE_SDK_PLATFORM "x86_64-pc-windows-msvc")
++  set(FOXGLOVE_SDK_SHA "58c3c5e945623bc02b596f748c82e1c8b82daef7871f11f600ff1a606ac9295d")
  else()
    message(FATAL_ERROR "Unsupported platform/architecture combination: ${CMAKE_SYSTEM_PROCESSOR}-${CMAKE_SYSTEM_NAME}")
  endif()
-@@ -84,14 +90,20 @@ target_include_directories(foxglove_cpp_shared SYSTEM
+@@ -84,14 +93,30 @@ target_include_directories(foxglove_cpp_shared SYSTEM
      $<INSTALL_INTERFACE:include>
  )
  target_sources(foxglove_cpp_shared PRIVATE ${FOXGLOVE_SDK_SOURCES})
@@ -36,10 +42,22 @@ index 71deedd..f08c969 100644
 +endif()
  # Import the prebuilt C shared library from the fetched SDK
  add_library(foxglove-shared SHARED IMPORTED)
- set_target_properties(foxglove-shared PROPERTIES
+-set_target_properties(foxglove-shared PROPERTIES
 -  IMPORTED_LOCATION ${foxglove_sdk_SOURCE_DIR}/lib/libfoxglove.so
-+  IMPORTED_LOCATION ${foxglove_sdk_SOURCE_DIR}/lib/libfoxglove${CMAKE_SHARED_LIBRARY_SUFFIX}
- )
+-)
++if(WIN32)
++  # the Windows SDK ships foxglove.dll with the import library foxglove.dll.lib
++  set_target_properties(foxglove-shared PROPERTIES
++    IMPORTED_LOCATION ${foxglove_sdk_SOURCE_DIR}/lib/foxglove.dll
++    IMPORTED_IMPLIB ${foxglove_sdk_SOURCE_DIR}/lib/foxglove.dll.lib
++  )
++  # the C++ wrapper has no dllexport annotations
++  set_target_properties(foxglove_cpp_shared PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
++else()
++  set_target_properties(foxglove-shared PROPERTIES
++    IMPORTED_LOCATION ${foxglove_sdk_SOURCE_DIR}/lib/libfoxglove${CMAKE_SHARED_LIBRARY_SUFFIX}
++  )
++endif()
  target_link_libraries(foxglove_cpp_shared PRIVATE foxglove-shared)
  set_target_properties(foxglove_cpp_shared PROPERTIES
 -  INSTALL_RPATH "$ORIGIN"
@@ -47,7 +65,7 @@ index 71deedd..f08c969 100644
    BUILD_WITH_INSTALL_RPATH TRUE
  )
  
-@@ -168,7 +180,7 @@ target_link_libraries(foxglove_bridge_component
+@@ -168,7 +193,7 @@ target_link_libraries(foxglove_bridge_component
  rclcpp_components_register_nodes(foxglove_bridge_component "foxglove_bridge::FoxgloveBridge")
  enable_strict_compiler_warnings(foxglove_bridge_component)
  set_target_properties(foxglove_bridge_component PROPERTIES
@@ -56,6 +74,23 @@ index 71deedd..f08c969 100644
    BUILD_WITH_INSTALL_RPATH TRUE
  )
  
+@@ -219,8 +244,14 @@ install(TARGETS foxglove_bridge_component
+ )
+ # Install the SDK shared libraries alongside the bridge component library so
+ # the runtime linker can find them via RPATH ($ORIGIN).
+-install(FILES $<TARGET_FILE:foxglove_cpp_shared> DESTINATION lib)
+-install(FILES $<TARGET_FILE:foxglove-shared> DESTINATION lib)
++if(WIN32)
++  # DLLs are found through PATH (bin), import libraries in lib
++  install(FILES $<TARGET_FILE:foxglove_cpp_shared> $<TARGET_FILE:foxglove-shared> DESTINATION bin)
++  install(FILES $<TARGET_LINKER_FILE:foxglove_cpp_shared> DESTINATION lib)
++else()
++  install(FILES $<TARGET_FILE:foxglove_cpp_shared> DESTINATION lib)
++  install(FILES $<TARGET_FILE:foxglove-shared> DESTINATION lib)
++endif()
+ install(TARGETS foxglove_bridge
+   DESTINATION lib/${PROJECT_NAME}
+ )
 diff --git a/src/message_definition_cache.cpp b/src/message_definition_cache.cpp
 index ef72c9c..ed85745 100644
 --- a/src/message_definition_cache.cpp

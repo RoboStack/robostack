@@ -52,20 +52,21 @@ packages_skip:
     then:
       - joy_linux
 
-  # rosgraph_monitor: no distro builds it on Windows; the rest need Ignition Fortress (libignition-gazebo6), not installable on win-64
   - if: win
     then:
-      - foxglove_bridge  # humble 3.3.0 has no Windows foxglove SDK download (only Linux/macOS in our patch)
-      - irobot_create_ignition_bringup
-      - irobot_create_ignition_plugins
-      - pinocchio  # doesn't resolve on win-64 (to investigate)
-      - plotjuggler  # QDomDocument unresolved (LNK2019) and no exports; rolling's large win patch is for 3.17
-      - plotjuggler_ros  # needs plotjuggler
-      - rosgraph_monitor
-      - rosx_introspection  # MSVC C1012 in the AMENT_INDEX_CPP/RCLCPP_VERSION_GTE checks (to investigate)
-      - turtlebot4_ignition_bringup
-      - turtlebot4_ignition_gui_plugins
-      - turtlebot4_simulator
+      - irobot_create_ignition_bringup  # needs Ignition Fortress (libignition-gazebo6), not installable on win-64
+      - irobot_create_ignition_plugins  # needs Ignition Fortress (libignition-gazebo6), not installable on win-64
+      - rosgraph_monitor  # no distribution builds it on Windows yet
+      - turtlebot4_ignition_bringup  # needs Ignition Fortress (libignition-gazebo6), not installable on win-64
+      - turtlebot4_ignition_gui_plugins  # needs Ignition Fortress (libignition-gazebo6), not installable on win-64
+      - turtlebot4_simulator  # needs Ignition Fortress (libignition-gazebo6), not installable on win-64
+
+packages_remove_from_deps:
+  # pinocchio's package.xml still names hpp_fcl, which humble's snapshot no longer has: nothing
+  # builds ros2-hpp-fcl (win-64 never had one). pinocchio is a wrapper around conda-forge's
+  # pinocchio, which uses coal.
+  - hpp_fcl
+  - hpp-fcl
 
 packages_select_by_deps:
 
