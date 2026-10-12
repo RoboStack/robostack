@@ -1,0 +1,198 @@
+jobs:
+  stage_0_job_0:
+    name: ros2-plansys2-msgs ros2-popf ros2-rosidlcpp-parser ros2-rplidar-ros ros2-sick-safetyscanners2-interfaces
+      ros2-sick-safetyscanners-base ros2-plansys2-lifecycle-manager ros2-smacc2 ros2-plansys2-pddl-parser
+      ros2-rosidlcpp-generator-core ros2-sick-safetyscanners2 smacc2 sick-safetyscanners-base
+      sick-safetyscanners2-interfaces rplidar-ros rosidlcpp-parser popf plansys2-msgs
+      plansys2-lifecycle-manager
+    runs-on: macos-15
+    strategy:
+      fail-fast: false
+    needs: []
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v7
+    - name: Disable git auto-maintenance
+      run: git config --global maintenance.auto false && git config --global gc.auto
+        0
+    - name: Setup pixi
+      uses: prefix-dev/setup-pixi@v0.11.0
+      with:
+        pixi-version: v0.81.0
+        cache: 'true'
+        log-level: v
+        frozen: 'true'
+    - name: Build ros2-plansys2-msgs ros2-popf ros2-rosidlcpp-parser ros2-rplidar-ros
+        ros2-sick-safetyscanners2-interfaces ros2-sick-safetyscanners-base ros2-plansys2-lifecycle-manager
+        ros2-smacc2 ros2-plansys2-pddl-parser ros2-rosidlcpp-generator-core ros2-sick-safetyscanners2
+        ros-jazzy-smacc2 ros-jazzy-sick-safetyscanners-base ros-jazzy-sick-safetyscanners2-interfaces
+        ros-jazzy-rplidar-ros ros-jazzy-rosidlcpp-parser ros-jazzy-popf ros-jazzy-plansys2-msgs
+        ros-jazzy-plansys2-lifecycle-manager
+      env:
+        CURRENT_RECIPES: ros2-plansys2-msgs ros2-popf ros2-rosidlcpp-parser ros2-rplidar-ros
+          ros2-sick-safetyscanners2-interfaces ros2-sick-safetyscanners-base ros2-plansys2-lifecycle-manager
+          ros2-smacc2 ros2-plansys2-pddl-parser ros2-rosidlcpp-generator-core ros2-sick-safetyscanners2
+          ros-jazzy-smacc2 ros-jazzy-sick-safetyscanners-base ros-jazzy-sick-safetyscanners2-interfaces
+          ros-jazzy-rplidar-ros ros-jazzy-rosidlcpp-parser ros-jazzy-popf ros-jazzy-plansys2-msgs
+          ros-jazzy-plansys2-lifecycle-manager
+        BUILD_TARGET: osx-arm64
+      run: |
+        export CI=github
+        export GIT_BRANCH=${GITHUB_REF_NAME}
+        export FEEDSTOCK_NAME=${GITHUB_REPOSITORY##*/}
+        .scripts/build_unix.sh --target $BUILD_TARGET
+    permissions:
+      id-token: write
+      contents: read
+      attestations: write
+  stage_1_job_1:
+    name: ros2-plansys2-core ros2-rosidlcpp-typesupport-introspection-cpp ros2-rosidlcpp-typesupport-introspection-c
+      ros2-rosidlcpp-typesupport-fastrtps-cpp ros2-rosidlcpp-typesupport-fastrtps-c
+      ros2-rosidlcpp-typesupport-cpp ros2-rosidlcpp-typesupport-c ros2-rosidlcpp-generator-type-description
+      ros2-rosidlcpp-generator-py ros2-rosidlcpp-generator-cpp ros2-rosidlcpp-generator-c
+      sick-safetyscanners2 rosidlcpp-generator-core plansys2-pddl-parser
+    runs-on: macos-15
+    strategy:
+      fail-fast: false
+    needs:
+    - stage_0_job_0
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v7
+    - name: Disable git auto-maintenance
+      run: git config --global maintenance.auto false && git config --global gc.auto
+        0
+    - name: Setup pixi
+      uses: prefix-dev/setup-pixi@v0.11.0
+      with:
+        pixi-version: v0.81.0
+        cache: 'true'
+        log-level: v
+        frozen: 'true'
+    - name: Build ros2-plansys2-core ros2-rosidlcpp-typesupport-introspection-cpp
+        ros2-rosidlcpp-typesupport-introspection-c ros2-rosidlcpp-typesupport-fastrtps-cpp
+        ros2-rosidlcpp-typesupport-fastrtps-c ros2-rosidlcpp-typesupport-cpp ros2-rosidlcpp-typesupport-c
+        ros2-rosidlcpp-generator-type-description ros2-rosidlcpp-generator-py ros2-rosidlcpp-generator-cpp
+        ros2-rosidlcpp-generator-c ros-jazzy-sick-safetyscanners2 ros-jazzy-rosidlcpp-generator-core
+        ros-jazzy-plansys2-pddl-parser
+      env:
+        CURRENT_RECIPES: ros2-plansys2-core ros2-rosidlcpp-typesupport-introspection-cpp
+          ros2-rosidlcpp-typesupport-introspection-c ros2-rosidlcpp-typesupport-fastrtps-cpp
+          ros2-rosidlcpp-typesupport-fastrtps-c ros2-rosidlcpp-typesupport-cpp ros2-rosidlcpp-typesupport-c
+          ros2-rosidlcpp-generator-type-description ros2-rosidlcpp-generator-py ros2-rosidlcpp-generator-cpp
+          ros2-rosidlcpp-generator-c ros-jazzy-sick-safetyscanners2 ros-jazzy-rosidlcpp-generator-core
+          ros-jazzy-plansys2-pddl-parser
+        BUILD_TARGET: osx-arm64
+      run: |
+        export CI=github
+        export GIT_BRANCH=${GITHUB_REF_NAME}
+        export FEEDSTOCK_NAME=${GITHUB_REPOSITORY##*/}
+        .scripts/build_unix.sh --target $BUILD_TARGET
+    permissions:
+      id-token: write
+      contents: read
+      attestations: write
+  stage_2_job_2:
+    name: ros2-plansys2-popf-plan-solver ros2-rosidlcpp rosidlcpp-typesupport-introspection-cpp
+      rosidlcpp-typesupport-introspection-c rosidlcpp-typesupport-fastrtps-cpp rosidlcpp-typesupport-fastrtps-c
+      rosidlcpp-typesupport-cpp rosidlcpp-typesupport-c rosidlcpp-generator-type-description
+      rosidlcpp-generator-py rosidlcpp-generator-cpp rosidlcpp-generator-c plansys2-core
+      ros2-plansys2-domain-expert rosidlcpp plansys2-popf-plan-solver ros2-plansys2-problem-expert
+      plansys2-domain-expert ros2-plansys2-planner plansys2-problem-expert ros2-plansys2-executor
+      plansys2-planner
+    runs-on: macos-15
+    strategy:
+      fail-fast: false
+    needs:
+    - stage_1_job_1
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v7
+    - name: Disable git auto-maintenance
+      run: git config --global maintenance.auto false && git config --global gc.auto
+        0
+    - name: Setup pixi
+      uses: prefix-dev/setup-pixi@v0.11.0
+      with:
+        pixi-version: v0.81.0
+        cache: 'true'
+        log-level: v
+        frozen: 'true'
+    - name: Build ros2-plansys2-popf-plan-solver ros2-rosidlcpp ros-jazzy-rosidlcpp-typesupport-introspection-cpp
+        ros-jazzy-rosidlcpp-typesupport-introspection-c ros-jazzy-rosidlcpp-typesupport-fastrtps-cpp
+        ros-jazzy-rosidlcpp-typesupport-fastrtps-c ros-jazzy-rosidlcpp-typesupport-cpp
+        ros-jazzy-rosidlcpp-typesupport-c ros-jazzy-rosidlcpp-generator-type-description
+        ros-jazzy-rosidlcpp-generator-py ros-jazzy-rosidlcpp-generator-cpp ros-jazzy-rosidlcpp-generator-c
+        ros-jazzy-plansys2-core ros2-plansys2-domain-expert ros-jazzy-rosidlcpp ros-jazzy-plansys2-popf-plan-solver
+        ros2-plansys2-problem-expert ros-jazzy-plansys2-domain-expert ros2-plansys2-planner
+        ros-jazzy-plansys2-problem-expert ros2-plansys2-executor ros-jazzy-plansys2-planner
+      env:
+        CURRENT_RECIPES: ros2-plansys2-popf-plan-solver ros2-rosidlcpp ros-jazzy-rosidlcpp-typesupport-introspection-cpp
+          ros-jazzy-rosidlcpp-typesupport-introspection-c ros-jazzy-rosidlcpp-typesupport-fastrtps-cpp
+          ros-jazzy-rosidlcpp-typesupport-fastrtps-c ros-jazzy-rosidlcpp-typesupport-cpp
+          ros-jazzy-rosidlcpp-typesupport-c ros-jazzy-rosidlcpp-generator-type-description
+          ros-jazzy-rosidlcpp-generator-py ros-jazzy-rosidlcpp-generator-cpp ros-jazzy-rosidlcpp-generator-c
+          ros-jazzy-plansys2-core ros2-plansys2-domain-expert ros-jazzy-rosidlcpp
+          ros-jazzy-plansys2-popf-plan-solver ros2-plansys2-problem-expert ros-jazzy-plansys2-domain-expert
+          ros2-plansys2-planner ros-jazzy-plansys2-problem-expert ros2-plansys2-executor
+          ros-jazzy-plansys2-planner
+        BUILD_TARGET: osx-arm64
+      run: |
+        export CI=github
+        export GIT_BRANCH=${GITHUB_REF_NAME}
+        export FEEDSTOCK_NAME=${GITHUB_REPOSITORY##*/}
+        .scripts/build_unix.sh --target $BUILD_TARGET
+    permissions:
+      id-token: write
+      contents: read
+      attestations: write
+  stage_3_job_3:
+    name: ros2-plansys2-bt-actions ros2-plansys2-bringup plansys2-executor plansys2-bt-actions
+      plansys2-bringup
+    runs-on: macos-15
+    strategy:
+      fail-fast: false
+    needs:
+    - stage_2_job_2
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v7
+    - name: Disable git auto-maintenance
+      run: git config --global maintenance.auto false && git config --global gc.auto
+        0
+    - name: Setup pixi
+      uses: prefix-dev/setup-pixi@v0.11.0
+      with:
+        pixi-version: v0.81.0
+        cache: 'true'
+        log-level: v
+        frozen: 'true'
+    - name: Build ros2-plansys2-bt-actions ros2-plansys2-bringup ros-jazzy-plansys2-executor
+        ros-jazzy-plansys2-bt-actions ros-jazzy-plansys2-bringup
+      env:
+        CURRENT_RECIPES: ros2-plansys2-bt-actions ros2-plansys2-bringup ros-jazzy-plansys2-executor
+          ros-jazzy-plansys2-bt-actions ros-jazzy-plansys2-bringup
+        BUILD_TARGET: osx-arm64
+      run: |
+        export CI=github
+        export GIT_BRANCH=${GITHUB_REF_NAME}
+        export FEEDSTOCK_NAME=${GITHUB_REPOSITORY##*/}
+        .scripts/build_unix.sh --target $BUILD_TARGET
+    permissions:
+      id-token: write
+      contents: read
+      attestations: write
+name: build
+run-name: jazzy osx-arm64
+concurrency:
+  group: build-jazzy-osx-arm64
+  cancel-in-progress: false
+on:
+  push:
+    branches:
+    - buildbranch_jazzy_osx_arm64
+env:
+  ROBOSTACK_DISTRO: jazzy
+  # optional repository variable: upload to this prefix.dev channel instead
+  # (e.g. a test channel), or 'none' to only build
+  ROBOSTACK_UPLOAD_CHANNEL: ${{ vars.ROBOSTACK_UPLOAD_CHANNEL }}
