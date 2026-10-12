@@ -1,6 +1,6 @@
 as2_behaviors_trajectory_generation:
-  # its dynamic_trajectory_generator FetchContents NLopt (whose helper scripts violate CMake 4's
-  # minimum version) unless NLopt, glog and gflags are installed: use conda-forge's
+  # conda-forge's NLopt (and glog, gflags) for the dynamic_trajectory_generator it fetches, so that
+  # doesn't build NLopt itself (fails with CMake 4); see patch/ros2-as2-behaviors-trajectory-generation.patch
   add_host: ["nlopt", "glog", "gflags"]
   add_run: ["nlopt", "glog", "gflags"]
 autoware_trajectory:
