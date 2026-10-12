@@ -12,3 +12,29 @@ index 6fb3e04..179d621 100644
  if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
    add_compile_options(-Wall -Wextra -Wpedantic)
  endif()
+diff --git a/deps/libmotioncapture/CMakeLists.txt b/deps/libmotioncapture/CMakeLists.txt
+index 8ae21e2..371278f 100644
+--- a/deps/libmotioncapture/CMakeLists.txt
++++ b/deps/libmotioncapture/CMakeLists.txt
+@@ -19,6 +19,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
+ set(CMAKE_CXX_EXTENSIONS OFF)
+ 
+ find_package(Boost 1.5 REQUIRED) # for optitrack (system component is header-only in Boost 1.70+)
++if(WIN32)
++  # Boost's auto-linking asks MSVC for an unqualified boost_filesystem.lib (LNK1104):
++  # link Boost::filesystem's imported target, which knows the actual library path
++  find_package(Boost REQUIRED COMPONENTS filesystem)
++endif()
+ add_definitions(
+   -DBOOST_DATE_TIME_NO_LIB
+   -DBOOST_REGEX_NO_LIB
+@@ -233,6 +238,9 @@ add_library(libmotioncapture
+ target_link_directories(libmotioncapture PUBLIC
+   ${my_link_directories}
+ )
++if(WIN32)
++  target_link_libraries(libmotioncapture Boost::filesystem)
++endif()
+ target_link_libraries(libmotioncapture
+   ${my_libraries}
+ )

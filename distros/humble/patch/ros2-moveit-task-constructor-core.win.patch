@@ -24,11 +24,51 @@ index e217ad6..d6e332f 100644
  	/// function callback used to initialize property value from another PropertyMap
  	using InitializerFunction = std::function<boost::any(const PropertyMap&)>;
  
+diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
+index bbd1c27..6b6a4a0 100644
+--- a/src/CMakeLists.txt
++++ b/src/CMakeLists.txt
+@@ -48,6 +48,10 @@ ament_target_dependencies(${PROJECT_NAME}
+ 	rviz_marker_tools
+ 	visualization_msgs
+ )
++if(WIN32)
++  # introspection.cpp's gethostname() is declared via <winsock.h> but implemented in ws2_32
++  target_link_libraries(${PROJECT_NAME} ws2_32)
++endif()
+ target_include_directories(${PROJECT_NAME}
+ 	PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+ 	       $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+diff --git a/src/container.cpp b/src/container.cpp
+index 78efe75..cff2be7 100644
+--- a/src/container.cpp
++++ b/src/container.cpp
+@@ -57,7 +57,7 @@ namespace moveit {
+ namespace task_constructor {
+ 
+ // for debugging of how children interfaces evolve over time
+-__attribute__((unused))  // silent unused-function warning
++[[maybe_unused]]  // silent unused-function warning
+ static void
+ printChildrenInterfaces(const ContainerBasePrivate& container, bool success, const Stage& creator,
+                         std::ostream& os = std::cerr) {
 diff --git a/src/introspection.cpp b/src/introspection.cpp
-index 9f297c6..4cbe05e 100644
+index 9f297c6..9711a65 100644
 --- a/src/introspection.cpp
 +++ b/src/introspection.cpp
-@@ -214,7 +214,7 @@ void Introspection::publishAllSolutions(bool wait) {
+@@ -49,6 +49,11 @@
+ #include <sstream>
+ #include <boost/bimap.hpp>
+ #include <rcutils/isalnum_no_locale.h>
++#ifdef _WIN32
++#include <winsock2.h>  // gethostname
++#else
++#include <unistd.h>
++#endif
+ 
+ static auto LOGGER = rclcpp::get_logger("introspection");
+ 
+@@ -214,7 +219,7 @@ void Introspection::publishAllSolutions(bool wait) {
  	};
  }
  
