@@ -1,28 +1,15 @@
 diff --git a/generate_polynomial_trajectory_behavior/CMakeLists.txt b/generate_polynomial_trajectory_behavior/CMakeLists.txt
-index 67bb76d..e76d81e 100644
+index 67bb76d..62dfe10 100644
 --- a/generate_polynomial_trajectory_behavior/CMakeLists.txt
 +++ b/generate_polynomial_trajectory_behavior/CMakeLists.txt
-@@ -7,6 +7,23 @@ if(${dynamic_trajectory_generator_FOUND})
+@@ -7,6 +7,10 @@ if(${dynamic_trajectory_generator_FOUND})
    message(STATUS "dynamic_trajectory_generator found")
  else()
    message(STATUS "dynamic_trajectory_generator not found")
-+  # dynamic_trajectory_generator's nlopt_dependencies.cmake runs find_package(nlopt) and then
-+  # checks NLopt_FOUND, so it never finds conda-forge's NLopt (NLoptConfig.cmake) and fetches
-+  # NLopt 2.7.1, whose generate-*.cmake scripts fail with CMake 4. Redirect find_package(nlopt)
-+  # to the installed NLopt.
-+  find_package(NLopt CONFIG QUIET)
-+  if(NLopt_FOUND)
-+    file(WRITE "${CMAKE_BINARY_DIR}/nlopt-config.cmake.in" [=[
-+include("@NLopt_DIR@/NLoptConfig.cmake")
-+set(NLopt_FOUND TRUE)
-+if(NOT TARGET nlopt)
-+  add_library(nlopt INTERFACE IMPORTED)
-+  target_link_libraries(nlopt INTERFACE NLopt::nlopt)
-+endif()
-+]=])
-+    configure_file("${CMAKE_BINARY_DIR}/nlopt-config.cmake.in"
-+      "${CMAKE_FIND_PACKAGE_REDIRECTS_DIR}/nlopt-config.cmake" @ONLY)
-+  endif()
++  # The fetched dynamic_trajectory_generator runs find_package(nlopt) but checks NLopt_FOUND,
++  # so it never sees conda-forge's NLopt and FetchContents NLopt 2.7.1 (which fails with
++  # CMake 4). Finding NLopt here sets NLopt_FOUND for it.
++  find_package(NLopt CONFIG REQUIRED)
    include(FetchContent)
    fetchcontent_declare(
      dynamic_trajectory_generator
