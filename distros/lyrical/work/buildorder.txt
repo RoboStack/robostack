@@ -1,0 +1,6 @@
+ros2-libnabo
+ros2-rplidar-ros
+ros2-libpointmatcher
+ros-lyrical-rplidar-ros
+ros-lyrical-libnabo
+ros-lyrical-libpointmatcher
