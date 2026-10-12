@@ -1,0 +1,113 @@
+jobs:
+  stage_0_job_0:
+    name: ros2-rosidlcpp-parser ros2-libnabo ros2-sick-safetyscanners2-interfaces
+      ros2-rplidar-ros ros2-rosidlcpp-generator-core ros2-libpointmatcher ros2-sick-safetyscanners2
+      sick-safetyscanners2-interfaces rplidar-ros rosidlcpp-parser libnabo ros2-rosidlcpp-typesupport-introspection-cpp
+      ros2-rosidlcpp-typesupport-introspection-c ros2-rosidlcpp-typesupport-fastrtps-cpp
+      ros2-rosidlcpp-typesupport-fastrtps-c ros2-rosidlcpp-typesupport-cpp ros2-rosidlcpp-typesupport-c
+      ros2-rosidlcpp-generator-type-description ros2-rosidlcpp-generator-py ros2-rosidlcpp-generator-cpp
+      ros2-rosidlcpp-generator-c sick-safetyscanners2 rosidlcpp-generator-core libpointmatcher
+    runs-on: macos-15-intel
+    strategy:
+      fail-fast: false
+    needs: []
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v7
+    - name: Disable git auto-maintenance
+      run: git config --global maintenance.auto false && git config --global gc.auto
+        0
+    - name: Setup pixi
+      uses: prefix-dev/setup-pixi@v0.11.0
+      with:
+        pixi-version: v0.81.0
+        cache: 'true'
+        log-level: v
+        frozen: 'true'
+    - name: Build ros2-rosidlcpp-parser ros2-libnabo ros2-sick-safetyscanners2-interfaces
+        ros2-rplidar-ros ros2-rosidlcpp-generator-core ros2-libpointmatcher ros2-sick-safetyscanners2
+        ros-rolling-sick-safetyscanners2-interfaces ros-rolling-rplidar-ros ros-rolling-rosidlcpp-parser
+        ros-rolling-libnabo ros2-rosidlcpp-typesupport-introspection-cpp ros2-rosidlcpp-typesupport-introspection-c
+        ros2-rosidlcpp-typesupport-fastrtps-cpp ros2-rosidlcpp-typesupport-fastrtps-c
+        ros2-rosidlcpp-typesupport-cpp ros2-rosidlcpp-typesupport-c ros2-rosidlcpp-generator-type-description
+        ros2-rosidlcpp-generator-py ros2-rosidlcpp-generator-cpp ros2-rosidlcpp-generator-c
+        ros-rolling-sick-safetyscanners2 ros-rolling-rosidlcpp-generator-core ros-rolling-libpointmatcher
+      env:
+        CURRENT_RECIPES: ros2-rosidlcpp-parser ros2-libnabo ros2-sick-safetyscanners2-interfaces
+          ros2-rplidar-ros ros2-rosidlcpp-generator-core ros2-libpointmatcher ros2-sick-safetyscanners2
+          ros-rolling-sick-safetyscanners2-interfaces ros-rolling-rplidar-ros ros-rolling-rosidlcpp-parser
+          ros-rolling-libnabo ros2-rosidlcpp-typesupport-introspection-cpp ros2-rosidlcpp-typesupport-introspection-c
+          ros2-rosidlcpp-typesupport-fastrtps-cpp ros2-rosidlcpp-typesupport-fastrtps-c
+          ros2-rosidlcpp-typesupport-cpp ros2-rosidlcpp-typesupport-c ros2-rosidlcpp-generator-type-description
+          ros2-rosidlcpp-generator-py ros2-rosidlcpp-generator-cpp ros2-rosidlcpp-generator-c
+          ros-rolling-sick-safetyscanners2 ros-rolling-rosidlcpp-generator-core ros-rolling-libpointmatcher
+        BUILD_TARGET: osx-64
+      run: |
+        export CI=github
+        export GIT_BRANCH=${GITHUB_REF_NAME}
+        export FEEDSTOCK_NAME=${GITHUB_REPOSITORY##*/}
+        .scripts/build_unix.sh --target $BUILD_TARGET
+    permissions:
+      id-token: write
+      contents: read
+      attestations: write
+  stage_1_job_1:
+    name: ros2-rosidlcpp rosidlcpp-typesupport-introspection-cpp rosidlcpp-typesupport-introspection-c
+      rosidlcpp-typesupport-fastrtps-cpp rosidlcpp-typesupport-fastrtps-c rosidlcpp-typesupport-cpp
+      rosidlcpp-typesupport-c rosidlcpp-generator-type-description rosidlcpp-generator-py
+      rosidlcpp-generator-cpp rosidlcpp-generator-c rosidlcpp
+    runs-on: macos-15-intel
+    strategy:
+      fail-fast: false
+    needs:
+    - stage_0_job_0
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v7
+    - name: Disable git auto-maintenance
+      run: git config --global maintenance.auto false && git config --global gc.auto
+        0
+    - name: Setup pixi
+      uses: prefix-dev/setup-pixi@v0.11.0
+      with:
+        pixi-version: v0.81.0
+        cache: 'true'
+        log-level: v
+        frozen: 'true'
+    - name: Build ros2-rosidlcpp ros-rolling-rosidlcpp-typesupport-introspection-cpp
+        ros-rolling-rosidlcpp-typesupport-introspection-c ros-rolling-rosidlcpp-typesupport-fastrtps-cpp
+        ros-rolling-rosidlcpp-typesupport-fastrtps-c ros-rolling-rosidlcpp-typesupport-cpp
+        ros-rolling-rosidlcpp-typesupport-c ros-rolling-rosidlcpp-generator-type-description
+        ros-rolling-rosidlcpp-generator-py ros-rolling-rosidlcpp-generator-cpp ros-rolling-rosidlcpp-generator-c
+        ros-rolling-rosidlcpp
+      env:
+        CURRENT_RECIPES: ros2-rosidlcpp ros-rolling-rosidlcpp-typesupport-introspection-cpp
+          ros-rolling-rosidlcpp-typesupport-introspection-c ros-rolling-rosidlcpp-typesupport-fastrtps-cpp
+          ros-rolling-rosidlcpp-typesupport-fastrtps-c ros-rolling-rosidlcpp-typesupport-cpp
+          ros-rolling-rosidlcpp-typesupport-c ros-rolling-rosidlcpp-generator-type-description
+          ros-rolling-rosidlcpp-generator-py ros-rolling-rosidlcpp-generator-cpp ros-rolling-rosidlcpp-generator-c
+          ros-rolling-rosidlcpp
+        BUILD_TARGET: osx-64
+      run: |
+        export CI=github
+        export GIT_BRANCH=${GITHUB_REF_NAME}
+        export FEEDSTOCK_NAME=${GITHUB_REPOSITORY##*/}
+        .scripts/build_unix.sh --target $BUILD_TARGET
+    permissions:
+      id-token: write
+      contents: read
+      attestations: write
+name: build
+run-name: rolling osx-64
+concurrency:
+  group: build-rolling-osx-64
+  cancel-in-progress: false
+on:
+  push:
+    branches:
+    - buildbranch_rolling_osx_64
+env:
+  ROBOSTACK_DISTRO: rolling
+  # optional repository variable: upload to this prefix.dev channel instead
+  # (e.g. a test channel), or 'none' to only build
+  ROBOSTACK_UPLOAD_CHANNEL: ${{ vars.ROBOSTACK_UPLOAD_CHANNEL }}
