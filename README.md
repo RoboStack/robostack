@@ -56,6 +56,7 @@ shared/                    the same for every distribution
   robostack.yaml           rosdep key -> conda package mapping (`robostack: []` drops a key)
   pinning/                 conda-forge pinning version, migrations and overrides
   tests/                   package tests (ros2-<pkg>.yaml; `if: ros_distro ...` for distro-specific bits)
+  ci.yaml                  temporary PR-build controls for all distributions (build_distros)
 tools/robostack.py         `pixi run rs ...`: every task, for one distribution or the repository
 tools/maintenance.py       checks and robostack-bot commands
 tools/import_distro.py     (re)import a distribution from its own repository
@@ -105,6 +106,12 @@ pixi run rs check                             # sanity checks (also run in CI)
 `distros/<distro>/ci.yaml` for the PR, and reset the file after merging. A full rebuild
 of a distribution uses `full_rebuild: true` there. A new build number goes into its
 `pkg_additional_info.yaml` (one package) or `vinca.yaml` (everything).
+
+**Building only some distributions in a PR:** a PR builds the distributions it changes,
+and all of them as soon as it touches anything outside `distros/<distro>/`. To limit
+that (e.g. a humble rebuild that also changes `shared/` or `tools/`), set
+`build_distros: [humble]` in `shared/ci.yaml` for the PR, and reset it to `[]` before
+merging.
 
 ### CI
 

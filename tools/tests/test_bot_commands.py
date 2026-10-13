@@ -223,3 +223,11 @@ def test_sync_keeps_repositories_ahead_of_it():
     # dropped by the sync but still released on master: released after the sync, kept
     merged, ahead = maintenance.keep_newer(old, new, {"dropped"})
     assert "https://github.com/x/other" in ahead and merged["dropped"] == old["dropped"]
+
+
+def test_build_distros_overrides_the_changed_ones():
+    assert rs.build_distros(["humble", "jazzy"], {}) == ["humble", "jazzy"]
+    assert rs.build_distros(["humble", "jazzy"], {"build_distros": []}) == ["humble", "jazzy"]
+    assert rs.build_distros(rs.distros(), {"build_distros": ["humble"]}) == ["humble"]
+    with pytest.raises(SystemExit):
+        rs.build_distros([], {"build_distros": ["kinetic"]})

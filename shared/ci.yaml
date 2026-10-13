@@ -1,0 +1,10 @@
+# Temporary controls for the pull-request build (.github/workflows/testpr.yaml) that
+# concern every distribution; per-distribution ones are in distros/<distro>/ci.yaml.
+# Set them in your PR, and reset them to the defaults below before merging.
+
+# Distributions the pull request builds. Empty: the ones it changes, i.e. every
+# distribution if it changes anything outside distros/<distro>/. List them to build only
+# those, e.g. for a humble rebuild that also touches shared/ or tools/:
+#
+# build_distros: [humble]
+build_distros: []

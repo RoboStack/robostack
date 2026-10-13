@@ -69,6 +69,9 @@ should edit a shared file at a time.
   build number (e.g. a patch fix) must be evicted: add it to `evict_cache` in
   `distros/<d>/ci.yaml` (`full_rebuild: true` for everything), and reset the file
   after merging.
+- A PR builds the distributions it changes (all of them if it touches anything
+  outside `distros/<d>/`). To build only some, set `build_distros` in `shared/ci.yaml`
+  for the PR (e.g. `[humble]`) and reset it to `[]` before merging.
 - After a merge, `main.yaml` regenerates the staged build branches
   `buildbranch_<distro>_<platform>`; uploads go to the channel in `distro.yaml`, or to
   the repository variable `ROBOSTACK_UPLOAD_CHANNEL`.
