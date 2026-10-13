@@ -231,3 +231,14 @@ def test_build_distros_overrides_the_changed_ones():
     assert rs.build_distros(rs.distros(), {"build_distros": ["humble"]}) == ["humble"]
     with pytest.raises(SystemExit):
         rs.build_distros([], {"build_distros": ["kinetic"]})
+
+
+def test_run_build_retries_network_errors(tmp_path, monkeypatch):
+    monkeypatch.setattr(rs, "NETWORK_WAIT", 0)
+    marker = tmp_path / "failed-once"
+    script = tmp_path / "build.sh"
+    script.write_text(f'if [ ! -e "{marker}" ]; then touch "{marker}"; echo "Git fetch failed: ..."; exit 1; fi\n')
+    assert rs.run_build(["bash", str(script)], rs.ROOT) == 0
+    # a real build failure is not retried
+    script.write_text('echo "error: expected ;"; exit 1\n')
+    assert rs.run_build(["bash", str(script)], rs.ROOT) == 1

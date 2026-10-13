@@ -68,24 +68,37 @@ def run(cmd: list[str], cwd: Path) -> int:
 INDEX_LAG_MESSAGE = b"No candidates were found"
 INDEX_LAG_RETRIES = 2
 INDEX_LAG_WAIT = 180
+# Network failures of the runners (GitHub or prefix.dev unreachable for a moment) end
+# a multi-hour build; packages already built stay in the output folder, so retrying
+# continues where it stopped.
+NETWORK_MESSAGES = (b"Git fetch failed", b"Failed to connect to github.com", b"error sending request for url",
+                    b"stream closed because of a broken pipe", b"RPC failed; curl", b"Could not resolve host")
+NETWORK_WAIT = 60
 
 
 def run_build(cmd: list[str], cwd: Path) -> int:
-    """run() for staged builds: retry when the solver misses a package, waiting for
-    the channel's index to catch up with the previous stage's uploads."""
+    """run() for builds: retry (at most INDEX_LAG_RETRIES times) when the solver misses a
+    package, waiting for the channel's index to catch up with the previous stage's
+    uploads, or when the runner's network failed."""
     for attempt in range(INDEX_LAG_RETRIES + 1):
         print("+", " ".join(cmd), f"  (in {cwd.relative_to(ROOT)})", flush=True)
-        missing = False
+        missing = network = False
         with subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT) as proc:
             for line in proc.stdout:
                 sys.stdout.buffer.write(line)
                 sys.stdout.buffer.flush()
                 missing = missing or INDEX_LAG_MESSAGE in line
-        if proc.returncode == 0 or not missing or attempt == INDEX_LAG_RETRIES:
+                network = network or any(m in line for m in NETWORK_MESSAGES)
+        if proc.returncode == 0 or not (missing or network) or attempt == INDEX_LAG_RETRIES:
             return proc.returncode
-        print(f"A dependency was not found; waiting {INDEX_LAG_WAIT} s for the channel index "
-              f"(retry {attempt + 1} of {INDEX_LAG_RETRIES})", file=sys.stderr, flush=True)
-        time.sleep(INDEX_LAG_WAIT)
+        if network:
+            print(f"Network error; retrying in {NETWORK_WAIT} s (retry {attempt + 1} of {INDEX_LAG_RETRIES})",
+                  file=sys.stderr, flush=True)
+            time.sleep(NETWORK_WAIT)
+        else:
+            print(f"A dependency was not found; waiting {INDEX_LAG_WAIT} s for the channel index "
+                  f"(retry {attempt + 1} of {INDEX_LAG_RETRIES})", file=sys.stderr, flush=True)
+            time.sleep(INDEX_LAG_WAIT)
     return proc.returncode
 
 
@@ -297,7 +310,7 @@ def task(distro: str, name: str, args: list[str]) -> int:
             print(f"Nothing to build: {(w / 'recipes').relative_to(ROOT)} is empty")
             return 0
     if name == "build":
-        return run(rattler_build(distro, ["--recipe-dir", "./recipes", *args]), w)
+        return run_build(rattler_build(distro, ["--recipe-dir", "./recipes", *args]), w)
     if name == "build-ci":  # used by .scripts/build_unix.sh / build_win.bat
         return run_build(rattler_build(distro, args, skip_existing=False), w)
     if name == "build-one":
