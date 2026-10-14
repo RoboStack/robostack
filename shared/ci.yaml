@@ -7,4 +7,4 @@
 # those, e.g. for a humble rebuild that also touches shared/ or tools/:
 #
 # build_distros: [humble]
-build_distros: []
+build_distros: [rolling]  # TEMPORARY (tooling-only PR): smoke-test one distribution; reset to [] before merging
