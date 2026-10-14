@@ -77,6 +77,9 @@ jobs:
         run: pixi run test
 
   build:
+    permissions:
+      actions: write  # drop this pull request's superseded build caches
+      contents: read
     needs: plan
     if: needs.plan.outputs.distros != '[]'
     strategy:
@@ -242,11 +245,30 @@ jobs:
         if [ -n "$newest" ]; then echo "Removing $newest"; rm -f "$newest"; fi
 
     - name: Save build cache
+      id: save-cache
       if: ${{ always() && contains(fromJSON('["success","failure","cancelled"]'), steps.build-recipes.outcome) }}
       uses: actions/cache/save@v5
       with:
         path: ${{ env.CACHE_DIR }}
         key: ${{ runner.os }}-${{ matrix.distro }}-${{ matrix.target.platform }}-pr-${{ github.event.pull_request.number }}-${{ github.run_id }}-${{ github.run_attempt }}
+
+    # Only the newest cache of a pull request/distribution/platform is restored; the ones
+    # of earlier runs and attempts only push others out of the repository's 10 GB, so
+    # full rebuilds lost their progress. (Read-only token on forks: then this is skipped.)
+    - name: Drop this pull request's superseded build caches
+      if: ${{ always() && steps.save-cache.outcome == 'success' && github.event.pull_request.number }}
+      continue-on-error: true
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        PREFIX: ${{ runner.os }}-${{ matrix.distro }}-${{ matrix.target.platform }}-pr-${{ github.event.pull_request.number }}-
+        KEEP: ${{ runner.os }}-${{ matrix.distro }}-${{ matrix.target.platform }}-pr-${{ github.event.pull_request.number }}-${{ github.run_id }}-${{ github.run_attempt }}
+      run: |
+        gh cache list --repo "$GITHUB_REPOSITORY" --key "$PREFIX" --limit 100 --json id,key \
+          --jq ".[] | select(.key != \"$KEEP\") | .id" |
+        while read -r id; do
+          gh cache delete "$id" --repo "$GITHUB_REPOSITORY" && echo "deleted cache $id"
+        done
 
     - name: Generate the staged build workflows (catches post-merge problems)
       shell: bash -l {0}
@@ -290,12 +312,16 @@ jobs:
             echo "$marker"
             echo "### ABI check (linux-64)"
             echo
+            cat "${files[@]}"
+            echo "<details><summary>About this check</summary>"
+            echo
             echo "Each package this pull request built, compared with its newest released build (\`tools/abi_check.py\`, libabigail):"
             echo "- **compatible** / **additions**: the package can be bumped on its own;"
             echo "- **soname** / **incompatible**: the packages that depend on it need a rebuild (build number bump) in the same pull request."
             echo
-            cat "${files[@]}"
             echo "Exported symbols are compared (the released packages are stripped, so struct layouts aren't); unchanged installed headers rule out layout and inline changes, changed ones are listed for review. Dependents to rebuild are the released ones linking to a changed library. A changed pin is part of the comparison."
+            echo
+            echo "</details>"
           } > body.md
           if [ -n "$existing" ]; then
             gh api -X PATCH "repos/$REPO/issues/comments/$existing" -F body=@body.md > /dev/null

@@ -46,6 +46,12 @@ def test_summary_puts_the_snippet_under_the_table():
     text = "\n".join(abi_check.pr_summary(results, "jazzy", "linux-64", ["https://x/test", "https://x/jazzy"], 26))
     assert text.index("| foo |") < text.index("bar:\n  build_number: 26") < text.index("<details>")
     assert "https://x/test/linux-64 and https://x/jazzy/linux-64" in text
+    # one section per distribution, open (with the count in the summary) when dependents need a rebuild
+    assert text.startswith("<details open><summary><b>jazzy linux-64</b>: **1 need their dependents rebuilt**, "
+                           "1 can be bumped on their own</summary>")
+    assert text.rstrip().endswith("</details>")
+    quiet = "\n".join(abi_check.pr_summary({"ok": results["ok"]}, "jazzy", "linux-64", "https://x/jazzy", 26))
+    assert quiet.startswith("<details><summary><b>jazzy linux-64</b>: 1 can be bumped on their own</summary>")
 
 
 def test_next_build_number_is_above_vinca_and_every_published_build(tmp_path, monkeypatch):
