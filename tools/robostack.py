@@ -72,15 +72,19 @@ INDEX_LAG_WAIT = 180
 # a multi-hour build; packages already built stay in the output folder, so retrying
 # continues where it stopped.
 NETWORK_MESSAGES = (b"Git fetch failed", b"Failed to connect to github.com", b"error sending request for url",
-                    b"stream closed because of a broken pipe", b"RPC failed; curl", b"Could not resolve host")
-NETWORK_WAIT = 60
+                    b"stream closed because of a broken pipe", b"RPC failed; curl", b"Could not resolve host",
+                    b"connection error")
+NETWORK_RETRIES = 4
+NETWORK_WAIT = 60  # doubled on each retry: 1, 2, 4, 8 minutes
 
 
 def run_build(cmd: list[str], cwd: Path) -> int:
-    """run() for builds: retry (at most INDEX_LAG_RETRIES times) when the solver misses a
-    package, waiting for the channel's index to catch up with the previous stage's
-    uploads, or when the runner's network failed."""
-    for attempt in range(INDEX_LAG_RETRIES + 1):
+    """run() for builds: retry when the solver misses a package, waiting for the
+    channel's index to catch up with the previous stage's uploads (at most
+    INDEX_LAG_RETRIES times), or when the runner's network failed (at most
+    NETWORK_RETRIES times, waiting longer each time)."""
+    index_retries = network_retries = 0
+    while True:
         print("+", " ".join(cmd), f"  (in {cwd.relative_to(ROOT)})", flush=True)
         missing = network = False
         with subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT) as proc:
@@ -89,17 +93,21 @@ def run_build(cmd: list[str], cwd: Path) -> int:
                 sys.stdout.buffer.flush()
                 missing = missing or INDEX_LAG_MESSAGE in line
                 network = network or any(m in line for m in NETWORK_MESSAGES)
-        if proc.returncode == 0 or not (missing or network) or attempt == INDEX_LAG_RETRIES:
-            return proc.returncode
-        if network:
-            print(f"Network error; retrying in {NETWORK_WAIT} s (retry {attempt + 1} of {INDEX_LAG_RETRIES})",
+        if proc.returncode == 0:
+            return 0
+        if network and network_retries < NETWORK_RETRIES:
+            wait = NETWORK_WAIT * 2 ** network_retries
+            network_retries += 1
+            print(f"Network error; retrying in {wait} s (retry {network_retries} of {NETWORK_RETRIES})",
                   file=sys.stderr, flush=True)
-            time.sleep(NETWORK_WAIT)
-        else:
+            time.sleep(wait)
+        elif missing and not network and index_retries < INDEX_LAG_RETRIES:
+            index_retries += 1
             print(f"A dependency was not found; waiting {INDEX_LAG_WAIT} s for the channel index "
-                  f"(retry {attempt + 1} of {INDEX_LAG_RETRIES})", file=sys.stderr, flush=True)
+                  f"(retry {index_retries} of {INDEX_LAG_RETRIES})", file=sys.stderr, flush=True)
             time.sleep(INDEX_LAG_WAIT)
-    return proc.returncode
+        else:
+            return proc.returncode
 
 
 # --------------------------------------------------------------------------- #
