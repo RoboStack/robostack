@@ -3,7 +3,7 @@
     pixi run rs <distro> <task> [args...]
     pixi run rs jazzy generate-recipes
     pixi run rs jazzy build-one ros2-ros-workspace
-    pixi run rs changed-distros --base origin/main      # for CI (shared/ci.yaml build_distros overrides)
+    pixi run rs changed-distros --base origin/main      # for CI (build:<distro> labels override)
     pixi run rs check | update-pinning | new-distro NAME --from DISTRO   (whole repository)
     pixi run rs <distro> update-pinning                                  (one distribution)
 
@@ -386,21 +386,15 @@ def generate_gha(distro: str, args: list[str]) -> int:
     return 0
 
 
-def build_distros(changed: list[str], config: dict) -> list[str]:
-    """The distributions a pull request builds: shared/ci.yaml's build_distros when set
-    (a rebuild of one distribution that also touches shared files), else the changed ones."""
-    selected = [str(d) for d in (config.get("build_distros") or [])]
+def build_distros(changed: list[str], labels: list[str]) -> list[str]:
+    """The distributions a pull request builds: those of its build:<distro> labels when it
+    has any (e.g. a rebuild of one distribution that also touches shared files), else the
+    changed ones."""
+    selected = sorted({label.split(":", 1)[1] for label in labels if label.startswith("build:")})
     unknown = sorted(set(selected) - set(distros()))
     if unknown:
-        raise SystemExit(f"shared/ci.yaml: unknown distributions in build_distros: {', '.join(unknown)}")
-    return sorted(set(selected)) if selected else changed
-
-
-def ci_config() -> dict:
-    import yaml  # PyYAML is on the runner image (changed-distros runs without pixi)
-
-    path = SHARED / "ci.yaml"
-    return (yaml.safe_load(path.read_text()) or {}) if path.is_file() else {}
+        raise SystemExit(f"build:<distro> labels name unknown distributions: {', '.join(unknown)}")
+    return selected or changed
 
 
 def changed_distros(base: str) -> list[str]:
@@ -429,8 +423,10 @@ def main() -> int:
         parser = argparse.ArgumentParser(prog="rs changed-distros")
         parser.add_argument("--base", required=True)
         parser.add_argument("--all", action="store_true", help="ignore the diff, list every distribution")
+        parser.add_argument("--labels", default="[]", help="JSON list of the pull request's labels (build:<distro>)")
         ns = parser.parse_args(sys.argv[2:])
-        print(json.dumps(build_distros(distros() if ns.all else changed_distros(ns.base), ci_config())))
+        changed = distros() if ns.all else changed_distros(ns.base)
+        print(json.dumps(build_distros(changed, json.loads(ns.labels))))
         return 0
     if len(sys.argv) < 3:
         print(__doc__)

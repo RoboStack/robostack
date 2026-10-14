@@ -225,12 +225,13 @@ def test_sync_keeps_repositories_ahead_of_it():
     assert "https://github.com/x/other" in ahead and merged["dropped"] == old["dropped"]
 
 
-def test_build_distros_overrides_the_changed_ones():
-    assert rs.build_distros(["humble", "jazzy"], {}) == ["humble", "jazzy"]
-    assert rs.build_distros(["humble", "jazzy"], {"build_distros": []}) == ["humble", "jazzy"]
-    assert rs.build_distros(rs.distros(), {"build_distros": ["humble"]}) == ["humble"]
+def test_build_distros_labels_override_the_changed_ones():
+    assert rs.build_distros(["humble", "jazzy"], []) == ["humble", "jazzy"]
+    assert rs.build_distros(["humble", "jazzy"], ["automerge"]) == ["humble", "jazzy"]
+    assert rs.build_distros(rs.distros(), ["build:humble", "automerge"]) == ["humble"]
+    assert rs.build_distros([], ["build:rolling", "build:humble"]) == ["humble", "rolling"]
     with pytest.raises(SystemExit):
-        rs.build_distros([], {"build_distros": ["kinetic"]})
+        rs.build_distros([], ["build:kinetic"])
 
 
 def test_run_build_retries_network_errors(tmp_path, monkeypatch):

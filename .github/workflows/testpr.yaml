@@ -25,6 +25,9 @@ env:
 jobs:
   plan:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read  # the build:<distro> labels
     outputs:
       distros: ${{ steps.plan.outputs.distros }}
     steps:
@@ -36,13 +39,18 @@ jobs:
         id: plan
         env:
           BASE: ${{ github.event.pull_request.base.sha }}
+          PR: ${{ github.event.pull_request.number }}
           SELECTED: ${{ inputs.distros }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           # plain python + PyYAML of the runner image; no pixi needed for this
           if [ -n "$SELECTED" ]; then
             distros=$(python3 -c 'import json,os; print(json.dumps(os.environ["SELECTED"].split()))')
           elif [ -n "$BASE" ]; then
-            distros=$(python3 tools/robostack.py changed-distros --base "$BASE")
+            # build:<distro> labels limit the build to those distributions; read now (not
+            # from the event) so that a re-run sees labels added after the push
+            labels=$(gh pr view "$PR" --repo "$GITHUB_REPOSITORY" --json labels -q '[.labels[].name]')
+            distros=$(python3 tools/robostack.py changed-distros --base "$BASE" --labels "$labels")
           else
             distros=$(python3 tools/robostack.py changed-distros --base HEAD --all)
           fi
