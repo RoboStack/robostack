@@ -222,6 +222,8 @@ easynav_tools:
   build_number: 29
 easynav_vff_controller:
   build_number: 29
+grid_map_rviz_plugin:
+  build_number: 29
 gz_gui_vendor:
   build_number: 28
 gz_sim_vendor:
@@ -240,13 +242,23 @@ navmap_rviz_plugin:
   build_number: 29
 navmap_tools:
   build_number: 29
+plansys2_tools:
+  build_number: 29
 ros2cli:
   # Rebuild with the shell completions under the names bash/zsh/fish load (patch).
   build_number: 28
+ros_image_to_qimage:
+  build_number: 29
 rosidl_cli:
   # Rebuild with the shell completions installed under the names bash/zsh/fish load (patch).
   build_number: 28
 rplidar_ros:
+  build_number: 29
+rqt_image_overlay:
+  build_number: 29
+rqt_image_overlay_layer:
+  build_number: 29
+rqt_mocap4r2_control:
   build_number: 29
 rqt_plot:
   build_number: 28
