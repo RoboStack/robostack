@@ -3,7 +3,7 @@
     pixi run rs <distro> <task> [args...]
     pixi run rs jazzy generate-recipes
     pixi run rs jazzy build-one ros2-ros-workspace
-    pixi run rs changed-distros --base origin/main      # for CI
+    pixi run rs changed-distros --base origin/main      # for CI (build:<distro> labels override)
     pixi run rs check | update-pinning | new-distro NAME --from DISTRO   (whole repository)
     pixi run rs <distro> update-pinning                                  (one distribution)
 
@@ -68,25 +68,46 @@ def run(cmd: list[str], cwd: Path) -> int:
 INDEX_LAG_MESSAGE = b"No candidates were found"
 INDEX_LAG_RETRIES = 2
 INDEX_LAG_WAIT = 180
+# Network failures of the runners (GitHub or prefix.dev unreachable for a moment) end
+# a multi-hour build; packages already built stay in the output folder, so retrying
+# continues where it stopped.
+NETWORK_MESSAGES = (b"Git fetch failed", b"Failed to connect to github.com", b"error sending request for url",
+                    b"stream closed because of a broken pipe", b"RPC failed; curl", b"Could not resolve host",
+                    b"connection error")
+NETWORK_RETRIES = 4
+NETWORK_WAIT = 60  # doubled on each retry: 1, 2, 4, 8 minutes
 
 
 def run_build(cmd: list[str], cwd: Path) -> int:
-    """run() for staged builds: retry when the solver misses a package, waiting for
-    the channel's index to catch up with the previous stage's uploads."""
-    for attempt in range(INDEX_LAG_RETRIES + 1):
+    """run() for builds: retry when the solver misses a package, waiting for the
+    channel's index to catch up with the previous stage's uploads (at most
+    INDEX_LAG_RETRIES times), or when the runner's network failed (at most
+    NETWORK_RETRIES times, waiting longer each time)."""
+    index_retries = network_retries = 0
+    while True:
         print("+", " ".join(cmd), f"  (in {cwd.relative_to(ROOT)})", flush=True)
-        missing = False
+        missing = network = False
         with subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT) as proc:
             for line in proc.stdout:
                 sys.stdout.buffer.write(line)
                 sys.stdout.buffer.flush()
                 missing = missing or INDEX_LAG_MESSAGE in line
-        if proc.returncode == 0 or not missing or attempt == INDEX_LAG_RETRIES:
+                network = network or any(m in line for m in NETWORK_MESSAGES)
+        if proc.returncode == 0:
+            return 0
+        if network and network_retries < NETWORK_RETRIES:
+            wait = NETWORK_WAIT * 2 ** network_retries
+            network_retries += 1
+            print(f"Network error; retrying in {wait} s (retry {network_retries} of {NETWORK_RETRIES})",
+                  file=sys.stderr, flush=True)
+            time.sleep(wait)
+        elif missing and not network and index_retries < INDEX_LAG_RETRIES:
+            index_retries += 1
+            print(f"A dependency was not found; waiting {INDEX_LAG_WAIT} s for the channel index "
+                  f"(retry {index_retries} of {INDEX_LAG_RETRIES})", file=sys.stderr, flush=True)
+            time.sleep(INDEX_LAG_WAIT)
+        else:
             return proc.returncode
-        print(f"A dependency was not found; waiting {INDEX_LAG_WAIT} s for the channel index "
-              f"(retry {attempt + 1} of {INDEX_LAG_RETRIES})", file=sys.stderr, flush=True)
-        time.sleep(INDEX_LAG_WAIT)
-    return proc.returncode
 
 
 # --------------------------------------------------------------------------- #
@@ -297,7 +318,7 @@ def task(distro: str, name: str, args: list[str]) -> int:
             print(f"Nothing to build: {(w / 'recipes').relative_to(ROOT)} is empty")
             return 0
     if name == "build":
-        return run(rattler_build(distro, ["--recipe-dir", "./recipes", *args]), w)
+        return run_build(rattler_build(distro, ["--recipe-dir", "./recipes", *args]), w)
     if name == "build-ci":  # used by .scripts/build_unix.sh / build_win.bat
         return run_build(rattler_build(distro, args, skip_existing=False), w)
     if name == "build-one":
@@ -365,6 +386,17 @@ def generate_gha(distro: str, args: list[str]) -> int:
     return 0
 
 
+def build_distros(changed: list[str], labels: list[str]) -> list[str]:
+    """The distributions a pull request builds: those of its build:<distro> labels when it
+    has any (e.g. a rebuild of one distribution that also touches shared files), else the
+    changed ones."""
+    selected = sorted({label.split(":", 1)[1] for label in labels if label.startswith("build:")})
+    unknown = sorted(set(selected) - set(distros()))
+    if unknown:
+        raise SystemExit(f"build:<distro> labels name unknown distributions: {', '.join(unknown)}")
+    return selected or changed
+
+
 def changed_distros(base: str) -> list[str]:
     # no common history (main's history was rewritten and force-pushed): nothing to
     # diff against, so every distribution counts as changed
@@ -391,8 +423,10 @@ def main() -> int:
         parser = argparse.ArgumentParser(prog="rs changed-distros")
         parser.add_argument("--base", required=True)
         parser.add_argument("--all", action="store_true", help="ignore the diff, list every distribution")
+        parser.add_argument("--labels", default="[]", help="JSON list of the pull request's labels (build:<distro>)")
         ns = parser.parse_args(sys.argv[2:])
-        print(json.dumps(distros() if ns.all else changed_distros(ns.base)))
+        changed = distros() if ns.all else changed_distros(ns.base)
+        print(json.dumps(build_distros(changed, json.loads(ns.labels))))
         return 0
     if len(sys.argv) < 3:
         print(__doc__)

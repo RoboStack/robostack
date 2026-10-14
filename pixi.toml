@@ -35,7 +35,7 @@ git = "*"
 [pypi-dependencies]
 # One vinca for all distributions.
 # Tobias-Fischer/vinca robostack-integration (extends, test selectors, gha fix, rebuild planner, mutex build number: RoboStack/vinca#163-#169) until merged upstream
-vinca = { git = "https://github.com/Tobias-Fischer/vinca.git", rev = "cf6833a12f36509a90ea33d25766709bcc1eb2cf" }
+vinca = { git = "https://github.com/Tobias-Fischer/vinca.git", rev = "63469bad308fe64612410eb2d9f7098e3fb34912" }
 # For local development, temporarily use (and regenerate pixi.lock):
 # vinca = { path = "../vinca", editable = true }
 

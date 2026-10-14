@@ -106,6 +106,12 @@ pixi run rs check                             # sanity checks (also run in CI)
 of a distribution uses `full_rebuild: true` there. A new build number goes into its
 `pkg_additional_info.yaml` (one package) or `vinca.yaml` (everything).
 
+**Building only some distributions in a PR:** a PR builds the distributions it changes,
+and all of them as soon as it touches anything outside `distros/<distro>/`. To limit
+that (e.g. a humble rebuild that also changes `shared/` or `tools/`), add the label
+`build:humble` (one per distribution to build), then push or re-run the build: adding a
+label doesn't start one by itself. Nothing has to be reset before merging.
+
 ### CI
 
 - **Pull requests** (`testpr.yaml`):
