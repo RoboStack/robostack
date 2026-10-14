@@ -505,9 +505,10 @@ def rebuild_snippet(results: dict, distro: str, build_number: int | None) -> lis
 
 
 def pr_summary(results: dict, distro: str, platform: str, channel: str, build_number: int | None = None) -> list[str]:
-    """Markdown for the pull-request comment: what needs attention as a table, the
-    rest collapsed. Packages without a release are left out; a distribution with
-    nothing to compare gets no section."""
+    """Markdown for the pull-request comment: one collapsed section per distribution,
+    with the counts in its summary line, open only when dependents need a rebuild.
+    Inside, what needs attention as a table, the rest collapsed again. Packages without
+    a release are left out; a distribution with nothing to compare gets no section."""
     def worst_first(item):
         verdict = item[1]["verdict"]
         return (-RANK.index(verdict) if verdict in RANK else 1, item[0])
@@ -518,21 +519,24 @@ def pr_summary(results: dict, distro: str, platform: str, channel: str, build_nu
 
     if not attention and not rest:
         return []
-    lines = [f"#### {distro} {platform}", ""]
+    breaking = [n for n, r in attention if r["verdict"] in ("soname", "incompatible", "error")]
+    counts = [f"**{len(breaking)} need their dependents rebuilt**" if breaking else "",
+              f"{len(attention) - len(breaking)} to review (changed headers)" if len(attention) > len(breaking) else "",
+              f"{len(rest)} can be bumped on their own" if rest else ""]
+    lines = [f"<details{' open' if breaking else ''}><summary><b>{distro} {platform}</b>: "
+             f"{', '.join(c for c in counts if c)}</summary>", ""]
     if attention:
         lines += TABLE_HEADER + [_row(n, r) for n, r in attention] + [""]
         lines += rebuild_snippet(dict(attention), distro, build_number)
     if rest:
-        counts: dict[str, int] = {}
+        verdicts: dict[str, int] = {}
         for _, res in rest:
-            counts[res["verdict"]] = counts.get(res["verdict"], 0) + 1
-        summary = ", ".join(f"{v}: {c}" for v, c in sorted(counts.items()))
-        if not attention:
-            lines += ["Nothing that needs a rebuild of other packages.", ""]
+            verdicts[res["verdict"]] = verdicts.get(res["verdict"], 0) + 1
+        summary = ", ".join(f"{v}: {c}" for v, c in sorted(verdicts.items()))
         lines += [f"<details><summary>{len(rest)} packages can be bumped on their own ({summary})</summary>", "",
                   *TABLE_HEADER, *[_row(n, r) for n, r in rest], "", "</details>", ""]
     where = " and ".join(f"{c}/{platform}" for c in ([channel] if isinstance(channel, str) else channel))
-    return lines + [f"Compared with the newest builds on {where}.", ""]
+    return lines + [f"Compared with the newest builds on {where}.", "", "</details>", ""]
 
 
 def main() -> int:
