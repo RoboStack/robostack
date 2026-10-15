@@ -76,6 +76,56 @@ jobs:
       - name: Unit tests of the tooling
         run: pixi run test
 
+  # The patches of every platform, checked once per distribution next to its builds
+  # (each check is a rattler-build run, ~13 minutes for all of them on Windows): the
+  # recipes of all platforms are generated and merged, since each platform selects
+  # its own packages; applying a patch doesn't depend on the host.
+  patches:
+    needs: plan
+    if: needs.plan.outputs.distros != '[]'
+    strategy:
+      fail-fast: false
+      matrix:
+        distro: ${{ fromJSON(needs.plan.outputs.distros) }}
+    name: ${{ matrix.distro }} patches
+    runs-on: ubuntu-latest
+    env:
+      DISTRO: ${{ matrix.distro }}
+      # generate-recipes -n leaves out what is on the channel, like the builds do
+      ROBOSTACK_UPLOAD_CHANNEL: ${{ vars.ROBOSTACK_UPLOAD_CHANNEL }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Disable git auto-maintenance
+        run: git config --global maintenance.auto false && git config --global gc.auto 0 && git config --global core.longpaths true
+      - uses: prefix-dev/setup-pixi@v0.11.0
+        with:
+          locked: true  # the lock file must match pixi.toml
+          pixi-version: v0.81.0
+          cache-write: false  # the build jobs save the pixi environment cache
+      - name: Generate the recipes of every platform
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -e
+          work="distros/$DISTRO/work"
+          all=$(mktemp -d)
+          for platform in linux-64 linux-aarch64 osx-64 osx-arm64 win-64; do
+            for attempt in 1 2 3; do
+              if pixi run rs "$DISTRO" generate-recipes --platform "$platform" -n; then break; fi
+              if [[ "$attempt" == 3 ]]; then echo "Recipe generation failed for $platform" >&2; exit 1; fi
+              sleep 15
+            done
+            cp -rn "$work/recipes/." "$all/"  # a package's recipe doesn't depend on the platform
+          done
+          rm -rf "$work/recipes" && mv "$all" "$work/recipes"
+          echo "$(ls "$work/recipes" | wc -l) recipes"
+      - name: Check patches
+        run: |
+          pixi run rs "$DISTRO" check-orphaned-patches
+          pixi run rs "$DISTRO" check-patches
+
   build:
     permissions:
       actions: write  # drop this pull request's superseded build caches
@@ -151,12 +201,6 @@ jobs:
           echo "Recipe generation attempt ${attempt} failed; retrying..." >&2
           sleep 15
         done
-
-    - name: Check patches
-      shell: bash -l {0}
-      run: |
-        pixi run rs "$DISTRO" check-orphaned-patches
-        pixi run rs "$DISTRO" check-patches
 
     - name: Restore build cache
       uses: actions/cache/restore@v5
@@ -333,7 +377,7 @@ jobs:
   # from PR to PR, so require this job instead of the individual builds.
   all-green:
     name: All green
-    needs: [plan, check, build]
+    needs: [plan, check, patches, build]
     if: always()
     runs-on: ubuntu-latest
     steps:
