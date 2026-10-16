@@ -32,6 +32,10 @@ pinning_overrides:
   cuda_compiler_version:
     - None
     - 12.9                       # [((linux and (x86_64 or aarch64)) or win64) and os.environ.get("CF_CUDA_ENABLED", "False") == "True"]
+  # libopencv 5.0.0 builds for openexr 3.5 need qt6-main >= 6.12, but pyqt6 6.11 (via
+  # qt6-multimedia 6.11) still requires qt6-main 6.11: stay on openexr 3.4 until pyqt6 is rebuilt
+  openexr:
+    - '3.4'
   libzenohc:
     - 1.10.1
   libzenohcxx:
