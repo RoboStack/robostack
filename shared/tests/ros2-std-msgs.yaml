@@ -11,7 +11,9 @@ tests:
   - if: unix
     then:
       script:
-        - cmake -S cpp_consumer -B build -G Ninja -DCMAKE_PREFIX_PATH="$PREFIX"
+        # the environment's Python for ament's CMake scripts: on macOS, FindPython3 prefers
+        # a framework Python (Xcode's 3.9), which the current ament_package doesn't support
+        - cmake -S cpp_consumer -B build -G Ninja -DCMAKE_PREFIX_PATH="$PREFIX" -DPython3_EXECUTABLE="$PREFIX/bin/python"
         - cmake --build build
         - ./build/std_msgs_cpp_consumer
       requirements:
