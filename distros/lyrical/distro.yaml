@@ -2,3 +2,4 @@
 # (everything else is shared, see the README).
 channel_name: robostack-lyrical
 upload_target: prefix
+rosdistro_sync: lyrical/2026-10-05
