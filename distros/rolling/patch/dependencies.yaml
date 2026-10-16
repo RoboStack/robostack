@@ -127,7 +127,7 @@ plotjuggler_ros:
 py_trees:
   add_host: ["hatchling"]
 py_trees_js:
-  add_host: ["poetry-core"]
+  add_host: ["hatchling"]  # 0.7 builds with hatchling (as in humble/jazzy)
 py_trees_ros:
   add_host: ["poetry-core"]
 py_trees_ros_tutorials:
