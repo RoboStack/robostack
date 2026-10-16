@@ -1004,6 +1004,7 @@ python:
 python_impl:
   - cpython
 
+  # ros-humble specific (distros/humble/distro.yaml)
 python_min:
   # minimum supported python version per CFEP-25
   # bump to next minor version when we drop python versions
@@ -1219,3 +1220,5 @@ pyqt6:
   - 6.11
 sip:
   - 6.15
+xtensor:
+  - 0.25.0
