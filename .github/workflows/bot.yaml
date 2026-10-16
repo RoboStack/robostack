@@ -198,7 +198,7 @@ jobs:
             echo
             echo "[Workflow run]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)"
           } > "$RUNNER_TEMP/comment.md"
-          gh issue comment "$NUMBER" --repo "$GITHUB_REPOSITORY" --body-file "$RUNNER_TEMP/comment.md"
+          pixi run gh issue comment "$NUMBER" --repo "$GITHUB_REPOSITORY" --body-file "$RUNNER_TEMP/comment.md"
           if [ "$GITHUB_EVENT_NAME" = issues ] && [ "${{ job.status }}" = success ] && [ "${{ matrix.command }}" != add-package ]; then
-            gh issue close "$NUMBER" --repo "$GITHUB_REPOSITORY"
+            pixi run gh issue close "$NUMBER" --repo "$GITHUB_REPOSITORY"
           fi

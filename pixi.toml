@@ -1,5 +1,5 @@
 [workspace]
-name = "robostack-distros"
+name = "robostack"
 description = "RoboStack: conda packages for all ROS 2 distributions, from one repository"
 authors = ["Tobias Fischer <tobias.fischer@qut.edu.au>", "Wolf Vollprecht <w.vollprecht@gmail.com>", "Silvio Traversaro <silvio@traversaro.it>", "Daisuke Nishimatsu <daisuke.nishimatsu1021@gmail.com>"]
 channels = ["https://prefix.dev/conda-forge"]
@@ -25,6 +25,8 @@ pyyaml = "*"
 # Some git repos need git-lfs, see https://github.com/RoboStack/ros-jazzy/issues/118
 git-lfs = "*"
 pytest = ">=9.1.1,<10"
+# gh for the workflows: one version everywhere (the runner's is not on PATH on Windows)
+gh = ">=2.102.0,<3"
 
 [target.win-64.dependencies]
 # patch is required by rattler-build

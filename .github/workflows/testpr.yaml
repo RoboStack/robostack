@@ -35,6 +35,13 @@ jobs:
         with:
           persist-credentials: false
           fetch-depth: 0
+      - name: Disable git auto-maintenance
+        run: git config --global maintenance.auto false && git config --global gc.auto 0
+      - uses: prefix-dev/setup-pixi@v0.11.0
+        with:
+          locked: true  # the lock file must match pixi.toml
+          pixi-version: v0.81.0
+          cache-write: false  # the build jobs save the pixi environment cache
       - name: Which distributions changed
         id: plan
         env:
@@ -43,16 +50,15 @@ jobs:
           SELECTED: ${{ inputs.distros }}
           GH_TOKEN: ${{ github.token }}
         run: |
-          # plain python + PyYAML of the runner image; no pixi needed for this
           if [ -n "$SELECTED" ]; then
-            distros=$(python3 -c 'import json,os; print(json.dumps(os.environ["SELECTED"].split()))')
+            distros=$(pixi run python -c 'import json,os; print(json.dumps(os.environ["SELECTED"].split()))')
           elif [ -n "$BASE" ]; then
             # build:<distro> labels limit the build to those distributions; read now (not
             # from the event) so that a re-run sees labels added after the push
-            labels=$(gh pr view "$PR" --repo "$GITHUB_REPOSITORY" --json labels -q '[.labels[].name]')
-            distros=$(python3 tools/robostack.py changed-distros --base "$BASE" --labels "$labels")
+            labels=$(pixi run gh pr view "$PR" --repo "$GITHUB_REPOSITORY" --json labels -q '[.labels[].name]')
+            distros=$(pixi run python tools/robostack.py changed-distros --base "$BASE" --labels "$labels")
           else
-            distros=$(python3 tools/robostack.py changed-distros --base HEAD --all)
+            distros=$(pixi run python tools/robostack.py changed-distros --base HEAD --all)
           fi
           echo "distros=$distros" | tee -a "$GITHUB_OUTPUT"
 
@@ -302,17 +308,17 @@ jobs:
     - name: Drop this pull request's superseded build caches
       if: ${{ always() && steps.save-cache.outcome == 'success' && github.event.pull_request.number }}
       continue-on-error: true
-      shell: bash
+      shell: bash -l {0}
       env:
         GH_TOKEN: ${{ github.token }}
         PREFIX: ${{ runner.os }}-${{ matrix.distro }}-${{ matrix.target.platform }}-pr-${{ github.event.pull_request.number }}-
         KEEP: ${{ runner.os }}-${{ matrix.distro }}-${{ matrix.target.platform }}-pr-${{ github.event.pull_request.number }}-${{ github.run_id }}-${{ github.run_attempt }}
       run: |
-        export PATH="$PATH:/c/Program Files/GitHub CLI"  # dropped by "Clean up PATH" on Windows
-        gh cache list --repo "$GITHUB_REPOSITORY" --key "$PREFIX" --limit 100 --json id,key \
+        # pixi's gh: the runner's is not on PATH on Windows (Clean up PATH)
+        pixi run gh cache list --repo "$GITHUB_REPOSITORY" --key "$PREFIX" --limit 100 --json id,key \
           --jq ".[] | select(.key != \"$KEEP\") | .id" |
         while read -r id; do
-          gh cache delete "$id" --repo "$GITHUB_REPOSITORY" && echo "deleted cache $id"
+          pixi run gh cache delete "$id" --repo "$GITHUB_REPOSITORY" && echo "deleted cache $id"
         done
 
     - name: Generate the staged build workflows (catches post-merge problems)
@@ -337,6 +343,16 @@ jobs:
       actions: read
       pull-requests: write
     steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Disable git auto-maintenance
+        run: git config --global maintenance.auto false && git config --global gc.auto 0
+      - uses: prefix-dev/setup-pixi@v0.11.0
+        with:
+          locked: true  # the lock file must match pixi.toml
+          pixi-version: v0.81.0
+          cache-write: false  # the build jobs save the pixi environment cache
       - uses: actions/download-artifact@v7
         with:
           pattern: abi-check-*
@@ -350,7 +366,7 @@ jobs:
           shopt -s nullglob
           files=(abi-check-*.md)
           marker='<!-- robostack-abi-check -->'
-          existing=$(gh api "repos/$REPO/issues/$PR/comments" --paginate -q ".[] | select(.body | startswith(\"$marker\")) | .id" | head -1)
+          existing=$(pixi run gh api "repos/$REPO/issues/$PR/comments" --paginate -q ".[] | select(.body | startswith(\"$marker\")) | .id" | head -1)
           # no comment for pull requests that build nothing released before
           if ! grep -q '^| package |' "${files[@]}" /dev/null && [ -z "$existing" ]; then exit 0; fi
           {
@@ -369,9 +385,9 @@ jobs:
             echo "</details>"
           } > body.md
           if [ -n "$existing" ]; then
-            gh api -X PATCH "repos/$REPO/issues/comments/$existing" -F body=@body.md > /dev/null
+            pixi run gh api -X PATCH "repos/$REPO/issues/comments/$existing" -F body=@body.md > /dev/null
           else
-            gh api "repos/$REPO/issues/$PR/comments" -F body=@body.md > /dev/null
+            pixi run gh api "repos/$REPO/issues/$PR/comments" -F body=@body.md > /dev/null
           fi
 
   # One stable check for branch protection / auto-merge: the build matrix differs

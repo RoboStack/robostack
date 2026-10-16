@@ -25,6 +25,17 @@ jobs:
       cancel-in-progress: false
     runs-on: ubuntu-latest
     steps:
+      # the base branch (pull_request_target's default), for pixi's gh: never the pull request's code
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Disable git auto-maintenance
+        run: git config --global maintenance.auto false && git config --global gc.auto 0
+      - uses: prefix-dev/setup-pixi@v0.11.0
+        with:
+          locked: true  # the lock file must match pixi.toml
+          pixi-version: v0.81.0
+          cache-write: false  # the build jobs save the pixi environment cache
       # The merge has to come from the bot (or a PAT): a merge made with the
       # workflow's own token would not trigger the main build workflow.
       - name: Bot token
@@ -42,15 +53,15 @@ jobs:
         run: |
           # labeled/unlabeled events can arrive out of order: go by the label the
           # pull request has now, not by the event
-          enabled=$(gh pr view "$PR" --json labels --jq 'any(.labels[]; .name == "automerge")')
+          enabled=$(pixi run gh pr view "$PR" --json labels --jq 'any(.labels[]; .name == "automerge")')
           if [ "$enabled" = true ]; then
             if [ -z "$BOT_TOKEN" ]; then
               echo "::error::auto-merge needs the bot app (ROBOSTACK_BOT_CLIENT_ID + ROBOSTACK_BOT_PRIVATE_KEY) or GHA_PAT: a merge with the workflow token doesn't start the build workflow"
               exit 1
             fi
-            GH_TOKEN="$BOT_TOKEN" gh pr merge "$PR" --auto --merge
+            GH_TOKEN="$BOT_TOKEN" pixi run gh pr merge "$PR" --auto --merge
           else
-            gh pr merge "$PR" --disable-auto
+            pixi run gh pr merge "$PR" --disable-auto
           fi
 
   drop-on-push:
@@ -62,6 +73,17 @@ jobs:
       cancel-in-progress: false
     runs-on: ubuntu-latest
     steps:
+      # the base branch (pull_request_target's default), for pixi's gh: never the pull request's code
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Disable git auto-maintenance
+        run: git config --global maintenance.auto false && git config --global gc.auto 0
+      - uses: prefix-dev/setup-pixi@v0.11.0
+        with:
+          locked: true  # the lock file must match pixi.toml
+          pixi-version: v0.81.0
+          cache-write: false  # the build jobs save the pixi environment cache
       # removing the label with this token doesn't start the unlabeled run above, so
       # turn auto-merge off here as well
       - name: Remove the automerge label
@@ -71,6 +93,6 @@ jobs:
           BEFORE: ${{ github.event.before }}
           AFTER: ${{ github.event.after }}
         run: |
-          gh pr edit "$PR" --remove-label automerge
-          gh pr merge "$PR" --disable-auto || true
-          gh pr comment "$PR" --body "New commits (${BEFORE:0:7}..${AFTER:0:7}) arrived after the \`automerge\` label was added, so the label was removed and auto-merge turned off. Add the label again once the new commits are reviewed."
+          pixi run gh pr edit "$PR" --remove-label automerge
+          pixi run gh pr merge "$PR" --disable-auto || true
+          pixi run gh pr comment "$PR" --body "New commits (${BEFORE:0:7}..${AFTER:0:7}) arrived after the \`automerge\` label was added, so the label was removed and auto-merge turned off. Add the label again once the new commits are reviewed."
