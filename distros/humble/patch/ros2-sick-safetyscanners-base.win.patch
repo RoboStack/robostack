@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 8bf0f32..9ff3fc6 100644
+index 15a6663..cf811fe 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1,6 +1,9 @@
@@ -9,6 +9,6 @@ index 8bf0f32..9ff3fc6 100644
 +# no dllexport annotations: export everything so MSVC writes the import library (LNK1181)
 +set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
 +
- ## Use C++11
- #add_definitions(-std=c++11 -Wall)
- ## By adding -Wall and -Werror, the compiler does not ignore warnings anymore,
+ ## Find system libraries
+ find_package(Boost REQUIRED COMPONENTS thread chrono)
+ 

@@ -23,4 +23,27 @@ full_rebuild: false
 #
 # Remember that dependents are not rebuilt automatically: evict them as well if
 # they must pick up the change.
-evict_cache: []
+evict_cache:  # TEMPORARY (#62): reset to [] before merging
+  - launch_pytest  # its pytest 8.4 patch
+  # the version headers with the MSVC-safe *_VERSION_GTE (ament_cmake_gen_version_h
+  # patch), and the packages that only had a Windows patch for it
+  - ament_cmake_gen_version_h
+  - ament_index_cpp
+  - camera_calibration_parsers
+  - camera_info_manager
+  - controller_interface
+  - controller_manager
+  - hardware_interface
+  - image_transport
+  - joint_limits
+  - point_cloud_transport
+  - rcl
+  - rcl_action
+  - rcl_lifecycle
+  - rcl_yaml_param_parser
+  - rclcpp
+  - rcpputils
+  - tf2_ros
+  - transmission_interface
+  - behaviortree_cpp
+  - moveit_visual_tools
