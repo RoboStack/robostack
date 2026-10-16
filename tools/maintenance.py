@@ -108,9 +108,7 @@ def released_builds(distro: str) -> dict[str, int] | None:
     import urllib.error
     import urllib.request
 
-    s = rs.settings(distro)
-    name = s.get("channel_name", f"robostack-{distro}")
-    base = f"https://repo.prefix.dev/{name}" if s.get("upload_target", "prefix") == "prefix" else rs.channel_url(distro)
+    base = f"https://repo.prefix.dev/{rs.channel_name(distro)}"
     builds: dict[str, int] = {}
     read = False
     for subdir in REPODATA_SUBDIRS:
@@ -414,10 +412,8 @@ def update_snapshot(distro: str) -> Result:
 
 
 def find_stale(distro: str) -> Result:
-    s = rs.settings(distro)
-    name = s.get("channel_name", f"robostack-{distro}")
     # repo.prefix.dev serves repodata directly (prefix.dev redirects)
-    url = f"https://repo.prefix.dev/{name}" if s.get("upload_target", "prefix") == "prefix" else rs.channel_url(distro)
+    url = f"https://repo.prefix.dev/{rs.channel_name(distro)}"
     rs.prepare(distro)
     proc = subprocess.run(
         [sys.executable, str(rs.TOOLS / "check_dependency_compat.py"), "--stale", "--repodata", url],
@@ -610,12 +606,9 @@ def new_distro(name: str, source: str) -> Result:
 
 
 def _populate_new_distro(name: str, source: str, src: Path, dest: Path) -> Result:
-    settings = rs.settings(source)
-    keep = {k: settings[k] for k in ("upload_target",) if k in settings}
     (dest / "distro.yaml").write_text(
         f"# Settings of ros-{name} that differ from the other distributions\n"
         "# (everything else is shared, see the README).\n"
-        + yaml.safe_dump({"channel_name": f"robostack-{name}", **keep}, sort_keys=False)
     )
     vinca = (src / "vinca.yaml").read_text()
     vinca = re.sub(r"(?m)^ros_distro:.*$", f"ros_distro: {name}", vinca)
@@ -1232,15 +1225,12 @@ def check() -> Result:
     """Sanity checks: every distribution assembles and its generated files are consistent."""
     problems: list[str] = []
     all_packages: set[str] = set()
-    known = {"channel_name", "upload_target", "conda_forge_pinning_version", "conda_forge_migrations", "pinning_overrides",
-             "rosdistro_sync"}
+    known = {"conda_forge_pinning_version", "conda_forge_migrations", "pinning_overrides", "rosdistro_sync"}
     for distro in rs.distros():
         d = rs.DISTROS / distro
         settings = rs.settings(distro)
         if unknown := set(settings) - known:
             problems.append(f"{distro}: unknown keys in distro.yaml: {sorted(unknown)}")
-        if settings.get("upload_target", "prefix") not in ("prefix", "anaconda"):
-            problems.append(f"{distro}: upload_target must be prefix or anaconda")
         sync = settings.get("rosdistro_sync")
         if sync is not None and sync != "manual" and not ((m := SYNC_TAG.match(str(sync))) and m["distro"] == distro):
             problems.append(f"{distro}: rosdistro_sync must be 'manual' or a sync tag like {distro}/2026-10-05")

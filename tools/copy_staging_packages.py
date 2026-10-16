@@ -1,8 +1,9 @@
 """Copy a distribution's packages from robostack-staging to robostack-<distro> (anaconda.org).
 
-humble and noetic upload to robostack-staging; this copies every package of the given
-distribution built after a cutoff date that robostack-<distro> doesn't have yet, with
-`anaconda copy` (the token is read from ANACONDA_API_TOKEN). Moved here from
+noetic uploads to robostack-staging (humble did, too, before it moved here); this
+copies every package of the given distribution built after a cutoff date that
+robostack-<distro> doesn't have yet, with `anaconda copy` (the token is read from
+ANACONDA_API_TOKEN). Moved here from
 RoboStack/robostack.github.io (scripts/copy-to-distro-specific-channel.py).
 """
 

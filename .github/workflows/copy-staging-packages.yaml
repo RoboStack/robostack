@@ -1,6 +1,7 @@
-# humble and noetic upload to robostack-staging: copy their packages on to
-# robostack-humble / robostack-noetic (tools/copy_staging_packages.py). Moved here from
-# RoboStack/robostack.github.io. A job without its token secret is skipped.
+# noetic (RoboStack/ros-noetic) uploads to robostack-staging: copy its packages on to
+# robostack-noetic (tools/copy_staging_packages.py). Moved here from
+# RoboStack/robostack.github.io. The distributions of this repository upload to their
+# own channels directly (tools/robostack.py upload). Skipped without the token secret.
 name: Copy staging packages
 
 on:
@@ -18,7 +19,6 @@ jobs:
       matrix:
         include:
           - { distro: noetic, token: ROBOSTACK_NOETIC_ANACONDA_API_TOKEN }
-          - { distro: humble, token: ROBOSTACK_HUMBLE_ANACONDA_API_TOKEN }
     name: copy ${{ matrix.distro }}
     runs-on: ubuntu-latest
     steps:

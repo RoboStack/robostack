@@ -49,12 +49,15 @@ def settings(distro: str) -> dict:
     return yaml.safe_load((DISTROS / distro / "distro.yaml").read_text()) or {}
 
 
+def channel_name(distro: str) -> str:
+    """Every distribution's channel: robostack-<distro>, on prefix.dev (what the builds
+    read, and their first upload) and on anaconda.org (the same packages, so that
+    `-c robostack-<distro>` keeps working)."""
+    return f"robostack-{distro}"
+
+
 def channel_url(distro: str) -> str:
-    s = settings(distro)
-    name = s.get("channel_name", f"robostack-{distro}")
-    if s.get("upload_target", "prefix") == "prefix":
-        return f"https://prefix.dev/{name}"
-    return f"https://conda.anaconda.org/{name}"
+    return f"https://prefix.dev/{channel_name(distro)}"
 
 
 def run(cmd: list[str], cwd: Path) -> int:
@@ -251,30 +254,44 @@ def rattler_build(distro: str, args: list[str], skip_existing: bool = True) -> l
 
 
 def upload(distro: str, files: list[str], cwd: Path) -> int:
-    """Upload to the distribution's channel.
+    """Upload to the distribution's channels: anaconda.org, then prefix.dev.
+
+    prefix.dev uses trusted publishing (Repository Access, OIDC; no stored key) and
+    publishes an attestation. anaconda.org has no trusted publishing: the
+    ANACONDA_API_TOKEN repository secret belongs to an account that can upload to every
+    robostack-<distro> channel there. anaconda.org goes first and replaces a file it
+    already has: prefix.dev decides what is built (skip_existing), so a package whose
+    prefix.dev upload failed is built again and both channels end up with that build.
 
     ROBOSTACK_UPLOAD_CHANNEL (set by the staged build workflows from the repository
-    variable of the same name) redirects uploads to another prefix.dev channel, e.g.
-    a test channel (the builds then also read from it, see rattler_build); "none"
-    skips uploading. prefix.dev uploads use trusted publishing (Repository Access,
-    OIDC; no stored key) and publish an attestation.
+    variable of the same name) redirects the uploads to one other prefix.dev channel,
+    e.g. a test channel (the builds then also read from it, see rattler_build); "none"
+    skips uploading.
     """
     override = os.environ.get("ROBOSTACK_UPLOAD_CHANNEL", "").strip()
     if override == "none":
         print(f"ROBOSTACK_UPLOAD_CHANNEL=none: not uploading {' '.join(files)}")
         return 0
-    s = settings(distro)
-    if not override and s.get("upload_target", "prefix") != "prefix":
-        # anaconda.org has no trusted publishing, and we keep no tokens
-        print(f"{distro}'s channel {s.get('channel_name')} is on anaconda.org: uploads go to prefix.dev only "
-              "(set ROBOSTACK_UPLOAD_CHANNEL, or move the channel to prefix.dev)", file=sys.stderr)
+    prefix = ["rattler-build", "upload", "prefix", "-c", override or channel_name(distro), "--skip-existing",
+              "--generate-attestation"]
+    if override:
+        return upload_with_retries(prefix + files, cwd)
+    token = os.environ.get("ANACONDA_API_TOKEN", "").strip()
+    if not token:
+        print(f"ANACONDA_API_TOKEN is not set: can't upload to anaconda.org/{channel_name(distro)}",
+              file=sys.stderr)
         return 1
-    channel = override or s.get("channel_name", f"robostack-{distro}")
-    cmd = ["rattler-build", "upload", "prefix", "-c", channel, "--skip-existing", "--generate-attestation"]
-    # Sigstore (attestations) and the channel fail now and then; uploads are
-    # idempotent (--skip-existing), so retry.
+    os.environ["ANACONDA_API_KEY"] = token  # read by rattler-build (not on the command line)
+    rc = upload_with_retries(["rattler-build", "upload", "anaconda", "-o", channel_name(distro), "--force"] + files,
+                             cwd)
+    return rc or upload_with_retries(prefix + files, cwd)
+
+
+def upload_with_retries(cmd: list[str], cwd: Path) -> int:
+    # Sigstore (attestations) and the channels fail now and then; the uploads are
+    # idempotent (prefix.dev --skip-existing, anaconda.org --force), so retry.
     for attempt in range(1, 4):
-        rc = run(cmd + files, cwd)
+        rc = run(cmd, cwd)
         if rc == 0 or attempt == 3:
             return rc
         print(f"upload attempt {attempt} failed, retrying in {30 * attempt} s", file=sys.stderr)

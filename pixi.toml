@@ -27,7 +27,7 @@ git-lfs = "*"
 pytest = ">=9.1.1,<10"
 # gh for the workflows: one version everywhere (the runner's is not on PATH on Windows)
 gh = ">=2.102.0,<3"
-# copy_staging_packages.py and mirror_to_anaconda.py (channel maintenance)
+# tools/copy_staging_packages.py (noetic: robostack-staging -> robostack-noetic)
 anaconda-client = ">=1.14.1,<2"
 niquests = ">=3.21.2,<4"
 py-rattler = ">=0.27.1,<0.28"
