@@ -11,9 +11,13 @@ tests:
   - if: unix
     then:
       script:
-        # the environment's Python for ament's CMake scripts: on macOS, FindPython3 prefers
-        # a framework Python (Xcode's 3.9), which the current ament_package doesn't support
-        - cmake -S cpp_consumer -B build -G Ninja -DCMAKE_PREFIX_PATH="$PREFIX" -DPython3_EXECUTABLE="$PREFIX/bin/python"
+        # the environment's Python for ament's CMake scripts, as vinca's build scripts pass
+        # it: otherwise FindPython3 prefers a framework Python on macOS (Xcode's 3.9), which
+        # the current ament_package doesn't support
+        - >-
+          cmake -S cpp_consumer -B build -G Ninja -DCMAKE_PREFIX_PATH="$PREFIX"
+          -DPYTHON_EXECUTABLE="$PREFIX/bin/python" -DPython_EXECUTABLE="$PREFIX/bin/python"
+          -DPython3_EXECUTABLE="$PREFIX/bin/python" -DPython3_FIND_STRATEGY=LOCATION
         - cmake --build build
         - ./build/std_msgs_cpp_consumer
       requirements:
