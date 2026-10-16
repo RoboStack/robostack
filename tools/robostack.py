@@ -62,6 +62,22 @@ def run(cmd: list[str], cwd: Path) -> int:
     return subprocess.run(cmd, cwd=cwd).returncode
 
 
+def run_tee(cmd: list[str], cwd: Path) -> tuple[int, bytes]:
+    """run(), also returning the combined output."""
+    print("+", " ".join(cmd), f"  (in {cwd.relative_to(ROOT)})", flush=True)
+    output = bytearray()
+    with subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT) as proc:
+        for line in proc.stdout:
+            sys.stdout.buffer.write(line)
+            sys.stdout.buffer.flush()
+            output += line
+    return proc.returncode, bytes(output)
+
+
+WORKFLOW_SIZE_MESSAGE = b"exceeding the 500 KiB limit"
+MAX_BATCH_SIZE = 100
+
+
 # prefix.dev's sharded repodata (what rattler reads) lists a new upload a few minutes
 # after repodata.json does, so a stage that starts right after the previous one
 # uploaded can find no candidates for a package that is on the channel.
@@ -342,8 +358,16 @@ def generate_gha(distro: str, args: list[str]) -> int:
     d = work_dir(distro)
     branch = f"buildbranch_{distro}_{ns.platform.replace('-', '_')}"
     before = set(d.glob("*.yml"))
-    rc = run(["vinca-gha", "--platform", ns.platform, "--trigger-branch", branch, "-d", "./recipes",
-              "--batch_size", ns.batch_size], d)
+    # GitHub refuses workflow files over 500 KiB, which a full rebuild's many batches can
+    # reach (jazzy's win-64 at 25): then retry with larger, hence fewer, batches.
+    batch_size = int(ns.batch_size)
+    while True:
+        rc, output = run_tee(["vinca-gha", "--platform", ns.platform, "--trigger-branch", branch, "-d",
+                              "./recipes", "--batch_size", str(batch_size)], d)
+        if not rc or WORKFLOW_SIZE_MESSAGE not in output or batch_size >= MAX_BATCH_SIZE:
+            break
+        batch_size = min(batch_size * 3 // 2, MAX_BATCH_SIZE)
+        print(f"The workflow is too large; retrying with --batch_size {batch_size}", flush=True)
     if rc:
         return rc
     # Edit the text: a YAML round trip would turn the `on:` key into `true:` (YAML 1.1).

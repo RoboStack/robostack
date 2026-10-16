@@ -308,6 +308,7 @@ jobs:
         PREFIX: ${{ runner.os }}-${{ matrix.distro }}-${{ matrix.target.platform }}-pr-${{ github.event.pull_request.number }}-
         KEEP: ${{ runner.os }}-${{ matrix.distro }}-${{ matrix.target.platform }}-pr-${{ github.event.pull_request.number }}-${{ github.run_id }}-${{ github.run_attempt }}
       run: |
+        export PATH="$PATH:/c/Program Files/GitHub CLI"  # dropped by "Clean up PATH" on Windows
         gh cache list --repo "$GITHUB_REPOSITORY" --key "$PREFIX" --limit 100 --json id,key \
           --jq ".[] | select(.key != \"$KEEP\") | .id" |
         while read -r id; do
