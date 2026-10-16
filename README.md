@@ -60,8 +60,9 @@ tools/robostack.py         `pixi run rs ...`: every task, for one distribution o
 tools/maintenance.py       checks and robostack-bot commands
 tools/import_distro.py     (re)import a distribution from its own repository
 tools/*.py                 check_patches_clean_apply, check_dependency_compat, build_gap_report, ...
+tools/copy_staging_packages.py, mirror_to_anaconda.py   channel maintenance (workflows below)
 .scripts/                  staged build scripts (build_unix.sh, build_win.bat)
-.github/workflows/         testpr.yaml, main.yaml (staged build branches), bot.yaml
+.github/workflows/         testpr.yaml, main.yaml (staged build branches), bot.yaml, channel maintenance
 .claude/skills/             procedures for agents (debug a build, patches, versions/rebuilds, package selection)
 pixi.toml                  one environment for all distributions (one vinca, one rattler-build)
 ```
@@ -126,6 +127,11 @@ label doesn't start one by itself. Nothing has to be reset before merging.
   - `ROBOSTACK_BOT_CLIENT_ID` (the App's Client ID, `Iv23…`) with the secret `ROBOSTACK_BOT_PRIVATE_KEY`: the robostack-bot GitHub App. It pushes the build branches (which contain workflow files) and opens bot PRs so that CI runs on them. `GHA_PAT` works as a fallback.
 
   The app needs repository permissions Contents, Pull requests, Issues and Workflows (read and write), with its webhook inactive.
+
+- **Channel maintenance:**
+  - `copy-staging-packages.yaml` (hourly): copies humble's and noetic's packages from `robostack-staging` on to `robostack-humble` / `robostack-noetic` (`anaconda copy`). Secrets `ROBOSTACK_HUMBLE_ANACONDA_API_TOKEN`, `ROBOSTACK_NOETIC_ANACONDA_API_TOKEN`.
+  - `mirror-to-anaconda.yaml` (started by hand for now, dry run by default): uploads what a prefix.dev channel has and its old anaconda.org channel doesn't (humble → `robostack-staging`, jazzy → `robostack-jazzy`). Secrets `ROBOSTACK_STAGING_ANACONDA_API_TOKEN`, `ROBOSTACK_JAZZY_ANACONDA_API_TOKEN`.
+  - A job without its secret is skipped.
 
 ### robostack-bot
 
