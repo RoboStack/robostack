@@ -523,7 +523,8 @@ def pr_summary(results: dict, distro: str, platform: str, channel: str, build_nu
     counts = [f"**{len(breaking)} need their dependents rebuilt**" if breaking else "",
               f"{len(attention) - len(breaking)} to review (changed headers)" if len(attention) > len(breaking) else "",
               f"{len(rest)} can be bumped on their own" if rest else ""]
-    lines = [f"<details{' open' if breaking else ''}><summary><b>{distro} {platform}</b>: "
+    # always collapsed, the summary line shows the counts (breaking ones in bold)
+    lines = [f"<details><summary><b>{distro} {platform}</b>: "
              f"{', '.join(c for c in counts if c)}</summary>", ""]
     if attention:
         lines += TABLE_HEADER + [_row(n, r) for n, r in attention] + [""]
