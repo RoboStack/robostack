@@ -1,0 +1,38 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 38f1a17..415c0e7 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,11 +1,16 @@
+ cmake_minimum_required(VERSION 3.5) 
+ project(sick_safetyscanners_base CXX)
+ 
++# no dllexport annotations: export everything so MSVC writes the import library (LNK1181)
++set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
++
+ ## Use C++11
+ #add_definitions(-std=c++11 -Wall)
+ ## By adding -Wall and -Werror, the compiler does not ignore warnings anymore,
+ ## enforcing cleaner code.
+-add_definitions(-std=c++11 -Wall -Werror)
++if(NOT MSVC)  # GCC flags; cl rejects -Werror (D8021)
++  add_definitions(-std=c++11 -Wall -Werror)
++endif()
+ 
+ 
+ ## Find system libraries
+diff --git a/include/sick_safetyscanners_base/Exceptions.h b/include/sick_safetyscanners_base/Exceptions.h
+index bdc42f4..da4da9b 100644
+--- a/include/sick_safetyscanners_base/Exceptions.h
++++ b/include/sick_safetyscanners_base/Exceptions.h
+@@ -40,6 +40,11 @@
+ #include <exception>
+ #include <sstream>
+ #include <stdexcept>
++#ifdef _WIN32
++#include <winsock2.h>  // timeval
++#else
++#include <sys/time.h>
++#endif
+ 
+ namespace sick {
+ 
