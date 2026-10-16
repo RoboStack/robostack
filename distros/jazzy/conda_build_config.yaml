@@ -1000,7 +1000,7 @@ pythia8:
 python:
   # conda-forge supports only 3.14+ for win-arm64 and linux-riscv64
   # part of a zip_keys: python, is_python_min
-  - 3.12.* *_cpython
+  - 3.14.* *_cp314
 python_impl:
   - cpython
 

@@ -3,5 +3,9 @@
 channel_name: robostack-jazzy
 upload_target: anaconda
 pinning_overrides:
+  # nav2_mppi_controller lists xsimd before xtensor: unpinned, the solver takes the newest
+  # xsimd (14), which no xtensor >= 0.25 accepts, and falls back to xtensor 0.23.9, whose
+  # xtensor_simd.hpp doesn't build with it. 0.25 brings a matching xsimd. (lyrical and
+  # rolling's nav2_mppi_controller use Eigen instead.)
   xtensor: [0.25.0]
-  python: [3.12.* *_cpython]
+rosdistro_sync: jazzy/2026-10-05
