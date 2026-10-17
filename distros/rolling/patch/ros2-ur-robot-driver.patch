@@ -1,5 +1,5 @@
 diff --git a/include/ur_robot_driver/hardware_interface.hpp b/include/ur_robot_driver/hardware_interface.hpp
-index 4ca463f..495e1f5 100644
+index 6232980..d018f27 100644
 --- a/include/ur_robot_driver/hardware_interface.hpp
 +++ b/include/ur_robot_driver/hardware_interface.hpp
 @@ -144,9 +144,11 @@ public:
@@ -16,7 +16,7 @@ index 4ca463f..495e1f5 100644
  
    hardware_interface::CallbackReturn on_configure(const rclcpp_lifecycle::State& previous_state) final;
    hardware_interface::CallbackReturn on_activate(const rclcpp_lifecycle::State& previous_state) final;
-@@ -175,6 +177,25 @@ public:
+@@ -175,6 +177,34 @@ public:
    void asyncThread();
  
  protected:
@@ -37,24 +37,34 @@ index 4ca463f..495e1f5 100644
 +  void pull_commands();
 +  void push_states_and_commands();
 +  std::vector<std::pair<hardware_interface::StateInterface::SharedPtr, double*>> state_links_;
-+  std::vector<std::pair<hardware_interface::CommandInterface::SharedPtr, double*>> command_links_;
++  // a command interface, the member it mirrors, and the value both last agreed on: only the
++  // side that changed since is copied, so that neither the controllers' commands nor the
++  // driver's own writes (async thread, mode switches) overwrite each other
++  struct CommandLink
++  {
++    hardware_interface::CommandInterface::SharedPtr handle;
++    double* value;
++    double synced;
++  };
++  std::vector<CommandLink> command_links_;
 +
    template <typename T>
    void readData(const std::unique_ptr<urcl::rtde_interface::DataPackage>& data_pkg, const std::string& var_name,
                  T& data);
 diff --git a/src/hardware_interface.cpp b/src/hardware_interface.cpp
-index 0edcf90..0d87cf0 100644
+index b9d3649..76c56de 100644
 --- a/src/hardware_interface.cpp
 +++ b/src/hardware_interface.cpp
-@@ -39,6 +39,7 @@
+@@ -39,6 +39,8 @@
   *
   */
  //----------------------------------------------------------------------
++#include <cstring>
 +#include <tuple>
  #include <algorithm>
  #include <memory>
  #include <string>
-@@ -226,17 +227,88 @@ URPositionHardwareInterface::on_init(const hardware_interface::HardwareComponent
+@@ -226,17 +228,101 @@ URPositionHardwareInterface::on_init(const hardware_interface::HardwareComponent
    return hardware_interface::CallbackReturn::SUCCESS;
  }
  
@@ -69,7 +79,6 @@ index 0edcf90..0d87cf0 100644
 +    info.name = link.name;
 +    auto handle = std::make_shared<hardware_interface::StateInterface>(
 +        hardware_interface::InterfaceDescription(link.prefix, info));
-+    std::ignore = handle->set_value(*link.value);
 +    state_links_.emplace_back(handle, link.value);
 +    state_interfaces.push_back(handle);
 +  }
@@ -83,33 +92,47 @@ index 0edcf90..0d87cf0 100644
 +  for (const auto& link : export_command_links()) {
 +    hardware_interface::InterfaceInfo info;
 +    info.name = link.name;
++    // starts as NaN, like the members are only set in on_activate() / read()
 +    auto handle = std::make_shared<hardware_interface::CommandInterface>(
 +        hardware_interface::InterfaceDescription(link.prefix, info));
-+    std::ignore = handle->set_value(*link.value);
-+    command_links_.emplace_back(handle, link.value);
++    command_links_.push_back({ handle, link.value, std::numeric_limits<double>::quiet_NaN() });
 +    command_interfaces.push_back(handle);
 +  }
 +  return command_interfaces;
 +}
 +
-+// the controllers' commands into the members, and the driver's values back out
++namespace
++{
++// NO_NEW_CMD_ is NaN, which never compares equal to itself
++bool same(double a, double b)
++{
++  return std::memcmp(&a, &b, sizeof(double)) == 0;
++}
++}  // namespace
++
++// a command a controller wrote to its handle since the last sync goes to the member
 +void URPositionHardwareInterface::pull_commands()
 +{
-+  for (auto& [handle, value] : command_links_) {
++  for (auto& link : command_links_) {
 +    double command;
-+    if (handle->get_value(command, true)) {
-+      *value = command;
++    if (link.handle->get_value(command, true) && !same(command, link.synced) && same(*link.value, link.synced)) {
++      *link.value = command;
++      link.synced = command;
 +    }
 +  }
 +}
 +
++// the states, and the commands the driver itself changed since the last sync, go to the handles
 +void URPositionHardwareInterface::push_states_and_commands()
 +{
 +  for (auto& [handle, value] : state_links_) {
 +    std::ignore = handle->set_value(*value);
 +  }
-+  for (auto& [handle, value] : command_links_) {
-+    std::ignore = handle->set_value(*value);
++  for (auto& link : command_links_) {
++    if (!same(*link.value, link.synced)) {
++      link.synced = *link.value;
++      std::ignore = link.handle->set_value(link.synced);
++    }
 +  }
 +}
 +
@@ -148,7 +171,7 @@ index 0edcf90..0d87cf0 100644
          info_.joints[i].name, hardware_interface::HW_IF_EFFORT, &urcl_joint_efforts_[i]));
    }
  
-@@ -244,7 +316,7 @@ std::vector<hardware_interface::StateInterface> URPositionHardwareInterface::exp
+@@ -244,7 +330,7 @@ std::vector<hardware_interface::StateInterface> URPositionHardwareInterface::exp
    // NOTE using the tf_prefix at this point is some kind of workaround. One should actually go through the list of gpio
    // state interface in info_ and match them accordingly
    const std::string tf_prefix = info_.hardware_parameters.at("tf_prefix");
@@ -157,7 +180,7 @@ index 0edcf90..0d87cf0 100644
                                                                     &speed_scaling_combined_));
  
    for (auto& sensor : info_.sensors) {
-@@ -254,129 +326,129 @@ std::vector<hardware_interface::StateInterface> URPositionHardwareInterface::exp
+@@ -254,129 +340,129 @@ std::vector<hardware_interface::StateInterface> URPositionHardwareInterface::exp
        };
        for (uint32_t j = 0; j < 6; ++j) {
          state_interfaces.emplace_back(
@@ -331,7 +354,7 @@ index 0edcf90..0d87cf0 100644
  {
    auto has_cmd_interface = [](const hardware_interface::ComponentInfo& joint, const std::string& interface_name) {
      auto it =
-@@ -384,16 +456,16 @@ std::vector<hardware_interface::CommandInterface> URPositionHardwareInterface::e
+@@ -384,16 +470,16 @@ std::vector<hardware_interface::CommandInterface> URPositionHardwareInterface::e
                  [&interface_name](const hardware_interface::InterfaceInfo& obj) { return obj.name == interface_name; });
      return it != joint.command_interfaces.end();
    };
@@ -352,7 +375,7 @@ index 0edcf90..0d87cf0 100644
            info_.joints[i].name, hardware_interface::HW_IF_EFFORT, &urcl_torque_commands_[i]));
      }
    }
-@@ -403,58 +475,58 @@ std::vector<hardware_interface::CommandInterface> URPositionHardwareInterface::e
+@@ -403,58 +489,58 @@ std::vector<hardware_interface::CommandInterface> URPositionHardwareInterface::e
    const std::string tf_prefix = info_.hardware_parameters.at("tf_prefix");
  
    command_interfaces.emplace_back(
@@ -433,7 +456,7 @@ index 0edcf90..0d87cf0 100644
                                                                         &friction_model_async_success_));
  
    command_interfaces.emplace_back(tf_prefix + FORCE_MODE_GPIO, "task_frame_x", &force_mode_task_frame_[0]);
-@@ -488,145 +560,145 @@ std::vector<hardware_interface::CommandInterface> URPositionHardwareInterface::e
+@@ -488,145 +574,145 @@ std::vector<hardware_interface::CommandInterface> URPositionHardwareInterface::e
    command_interfaces.emplace_back(tf_prefix + FORCE_MODE_GPIO, "gain_scaling", &force_mode_gain_scaling_);
  
    command_interfaces.emplace_back(
@@ -631,7 +654,7 @@ index 0edcf90..0d87cf0 100644
  
    return command_interfaces;
  }
-@@ -935,7 +1007,7 @@ void URPositionHardwareInterface::asyncThread()
+@@ -981,7 +1067,7 @@ void URPositionHardwareInterface::asyncThread()
    }
  }
  
@@ -640,7 +663,7 @@ index 0edcf90..0d87cf0 100644
                                                                    const rclcpp::Duration& period)
  {
    // We want to start the rtde comm the latest point possible due to the delay times arising from setting up the
-@@ -1041,7 +1113,7 @@ hardware_interface::return_type URPositionHardwareInterface::read(const rclcpp::
+@@ -1091,7 +1177,7 @@ hardware_interface::return_type URPositionHardwareInterface::read(const rclcpp::
    return hardware_interface::return_type::OK;
  }
  
