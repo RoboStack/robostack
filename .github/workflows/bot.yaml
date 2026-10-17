@@ -74,6 +74,7 @@ jobs:
         with:
           locked: true  # the lock file must match pixi.toml
           pixi-version: v0.81.0
+          cache-write: false  # saved from main only (pixi-cache.yaml)
       - id: plan
         env:
           GITHUB_TOKEN: ${{ github.token }}  # GitHub API: ros/rosdistro sync tags
@@ -134,7 +135,7 @@ jobs:
         with:
           locked: true  # the lock file must match pixi.toml
           pixi-version: v0.81.0
-          cache-write: false  # the plan job saves the pixi environment cache
+          cache-write: false  # saved from main only (pixi-cache.yaml)
       - name: robostack-bot ${{ matrix.command }} ${{ matrix.distro }}
         id: bot
         env:
