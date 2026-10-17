@@ -6,10 +6,13 @@ the [RoboStack documentation](https://robostack.github.io/GettingStarted.html).
 
 | Distribution | Channel |
 |---|---|
-| rolling | [robostack-rolling](https://prefix.dev/channels/robostack-rolling) |
-| lyrical | [robostack-lyrical](https://prefix.dev/channels/robostack-lyrical) |
-| jazzy | [robostack-jazzy](https://anaconda.org/robostack-jazzy) |
-| humble | [robostack-staging](https://anaconda.org/robostack-staging) |
+| rolling | robostack-rolling ([prefix.dev](https://prefix.dev/channels/robostack-rolling), [anaconda.org](https://anaconda.org/robostack-rolling)) |
+| lyrical | robostack-lyrical ([prefix.dev](https://prefix.dev/channels/robostack-lyrical), [anaconda.org](https://anaconda.org/robostack-lyrical)) |
+| jazzy | robostack-jazzy ([prefix.dev](https://prefix.dev/channels/robostack-jazzy), [anaconda.org](https://anaconda.org/robostack-jazzy)) |
+| humble | robostack-humble ([prefix.dev](https://prefix.dev/channels/robostack-humble), [anaconda.org](https://anaconda.org/robostack-humble)) |
+
+Every distribution uploads the same packages to both: `-c robostack-<distro>` (anaconda.org)
+and `-c https://prefix.dev/robostack-<distro>` work alike.
 
 Packages are named `ros2-<package>`, e.g. `ros2-desktop` or `ros2-rclcpp`; the
 distribution comes from the channel. The older names keep working: for every package
@@ -60,8 +63,9 @@ tools/robostack.py         `pixi run rs ...`: every task, for one distribution o
 tools/maintenance.py       checks and robostack-bot commands
 tools/import_distro.py     (re)import a distribution from its own repository
 tools/*.py                 check_patches_clean_apply, check_dependency_compat, build_gap_report, ...
+tools/copy_staging_packages.py   noetic's staging copy (see CI)
 .scripts/                  staged build scripts (build_unix.sh, build_win.bat)
-.github/workflows/         testpr.yaml, main.yaml (staged build branches), bot.yaml
+.github/workflows/         testpr.yaml, main.yaml (staged build branches), bot.yaml, channel maintenance
 .claude/skills/             procedures for agents (debug a build, patches, versions/rebuilds, package selection)
 pixi.toml                  one environment for all distributions (one vinca, one rattler-build)
 ```
@@ -119,13 +123,19 @@ label doesn't start one by itself. Nothing has to be reset before merging.
   - Each selected distribution is built on all five platforms, with its own build cache. The `check` job runs `pixi run rs check`.
 - **After a merge** (`main.yaml`): for every changed distribution and platform, the job regenerates the recipes and the staged build workflow, and pushes them to `buildbranch_<distro>_<platform>`.
   - Each build branch carries its workflow as `.github/workflows/build.yaml`, which runs `.scripts/build_*.sh` in `distros/<distro>/work`.
-  - Those workflows build the packages and upload them to the distribution's channel.
+  - Those workflows build the packages and upload them to the distribution's channels, `robostack-<distro>` on anaconda.org and then on prefix.dev (`pixi run rs <distro> upload`). The builds read prefix.dev.
 - **Repository variables:**
   - `ROBOSTACK_UPLOAD_CHANNEL`: upload to this prefix.dev channel instead (for example a test channel), or `none` to build without uploading. Use the canonical reference: `<namespace>/<channel>` for a channel that isn't the namespace's primary one (e.g. `tobias-fischer/robostack-distro-test`).
-  - Upload credentials: prefix.dev channels use Repository Access (OIDC, no stored key). In the channel's *Settings > Repository Access*, authorize GitHub, this repository, workflow filename `build.yaml`, mode *Read/write*. There are no upload tokens: distributions whose channel is still on anaconda.org (`upload_target: anaconda`, read from there) can only upload to a prefix.dev channel set in `ROBOSTACK_UPLOAD_CHANNEL`.
+  - Upload credentials:
+    - prefix.dev channels use Repository Access (OIDC, no stored key). In the channel's *Settings > Repository Access*, authorize GitHub, this repository, workflow filename `build.yaml`, mode *Read/write*.
+    - anaconda.org has no trusted publishing: the secret `ANACONDA_API_TOKEN` is a token of an account that can upload to every `robostack-<distro>` channel there.
+    - With `ROBOSTACK_UPLOAD_CHANNEL` set, the uploads only go to that channel.
   - `ROBOSTACK_BOT_CLIENT_ID` (the App's Client ID, `Iv23…`) with the secret `ROBOSTACK_BOT_PRIVATE_KEY`: the robostack-bot GitHub App. It pushes the build branches (which contain workflow files) and opens bot PRs so that CI runs on them. `GHA_PAT` works as a fallback.
 
   The app needs repository permissions Contents, Pull requests, Issues and Workflows (read and write), with its webhook inactive.
+
+- **Channel maintenance:**
+  - `copy-staging-packages.yaml` (hourly): noetic (RoboStack/ros-noetic) still uploads to `robostack-staging`; this copies its packages on to `robostack-noetic` (`anaconda copy`, secret `ROBOSTACK_NOETIC_ANACONDA_API_TOKEN`; skipped without it).
 
 ### robostack-bot
 

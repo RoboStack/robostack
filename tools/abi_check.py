@@ -338,13 +338,9 @@ def channel_for(distro: str) -> list[str]:
     sys.path.insert(0, str(Path(__file__).parent))
     import robostack as rs
 
-    s = rs.settings(distro)
-    name = s.get("channel_name", f"robostack-{distro}")
     upload = os.environ.get("ROBOSTACK_UPLOAD_CHANNEL", "").strip()
     extra = [f"https://repo.prefix.dev/{upload}"] if upload and upload != "none" else []
-    if s.get("upload_target", "prefix") == "prefix":
-        return extra + [f"https://repo.prefix.dev/{name}"]
-    return extra + [f"https://conda.anaconda.org/{name}"]
+    return extra + [f"https://repo.prefix.dev/{rs.channel_name(distro)}"]
 
 
 def download(channel: str, platform: str, filename: str, dest: Path) -> Path:

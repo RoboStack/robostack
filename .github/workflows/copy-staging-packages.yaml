@@ -1,0 +1,41 @@
+# noetic (RoboStack/ros-noetic) uploads to robostack-staging: copy its packages on to
+# robostack-noetic (tools/copy_staging_packages.py). Moved here from
+# RoboStack/robostack.github.io. The distributions of this repository upload to their
+# own channels directly (tools/robostack.py upload). Skipped without the token secret.
+name: Copy staging packages
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "42 * * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  copy:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { distro: noetic, token: ROBOSTACK_NOETIC_ANACONDA_API_TOKEN }
+    name: copy ${{ matrix.distro }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Disable git auto-maintenance
+        run: git config --global maintenance.auto false && git config --global gc.auto 0
+      - uses: prefix-dev/setup-pixi@v0.11.0
+        with:
+          locked: true
+          pixi-version: v0.81.0
+          cache-write: false
+      - name: Copy the packages built since 2025-01-01
+        env:
+          ANACONDA_API_TOKEN: ${{ secrets[matrix.token] }}
+          DISTRO: ${{ matrix.distro }}
+        run: |
+          if [ -z "$ANACONDA_API_TOKEN" ]; then echo "::notice::no ${{ matrix.token }} secret: skipped"; exit 0; fi
+          pixi run python tools/copy_staging_packages.py "$DISTRO" 2025-01-01
