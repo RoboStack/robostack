@@ -1,8 +1,17 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 8d23a299a..f58c62831 100644
+index b7e8732..f139539 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -76,7 +76,11 @@ endif()
+@@ -34,13 +34,20 @@ else()
+ endif()
+ 
+ set(OGRE_CMAKE_ARGS)
++# RViz doesn't use the EXR codec, and Ogre's FindOpenEXR only knows OpenEXR 2's library names
++# (it never finds conda-forge's OpenEXR 3, but may mix in a system OpenEXR 2 from /usr)
++list(APPEND OGRE_CMAKE_ARGS -DOGRE_BUILD_PLUGIN_EXRCODEC:BOOL=OFF)
+ if(NOT WIN32)
+   list(APPEND OGRE_CMAKE_ARGS -DCMAKE_SKIP_INSTALL_RPATH:BOOL=ON)
+ endif()
  
  if(APPLE)
    list(APPEND OGRE_CMAKE_ARGS -DOGRE_ENABLE_PRECOMPILED_HEADERS:BOOL=OFF)
@@ -15,34 +24,9 @@ index 8d23a299a..f58c62831 100644
  endif()
  
  ament_vendor(ogre_vendor
-diff --git a/patches/0005-fix-macos-arm64.patch b/patches/0005-fix-macos-arm64.patch
-new file mode 100644
-index 000000000..9494cc9ae
---- /dev/null
-+++ b/patches/0005-fix-macos-arm64.patch
-@@ -0,0 +1,19 @@
-+diff --git a/CMakeLists.txt b/CMakeLists.txt
-+index f4d8fd4..ffae9c8 100644
-+--- a/CMakeLists.txt
-++++ b/CMakeLists.txt
-+@@ -270,14 +270,6 @@ elseif(EMSCRIPTEN)
-+   set(OGRE_CONFIG_THREADS "0" CACHE STRING "Threading is unstable on Emscripten" FORCE)
-+ elseif (APPLE AND NOT APPLE_IOS)
-+ 
-+-  set(XCODE_ATTRIBUTE_SDKROOT macosx)
-+-  if(CMAKE_GENERATOR STREQUAL "Unix Makefiles")
-+-    execute_process(COMMAND xcodebuild -version -sdk "${XCODE_ATTRIBUTE_SDKROOT}" Path | head -n 1 OUTPUT_VARIABLE CMAKE_OSX_SYSROOT)
-+-    string(REGEX REPLACE "(\r?\n)+$" "" CMAKE_OSX_SYSROOT "${CMAKE_OSX_SYSROOT}")
-+-  else()
-+-    set(CMAKE_OSX_SYSROOT macosx)
-+-  endif()
-+-
-+   # Make sure that the OpenGL render system is selected for non-iOS Apple builds
-+   set(OGRE_BUILD_RENDERSYSTEM_GLES2 FALSE)
-+ endif ()
 diff --git a/patches/0006-fix-char16.patch b/patches/0006-fix-char16.patch
 new file mode 100644
-index 000000000..dfc080bb9
+index 0000000..dfc080b
 --- /dev/null
 +++ b/patches/0006-fix-char16.patch
 @@ -0,0 +1,17 @@
@@ -63,3 +47,27 @@ index 000000000..dfc080bb9
 + 
 +         //! value type typedef for use in iterators
 +         typedef code_point value_type;
+diff --git a/patches/0008-fix-macos-sysroot.patch b/patches/0008-fix-macos-sysroot.patch
+new file mode 100644
+index 0000000..f58ad22
+--- /dev/null
++++ b/patches/0008-fix-macos-sysroot.patch
+@@ -0,0 +1,18 @@
++diff --git a/CMakeLists.txt b/CMakeLists.txt
++--- a/CMakeLists.txt
+++++ b/CMakeLists.txt
++@@ -270,14 +270,6 @@ elseif(EMSCRIPTEN)
++   set(OGRE_CONFIG_THREADS "0" CACHE STRING "Threading is unstable on Emscripten" FORCE)
++ elseif (APPLE AND NOT APPLE_IOS)
++ 
++-  set(XCODE_ATTRIBUTE_SDKROOT macosx)
++-  if(CMAKE_GENERATOR STREQUAL "Unix Makefiles")
++-    execute_process(COMMAND xcrun --sdk macosx --show-sdk-path OUTPUT_VARIABLE CMAKE_OSX_SYSROOT)
++-    string(REGEX REPLACE "(\r?\n)+$" "" CMAKE_OSX_SYSROOT "${CMAKE_OSX_SYSROOT}")
++-  else()
++-    set(CMAKE_OSX_SYSROOT macosx)
++-  endif()
++-
++   # Make sure that the OpenGL render system is selected for non-iOS Apple builds
++   set(OGRE_BUILD_RENDERSYSTEM_GLES2 FALSE)
++ endif ()
