@@ -542,6 +542,7 @@ packages_select_by_deps:
       - event_camera_renderer # doesn't support Windows shared library
       - ffmpeg_image_transport # TODO on windows: fix iconv link issue
       - foxglove_compressed_video_transport
+      - fuse # Windows: the fuse libraries export no symbols and add -Werror; requested in https://github.com/RoboStack/ros-lyrical/pull/85
       - grid_map # rviz linking problems on Windows, see https://github.com/RoboStack/ros-jazzy/pull/79#issuecomment-2993499990
       - grid_map_rviz_plugin # rviz linking problems on Windows, see https://github.com/RoboStack/ros-jazzy/pull/79#issuecomment-2993499990
       - ign_ros2_control
