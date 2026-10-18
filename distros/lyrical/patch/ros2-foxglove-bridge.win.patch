@@ -1,12 +1,14 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -62,7 +62,7 @@ endif()
+@@ -62,7 +62,9 @@ endif()
 
  macro(enable_strict_compiler_warnings target)
    if (MSVC)
 -    target_compile_options(${target} PRIVATE /WX /W4)
-+    target_compile_options(${target} PRIVATE /W4)
++    # /permissive: with C++20 (pulled in by the dependencies) MSVC enables /permissive-, which rejects
++    # the Foxglove SDK's explicit specializations after their first use (C2908 in parameter.hpp)
++    target_compile_options(${target} PRIVATE /W4 /permissive)
    elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
      target_compile_options(${target} PRIVATE -Wall -Wextra -Wpedantic -Werror -Wold-style-cast -Wfloat-equal -Wmost -Wunused-exception-parameter)
    else()
