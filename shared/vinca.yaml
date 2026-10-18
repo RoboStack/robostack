@@ -514,6 +514,10 @@ packages_select_by_deps:
   - if: linux and not aarch64
     then:
       - franka_ros2  # Franka robots support; see PR #338 for macOS/Windows errors
+      - kinova_gen3_6dof_robotiq_2f_85_moveit_config # kortex_api ships a linux-x86_64 binary; requested in https://github.com/RoboStack/ros-jazzy/pull/221
+      - kinova_gen3_7dof_robotiq_2f_85_moveit_config
+      - kinova_gen3_lite_moveit_config
+      - kortex_bringup
       - libfranka # conda-forge's libfranka is only published for linux-64, not linux-aarch64
       - webots_ros2 # Cyberbotics
 
