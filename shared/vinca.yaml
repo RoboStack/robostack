@@ -397,6 +397,7 @@ packages_select_by_deps:
       - avt_vimba_camera # ships some Linux .so in the repo, so it only supports linux
       - camera_ros # Depends on libcamera that is only available on linux; Depends on libcamera, only available on linux
       - can_dbc_parser
+      - canopen # macOS/Windows not tried yet; requested in https://github.com/RoboStack/ros-jazzy/pull/167
       - easynav
       - easynav_bonxai_maps_manager
       - easynav_common
