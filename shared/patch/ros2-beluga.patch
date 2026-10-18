@@ -1,0 +1,26 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 5c08a64..b94a7f1 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -94,7 +94,7 @@ target_sources(clang_tidy_findable PRIVATE src/clang_tidy_findable.cpp)
+ target_link_libraries(clang_tidy_findable PRIVATE ${PROJECT_NAME}
+                                                   beluga_compile_options)
+ 
+-option(BUILD_TESTING "Build the testing tree." ON)
++option(BUILD_TESTING "Build the testing tree." OFF)
+ if(BUILD_TESTING)
+   message(STATUS "Build testing enabled.")
+   enable_testing()
+diff --git a/include/beluga/policies/on_motion.hpp b/include/beluga/policies/on_motion.hpp
+index 9d7ad43..eb7a21f 100644
+--- a/include/beluga/policies/on_motion.hpp
++++ b/include/beluga/policies/on_motion.hpp
+@@ -15,7 +15,7 @@
+ #ifndef BELUGA_POLICIES_ON_MOTION_HPP
+ #define BELUGA_POLICIES_ON_MOTION_HPP
+ 
+-#include <Eigen/src/Geometry/AngleAxis.h>
++#include <Eigen/Geometry>
+ #include <beluga/policies/policy.hpp>
+ #include <sophus/se2.hpp>
+ #include <sophus/se3.hpp>
