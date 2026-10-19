@@ -66,6 +66,11 @@ mrpt2:
   add_host: ["assimp", "octomap", "tinyxml2", "libboost-devel", "jsoncpp", "gtest", "libboost-python-devel", "libdc1394", "xorg-libxcomposite", "libftdi", "ros2-octomap"]
   add_run: ["assimp", "octomap", "tinyxml2", "libboost-devel", "jsoncpp", "gtest", "libboost-python-devel", "libdc1394", "xorg-libxcomposite", "libftdi", "ros2-octomap"]
   add_build: ["${{ cdt('libxcomposite-devel') if linux }}"]
+mrpt_gui:
+  # Overrides shared/: this distribution maps Qt to qt-main 5.15, whose builds need
+  # gstreamer <1.27, while the pinned wxwidgets (3.3.3) needs gstreamer 1.28. A version
+  # spec bypasses that pin, so the solver picks a wxwidgets that coexists with qt-main.
+  add_host: ["wxwidgets >=3.2"]
 nav2_constrained_smoother:
   add_host: ["${{ 'openblas' if win }}"]
 nav2_util:
