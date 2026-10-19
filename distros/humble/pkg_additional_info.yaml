@@ -87,10 +87,9 @@ py_trees:
     max_pin: 'x.x.x'
     override_version: '2.5.0'
 rtabmap:
-  additional_cmake_args:
-    if: win
-    then: "-DWITH_QT=OFF -DBUILD_TOOLS=OFF -DBUILD_EXAMPLES=OFF -DWITH_GTSAM=OFF"
-    else: "-DWITH_QT=OFF -DBUILD_TOOLS=OFF -DBUILD_EXAMPLES=OFF"
+  # 0.23.13 as in jazzy: with its Qt GUI (rtabmap_viz needs it) and GTSAM; its tests
+  # (corelib/test) don't build with MSVC
+  additional_cmake_args: -DBUILD_TESTING=OFF
 urdfdom:
   generate_dummy_package_with_run_deps:
     dep_name: urdfdom
