@@ -1,0 +1,31 @@
+diff --git a/src/MolaDLL_Loader.cpp b/src/MolaDLL_Loader.cpp
+--- a/src/MolaDLL_Loader.cpp
++++ b/src/MolaDLL_Loader.cpp
+@@ -59,6 +59,9 @@
+     for (const auto& lib : lst)
+     {
+       if (lib.name.find("mola") == std::string::npos) continue;  // skip
++      // ROS interface libraries (e.g. mola_msgs) are never MOLA modules, and the
++      // Python ones cannot be dlopen()ed from a non-Python process:
++      if (lib.name.find("__rosidl_") != std::string::npos) continue;  // skip
+ 
+       // Already loaded?
+       if (loaded_lib_handled.count(lib.name) != 0) continue;  // skip
+diff --git a/src/MolaLauncherApp.cpp b/src/MolaLauncherApp.cpp
+--- a/src/MolaLauncherApp.cpp
++++ b/src/MolaLauncherApp.cpp
+@@ -119,6 +119,14 @@
+   // do not filter these ones by *directory* name, since *filenames* will be
+   // filtered later on:
+   from_env_var_to_list("LD_LIBRARY_PATH", lib_search_paths_);
++
++  // conda/RoboStack environments do not set LD_LIBRARY_PATH: also search
++  // <prefix>/lib for every prefix in AMENT_PREFIX_PATH.
++  {
++    std::vector<std::string> prefixes;
++    from_env_var_to_list("AMENT_PREFIX_PATH", prefixes);
++    for (const auto& prefix : prefixes) safe_add_to_list(prefix + "/lib", lib_search_paths_);
++  }
+ }
+ 
+ MolaLauncherApp::~MolaLauncherApp()
