@@ -1,5 +1,19 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a4a50fa..3e74cd5 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -38,6 +38,9 @@ ament_target_dependencies(floorplan_visualizer
+ )
+ 
+ 
++# Eigen 5's config doesn't set the Eigen3_INCLUDE_DIRS that ament_target_dependencies uses
++target_link_libraries(floorplan_visualizer PUBLIC Eigen3::Eigen)
++
+ target_include_directories(floorplan_visualizer
+   PRIVATE
+     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 diff --git a/src/FloorplanVisualizer.cpp b/src/FloorplanVisualizer.cpp
-index 15c07c0..6c6035e 100644
+index e0eefa6..4fb84b0 100644
 --- a/src/FloorplanVisualizer.cpp
 +++ b/src/FloorplanVisualizer.cpp
 @@ -74,7 +74,9 @@ FloorplanVisualizer::FloorplanVisualizer(const rclcpp::NodeOptions& options)
