@@ -32,3 +32,17 @@ diff --git a/cmake/script_nanogui.cmake b/cmake/script_nanogui.cmake
  set(MRPT_WITH_NANOGUI ${def_} CACHE BOOL "Build an embedded version of nanogui (OpenGL GUIs)")
  unset(def_)
  
+diff --git a/src/error_box.cpp b/src/error_box.cpp
+--- a/src/error_box.cpp
++++ b/src/error_box.cpp
+@@ -22,7 +22,9 @@
+ #else
+ #include <iostream>
+ #endif  // MRPT_HAS_Qt5
+-#if MRPT_HAS_WXWIDGETS
++// Only needed without Qt (see showErrorMessage()); on macOS the wx and Qt 5 headers
++// clash (NSData/NSString forward declarations).
++#if MRPT_HAS_WXWIDGETS && !MRPT_HAS_Qt5
+ #include <mrpt/gui/WxUtils.h>
+ #endif
+ 
