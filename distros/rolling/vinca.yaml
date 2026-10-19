@@ -16,15 +16,3 @@ packages_skip:
   - if: osx or win
     then:
       - mujoco_ros2_control_plugins
-
-
-packages_exclude:
-  # kortex_driver 0.2.5 still uses the pointer-based StateInterface/CommandInterface constructors
-  # that ros2_control 6.12 removed; upstream (Kinovarobotics/ros2_kortex) hasn't migrated yet
-  # (https://github.com/Kinovarobotics/ros2_kortex/issues/430).
-  # The rest needs the driver (kortex_api and kortex_description, which only these pull in, go too).
-  - kortex_driver
-  - kortex_bringup
-  - kinova_gen3_6dof_robotiq_2f_85_moveit_config
-  - kinova_gen3_7dof_robotiq_2f_85_moveit_config
-  - kinova_gen3_lite_moveit_config
