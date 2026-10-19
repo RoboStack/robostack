@@ -1,7 +1,27 @@
 diff --git a/src/MolaDLL_Loader.cpp b/src/MolaDLL_Loader.cpp
 --- a/src/MolaDLL_Loader.cpp
 +++ b/src/MolaDLL_Loader.cpp
-@@ -59,6 +59,9 @@
+@@ -24,7 +24,7 @@
+ 
+ #include <map>
+ 
+-#if defined(__unix__)
++#if defined(__unix__) || defined(__APPLE__)
+ #include <dlfcn.h>
+ #endif
+ 
+@@ -39,7 +39,9 @@
+ {
+   MRPT_TRY_START
+ 
+-#if defined(__unix__)
++#if defined(__APPLE__)
++#define DLL_EXT "dylib"
++#elif defined(__unix__)
+ #define DLL_EXT "so"
+ #else
+ #define DLL_EXT "dll"
+@@ -59,11 +61,14 @@
      for (const auto& lib : lst)
      {
        if (lib.name.find("mola") == std::string::npos) continue;  // skip
@@ -11,6 +31,21 @@ diff --git a/src/MolaDLL_Loader.cpp b/src/MolaDLL_Loader.cpp
  
        // Already loaded?
        if (loaded_lib_handled.count(lib.name) != 0) continue;  // skip
+ 
+-#if defined(__unix__)
++#if defined(__unix__) || defined(__APPLE__)
+       // Check if already loaded?
+       {
+         void* handle = dlopen(lib.wholePath.c_str(), RTLD_NOLOAD);
+@@ -109,7 +114,7 @@
+   {
+     // printf("[mola-launcher] Unloading: %s\n",
+     // lib.second.lib_path.c_str());
+-#if defined(__unix__)
++#if defined(__unix__) || defined(__APPLE__)
+     dlclose(lib.second.handle);
+ #else
+     FreeLibrary(lib.second.handle);
 diff --git a/src/MolaLauncherApp.cpp b/src/MolaLauncherApp.cpp
 --- a/src/MolaLauncherApp.cpp
 +++ b/src/MolaLauncherApp.cpp
