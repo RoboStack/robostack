@@ -1,0 +1,25 @@
+tests:
+  # Regression test (https://github.com/RoboStack/ros-kilted/issues/59): a package with an
+  # ament_add_gtest and an ament_add_gmock test must build and its tests run. When
+  # ament_cmake_gtest/gmock compiled gtest_vendor's sources against conda-forge's gtest headers
+  # (a different version), this failed to build or crashed.
+  - if: unix
+    then:
+      script:
+        - >-
+          cmake -S gt_demo -B build -G Ninja -DCMAKE_PREFIX_PATH="$PREFIX" -DBUILD_TESTING=ON
+          -DPYTHON_EXECUTABLE="$PREFIX/bin/python" -DPython_EXECUTABLE="$PREFIX/bin/python"
+          -DPython3_EXECUTABLE="$PREFIX/bin/python" -DPython3_FIND_STRATEGY=LOCATION
+        - cmake --build build
+        - ./build/test_demo
+        - ./build/test_mock
+      requirements:
+        build:
+          - cxx-compiler
+          - cmake
+          - ninja
+        run:
+          - ros2-ament-cmake  # the demo package's buildtool; not a run dependency of ament_cmake_gmock
+      files:
+        recipe:
+          - gt_demo/
