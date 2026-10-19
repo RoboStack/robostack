@@ -12,7 +12,7 @@ index 5c08a64..b94a7f1 100644
    message(STATUS "Build testing enabled.")
    enable_testing()
 diff --git a/include/beluga/policies/on_motion.hpp b/include/beluga/policies/on_motion.hpp
-index 9d7ad43..eb7a21f 100644
+index 9d7ad43..5cb6d95 100644
 --- a/include/beluga/policies/on_motion.hpp
 +++ b/include/beluga/policies/on_motion.hpp
 @@ -15,7 +15,7 @@
@@ -24,3 +24,30 @@ index 9d7ad43..eb7a21f 100644
  #include <beluga/policies/policy.hpp>
  #include <sophus/se2.hpp>
  #include <sophus/se3.hpp>
+@@ -119,12 +119,13 @@ struct on_motion_policy : public on_motion_policy_base<Pose> {
+ 
+   /// Return true if motion has been detected.
+   constexpr bool operator()(const Pose& pose) {
+-    if (!latest_pose_) {
++    if (!has_latest_pose_) {
+       latest_pose_ = pose;
++      has_latest_pose_ = true;
+       return true;
+     }
+ 
+-    const bool moved = (*this)(*latest_pose_, pose);
++    const bool moved = (*this)(latest_pose_, pose);
+     if (moved) {
+       latest_pose_ = pose;
+     }
+@@ -133,7 +134,9 @@ struct on_motion_policy : public on_motion_policy_base<Pose> {
+   }
+ 
+  private:
+-  std::optional<Pose> latest_pose_;  ///< The latest pose for motion comparison.
++  // a flag instead of std::optional<Pose>: GCC 15 fails to instantiate std::optional<Sophus::SE3>
++  bool has_latest_pose_{false};  ///< Whether latest_pose_ holds a pose.
++  Pose latest_pose_{};           ///< The latest pose for motion comparison.
+ };
+ 
+ /// Implementation detail for the on_motion_fn object.
