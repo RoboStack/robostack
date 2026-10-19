@@ -1,7 +1,7 @@
 diff --git a/3rdparty/nanogui/CMakeLists.txt b/3rdparty/nanogui/CMakeLists.txt
 --- a/3rdparty/nanogui/CMakeLists.txt
 +++ b/3rdparty/nanogui/CMakeLists.txt
-@@ -64,9 +64,9 @@
+@@ -64,9 +64,9 @@ endif()
  # -------------------------------------------------------------------------
  # Resource / Font Compilation
  # -------------------------------------------------------------------------
@@ -14,3 +14,21 @@ diff --git a/3rdparty/nanogui/CMakeLists.txt b/3rdparty/nanogui/CMakeLists.txt
  
  set(resources ${ENTYPO_TTF_FILE} ${ROBOTO_BOLD_TTF_FILE} ${ROBOTO_REGULAR_TTF_FILE})
  message(STATUS "Font resources: ${resources}")
+diff --git a/cmake/script_nanogui.cmake b/cmake/script_nanogui.cmake
+--- a/cmake/script_nanogui.cmake
++++ b/cmake/script_nanogui.cmake
+@@ -4,11 +4,9 @@
+ set(CMAKE_MRPT_HAS_NANOGUI 0)
+ set(CMAKE_MRPT_HAS_NANOGUI_SYSTEM 0)
+ 
+-if (APPLE)
+-  set(def_ OFF)
+-else()
+-  set(def_ ON)
+-endif()
++# RoboStack: also build nanogui on macOS (needed by mola_viz); it builds with GLFW and
++# OpenGL.framework.
++set(def_ ON)
+ set(MRPT_WITH_NANOGUI ${def_} CACHE BOOL "Build an embedded version of nanogui (OpenGL GUIs)")
+ unset(def_)
+ 
