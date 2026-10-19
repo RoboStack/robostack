@@ -448,7 +448,6 @@ packages_select_by_deps:
       - easynav_tools
       - easynav_vff_controller
       - libcamera
-      - mola # requested in https://github.com/RoboStack/robostack/issues/106
       - mujoco_ros2_control # Isaac ROS deploy / Unitree G1 simulation; runtime uses Linux-specific files; mujoco_ros2_control_plugins needs EGL
       - mujoco_ros2_control_demos # Use readlink and access at runtime linux-specific file
       - navmap_core
@@ -564,6 +563,7 @@ packages_select_by_deps:
       - med14_moveit_config
       - med7_moveit_config
       - mobile_robot_simulator
+      - mola # requested in https://github.com/RoboStack/robostack/issues/106; Windows not tried yet
       - octomap_server
       - openvdb_vendor
       - orbbec_camera_msgs
