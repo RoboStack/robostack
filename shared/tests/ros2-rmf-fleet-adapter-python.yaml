@@ -4,4 +4,5 @@ tests:
   # ("PyInterpreterState_Get: the function must be called with the GIL held"): it initialises
   # a second interpreter (see shared/patch/ros2-rmf-fleet-adapter-python.patch).
   - script:
-      - python -c "import rmf_adapter, rmf_adapter.easy_full_control, rmf_adapter.graph as graph; assert graph.Graph().num_waypoints == 0"
+      # submodules as attributes: older versions (humble's) don't make rmf_adapter a package
+      - python -c "import rmf_adapter; assert rmf_adapter.graph.Graph().num_waypoints == 0"
