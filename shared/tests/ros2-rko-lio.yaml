@@ -1,0 +1,6 @@
+tests:
+  # Smoke test: `rko_lio/online_node` (the odometry node) starts (loads its libraries and the RMW) and is still running after 5 s.
+  - if: unix
+    then:
+      script:
+        - python -c "import os, subprocess, sys, time; p = subprocess.Popen([os.path.join(os.environ['PREFIX'], 'lib', 'rko_lio', 'online_node')]); time.sleep(5); r = p.poll(); p.terminate(); sys.exit(0 if r is None else 1)"
