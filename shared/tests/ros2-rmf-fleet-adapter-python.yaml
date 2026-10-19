@@ -1,0 +1,7 @@
+tests:
+  # Regression test: rmf_adapter must import and work. Built as a SHARED library instead of
+  # a Python module, it links libpython, and on macOS `import rmf_adapter` then aborts
+  # ("PyInterpreterState_Get: the function must be called with the GIL held"): it initialises
+  # a second interpreter (see shared/patch/ros2-rmf-fleet-adapter-python.patch).
+  - script:
+      - python -c "import rmf_adapter, rmf_adapter.easy_full_control, rmf_adapter.graph as graph; assert graph.Graph().num_waypoints == 0"
