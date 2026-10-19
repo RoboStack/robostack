@@ -1,0 +1,108 @@
+diff --git a/mp2p_icp/include/mp2p_icp/LogRecord.h b/mp2p_icp/include/mp2p_icp/LogRecord.h
+--- a/mp2p_icp/include/mp2p_icp/LogRecord.h
++++ b/mp2p_icp/include/mp2p_icp/LogRecord.h
+@@ -80,7 +80,7 @@ class LogRecord : public mrpt::serialization::CSerializable
+ 
+         DECLARE_TTYPENAME_CLASSNAME(mp2p_icp::LogRecord::DebugInfoPerIteration)
+     };
+-    using iteration_idx_t   = std::size_t;
++    using iteration_idx_t   = std::uint64_t;
+     using IterationsDetails = std::map<iteration_idx_t, DebugInfoPerIteration>;
+ 
+     std::optional<IterationsDetails> iterationsDetails;
+diff --git a/mp2p_icp/src/Pairings.cpp b/mp2p_icp/src/Pairings.cpp
+--- a/mp2p_icp/src/Pairings.cpp
++++ b/mp2p_icp/src/Pairings.cpp
+@@ -57,7 +57,7 @@ void Pairings::serializeFrom(mrpt::serialization::CArchive& in)
+     {
+         // Removed in v3: per-point weights. Read and discard, for backward
+         // compatibility with older serialized icplog files.
+-        std::vector<std::pair<std::size_t, double>> unusedPointWeights;
++        std::vector<std::pair<std::uint64_t, double>> unusedPointWeights;
+         in >> unusedPointWeights;
+     }
+     if (readVersion >= 1)
+diff --git a/mp2p_icp/src/Results.cpp b/mp2p_icp/src/Results.cpp
+--- a/mp2p_icp/src/Results.cpp
++++ b/mp2p_icp/src/Results.cpp
+@@ -25,7 +25,7 @@ static const uint8_t SERIALIZATION_VERSION = 1;
+ void Results::serializeTo(mrpt::serialization::CArchive& out) const
+ {
+     out.WriteAs<uint8_t>(SERIALIZATION_VERSION);
+-    out << optimal_tf << optimalScale << nIterations;
++    out << optimal_tf << optimalScale << static_cast<uint64_t>(nIterations);
+     out << static_cast<uint8_t>(terminationReason);
+     out << quality;
+     finalPairings.serializeTo(out);
+@@ -37,7 +37,8 @@ void Results::serializeFrom(mrpt::serialization::CArchive& in)
+ 
+     ASSERT_LE_(readVersion, SERIALIZATION_VERSION);
+ 
+-    in >> optimal_tf >> optimalScale >> nIterations;
++    in >> optimal_tf >> optimalScale;
++    nIterations = static_cast<size_t>(in.ReadAs<uint64_t>());
+     terminationReason = static_cast<IterTermReason>(in.ReadAs<uint8_t>());
+     in >> quality;
+     finalPairings.serializeFrom(in);
+diff --git a/mp2p_icp_common/src/load_plugin.cpp b/mp2p_icp_common/src/load_plugin.cpp
+--- a/mp2p_icp_common/src/load_plugin.cpp
++++ b/mp2p_icp_common/src/load_plugin.cpp
+@@ -27,7 +27,7 @@
+ #include <string>
+ namespace fs = std::filesystem;
+ 
+-#if defined(__unix__)
++#if defined(__unix__) || defined(__APPLE__)
+ #include <dlfcn.h>
+ #endif
+ 
+@@ -72,6 +72,14 @@ void mp2p_icp::load_plugin(
+ {
+     std::string absPath;
+ 
++#if defined(__APPLE__)
++    // Plugin names are usually given as "lib<name>.so": use the macOS suffix.
++    if (fs::path(moduleToLoad).extension() == ".so")
++    {
++        return load_plugin(fs::path(moduleToLoad).replace_extension(".dylib").string(), logger);
++    }
++#endif
++
+     if (!fs::path(moduleToLoad).is_relative())
+     {
+         // already absolute:
+@@ -83,6 +91,13 @@ void mp2p_icp::load_plugin(
+         // search for it:
+         std::vector<std::string> lstPath;
+         from_env_var_to_list("LD_LIBRARY_PATH", lstPath);
++        // conda/RoboStack environments do not set LD_LIBRARY_PATH: also search
++        // <prefix>/lib for every prefix in AMENT_PREFIX_PATH.
++        {
++            std::vector<std::string> prefixes;
++            from_env_var_to_list("AMENT_PREFIX_PATH", prefixes);
++            for (const auto& prefix : prefixes) safe_add_to_list(prefix + "/lib", lstPath);
++        }
+ 
+         for (const auto& p : lstPath)
+         {
+@@ -101,7 +116,7 @@ void mp2p_icp::load_plugin(
+         }
+     }
+ 
+-#if defined(__unix__)
++#if defined(__unix__) || defined(__APPLE__)
+     // Check if already loaded?
+     {
+         void* handle = dlopen(absPath.c_str(), RTLD_NOLOAD);
+diff --git a/tests/test-mp2p_Pairings.cpp b/tests/test-mp2p_Pairings.cpp
+--- a/tests/test-mp2p_Pairings.cpp
++++ b/tests/test-mp2p_Pairings.cpp
+@@ -149,7 +149,7 @@ void test_Pairings_BackwardCompatDeserialization()
+     MatchedLineList       ln2ln;
+     MatchedPlaneList      pl2pl;
+     // Old-format per-point weights block, no longer used by current code:
+-    std::vector<std::pair<std::size_t, double>> point_weights;
++    std::vector<std::pair<std::uint64_t, double>> point_weights;
+     point_weights.emplace_back(1, 2.5);
+     const uint64_t          potential_pairings = 42;
+     MatchedPointWithCovList cov2cov;
