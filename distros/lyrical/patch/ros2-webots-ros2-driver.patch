@@ -74,6 +74,26 @@ index 1f913c1..18a0097 100644
    DESTINATION share/${PROJECT_NAME}/scripts
  )
  
+diff --git a/src/Driver.cpp b/src/Driver.cpp
+index cf79908..22069db 100644
+--- a/src/Driver.cpp
++++ b/src/Driver.cpp
+@@ -46,6 +46,7 @@ int main(int argc, char **argv) {
+     std::make_shared<webots_ros2_driver::WebotsNode>(robotName, nodeOptions);
+   node->init();
+ 
++#if defined(__linux__)  // /proc/<pid>/cmdline is Linux-only
+   // The parent process must be ros2 run. Declaring from launch file is deprecated. Remove with 2024.0.0.
+   const pid_t parentPid = getppid();
+   char buffer[4096];
+@@ -65,6 +66,7 @@ int main(int argc, char **argv) {
+   if (strstr(buffer, "ros2 launch"))
+     RCLCPP_WARN(node->get_logger(), "\033[33mThe direct declaration of the driver node in the launch file is deprecated. "
+                                     "Please use the new WebotsController node instead.\033[0m");
++#endif
+ 
+   RCLCPP_INFO(node->get_logger(), "Controller successfully connected to robot in Webots simulation.");
+   while (true) {
 diff --git a/src/plugins/static/Ros2LightSensor.cpp b/src/plugins/static/Ros2LightSensor.cpp
 index 63a5e4b..1288e06 100644
 --- a/src/plugins/static/Ros2LightSensor.cpp
@@ -89,6 +109,32 @@ index 63a5e4b..1288e06 100644
          relativeStd = mLookupTable[i + 2];
          break;
        }
+diff --git a/webots/lib/controller/python/controller/wb.py b/webots/lib/controller/python/controller/wb.py
+index 48c9506..64f07de 100644
+--- a/webots/lib/controller/python/controller/wb.py
++++ b/webots/lib/controller/python/controller/wb.py
+@@ -21,7 +21,7 @@ if sys.platform == 'linux' or sys.platform == 'linux2':
+ elif sys.platform == 'win32':
+     path = os.path.join('lib', 'controller', 'Controller.dll')
+ elif sys.platform == 'darwin':
+-    path = os.path.join('Contents', 'lib', 'controller', 'libController.dylib')
++    path = os.path.join('lib', 'controller', 'libController.dylib')
+ 
+ wb = ctypes.cdll.LoadLibrary(os.path.join(os.environ['WEBOTS_HOME'], path))
+ 
+diff --git a/webots/lib/controller/python/vehicle/driver.py b/webots/lib/controller/python/vehicle/driver.py
+index 6d70788..5123beb 100644
+--- a/webots/lib/controller/python/vehicle/driver.py
++++ b/webots/lib/controller/python/vehicle/driver.py
+@@ -43,7 +43,7 @@ class Driver(Supervisor):
+             car = 'car.dll'
+             driver = 'driver.dll'
+         elif sys.platform == 'darwin':
+-            path = os.path.join('Contents', 'lib', 'controller')
++            path = os.path.join('lib', 'controller')
+             car = 'libcar.dylib'
+             driver = 'libdriver.dylib'
+         ctypes.cdll.LoadLibrary(os.path.join(os.environ['WEBOTS_HOME'], path, car))
 diff --git a/webots/resources/Makefile.include b/webots/resources/Makefile.include
 index 461793b..704adf6 100644
 --- a/webots/resources/Makefile.include
@@ -239,3 +285,30 @@ index 6c9cf55..7cd02ff 100644
 +	@$(or $(LAUNCHER_CC),gcc) $(CFLAGS) webots_controller.c -o $@
  
  FILES_TO_REMOVE += $(CONTROLLER_LAUNCHER)
+diff --git a/webots_ros2_driver/utils.py b/webots_ros2_driver/utils.py
+index b6a9a54..87acc5f 100644
+--- a/webots_ros2_driver/utils.py
++++ b/webots_ros2_driver/utils.py
+@@ -46,6 +46,9 @@ class WebotsVersion:
+     @staticmethod
+     def from_path(path):
+         version_file = os.path.join(path, 'resources', 'version.txt')
++        if sys.platform == 'darwin' and not os.path.isfile(version_file):
++            # the macOS app bundle: /Applications/Webots.app/Contents/Resources
++            version_file = os.path.join(path, 'Contents', 'Resources', 'version.txt')
+         if not os.path.isfile(version_file):
+             return None
+         with open(version_file, 'r') as f:
+diff --git a/webots_ros2_driver/webots_launcher.py b/webots_ros2_driver/webots_launcher.py
+index 3952906..12c493c 100644
+--- a/webots_ros2_driver/webots_launcher.py
++++ b/webots_ros2_driver/webots_launcher.py
+@@ -72,6 +72,8 @@ class WebotsLauncher(ExecuteProcess):
+                 webots_path = get_webots_home()
+             if self.__is_wsl:
+                 webots_path = os.path.join(webots_path, 'msys64', 'mingw64', 'bin', 'webots.exe')
++            elif sys.platform == 'darwin':
++                webots_path = os.path.join(webots_path, 'Contents', 'MacOS', 'webots')
+             else:
+                 webots_path = os.path.join(webots_path, 'webots')
+         else:
