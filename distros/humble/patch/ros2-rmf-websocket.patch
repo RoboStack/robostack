@@ -1,0 +1,22 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index abc3bae..2cef478 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -21,7 +21,8 @@ find_package(nlohmann_json REQUIRED)
+ find_package(nlohmann_json_schema_validator_vendor REQUIRED)
+ find_package(nlohmann_json_schema_validator REQUIRED)
+ find_package(websocketpp REQUIRED)
+-find_package(Boost COMPONENTS system filesystem REQUIRED)
++# Boost.System is header-only (no boost_system library since Boost 1.89)
++find_package(Boost COMPONENTS filesystem REQUIRED)
+ find_package(Threads)
+ 
+ file(GLOB_RECURSE core_lib_srcs "src/rmf_websocket/*.cpp")
+@@ -36,7 +37,6 @@ target_link_libraries(rmf_websocket
+     nlohmann_json_schema_validator
+   PRIVATE
+     ${Boost_FILESYSTEM_LIBRARY}
+-    ${Boost_SYSTEM_LIBRARY}
+     Threads::Threads
+ )
+ 

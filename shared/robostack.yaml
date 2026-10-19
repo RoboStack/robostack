@@ -175,6 +175,11 @@ ignition-cmake2:
   robostack: [libignition-cmake2]
 ignition-common4:
   robostack: [libignition-common4]
+ignition-fortress:
+  robostack:
+    linux: [libignition-cmake2, libignition-common4, libignition-gazebo6, libignition-gui6, libignition-math6, libignition-msgs8, libignition-plugin1, libignition-rendering6, libignition-transport11, libgl-devel]
+    osx: [libignition-cmake2, libignition-common4, libignition-gazebo6, libignition-gui6, libignition-math6, libignition-msgs8, libignition-plugin1, libignition-rendering6, libignition-transport11]
+    win64: [libignition-cmake2, libignition-common4, libignition-gazebo6, libignition-gui6, libignition-math6, libignition-msgs8, libignition-plugin1, libignition-rendering6, libignition-transport11]
 ignition-gazebo3:
   robostack: [libignition-gazebo5]
 ignition-gazebo5:
