@@ -23,4 +23,6 @@ full_rebuild: false
 #
 # Remember that dependents are not rebuilt automatically: evict them as well if
 # they must pick up the change.
-evict_cache: []
+evict_cache:
+  - ur_robot_driver   # patch now from UniversalRobots/Universal_Robots_ROS2_Driver#2026
+  - ur_controllers
