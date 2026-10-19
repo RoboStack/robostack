@@ -93,9 +93,6 @@ py_trees_ros_tutorials:
   # PyQt6 (the rqt stack) can't be installed together
   remove_run: ["pyqt", "pyqt-builder"]
   add_run: ["pyqt6"]
-pybind11_json_vendor:
-  add_host: ["pybind11_json"]
-  add_run: ["pybind11_json"]
 python_qt_binding:
   # pyside2 has no python 3.14 build; port to PyQt6 instead.
   remove_host: ["qt-main", "pyqt"]
