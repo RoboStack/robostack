@@ -267,6 +267,12 @@ def rattler_build(distro: str, args: list[str], skip_existing: bool = True) -> l
 UPLOAD_HOSTS = ("prefix", "anaconda")
 
 
+def anaconda_token_secret(distro: str) -> str:
+    """The repository secret with the anaconda.org API token of the distribution's
+    organization (robostack-<distro>); the build workflows pass it on as ANACONDA_API_TOKEN."""
+    return f"ANACONDA_API_TOKEN_{distro.upper()}"
+
+
 def upload_hosts(distro: str) -> list[str]:
     """Where the distribution's packages are uploaded (upload_to in distro.yaml; both by
     default), to the channel of the same name on each."""
@@ -278,8 +284,8 @@ def upload(distro: str, files: list[str], cwd: Path) -> int:
     same channel name on each).
 
     prefix.dev uploads use trusted publishing (Repository Access, OIDC; no stored key)
-    and publish an attestation. anaconda.org uploads use the ANACONDA_API_TOKEN secret,
-    which the build workflows pass on (vinca-gha). Both skip packages that are already
+    and publish an attestation. anaconda.org uploads use ANACONDA_API_TOKEN, which the
+    build workflow sets from the secret ANACONDA_API_TOKEN_<DISTRO> (see generate_gha). Both skip packages that are already
     there, so a re-run only uploads what's missing.
 
     ROBOSTACK_UPLOAD_CHANNEL (set by the staged build workflows from the repository
@@ -301,7 +307,8 @@ def upload(distro: str, files: list[str], cwd: Path) -> int:
         return rc
     token = os.environ.get("ANACONDA_API_TOKEN", "").strip()
     if not token:
-        print(f"no ANACONDA_API_TOKEN: not uploading to anaconda.org/{channel}", file=sys.stderr)
+        print(f"no ANACONDA_API_TOKEN (repository secret {anaconda_token_secret(distro)}): not uploading to "
+              f"anaconda.org/{channel}", file=sys.stderr)
         return 1
     missing = [f for f in files if not on_anaconda(channel, Path(cwd, f))]
     if missing:
@@ -443,8 +450,11 @@ def generate_gha(distro: str, args: list[str]) -> int:
         lines = [f"name: build\nrun-name: {distro} {ns.platform}\n"
                  f"concurrency:\n  group: build-{distro}-{ns.platform}\n  cancel-in-progress: false"
                  if l.startswith("name: ") else l for l in lines]
-        # vinca-gha passes secrets.ANACONDA_API_TOKEN to the build jobs: the anaconda.org
-        # upload (prefix.dev uses trusted publishing, id-token: write)
+        # vinca-gha passes secrets.ANACONDA_API_TOKEN to the build jobs, for the anaconda.org
+        # upload (prefix.dev uses trusted publishing, id-token: write): each distribution
+        # has its own token (its organization's), the secret ANACONDA_API_TOKEN_<DISTRO>
+        secret = anaconda_token_secret(distro)
+        lines = [l.replace("secrets.ANACONDA_API_TOKEN }}", f"secrets.{secret} }}}}") for l in lines]
         # jobs that declare permissions get none they don't list: checking out the
         # repository needs contents: read (only works without it while it is public)
         lines = [f"{l}\n{l[:len(l) - len(l.lstrip())]}contents: read" if l.strip() == "id-token: write" else l

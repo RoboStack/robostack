@@ -124,7 +124,7 @@ label doesn't start one by itself. Nothing has to be reset before merging.
   - `ROBOSTACK_UPLOAD_CHANNEL`: upload only to this prefix.dev channel instead (for example a test channel), or `none` to build without uploading. Use the canonical reference: `<namespace>/<channel>` for a channel that isn't the namespace's primary one (e.g. `tobias-fischer/robostack-distro-test`).
   - Upload credentials:
     - prefix.dev: Repository Access (OIDC, no stored key). In each channel's *Settings > Repository Access*, authorize GitHub, this repository, workflow filename `build.yaml`, mode *Read/write*.
-    - anaconda.org: the repository secret `ANACONDA_API_TOKEN`, an anaconda.org API token (scope *Allow write access to the API site*, `api:write`) of an account that can upload to every `robostack-<distro>` organization that a distribution uploads to.
+    - anaconda.org: one repository secret per distribution, `ANACONDA_API_TOKEN_<DISTRO>` (e.g. `ANACONDA_API_TOKEN_HUMBLE`): an API token of its `robostack-<distro>` organization with scope *Allow write access to the API site* (`api:write`). The generated build workflow passes it to the upload as `ANACONDA_API_TOKEN`.
   - `ROBOSTACK_BOT_CLIENT_ID` (the App's Client ID, `Iv23…`) with the secret `ROBOSTACK_BOT_PRIVATE_KEY`: the robostack-bot GitHub App. It pushes the build branches (which contain workflow files) and opens bot PRs so that CI runs on them. `GHA_PAT` works as a fallback.
 
   The app needs repository permissions Contents, Pull requests, Issues and Workflows (read and write), with its webhook inactive.
