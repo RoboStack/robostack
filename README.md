@@ -6,7 +6,7 @@ the [RoboStack documentation](https://robostack.github.io/GettingStarted.html).
 
 | Distribution | Channel |
 |---|---|
-| rolling | [robostack-rolling](https://prefix.dev/channels/robostack-rolling) |
+| rolling | robostack-rolling on [prefix.dev](https://prefix.dev/channels/robostack-rolling) and [anaconda.org](https://anaconda.org/robostack-rolling) (the same packages) |
 | lyrical | robostack-lyrical on [prefix.dev](https://prefix.dev/channels/robostack-lyrical) and [anaconda.org](https://anaconda.org/robostack-lyrical) (the same packages) |
 | jazzy | [robostack-jazzy](https://anaconda.org/robostack-jazzy) (prefix.dev mirrors it) |
 | humble | [robostack-humble](https://anaconda.org/robostack-humble) (prefix.dev mirrors it) |
