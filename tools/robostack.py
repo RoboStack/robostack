@@ -264,9 +264,18 @@ def rattler_build(distro: str, args: list[str], skip_existing: bool = True) -> l
     return cmd + (["--skip-existing"] if skip_existing else []) + args
 
 
+UPLOAD_HOSTS = ("prefix", "anaconda")
+
+
+def upload_hosts(distro: str) -> list[str]:
+    """Where the distribution's packages are uploaded (upload_to in distro.yaml; both by
+    default), to the channel of the same name on each."""
+    return list(settings(distro).get("upload_to", UPLOAD_HOSTS))
+
+
 def upload(distro: str, files: list[str], cwd: Path) -> int:
-    """Upload to the distribution's channel on both prefix.dev and anaconda.org (same
-    channel name on each).
+    """Upload to the distribution's channel on prefix.dev and/or anaconda.org (upload_to;
+    same channel name on each).
 
     prefix.dev uploads use trusted publishing (Repository Access, OIDC; no stored key)
     and publish an attestation. anaconda.org uploads use the ANACONDA_API_TOKEN secret,
@@ -283,9 +292,12 @@ def upload(distro: str, files: list[str], cwd: Path) -> int:
         print(f"ROBOSTACK_UPLOAD_CHANNEL=none: not uploading {' '.join(files)}")
         return 0
     channel = override or channel_name(distro)
-    rc = retry(["rattler-build", "upload", "prefix", "-c", channel, "--skip-existing", "--generate-attestation",
-                *files], cwd, "prefix.dev")
-    if override:
+    hosts = ["prefix"] if override else upload_hosts(distro)
+    rc = 0
+    if "prefix" in hosts:
+        rc = retry(["rattler-build", "upload", "prefix", "-c", channel, "--skip-existing", "--generate-attestation",
+                    *files], cwd, "prefix.dev")
+    if "anaconda" not in hosts:
         return rc
     token = os.environ.get("ANACONDA_API_TOKEN", "").strip()
     if not token:

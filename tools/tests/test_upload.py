@@ -48,3 +48,10 @@ def test_reads_from(monkeypatch):
     assert rs.channel_url("humble") == "https://conda.anaconda.org/robostack-humble"
     monkeypatch.setattr(rs, "settings", lambda distro: {"channel_name": "robostack-rolling"})
     assert rs.repodata_url("rolling") == "https://repo.prefix.dev/robostack-rolling"
+
+
+def test_anaconda_only(calls, monkeypatch):
+    monkeypatch.setattr(rs, "settings", lambda distro: {"channel_name": "robostack-humble", "upload_to": ["anaconda"]})
+    monkeypatch.setattr(rs, "on_anaconda", lambda channel, package: False)
+    assert rs.upload("humble", ["linux-64/a-1-0.conda"], Path(".")) == 0
+    assert [c[2] for c in calls] == ["anaconda"] and calls[0][4] == "robostack-humble"

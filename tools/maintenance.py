@@ -606,7 +606,7 @@ def new_distro(name: str, source: str) -> Result:
 
 def _populate_new_distro(name: str, source: str, src: Path, dest: Path) -> Result:
     settings = rs.settings(source)
-    keep = {k: settings[k] for k in ("read_from",) if k in settings}
+    keep = {k: settings[k] for k in ("read_from", "upload_to") if k in settings}
     (dest / "distro.yaml").write_text(
         f"# Settings of ros-{name} that differ from the other distributions\n"
         "# (everything else is shared, see the README).\n"
@@ -1227,7 +1227,7 @@ def check() -> Result:
     """Sanity checks: every distribution assembles and its generated files are consistent."""
     problems: list[str] = []
     all_packages: set[str] = set()
-    known = {"channel_name", "read_from", "conda_forge_pinning_version", "conda_forge_migrations", "pinning_overrides",
+    known = {"channel_name", "read_from", "upload_to", "conda_forge_pinning_version", "conda_forge_migrations", "pinning_overrides",
              "rosdistro_sync"}
     for distro in rs.distros():
         d = rs.DISTROS / distro
@@ -1236,6 +1236,9 @@ def check() -> Result:
             problems.append(f"{distro}: unknown keys in distro.yaml: {sorted(unknown)}")
         if settings.get("read_from", "prefix") not in ("prefix", "anaconda"):
             problems.append(f"{distro}: read_from must be prefix or anaconda")
+        upload_to = settings.get("upload_to", list(rs.UPLOAD_HOSTS))
+        if not upload_to or not set(upload_to) <= set(rs.UPLOAD_HOSTS):
+            problems.append(f"{distro}: upload_to must list prefix and/or anaconda")
         sync = settings.get("rosdistro_sync")
         if sync is not None and sync != "manual" and not ((m := SYNC_TAG.match(str(sync))) and m["distro"] == distro):
             problems.append(f"{distro}: rosdistro_sync must be 'manual' or a sync tag like {distro}/2026-10-05")

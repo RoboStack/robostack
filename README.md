@@ -4,12 +4,12 @@ Conda packages of [ROS](https://www.ros.org) for Linux, macOS and Windows, built
 this repository for every supported ROS 2 distribution. To install and use them, see
 the [RoboStack documentation](https://robostack.github.io/GettingStarted.html).
 
-| Distribution | Channel (the same packages on both) |
+| Distribution | Channel |
 |---|---|
-| rolling | robostack-rolling on [prefix.dev](https://prefix.dev/channels/robostack-rolling) and [anaconda.org](https://anaconda.org/robostack-rolling) |
-| lyrical | robostack-lyrical on [prefix.dev](https://prefix.dev/channels/robostack-lyrical) and [anaconda.org](https://anaconda.org/robostack-lyrical) |
-| jazzy | robostack-jazzy on [prefix.dev](https://prefix.dev/channels/robostack-jazzy) and [anaconda.org](https://anaconda.org/robostack-jazzy) |
-| humble | robostack-humble on [prefix.dev](https://prefix.dev/channels/robostack-humble) and [anaconda.org](https://anaconda.org/robostack-humble) |
+| rolling | robostack-rolling on [prefix.dev](https://prefix.dev/channels/robostack-rolling) and [anaconda.org](https://anaconda.org/robostack-rolling) (the same packages) |
+| lyrical | robostack-lyrical on [prefix.dev](https://prefix.dev/channels/robostack-lyrical) and [anaconda.org](https://anaconda.org/robostack-lyrical) (the same packages) |
+| jazzy | [robostack-jazzy](https://anaconda.org/robostack-jazzy) (prefix.dev mirrors it) |
+| humble | [robostack-humble](https://anaconda.org/robostack-humble) (prefix.dev mirrors it) |
 
 Packages are named `ros2-<package>`, e.g. `ros2-desktop` or `ros2-rclcpp`; the
 distribution comes from the channel. The older names keep working: for every package
@@ -41,7 +41,7 @@ If you use RoboStack in your academic work, please cite:
 
 ```
 distros/<distro>/          only what is specific to one distribution
-  distro.yaml              channel (and where builds read it from), conda-forge pinning version/migrations, own pins, rosdistro sync
+  distro.yaml              channel, where it's uploaded and read from, conda-forge pinning version/migrations, own pins, rosdistro sync
   vinca.yaml               extends shared/vinca.yaml: ros_distro, build number, mutex version, its exceptions
   pkg_additional_info.yaml its own per-package settings (build numbers, version-specific cmake args)
   patch/                   its patches; patch/dependencies.yaml its own dependency fixes
@@ -119,12 +119,12 @@ label doesn't start one by itself. Nothing has to be reset before merging.
   - Each selected distribution is built on all five platforms, with its own build cache. The `check` job runs `pixi run rs check`.
 - **After a merge** (`main.yaml`): for every changed distribution and platform, the job regenerates the recipes and the staged build workflow, and pushes them to `buildbranch_<distro>_<platform>`.
   - Each build branch carries its workflow as `.github/workflows/build.yaml`, which runs `.scripts/build_*.sh` in `distros/<distro>/work`.
-  - Those workflows build the packages and upload them to the distribution's channel on both prefix.dev and anaconda.org (same channel name; packages already there are skipped). `read_from` in `distro.yaml` only says where the builds look up what's already published.
+  - Those workflows build the packages and upload them to the distribution's channel on the servers `upload_to` in `distro.yaml` lists (prefix.dev and/or anaconda.org, the same channel name on each; packages already there are skipped). `read_from` says where the builds look up what's already published.
 - **Repository variables:**
   - `ROBOSTACK_UPLOAD_CHANNEL`: upload only to this prefix.dev channel instead (for example a test channel), or `none` to build without uploading. Use the canonical reference: `<namespace>/<channel>` for a channel that isn't the namespace's primary one (e.g. `tobias-fischer/robostack-distro-test`).
   - Upload credentials:
     - prefix.dev: Repository Access (OIDC, no stored key). In each channel's *Settings > Repository Access*, authorize GitHub, this repository, workflow filename `build.yaml`, mode *Read/write*.
-    - anaconda.org: the repository secret `ANACONDA_API_TOKEN`, an anaconda.org API token (scope *Allow write access to the API site*, `api:write`) of an account that can upload to every `robostack-<distro>` organization.
+    - anaconda.org: the repository secret `ANACONDA_API_TOKEN`, an anaconda.org API token (scope *Allow write access to the API site*, `api:write`) of an account that can upload to every `robostack-<distro>` organization that a distribution uploads to.
   - `ROBOSTACK_BOT_CLIENT_ID` (the App's Client ID, `Iv23…`) with the secret `ROBOSTACK_BOT_PRIVATE_KEY`: the robostack-bot GitHub App. It pushes the build branches (which contain workflow files) and opens bot PRs so that CI runs on them. `GHA_PAT` works as a fallback.
 
   The app needs repository permissions Contents, Pull requests, Issues and Workflows (read and write), with its webhook inactive.
