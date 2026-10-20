@@ -39,8 +39,8 @@ done
 shopt -s nullglob
 conda_packages=( "${CONDA_BLD_PATH}/${target}"*/*.conda )
 if (( ${#conda_packages[@]} > 0 )); then
-    # Upload packages one-by-one; the upload task (tools/robostack.py) skips or overwrites
-    # packages that already exist, depending on the upload target.
+    # Upload packages one-by-one; the upload task (tools/robostack.py) uploads them to
+    # prefix.dev and anaconda.org and skips packages that are already there.
     for conda_package in "${conda_packages[@]}"; do
         pixi run rs "${ROBOSTACK_DISTRO}" upload "${conda_package}"
     done

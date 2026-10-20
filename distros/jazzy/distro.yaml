@@ -1,7 +1,9 @@
 # Settings of ros-jazzy that differ from the other distributions
 # (everything else is shared, see the README).
+# packages are uploaded to this channel on both prefix.dev and anaconda.org;
+# read_from: where the builds look up what is already published
 channel_name: robostack-jazzy
-upload_target: anaconda
+read_from: anaconda
 conda_forge_pinning_version: 2026.09.01.16.28.00
 conda_forge_migrations: [giflib6, go_macos, gstreamer128, hdf52, libboost190, pybind11_abi11, urdfdom6,
   vtk970]
