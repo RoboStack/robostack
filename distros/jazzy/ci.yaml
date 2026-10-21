@@ -23,6 +23,4 @@ full_rebuild: false
 #
 # Remember that dependents are not rebuilt automatically: evict them as well if
 # they must pick up the change.
-evict_cache:  # TEMPORARY (#61): reset to [] before merging
-  # its Windows environment hook points at bin/ (RoboStack/robostack#104)
-  - gz_ros2_control
+evict_cache: []

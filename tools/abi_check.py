@@ -338,13 +338,9 @@ def channel_for(distro: str) -> list[str]:
     sys.path.insert(0, str(Path(__file__).parent))
     import robostack as rs
 
-    s = rs.settings(distro)
-    name = s.get("channel_name", f"robostack-{distro}")
     upload = os.environ.get("ROBOSTACK_UPLOAD_CHANNEL", "").strip()
     extra = [f"https://repo.prefix.dev/{upload}"] if upload and upload != "none" else []
-    if s.get("upload_target", "prefix") == "prefix":
-        return extra + [f"https://repo.prefix.dev/{name}"]
-    return extra + [f"https://conda.anaconda.org/{name}"]
+    return extra + [rs.repodata_url(distro)]
 
 
 def download(channel: str, platform: str, filename: str, dest: Path) -> Path:
@@ -523,7 +519,8 @@ def pr_summary(results: dict, distro: str, platform: str, channel: str, build_nu
     counts = [f"**{len(breaking)} need their dependents rebuilt**" if breaking else "",
               f"{len(attention) - len(breaking)} to review (changed headers)" if len(attention) > len(breaking) else "",
               f"{len(rest)} can be bumped on their own" if rest else ""]
-    lines = [f"<details{' open' if breaking else ''}><summary><b>{distro} {platform}</b>: "
+    # always collapsed, the summary line shows the counts (breaking ones in bold)
+    lines = [f"<details><summary><b>{distro} {platform}</b>: "
              f"{', '.join(c for c in counts if c)}</summary>", ""]
     if attention:
         lines += TABLE_HEADER + [_row(n, r) for n, r in attention] + [""]
