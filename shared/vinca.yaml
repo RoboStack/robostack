@@ -20,10 +20,6 @@ mutex_package:
 # pixi used by the generated build workflows; keep in sync with .github/workflows.
 setup_pixi_version: "0.11.0"
 pixi_version: "0.81.0"
-# Mapped to conda-forge in shared/robostack.yaml (tl_expected -> cpp-expected,
-# sophus -> sophus). Where they are also ROS packages (humble, jazzy), vinca
-# would otherwise build the ROS package under the conda-forge name, which shadows the
-# conda-forge package (e.g. no tl-expected CMake config for rsl).
 packages_select_by_deps:
   - ackermann_msgs
   - ament_cmake
@@ -93,7 +89,6 @@ packages_select_by_deps:
   - autoware_v2x_msgs
   - autoware_vehicle_info_utils
   - autoware_vehicle_msgs
-  - avt_vimba_camera_msgs # Allied Vision Technologies
   - aws_robomaker_small_warehouse_world # AWS Robotics
   - battery_state_broadcaster
   - behaviortree_cpp
@@ -106,7 +101,6 @@ packages_select_by_deps:
   - can_msgs
   - cartographer_ros
   - cascade_lifecycle_msgs # Requested in https://www.linkedin.com/feed/update/urn:li:activity:7346559234177703938/
-  - cl_ros2_timer
   - clearpath_common
   - cm_executors
   - color_util
@@ -117,7 +111,6 @@ packages_select_by_deps:
   - demo_nodes_py
   - desktop
   - desktop_full
-  - dev_tools
   - diagnostic_remote_logging
   - diagnostics
   - diff_drive_controller
@@ -255,7 +248,6 @@ packages_select_by_deps:
   - rclc_lifecycle
   - rclc_parameter
   - rclcpp
-  - rclcpp_async
   - rclcpp_cascade_lifecycle
   - rclpy
   - rclpy_cascade_lifecycle
@@ -285,7 +277,6 @@ packages_select_by_deps:
   - roboplan_rrt
   - roboplan_simple_ik
   - roboplan_toppra
-  - robot
   - robot_controllers
   - robot_localization # win-64 LNK2019/LNK2001 unresolved symbols in rosidl fastrtps typesupport libs; root cause unclear, skip rather than guess blind
   - robotiq_controllers
@@ -347,7 +338,6 @@ packages_select_by_deps:
   - smacc2_msgs
   - stubborn_buddies # Open RMF; Requested in https://github.com/RoboStack/ros-humble/issues/325
   - system_modes # Micro-ROS
-  - teleop
   - teleop_tools
   - tf_transformations # DLu
   - topic_based_ros2_control # Generic dependency used by Isaac ROS without Jazzy rosdistro releases.
@@ -528,7 +518,6 @@ packages_select_by_deps:
       - autoware_ekf_localizer # Windows error: error C2338: static_assert failed: 'First argument to logging macros must be an rclcpp::Logger'
       - autoware_internal_localization_msgs # Generated Python type support exceeds MSVC path handling
       - autoware_lanelet2_utils # Windows errors: C3546 (no parameter packs to expand), C2678 (no operator '|' for transform_view)
-      - autoware_lanlet2_utils # Windows errors: C3546 (no parameter packs to expand), C2678 (no operator '|' for transform_view)
       - autoware_motion_utils # Windows error: error C2765: 'function': an explicit specialization of a function template cannot have any default arguments
       - autoware_osqp_interface
       - autoware_pose_initializer # depends on autoware_motion_utils

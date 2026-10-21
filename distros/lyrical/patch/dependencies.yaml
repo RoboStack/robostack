@@ -28,9 +28,6 @@ foxglove_bridge:
   add_host: ["ros2-ament-cmake"]
 geometric_shapes:
   add_host: ["libboost-devel", "octomap"]
-grid_map_octomap:
-  add_host: ["octomap"]
-  add_run: ["octomap"]
 grid_map_rviz_plugin:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "qt6-main"]
 gz_cmake_vendor:
@@ -107,10 +104,6 @@ moveit_core:
   add_host: ["eigen-abi-devel"]
 moveit_visual_tools:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
-mrpt2:
-  add_host: ["assimp", "octomap", "tinyxml2", "libboost-devel", "jsoncpp", "gtest", "libboost-python-devel", "libdc1394", "xorg-libxcomposite", "libftdi", "ros2-octomap"]
-  add_run: ["assimp", "octomap", "tinyxml2", "libboost-devel", "jsoncpp", "gtest", "libboost-python-devel", "libdc1394", "xorg-libxcomposite", "libftdi", "ros2-octomap"]
-  add_build: ["${{ cdt('libxcomposite-devel') if linux }}"]
 nav2_constrained_smoother:
   add_host: ["${{ 'openblas' if win }}", "ceres-solver"]
 openvdb_vendor:
@@ -163,10 +156,6 @@ rmf_visualization_schedule:
   add_host: ["asio"]
 ros_gz_sim:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "ros2-gz-sensors-vendor"]
-ros_ign_gazebo:
-  add_host: ["ros2-std-msgs", "ros2-rclcpp", "${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
-ros_ign_interfaces:
-  add_host: ["ros2-rcl-interfaces"]
 ros_image_to_qimage:
   # Qt6, like rqt_gui_cpp (patch/ros2-ros-image-to-qimage.patch)
   remove_host: ["qt-main"]
