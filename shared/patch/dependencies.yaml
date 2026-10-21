@@ -86,6 +86,14 @@ moveit_setup_framework:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
 moveit_setup_srdf_plugins:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
+mrpt_common:
+  # CMakeLists.txt calls find_package(ament_cmake) when ROS_VERSION=2 (set by ros_environment),
+  # but package.xml (build_type cmake) does not declare it
+  add_host: ["ros2-ament-cmake"]
+mrpt_gui:
+  # links libwx_*; the wxwidgets/wx-common keys map to wxpython, so wxwidgets is only a
+  # transitive host dep and its (weak) run_exports never reach the run requirements
+  add_host: ["wxwidgets"]
 mujoco_ros2_control_plugins:
   add_host:
   - if: linux
