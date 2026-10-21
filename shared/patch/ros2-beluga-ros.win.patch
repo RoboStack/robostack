@@ -1,0 +1,18 @@
+diff --git a/beluga_ros/CMakeLists.txt b/beluga_ros/CMakeLists.txt
+index 212972e..8395c83 100644
+--- a/beluga_ros/CMakeLists.txt
++++ b/beluga_ros/CMakeLists.txt
+@@ -73,7 +73,12 @@ if(NOT PARANOID)
+   endforeach()
+ endif()
+ 
+-add_library(beluga_ros)
++if(WIN32)
++  add_library(beluga_ros STATIC)
++else()
++  add_library(beluga_ros)
++endif()
++
+ target_sources(beluga_ros PRIVATE src/amcl.cpp src/ndt_ellipsoid.cpp)
+ target_include_directories(
+   beluga_ros PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>

@@ -395,8 +395,6 @@ packages_select_by_deps:
       - apex_containers
       - apriltag_ros  # These packages are currently only build on Linux,; as trying to build them in the past on macos or Windows resulted in errors
       - avt_vimba_camera # ships some Linux .so in the repo, so it only supports linux
-      - beluga_amcl # macOS: libc++ lacks std::execution::sequenced_policy; requested in https://github.com/RoboStack/ros-jazzy/pull/298
-      - beluga_ros # macOS: libc++ lacks std::execution::sequenced_policy; requested in https://github.com/RoboStack/ros-jazzy/pull/298
       - camera_ros # Depends on libcamera that is only available on linux; Depends on libcamera, only available on linux
       - can_dbc_parser
       - easynav
@@ -512,6 +510,11 @@ packages_select_by_deps:
       - usb_cam # Depends on v4l
       - v4l2_camera
       - yaets
+
+  - if: not osx
+    then:
+      - beluga_amcl # macOS: libc++ lacks std::execution::sequenced_policy; requested in https://github.com/RoboStack/ros-jazzy/pull/298
+      - beluga_ros # macOS: libc++ lacks std::execution::sequenced_policy; requested in https://github.com/RoboStack/ros-jazzy/pull/298
 
   - if: linux and not aarch64
     then:
