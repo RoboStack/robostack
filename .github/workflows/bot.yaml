@@ -179,7 +179,9 @@ jobs:
           token: ${{ steps.app.outputs.token || secrets.GHA_PAT || github.token }}
           branch: bot/${{ matrix.command }}${{ matrix.distro && format('-{0}', matrix.distro) || '' }}${{ (matrix.command == 'add-package' || matrix.command == 'rebuild') && format('-{0}', github.run_id) || '' }}
           delete-branch: true
-          commit-message: ${{ steps.bot.outputs.title }}
+          # pinning updates can rebuild a lot: their commits carry [ci skip], so the daily
+          # re-creation of the PR (a force push) doesn't start CI; push a commit without it to build
+          commit-message: ${{ steps.bot.outputs.title }}${{ matrix.command == 'update-conda-forge-pinning' && ' [ci skip]' || '' }}
           title: ${{ steps.bot.outputs.title }}
           body-path: ${{ runner.temp }}/summary.md
           labels: |
