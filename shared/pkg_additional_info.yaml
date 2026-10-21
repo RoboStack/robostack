@@ -123,6 +123,12 @@ pybind11_vendor:
   additional_cmake_args: "-DAMENT_VENDOR_POLICY=NEVER_VENDOR"
 robot_state_publisher:
   additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
+rosbag2_performance_benchmarking_msgs:
+  additional_cmake_args:
+    # MSVC can't open object files whose path exceeds 260 characters (error C1083 with ''):
+    # name the intermediate directories and object files by short hashes (CMake >= 4.2)
+    if: win
+    then: "-DCMAKE_INTERMEDIATE_DIR_STRATEGY=SHORT"
 rosx_introspection:
   additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
 sbg_driver:
