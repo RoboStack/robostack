@@ -29,7 +29,6 @@ packages_exclude:
       - ros_ign_gazebo  # Ignition Fortress (libignition-gazebo6) isn't installable on win-64
       - ros_ign_gazebo_demos  # Ignition Fortress (libignition-gazebo6) isn't installable on win-64
       - ros_ign_image  # Fortress-based gz integration isn't supported on humble Windows (old ros-humble#68)
-      - test_ros_gz_bridge  # Fortress-based gz integration isn't supported on humble Windows (old ros-humble#68)
       - velodyne_gazebo_plugins  # links Gazebo Classic's Ogre libraries; win-64 has no OgreBites.lib
 
 packages_skip:
