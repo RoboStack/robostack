@@ -169,3 +169,4 @@ pixi run rs <distro> render-pinning && pixi run sort && pixi run rs check
 The import leaves out what `shared/` already provides (shared package selections and entries, derived keys) and keeps comments. It writes `distro.yaml` from the old repository's `pixi.toml` and `vinca_pinning.yaml`. Run it again to pick up changes made in the old repository until that is archived.
 
 **Check:** re-importing lyrical from its repository reproduces `distros/lyrical/` exactly. The full linux-64 recipe sets of rolling, humble and lyrical generated here are byte-identical to those of their own repositories.
+
