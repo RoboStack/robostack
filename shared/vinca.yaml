@@ -571,6 +571,7 @@ packages_select_by_deps:
       - rqt_reconfigure
       - rqt_tf_tree
       - rslidar_sdk # rs_driver's Windows socket code has multiple pre-existing min/max-macro and getsockopt/setsockopt type bugs; not pursuing further
+      - rtabmap_ros # Windows not tried yet; requested in https://github.com/RoboStack/ros-lyrical/pull/83
       - rviz_2d_overlay_plugins
       - rviz_satellite
       - smacc2
