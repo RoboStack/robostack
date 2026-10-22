@@ -27,6 +27,9 @@ foxglove_bridge:
   add_host: ["ros2-ament-cmake"]
 geometric_shapes:
   add_host: ["libboost-devel", "octomap"]
+grid_map_octomap:
+  add_host: ["octomap"]
+  add_run: ["octomap"]
 gz_cmake_vendor:
   # Major version pin selects the Gazebo release matching rolling (applies to all gz-* vendor packages).
   add_host: ["gz-cmake"]
@@ -179,6 +182,9 @@ sdformat_urdf:
 sdformat_vendor:
   add_host: ["sdformat"]
   add_run: ["sdformat"]
+slam_toolbox:
+  add_build: ["${{ 'qt6-main' if (build_platform != target_platform) }}"]
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "blas-devel", "ceres-solver * cpu*"]
 spdlog_vendor:
   add_host: ["spdlog"]
   add_run: ["spdlog"]
