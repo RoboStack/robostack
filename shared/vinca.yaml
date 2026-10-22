@@ -217,6 +217,7 @@ packages_select_by_deps:
   - nonpersistent_voxel_layer
   - ntrip_client
   - odom_to_tf_ros2
+  - onnxruntime_vendor
   - open3d_conversions
   - osrf_testing_tools_cpp
   - pal_statistics
