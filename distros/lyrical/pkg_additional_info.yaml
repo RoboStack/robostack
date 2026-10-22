@@ -11,12 +11,6 @@ gtsam:
     # the version on ros is actually an alpha, not a properly released version,
     # see https://discourse.ros.org/t/on-new-gtsam-version-without-boost/44307
     override_version: '4.2.0'
-hpp_fcl:
-  generate_dummy_package_with_run_deps:
-    dep_name: hpp-fcl
-    max_pin: 'x.x.x'
-    # the version on ros is outdated w.r.t. to the conda-forge one
-    override_version: '3.0.2'
 iceoryx_binding_c:
   generate_dummy_package_with_run_deps:
     dep_name: libiceoryx-binding-c
@@ -51,10 +45,6 @@ librealsense2:
 magic_enum:
   generate_dummy_package_with_run_deps:
     dep_name: magic_enum
-    max_pin: 'x.x'
-octomap:
-  generate_dummy_package_with_run_deps:
-    dep_name: octomap
     max_pin: 'x.x'
 ompl:
   generate_dummy_package_with_run_deps:

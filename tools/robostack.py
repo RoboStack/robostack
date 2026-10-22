@@ -49,17 +49,47 @@ def settings(distro: str) -> dict:
     return yaml.safe_load((DISTROS / distro / "distro.yaml").read_text()) or {}
 
 
+def channel_name(distro: str) -> str:
+    return settings(distro).get("channel_name", f"robostack-{distro}")
+
+
+def reads_from_prefix(distro: str) -> bool:
+    """Whether builds read the distribution's published packages from prefix.dev (else
+    anaconda.org). Uploads go to both (see upload)."""
+    return settings(distro).get("read_from", "prefix") == "prefix"
+
+
 def channel_url(distro: str) -> str:
-    s = settings(distro)
-    name = s.get("channel_name", f"robostack-{distro}")
-    if s.get("upload_target", "prefix") == "prefix":
-        return f"https://prefix.dev/{name}"
-    return f"https://conda.anaconda.org/{name}"
+    name = channel_name(distro)
+    return f"https://prefix.dev/{name}" if reads_from_prefix(distro) else f"https://conda.anaconda.org/{name}"
+
+
+def repodata_url(distro: str) -> str:
+    """Base URL to read the channel's repodata from (repo.prefix.dev serves it directly,
+    prefix.dev redirects)."""
+    name = channel_name(distro)
+    return f"https://repo.prefix.dev/{name}" if reads_from_prefix(distro) else f"https://conda.anaconda.org/{name}"
 
 
 def run(cmd: list[str], cwd: Path) -> int:
     print("+", " ".join(cmd), f"  (in {cwd.relative_to(ROOT)})", flush=True)
     return subprocess.run(cmd, cwd=cwd).returncode
+
+
+def run_tee(cmd: list[str], cwd: Path) -> tuple[int, bytes]:
+    """run(), also returning the combined output."""
+    print("+", " ".join(cmd), f"  (in {cwd.relative_to(ROOT)})", flush=True)
+    output = bytearray()
+    with subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT) as proc:
+        for line in proc.stdout:
+            sys.stdout.buffer.write(line)
+            sys.stdout.buffer.flush()
+            output += line
+    return proc.returncode, bytes(output)
+
+
+WORKFLOW_SIZE_MESSAGE = b"exceeding the 500 KiB limit"
+MAX_BATCH_SIZE = 100
 
 
 # prefix.dev's sharded repodata (what rattler reads) lists a new upload a few minutes
@@ -73,7 +103,9 @@ INDEX_LAG_WAIT = 180
 # continues where it stopped.
 NETWORK_MESSAGES = (b"Git fetch failed", b"Failed to connect to github.com", b"error sending request for url",
                     b"stream closed because of a broken pipe", b"RPC failed; curl", b"Could not resolve host",
-                    b"connection error")
+                    b"connection error",
+                    # prefix.dev's sharded repodata answers 409 / 5xx now and then while a channel updates
+                    b"HTTP status client error (409 Conflict)", b"HTTP status server error")
 NETWORK_RETRIES = 4
 NETWORK_WAIT = 60  # doubled on each retry: 1, 2, 4, 8 minutes
 
@@ -232,36 +264,88 @@ def rattler_build(distro: str, args: list[str], skip_existing: bool = True) -> l
     return cmd + (["--skip-existing"] if skip_existing else []) + args
 
 
+UPLOAD_HOSTS = ("prefix", "anaconda")
+
+
+def anaconda_token_secret(distro: str) -> str:
+    """The repository secret with the anaconda.org API token of the distribution's
+    organization (robostack-<distro>); the build workflows pass it on as ANACONDA_API_TOKEN."""
+    return f"ANACONDA_API_TOKEN_{distro.upper()}"
+
+
+def upload_hosts(distro: str) -> list[str]:
+    """Where the distribution's packages are uploaded (upload_to in distro.yaml; both by
+    default), to the channel of the same name on each."""
+    return list(settings(distro).get("upload_to", UPLOAD_HOSTS))
+
+
 def upload(distro: str, files: list[str], cwd: Path) -> int:
-    """Upload to the distribution's channel.
+    """Upload to the distribution's channel on prefix.dev and/or anaconda.org (upload_to;
+    same channel name on each).
+
+    prefix.dev uploads use trusted publishing (Repository Access, OIDC; no stored key)
+    and publish an attestation. anaconda.org uploads use ANACONDA_API_TOKEN, which the
+    build workflow sets from the secret ANACONDA_API_TOKEN_<DISTRO> (see generate_gha). Both skip packages that are already
+    there, so a re-run only uploads what's missing.
 
     ROBOSTACK_UPLOAD_CHANNEL (set by the staged build workflows from the repository
-    variable of the same name) redirects uploads to another prefix.dev channel, e.g.
-    a test channel (the builds then also read from it, see rattler_build); "none"
-    skips uploading. prefix.dev uploads use trusted publishing (Repository Access,
-    OIDC; no stored key) and publish an attestation.
+    variable of the same name) redirects uploads to another prefix.dev channel only,
+    e.g. a test channel (the builds then also read from it, see rattler_build); "none"
+    skips uploading.
     """
     override = os.environ.get("ROBOSTACK_UPLOAD_CHANNEL", "").strip()
     if override == "none":
         print(f"ROBOSTACK_UPLOAD_CHANNEL=none: not uploading {' '.join(files)}")
         return 0
-    s = settings(distro)
-    if not override and s.get("upload_target", "prefix") != "prefix":
-        # anaconda.org has no trusted publishing, and we keep no tokens
-        print(f"{distro}'s channel {s.get('channel_name')} is on anaconda.org: uploads go to prefix.dev only "
-              "(set ROBOSTACK_UPLOAD_CHANNEL, or move the channel to prefix.dev)", file=sys.stderr)
+    channel = override or channel_name(distro)
+    hosts = ["prefix"] if override else upload_hosts(distro)
+    rc = 0
+    if "prefix" in hosts:
+        rc = retry(["rattler-build", "upload", "prefix", "-c", channel, "--skip-existing", "--generate-attestation",
+                    *files], cwd, "prefix.dev")
+    if "anaconda" not in hosts:
+        return rc
+    token = os.environ.get("ANACONDA_API_TOKEN", "").strip()
+    if not token:
+        print(f"no ANACONDA_API_TOKEN (repository secret {anaconda_token_secret(distro)}): not uploading to "
+              f"anaconda.org/{channel}", file=sys.stderr)
         return 1
-    channel = override or s.get("channel_name", f"robostack-{distro}")
-    cmd = ["rattler-build", "upload", "prefix", "-c", channel, "--skip-existing", "--generate-attestation"]
-    # Sigstore (attestations) and the channel fail now and then; uploads are
-    # idempotent (--skip-existing), so retry.
+    missing = [f for f in files if not on_anaconda(channel, Path(cwd, f))]
+    if missing:
+        rc |= retry(["rattler-build", "upload", "anaconda", "-o", channel, "--api-key", token, *missing], cwd,
+                    "anaconda.org")
+    return rc
+
+
+def retry(cmd: list[str], cwd: Path, what: str) -> int:
+    # the channels (and Sigstore, for attestations) fail now and then; uploads are
+    # idempotent, so retry
     for attempt in range(1, 4):
-        rc = run(cmd + files, cwd)
+        rc = run(cmd, cwd)
         if rc == 0 or attempt == 3:
             return rc
-        print(f"upload attempt {attempt} failed, retrying in {30 * attempt} s", file=sys.stderr)
+        print(f"{what} upload attempt {attempt} failed, retrying in {30 * attempt} s", file=sys.stderr)
         time.sleep(30 * attempt)
     return rc
+
+
+def on_anaconda(channel: str, package: Path) -> bool:
+    """Whether anaconda.org already has this package file (rattler-build's anaconda upload
+    has no --skip-existing). The builds write packages to output/<subdir>/."""
+    import urllib.error
+    import urllib.request
+
+    stem = package.name.removesuffix(".conda").removesuffix(".tar.bz2")
+    name, version, _build = stem.rsplit("-", 2)
+    url = f"https://api.anaconda.org/dist/{channel}/{name}/{version}/{package.parent.name}/{package.name}"
+    try:
+        with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "robostack"}), timeout=60):
+            print(f"{package.name} is already on anaconda.org/{channel}")
+            return True
+    except urllib.error.HTTPError as e:
+        if e.code == 404:
+            return False
+        raise
 
 
 def task(distro: str, name: str, args: list[str]) -> int:
@@ -342,8 +426,16 @@ def generate_gha(distro: str, args: list[str]) -> int:
     d = work_dir(distro)
     branch = f"buildbranch_{distro}_{ns.platform.replace('-', '_')}"
     before = set(d.glob("*.yml"))
-    rc = run(["vinca-gha", "--platform", ns.platform, "--trigger-branch", branch, "-d", "./recipes",
-              "--batch_size", ns.batch_size], d)
+    # GitHub refuses workflow files over 500 KiB, which a full rebuild's many batches can
+    # reach (jazzy's win-64 at 25): then retry with larger, hence fewer, batches.
+    batch_size = int(ns.batch_size)
+    while True:
+        rc, output = run_tee(["vinca-gha", "--platform", ns.platform, "--trigger-branch", branch, "-d",
+                              "./recipes", "--batch_size", str(batch_size)], d)
+        if not rc or WORKFLOW_SIZE_MESSAGE not in output or batch_size >= MAX_BATCH_SIZE:
+            break
+        batch_size = min(batch_size * 3 // 2, MAX_BATCH_SIZE)
+        print(f"The workflow is too large; retrying with --batch_size {batch_size}", flush=True)
     if rc:
         return rc
     # Edit the text: a YAML round trip would turn the `on:` key into `true:` (YAML 1.1).
@@ -358,8 +450,11 @@ def generate_gha(distro: str, args: list[str]) -> int:
         lines = [f"name: build\nrun-name: {distro} {ns.platform}\n"
                  f"concurrency:\n  group: build-{distro}-{ns.platform}\n  cancel-in-progress: false"
                  if l.startswith("name: ") else l for l in lines]
-        # uploads use prefix.dev trusted publishing only: no anaconda.org token
-        lines = [l for l in lines if "ANACONDA_API_TOKEN" not in l]
+        # vinca-gha passes secrets.ANACONDA_API_TOKEN to the build jobs, for the anaconda.org
+        # upload (prefix.dev uses trusted publishing, id-token: write): each distribution
+        # has its own token (its organization's), the secret ANACONDA_API_TOKEN_<DISTRO>
+        secret = anaconda_token_secret(distro)
+        lines = [l.replace("secrets.ANACONDA_API_TOKEN }}", f"secrets.{secret} }}}}") for l in lines]
         # jobs that declare permissions get none they don't list: checking out the
         # repository needs contents: read (only works without it while it is public)
         lines = [f"{l}\n{l[:len(l) - len(l.lstrip())]}contents: read" if l.strip() == "id-token: write" else l

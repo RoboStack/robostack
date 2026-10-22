@@ -6,10 +6,10 @@ the [RoboStack documentation](https://robostack.github.io/GettingStarted.html).
 
 | Distribution | Channel |
 |---|---|
-| rolling | [robostack-rolling](https://prefix.dev/channels/robostack-rolling) |
-| lyrical | [robostack-lyrical](https://prefix.dev/channels/robostack-lyrical) |
-| jazzy | [robostack-jazzy](https://anaconda.org/robostack-jazzy) |
-| humble | [robostack-staging](https://anaconda.org/robostack-staging) |
+| rolling | robostack-rolling on [prefix.dev](https://prefix.dev/channels/robostack-rolling) and [anaconda.org](https://anaconda.org/robostack-rolling) (the same packages) |
+| lyrical | robostack-lyrical on [prefix.dev](https://prefix.dev/channels/robostack-lyrical) and [anaconda.org](https://anaconda.org/robostack-lyrical) (the same packages) |
+| jazzy | [robostack-jazzy](https://anaconda.org/robostack-jazzy) (prefix.dev mirrors it) |
+| humble | [robostack-humble](https://anaconda.org/robostack-humble) (prefix.dev mirrors it) |
 
 Packages are named `ros2-<package>`, e.g. `ros2-desktop` or `ros2-rclcpp`; the
 distribution comes from the channel. The older names keep working: for every package
@@ -41,7 +41,7 @@ If you use RoboStack in your academic work, please cite:
 
 ```
 distros/<distro>/          only what is specific to one distribution
-  distro.yaml              channel, upload target, conda-forge pinning version/migrations, own pins, rosdistro sync
+  distro.yaml              channel, where it's uploaded and read from, conda-forge pinning version/migrations, own pins, rosdistro sync
   vinca.yaml               extends shared/vinca.yaml: ros_distro, build number, mutex version, its exceptions
   pkg_additional_info.yaml its own per-package settings (build numbers, version-specific cmake args)
   patch/                   its patches; patch/dependencies.yaml its own dependency fixes
@@ -119,10 +119,12 @@ label doesn't start one by itself. Nothing has to be reset before merging.
   - Each selected distribution is built on all five platforms, with its own build cache. The `check` job runs `pixi run rs check`.
 - **After a merge** (`main.yaml`): for every changed distribution and platform, the job regenerates the recipes and the staged build workflow, and pushes them to `buildbranch_<distro>_<platform>`.
   - Each build branch carries its workflow as `.github/workflows/build.yaml`, which runs `.scripts/build_*.sh` in `distros/<distro>/work`.
-  - Those workflows build the packages and upload them to the distribution's channel.
+  - Those workflows build the packages and upload them to the distribution's channel on the servers `upload_to` in `distro.yaml` lists (prefix.dev and/or anaconda.org, the same channel name on each; packages already there are skipped). `read_from` says where the builds look up what's already published.
 - **Repository variables:**
-  - `ROBOSTACK_UPLOAD_CHANNEL`: upload to this prefix.dev channel instead (for example a test channel), or `none` to build without uploading. Use the canonical reference: `<namespace>/<channel>` for a channel that isn't the namespace's primary one (e.g. `tobias-fischer/robostack-distro-test`).
-  - Upload credentials: prefix.dev channels use Repository Access (OIDC, no stored key). In the channel's *Settings > Repository Access*, authorize GitHub, this repository, workflow filename `build.yaml`, mode *Read/write*. There are no upload tokens: distributions whose channel is still on anaconda.org (`upload_target: anaconda`, read from there) can only upload to a prefix.dev channel set in `ROBOSTACK_UPLOAD_CHANNEL`.
+  - `ROBOSTACK_UPLOAD_CHANNEL`: upload only to this prefix.dev channel instead (for example a test channel), or `none` to build without uploading. Use the canonical reference: `<namespace>/<channel>` for a channel that isn't the namespace's primary one (e.g. `tobias-fischer/robostack-distro-test`).
+  - Upload credentials:
+    - prefix.dev: Repository Access (OIDC, no stored key). In each channel's *Settings > Repository Access*, authorize GitHub, this repository, workflow filename `build.yaml`, mode *Read/write*.
+    - anaconda.org: one repository secret per distribution, `ANACONDA_API_TOKEN_<DISTRO>` (e.g. `ANACONDA_API_TOKEN_HUMBLE`): an API token of its `robostack-<distro>` organization with scope *Allow write access to the API site* (`api:write`). The generated build workflow passes it to the upload as `ANACONDA_API_TOKEN`.
   - `ROBOSTACK_BOT_CLIENT_ID` (the App's Client ID, `Iv23…`) with the secret `ROBOSTACK_BOT_PRIVATE_KEY`: the robostack-bot GitHub App. It pushes the build branches (which contain workflow files) and opens bot PRs so that CI runs on them. `GHA_PAT` works as a fallback.
 
   The app needs repository permissions Contents, Pull requests, Issues and Workflows (read and write), with its webhook inactive.
@@ -136,7 +138,7 @@ label doesn't start one by itself. Nothing has to be reset before merging.
 | `add-package <pkg>... [<distro>...]` | anyone | Adds ROS packages to the shared selection in `shared/vinca.yaml`, in sorted position; every distribution that has them builds them. Opens a PR listing, for the given (default: every) distribution, what will be built on linux-64 (and what is already published as a dependency). Valid ROS package names only, at most 10 per request. |
 | `update-rosdistro-snapshot [<distro>... \| all]` | maintainers | Snapshots the distribution's latest rosdistro sync (the release team's tag, e.g. `jazzy/2026-10-05`, recorded as `rosdistro_sync` in `distro.yaml`; rosdistro master for `rosdistro_sync: manual`, like rolling), then sets `build_number` to the highest build of the distribution's released packages + 1, bumps the mutex minor version and removes all per-package build numbers: a full rebuild. The PR links the sync's announcement and lists the version bumps. Runs daily for distributions with a new sync. |
 | `find-stale-packages [<distro>... \| all]` | maintainers | Published packages built against pins that no longer match, with the build-number snippet to rebuild them. Replies only. |
-| `update-conda-forge-pinning [<distro>... \| all]` | maintainers | Moves the distribution's conda-forge pinning (`conda_forge_pinning_version` / `conda_forge_migrations` in `distro.yaml`, or `shared/pinning/conda_forge.yaml` for distributions that follow it) to the latest version, with the migrations that are done for the distribution's dependencies, and re-renders `conda_build_config.yaml`. Only packages that use a changed pin, and everything depending on them, are rebuilt (per-package build numbers); more than half affected means a full rebuild. The PR lists the rebuilt packages, the migrations used and those waiting for feedstocks, and the dependency check; it is labelled `dependency-conflict` when the pins can't be installed together. Runs daily, one PR per distribution. |
+| `update-conda-forge-pinning [<distro>... \| all]` | maintainers | Moves the distribution's conda-forge pinning (`conda_forge_pinning_version` / `conda_forge_migrations` in `distro.yaml`, or `shared/pinning/conda_forge.yaml` for distributions that follow it) to the latest version, with the migrations that are done for the distribution's dependencies, and re-renders `conda_build_config.yaml`. Only packages that use a changed pin, and everything depending on them, are rebuilt (per-package build numbers); more than half affected means a full rebuild. The PR lists the rebuilt packages, the migrations used and those waiting for feedstocks, and the dependency check; it is labelled `dependency-conflict` when the pins can't be installed together. Runs daily, one PR per distribution. Its commits carry `[ci skip]`, so the daily update of the PR (a force push) doesn't start a build: to build it, push a commit without the marker (e.g. `git commit --allow-empty -m "Build"`). |
 | `rebuild <pkg>... [<distro>... \| all] [--with-dependents]` | maintainers | New builds of ROS packages (dashes or underscores, `ros-<distro>-` / `ros2-` prefixes accepted) in the given distributions (default: every one that builds them): per-package build numbers in `distros/<distro>/pkg_additional_info.yaml`, above every released build. `--with-dependents` also rebuilds every package that depends on them (host or run, transitively; vinca's rebuild planner). Opens a PR listing the rebuilt packages. |
 | `rebuild-dependents` | maintainers | Only as a comment on a pull request: commits the build-number entries the ABI check's comment suggests (its `yaml` blocks per distribution) to the pull request's branch, keeping existing entries' other keys. Pull requests from forks can't be pushed to: the bot replies with the entries to add instead. |
 | `update-vinca [<ref>]` | maintainers | Moves the vinca pin in `pixi.toml` to the newest commit of the pinned repository's branch (`robostack-integration` for Tobias-Fischer/vinca, else its default branch) or of `<ref>`, runs `pixi lock`, re-renders the pinning and runs `rs check`. The PR links the comparison and lists the vinca commits. |

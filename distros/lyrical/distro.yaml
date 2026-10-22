@@ -1,5 +1,8 @@
 # Settings of ros-lyrical that differ from the other distributions
 # (everything else is shared, see the README).
+# upload_to: where packages are uploaded, to this channel on each (prefix.dev, anaconda.org);
+# read_from: where the builds look up what is already published
 channel_name: robostack-lyrical
-upload_target: prefix
+upload_to: [prefix, anaconda]
+read_from: prefix
 rosdistro_sync: lyrical/2026-10-05

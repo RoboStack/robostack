@@ -1248,6 +1248,7 @@ socat:
     linux: [socat]
     osx: [socat]
     win64: []
+# also a ROS package in humble and jazzy, see tl_expected
 sophus:
   robostack: [sophus]
 spacenavd:
@@ -1276,6 +1277,10 @@ tinyxml:
   robostack: [tinyxml]
 tinyxml2:
   robostack: [tinyxml2]
+# tl_expected and sophus are also ROS packages in humble and jazzy. Mapping their keys to
+# conda-forge makes every dependent use conda-forge's build (vinca prefers a mapped key over
+# the ROS package), which is the one with the CMake config other packages expect (e.g. rsl
+# needs tl-expected's); the ROS packages themselves are then never built.
 tl_expected:
   robostack: [cpp-expected]
 udev:
