@@ -18,6 +18,7 @@ body:
         | `rebuild` | maintainers | New builds of the given ROS packages (per-package build numbers above every released build); add `--with-dependents` to the packages to also rebuild everything that depends on them. The PR lists the packages. |
         | `update-vinca` | maintainers | Move the vinca pin in `pixi.toml` to the newest commit of its branch (or the ref given under Packages), lock and check. The PR lists the vinca commits. |
         | `dependency-report` | maintainers | Check the dependencies against the pins and update the distribution's dependency-report issue (closed when nothing conflicts). Runs weekly. |
+        | `update-build-timings` | maintainers | Record the build times of the last week's build-branch runs in `shared/build_timings/`, which the build workflows use to pack each stage's recipes into jobs by time. Runs weekly. |
 
         On a pull request, `@robostack-bot rebuild-dependents` (maintainers) commits the rebuilds its ABI check suggests to the pull request's branch.
   - type: dropdown
@@ -25,7 +26,7 @@ body:
     attributes:
       label: Command
       options: [add-package, update-rosdistro-snapshot, find-stale-packages, update-conda-forge-pinning, rebuild, update-vinca,
-                dependency-report]
+                dependency-report, update-build-timings]
     validations:
       required: true
   - type: input
