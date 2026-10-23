@@ -23,7 +23,4 @@ full_rebuild: false
 #
 # Remember that dependents are not rebuilt automatically: evict them as well if
 # they must pick up the change.
-evict_cache:  # TEMPORARY (#62): reset to [] before merging
-  # osx-64: Ogre's FreeType from the prefix, not from Homebrew (RoboStack/ros-humble#88);
-  # the earlier entries of this sync were applied in its green run
-  - rviz_ogre_vendor
+evict_cache: []

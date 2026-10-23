@@ -3,9 +3,10 @@
 Each build-branch job records how long each of its recipes took to build (`rs <distro>
 build-ci`, in distros/<distro>/work/build_timings.jsonl) and keeps that file as an artifact
 (vinca-gha --keep-file). `robostack-bot update-build-timings` merges the last week's into
-shared/build_timings/<platform>.json, {recipe: {distro: seconds}}, and `rs <distro> gha`
-hands vinca-gha each recipe's average over the distributions: a recipe new to one
-distribution still has a time (the names are the same, ros2-<package>).
+shared/build_timings/<platform>.json, {recipe: {distro: seconds}}, one recipe per line, and
+`rs <distro> gha` hands vinca-gha each recipe's average over the distributions: a recipe new
+to one distribution still has a time (the names are the same, ros2-<package>). The
+compatibility recipes (ros-<distro>-<name>) aren't kept: they get ALIAS_SECONDS.
 
     pixi run python tools/build_timings.py   # what the bot command does
 """
@@ -25,6 +26,9 @@ import robostack as rs
 
 TIMINGS = rs.ROOT / "shared" / "build_timings"
 JOURNAL = "build_timings.jsonl"
+# a compatibility recipe (ros-<distro>-<name>) only repackages: measured median, the same
+# everywhere, so the files don't keep one per distribution
+ALIAS_SECONDS = 0.3
 
 
 def note(distro: str, recipe: str, seconds: float) -> None:
@@ -55,25 +59,34 @@ def collect(days: int = 8) -> int:
             for journal in sorted(out.rglob(JOURNAL)):
                 for line in journal.read_text().splitlines():
                     entry = json.loads(line)
+                    if entry["recipe"].startswith(f"ros-{distro}-"):
+                        continue  # a compatibility recipe: ALIAS_SECONDS
                     files.setdefault(entry["platform"], {}).setdefault(entry["recipe"], {})[distro] = entry["seconds"]
                     count += 1
     TIMINGS.mkdir(parents=True, exist_ok=True)
     for platform, recipes in files.items():
-        (TIMINGS / f"{platform}.json").write_text(json.dumps(recipes, indent=0, sort_keys=True) + "\n")
+        (TIMINGS / f"{platform}.json").write_text(dumps(recipes))
     return count
 
 
-def vinca_timings(platform: str, path: Path) -> bool:
+def dumps(recipes: dict) -> str:
+    """One recipe per line, sorted: small files, and a changed time is a one-line diff."""
+    lines = [f"{json.dumps(r)}: {json.dumps(recipes[r], sort_keys=True)}" for r in sorted(recipes)]
+    return "{\n" + ",\n".join(lines) + "\n}\n"
+
+
+def vinca_timings(distro: str, platform: str, path: Path) -> bool:
     """Write vinca-gha's --timings file for the platform: each recipe's average over the
-    distributions. False when there are no times yet."""
+    distributions, and ALIAS_SECONDS for the distribution's compatibility recipes
+    (ros-<distro>-<name>, built right after ros2-<name>). False when there are no times yet."""
     source = TIMINGS / f"{platform}.json"
     if not source.is_file():
         return False
     recipes = {r: round(statistics.fmean(by.values()), 1) for r, by in json.loads(source.read_text()).items()}
-    # unmeasured recipes: the median of the packages (ros2-*); the compatibility recipes,
-    # about half the entries and almost no time each, would make it nearly zero
-    packages = [s for r, s in recipes.items() if r.startswith("ros2-")] or list(recipes.values())
-    path.write_text(json.dumps({"recipes": recipes, "default": statistics.median(packages)}) + "\n")
+    # unmeasured recipes: the median of the packages (ros2-*)
+    default = statistics.median([s for r, s in recipes.items() if r.startswith("ros2-")] or list(recipes.values()))
+    recipes.update({f"ros-{distro}-{r[len('ros2-'):]}": ALIAS_SECONDS for r in list(recipes) if r.startswith("ros2-")})
+    path.write_text(json.dumps({"recipes": recipes, "default": default}) + "\n")
     return True
 
 
