@@ -110,7 +110,8 @@ of a distribution uses `full_rebuild: true` there. A new build number goes into 
 and all of them as soon as it touches anything outside `distros/<distro>/`. To limit
 that (e.g. a humble rebuild that also changes `shared/` or `tools/`), add the label
 `build:humble` (one per distribution to build), then push or re-run the build: adding a
-label doesn't start one by itself. Nothing has to be reset before merging.
+label doesn't start one by itself. Nothing has to be reset before merging. A PR that
+changes no packages (tooling, CI, docs) gets `build:none`: only the checks run.
 
 ### CI
 
@@ -119,6 +120,7 @@ label doesn't start one by itself. Nothing has to be reset before merging.
   - Each selected distribution is built on all five platforms, with its own build cache. The `check` job runs `pixi run rs check`.
 - **After a merge** (`main.yaml`): for every changed distribution and platform, the job regenerates the recipes and the staged build workflow, and pushes them to `buildbranch_<distro>_<platform>`.
   - Each build branch carries its workflow as `.github/workflows/build.yaml`, which runs `.scripts/build_*.sh` in `distros/<distro>/work`.
+  - The workflow builds in stages (by dependency depth), each stage in parallel jobs. Each job records how long its recipes took to build and keeps that as an artifact; `robostack-bot update-build-timings` merges them weekly into `shared/build_timings/<platform>.json` (each recipe's time per distribution). With those times, each stage's recipes are packed into jobs by time (vinca-gha `--timings`, each recipe's average over the distributions), so that no single job holds up its stage; until a platform has times, its jobs are cut by count as before.
   - Those workflows build the packages and upload them to the distribution's channel on the servers `upload_to` in `distro.yaml` lists (prefix.dev and/or anaconda.org, the same channel name on each; packages already there are skipped). `read_from` says where the builds look up what's already published.
   - A new push to a build branch cancels its run in progress: the new run skips what the old one uploaded. Re-run failed jobs only in a build branch's newest run, since re-running an older one cancels the newer run.
 - **Repository variables:**
@@ -144,6 +146,7 @@ label doesn't start one by itself. Nothing has to be reset before merging.
 | `rebuild-dependents` | maintainers | Only as a comment on a pull request: commits the build-number entries the ABI check's comment suggests (its `yaml` blocks per distribution) to the pull request's branch, keeping existing entries' other keys. Pull requests from forks can't be pushed to: the bot replies with the entries to add instead. |
 | `update-vinca [<ref>]` | maintainers | Moves the vinca pin in `pixi.toml` to the newest commit of the pinned repository's branch (`robostack-integration` for Tobias-Fischer/vinca, else its default branch) or of `<ref>`, runs `pixi lock`, re-renders the pinning and runs `rs check`. The PR links the comparison and lists the vinca commits. |
 | `dependency-report [<distro>... \| all]` | maintainers | Runs the dependency check (`check-deps`, linux-64) and keeps one issue per distribution, *`<distro>`: dependency report* (label `dependency-report`), up to date with the conflicts, notes and conda-forge migration status; the issue is closed when nothing conflicts. Runs weekly (Mondays). |
+| `update-build-timings` | maintainers | Merges the build times the last week's build-branch runs recorded (`rs <distro> build-ci`, kept as each job's artifact) into `shared/build_timings/<platform>.json` and opens a PR. The build workflows pack each stage's recipes into jobs by these times. Runs weekly (Mondays). |
 
 There are three ways to trigger a command:
 - a *Package request* or *robostack-bot command* issue;
@@ -151,6 +154,20 @@ There are three ways to trigger a command:
 - *Actions › robostack-bot › Run workflow*.
 
 "Maintainers" means the repository's owners, members and collaborators.
+
+### Nightly package tests
+
+`.github/workflows/package-tests.yaml` runs `tools/package_tests.py` every night (or via *Actions › package-tests › Run workflow*, for some distributions):
+- **What:** every package with a test file (`shared/tests/<package>.yaml`, `distros/<distro>/tests/<package>.yaml`), in its newest build on the distribution's channel, with every variant of that build (e.g. each Python), on all five platforms.
+- **How:** `rattler-build test` runs the tests bundled in the published package, with the newest dependencies from the distribution's channel and conda-forge. This catches breakages that come from conda-forge rather than from RoboStack, e.g. an ABI change in a dependency a package was built against.
+- **Report:** one issue per distribution, *`<distro>`: package tests* (label `package-tests`), with the failed tests and their output; it is closed when every test passes. Builds from before their test file was added carry no tests and are listed as such.
+
+Locally:
+
+```bash
+pixi run python tools/package_tests.py run --distro jazzy --platform osx-arm64 --results results/jazzy.json [--package ros2-rclpy]
+pixi run python tools/package_tests.py report results/
+```
 
 ### New distribution
 
@@ -170,3 +187,4 @@ pixi run rs <distro> render-pinning && pixi run sort && pixi run rs check
 The import leaves out what `shared/` already provides (shared package selections and entries, derived keys) and keeps comments. It writes `distro.yaml` from the old repository's `pixi.toml` and `vinca_pinning.yaml`. Run it again to pick up changes made in the old repository until that is archived.
 
 **Check:** re-importing lyrical from its repository reproduces `distros/lyrical/` exactly. The full linux-64 recipe sets of rolling, humble and lyrical generated here are byte-identical to those of their own repositories.
+

@@ -11,6 +11,4 @@ conda_index: [robostack.yaml]
 build_number: 27
 
 mutex_package:
-  # new build without run_constraints (same version as the published ones)
-  build_number: 26
   version: "0.20.0"

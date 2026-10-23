@@ -43,6 +43,7 @@ BOT_COMMANDS = {
     "rebuild-dependents": "on a pull request: add the rebuilds its ABI check suggests (pushes to its branch)",
     "update-vinca": "move the vinca pin to the newest commit of its branch (opens a PR)",
     "dependency-report": "check the dependencies against the pins, in the distribution's dependency-report issue",
+    "update-build-timings": "record the build times of the last week's build-branch runs, for batching by time (opens a PR)",
 }
 PER_DISTRO_COMMANDS = ("update-rosdistro-snapshot", "find-stale-packages", "update-conda-forge-pinning",
                        "dependency-report")
@@ -1077,16 +1078,16 @@ def report_issue_body(distro: str, data: dict, migrations: str = "", run_url: st
     return body
 
 
-def publish_report(repo: str, distro: str, body: str, conflicts: bool) -> str | None:
-    """Create or update the distribution's dependency-report issue: open while there
-    are conflicts, closed otherwise. Returns its URL."""
-    title = f"{distro}: dependency report"
+def publish_issue(repo: str, title: str, label: str, body: str, open_: bool) -> str | None:
+    """Create or update the issue with this title and label: open while open_ (e.g.
+    there are conflicts), closed otherwise. Returns its URL (None: nothing to report
+    and no issue to close)."""
     query = f'.[] | select(.title == {json.dumps(title)}) | {{number, state, html_url}} | @json'
-    out = _gh(["api", "--paginate", f"repos/{repo}/issues?labels={REPORT_LABEL}&state=all&per_page=100", "--jq", query])
+    out = _gh(["api", "--paginate", f"repos/{repo}/issues?labels={label}&state=all&per_page=100", "--jq", query])
     # the open one, else the newest
     issues = sorted((json.loads(l) for l in out.splitlines() if l.strip()),
                     key=lambda i: (i["state"] == "open", i["number"]))
-    if not issues and not conflicts:
+    if not issues and not open_:
         return None
     with tempfile.NamedTemporaryFile("w", suffix=".md", delete=False) as fh:
         fh.write(body)
@@ -1094,13 +1095,19 @@ def publish_report(repo: str, distro: str, body: str, conflicts: bool) -> str | 
         if issues:
             issue = issues[-1]
             _gh(["api", "-X", "PATCH", f"repos/{repo}/issues/{issue['number']}", "-F", f"body=@{fh.name}",
-                 "-f", f"state={'open' if conflicts else 'closed'}"])
+                 "-f", f"state={'open' if open_ else 'closed'}"])
             return issue["html_url"]
         created = _gh(["api", f"repos/{repo}/issues", "-f", f"title={title}", "-F", f"body=@{fh.name}",
-                       "-f", f"labels[]={REPORT_LABEL}"])
+                       "-f", f"labels[]={label}"])
         return json.loads(created)["html_url"]
     finally:
         os.unlink(fh.name)
+
+
+def publish_report(repo: str, distro: str, body: str, conflicts: bool) -> str | None:
+    """Create or update the distribution's dependency-report issue: open while there
+    are conflicts, closed otherwise. Returns its URL."""
+    return publish_issue(repo, f"{distro}: dependency report", REPORT_LABEL, body, conflicts)
 
 
 def dependency_report(distro: str) -> Result:
@@ -1125,6 +1132,20 @@ def dependency_report(distro: str) -> Result:
         return Result(title, body)
     url = publish_report(_repository(), distro, body, bool(count))
     return Result(title, f"Report: {url}" if url else "No conflicts, and no report issue to close.")
+
+
+def update_build_timings() -> Result:
+    """Merge the build times of the last week's build-branch runs into shared/build_timings/."""
+    import build_timings
+
+    before = {p: p.read_text() for p in build_timings.TIMINGS.glob("*.json")}
+    count = build_timings.collect()
+    changed = sorted(p.name for p in build_timings.TIMINGS.glob("*.json") if before.get(p) != p.read_text())
+    if not changed:
+        return Result("Build times are up to date", "No new build times in the last week's build-branch runs.")
+    return Result("Update the build times", f"{count} build times from the last week's build-branch runs, in "
+                  + ", ".join(f"`shared/build_timings/{name}`" for name in changed)
+                  + ". `rs <distro> gha` packs each stage's recipes into jobs by them.", changed=True)
 
 
 def _default_ci_yaml() -> str:
@@ -1340,6 +1361,8 @@ def main(command: str, argv: list[str], distro: str | None = None) -> int:
         return report(update_vinca(args.ref), args.summary)
     if command == "dependency-report":
         return report(dependency_report(distro), args.summary)
+    if command == "update-build-timings":
+        return report(update_build_timings(), args.summary)
     if command == "add-package":
         known = set(rs.distros())
         distros = [n for n in args.names if n in known]
