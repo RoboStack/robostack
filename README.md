@@ -110,7 +110,8 @@ of a distribution uses `full_rebuild: true` there. A new build number goes into 
 and all of them as soon as it touches anything outside `distros/<distro>/`. To limit
 that (e.g. a humble rebuild that also changes `shared/` or `tools/`), add the label
 `build:humble` (one per distribution to build), then push or re-run the build: adding a
-label doesn't start one by itself. Nothing has to be reset before merging.
+label doesn't start one by itself. Nothing has to be reset before merging. A PR that
+changes no packages (tooling, CI, docs) gets `build:none`: only the checks run.
 
 ### CI
 
