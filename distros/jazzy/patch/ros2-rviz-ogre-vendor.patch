@@ -1,7 +1,8 @@
-diff -ruN a/CMakeLists.txt b/CMakeLists.txt
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 7f60ad5..6e36fdf 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -22,6 +22,8 @@
+@@ -24,6 +24,8 @@ if(WIN32)
        -DFT_DISABLE_PNG:BOOL=ON
        -DFT_DISABLE_HARFBUZZ:BOOL=ON
        "-DCMAKE_C_FLAGS=${FREETYPE_C_FLAGS}"
@@ -10,12 +11,15 @@ diff -ruN a/CMakeLists.txt b/CMakeLists.txt
    )
  
    set(ZLIB_C_FLAGS "${ZLIB_C_FLAGS}")
-@@ -72,13 +74,19 @@
+@@ -72,13 +74,22 @@ else()
  endif()
  
  set(OGRE_CMAKE_ARGS)
 +# OGRE 1.12.10 declares cmake_minimum_required < 3.5, rejected by CMake >= 4
 +list(APPEND OGRE_CMAKE_ARGS -DCMAKE_POLICY_VERSION_MINIMUM=3.5)
++# RViz doesn't use the EXR codec, and Ogre's FindOpenEXR only knows OpenEXR 2's library names
++# (it never finds conda-forge's OpenEXR 3, but may mix in a system OpenEXR 2 from /usr)
++list(APPEND OGRE_CMAKE_ARGS -DOGRE_BUILD_PLUGIN_EXRCODEC:BOOL=OFF)
  if(NOT WIN32)
    list(APPEND OGRE_CMAKE_ARGS -DCMAKE_SKIP_INSTALL_RPATH:BOOL=ON)
  endif()
@@ -31,8 +35,10 @@ diff -ruN a/CMakeLists.txt b/CMakeLists.txt
  endif()
  
  ament_vendor(ogre_vendor
-diff -ruN a/patches/0005-fix-macos-arm64.patch b/patches/0005-fix-macos-arm64.patch
---- a/patches/0005-fix-macos-arm64.patch
+diff --git a/patches/0005-fix-macos-arm64.patch b/patches/0005-fix-macos-arm64.patch
+new file mode 100644
+index 0000000..9494cc9
+--- /dev/null
 +++ b/patches/0005-fix-macos-arm64.patch
 @@ -0,0 +1,19 @@
 +diff --git a/CMakeLists.txt b/CMakeLists.txt
@@ -54,8 +60,10 @@ diff -ruN a/patches/0005-fix-macos-arm64.patch b/patches/0005-fix-macos-arm64.pa
 +   # Make sure that the OpenGL render system is selected for non-iOS Apple builds
 +   set(OGRE_BUILD_RENDERSYSTEM_GLES2 FALSE)
 + endif ()
-diff -ruN a/patches/0006-fix-char16.patch b/patches/0006-fix-char16.patch
---- a/patches/0006-fix-char16.patch
+diff --git a/patches/0006-fix-char16.patch b/patches/0006-fix-char16.patch
+new file mode 100644
+index 0000000..dfc080b
+--- /dev/null
 +++ b/patches/0006-fix-char16.patch
 @@ -0,0 +1,17 @@
 +diff --git a/Components/Overlay/include/OgreUTFString.h b/Components/Overlay/include/OgreUTFString.h

@@ -197,7 +197,7 @@ index 000000000..9e9540007
 +         //! value type typedef for use in iterators
 +         typedef code_point value_type;
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 122f2f29..c837ae29 100644
+index d274cad..59b2cf4 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -12,8 +12,8 @@ if(POLICY CMP0135)
@@ -211,7 +211,7 @@ index 122f2f29..c837ae29 100644
  else()
    set(BUILDING_FREETYPE_LOCALLY OFF)
    set(BUILDING_ZLIB_LOCALLY OFF)
-@@ -125,7 +125,11 @@ macro(build_ogre)
+@@ -125,7 +125,15 @@ macro(build_ogre)
      set(OGRE_CXX_FLAGS "${OGRE_CXX_FLAGS} /w /EHsc")
    elseif(APPLE)
      set(OGRE_CXX_FLAGS "${OGRE_CXX_FLAGS} -std=c++14 -stdlib=libc++ -w")
@@ -221,10 +221,24 @@ index 122f2f29..c837ae29 100644
 +    else()
 +      list(APPEND extra_cmake_args "-DCMAKE_OSX_ARCHITECTURES='x86_64'")
 +    endif()
++    # OGRE adds /usr/local (Homebrew on Intel Macs) to its dependency search path:
++    # find freetype and zlib in our prefix instead
++    list(APPEND extra_cmake_args "-DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}")
++    list(APPEND extra_cmake_args "-DCMAKE_IGNORE_PREFIX_PATH=/usr/local")
    else()  # Linux
      set(OGRE_C_FLAGS "${OGRE_C_FLAGS} -w")
      # include Clang -Wno-everything to disable warnings in that build. GCC doesn't mind it
-@@ -161,9 +165,8 @@ macro(build_ogre)
+@@ -142,6 +150,9 @@ macro(build_ogre)
+ 
+   # These next lines can be used to disable some of the components or plugins for OGRE
+   list(APPEND extra_cmake_args "-DOGRE_CONFIG_ENABLE_ZIP:BOOL=ON")
++  # RViz doesn't use the EXR codec, and Ogre's FindOpenEXR only knows OpenEXR 2's library names
++  # (it never finds conda-forge's OpenEXR 3, but may mix in a system OpenEXR 2 from /usr)
++  list(APPEND extra_cmake_args "-DOGRE_BUILD_PLUGIN_EXRCODEC:BOOL=OFF")
+ 
+   if(BUILDING_FREETYPE_LOCALLY)
+     list(APPEND extra_cmake_args
+@@ -161,9 +172,8 @@ macro(build_ogre)
  
    find_package(Patch REQUIRED)
    include(ExternalProject)
@@ -236,7 +250,7 @@ index 122f2f29..c837ae29 100644
      TIMEOUT 1200
      LOG_CONFIGURE ${should_log}
      LOG_BUILD ${should_log}
-@@ -185,21 +185,26 @@ macro(build_ogre)
+@@ -185,21 +195,26 @@ macro(build_ogre)
        -DOGRE_BUILD_COMPONENT_JAVA:BOOL=FALSE
        -DOGRE_BUILD_COMPONENT_CSHARP:BOOL=FALSE
        -DOGRE_BUILD_COMPONENT_BITES:BOOL=FALSE
