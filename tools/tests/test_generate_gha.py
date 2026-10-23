@@ -1,9 +1,11 @@
 """rs <distro> gha: larger batches when the generated workflow is too large for GitHub."""
 
+import build_timings
 import robostack as rs
 
 
 def test_gha_retries_with_larger_batches_when_the_workflow_is_too_large(monkeypatch, tmp_path):
+    monkeypatch.setattr(build_timings, "TIMINGS", tmp_path / "no-timings")  # batching by count
     sizes = []
 
     def fake_run_tee(cmd, cwd):

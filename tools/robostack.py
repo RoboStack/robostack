@@ -224,7 +224,7 @@ def prepare(distro: str) -> Path:
         "extends: ../vinca.yaml\n"
         "skip_existing:\n" + "".join(f"  - {url}/\n" for url in skip)
     )
-    # vinca-gha inlines ./.scripts/build_win.bat into the Windows workflow
+    # vinca-gha checks for ./.scripts/build_win.bat, which the Windows jobs call
     shutil.rmtree(w / ".scripts", ignore_errors=True)
     shutil.copytree(ROOT / ".scripts", w / ".scripts")
     (w / "vinca_pinning.yaml").write_text(vinca_pinning(distro))
@@ -436,25 +436,20 @@ def generate_gha(distro: str, args: list[str]) -> int:
     # GitHub refuses workflow files over 500 KiB, which a full rebuild's many batches can
     # reach (jazzy's win-64 at 25): then retry with larger, hence fewer, batches.
     batch_size = int(ns.batch_size)
-    # each job keeps the build times it records (build-ci); with times for the platform,
-    # vinca-gha packs each stage's recipes into jobs by time instead of by count
+    # each job keeps the build times it records (build-ci); vinca-gha packs each stage's
+    # recipes into jobs by those times (every recipe the same without them)
     import build_timings
 
     extra = ["--keep-file", f"distros/{distro}/work/{build_timings.JOURNAL}"]
-    timed = build_timings.vinca_timings(ns.platform, d / "build_timings.json")
-    if timed:
+    if build_timings.vinca_timings(ns.platform, d / "build_timings.json"):
         extra += ["--timings", "build_timings.json"]
-    runners = 20
+    # vinca-gha keeps the workflow under GitHub's size limit itself (a job budget); only
+    # when even the fewest jobs the batch size allows are too many, retry with larger batches
     while True:
         rc, output = run_tee(["vinca-gha", "--platform", ns.platform, "--trigger-branch", branch, "-d",
                               "./recipes", "--batch_size", str(batch_size), *extra], d)
         if not rc or WORKFLOW_SIZE_MESSAGE not in output:
             break
-        if timed and runners > 2:  # planning for fewer runners makes fewer jobs
-            runners //= 2
-            extra = [a for a in extra if not a.startswith("--runners")] + [f"--runners={runners}"]
-            print(f"The workflow is too large; retrying with --runners {runners}", flush=True)
-            continue
         if batch_size >= MAX_BATCH_SIZE:
             break
         batch_size = min(batch_size * 3 // 2, MAX_BATCH_SIZE)
@@ -466,12 +461,12 @@ def generate_gha(distro: str, args: list[str]) -> int:
         lines = wf.read_text().splitlines()
         # all build branches share .github/workflows/build.yaml, which GitHub lists as one
         # workflow: run-name tells the runs apart
-        # one run per distribution and platform at a time: an older run can't upload
-        # alongside a newer one; a newer pending run replaces older pending ones (not
-        # cancel-in-progress: re-running a failed job of an older run would cancel the
-        # newer run)
+        # one run per distribution and platform at a time: a newer run (the latest main's
+        # recipes and workflow) cancels the older one, and skips what that one uploaded
+        # already. Re-run failed jobs only in the newest run: re-running an older one
+        # would cancel the newer run.
         lines = [f"name: build\nrun-name: {distro} {ns.platform}\n"
-                 f"concurrency:\n  group: build-{distro}-{ns.platform}\n  cancel-in-progress: false"
+                 f"concurrency:\n  group: build-{distro}-{ns.platform}\n  cancel-in-progress: true"
                  if l.startswith("name: ") else l for l in lines]
         # vinca-gha passes secrets.ANACONDA_API_TOKEN to the build jobs, for the anaconda.org
         # upload (prefix.dev uses trusted publishing, id-token: write): each distribution
@@ -484,7 +479,7 @@ def generate_gha(distro: str, args: list[str]) -> int:
                  for l in lines]
         if sum("permissions:" in l for l in lines) != sum("contents: read" in l for l in lines):
             raise SystemExit(f"{wf}: a job with permissions but without contents: read")
-        if ns.platform == "win-64" and not any("build-ci" in l for l in lines):
+        if ns.platform == "win-64" and not any("build_win.bat" in l for l in lines):
             raise SystemExit(f"{wf}: the Windows workflow doesn't use .scripts/build_win.bat")
         if any(l.startswith("env:") for l in lines):
             raise SystemExit(f"{wf}: unexpected top-level env in the vinca-gha output")
