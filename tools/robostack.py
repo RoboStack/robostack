@@ -481,10 +481,15 @@ def generate_gha(distro: str, args: list[str]) -> int:
     return 0
 
 
+NO_BUILD_LABEL = "build:none"  # only the checks (tooling, CI or docs changes)
+
+
 def build_distros(changed: list[str], labels: list[str]) -> list[str]:
-    """The distributions a pull request builds: those of its build:<distro> labels when it
-    has any (e.g. a rebuild of one distribution that also touches shared files), else the
-    changed ones."""
+    """The distributions a pull request builds: none with the build:none label, those of
+    its build:<distro> labels when it has any (e.g. a rebuild of one distribution that also
+    touches shared files), else the changed ones."""
+    if NO_BUILD_LABEL in labels:
+        return []
     selected = sorted({label.split(":", 1)[1] for label in labels if label.startswith("build:")})
     unknown = sorted(set(selected) - set(distros()))
     if unknown:

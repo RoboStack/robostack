@@ -230,6 +230,9 @@ def test_build_distros_labels_override_the_changed_ones():
     assert rs.build_distros(["humble", "jazzy"], ["automerge"]) == ["humble", "jazzy"]
     assert rs.build_distros(rs.distros(), ["build:humble", "automerge"]) == ["humble"]
     assert rs.build_distros([], ["build:rolling", "build:humble"]) == ["humble", "rolling"]
+    # only the checks
+    assert rs.build_distros(rs.distros(), ["build:none"]) == []
+    assert rs.build_distros(rs.distros(), ["build:none", "build:humble"]) == []
     with pytest.raises(SystemExit):
         rs.build_distros([], ["build:kinetic"])
 
