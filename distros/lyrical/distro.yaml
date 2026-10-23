@@ -8,3 +8,7 @@ pinning_overrides:
   # libopencv 5.0.0 builds for openexr 3.5 need qt6-main >= 6.12, but pyqt6 6.11 (via
   # qt6-multimedia 6.11) still requires qt6-main 6.11: stay on openexr 3.4 until pyqt6 is rebuilt
   openexr: ['3.4']
+  # build every python package for 3.14 (the shared default) and 3.12;
+  # is_python_min is zipped with python, so it needs one entry per version
+  python: [3.14.* *_cp314, 3.12.* *_cpython]
+  is_python_min: [false, false]
