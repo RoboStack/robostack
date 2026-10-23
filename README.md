@@ -120,6 +120,7 @@ label doesn't start one by itself. Nothing has to be reset before merging.
 - **After a merge** (`main.yaml`): for every changed distribution and platform, the job regenerates the recipes and the staged build workflow, and pushes them to `buildbranch_<distro>_<platform>`.
   - Each build branch carries its workflow as `.github/workflows/build.yaml`, which runs `.scripts/build_*.sh` in `distros/<distro>/work`.
   - Those workflows build the packages and upload them to the distribution's channel on the servers `upload_to` in `distro.yaml` lists (prefix.dev and/or anaconda.org, the same channel name on each; packages already there are skipped). `read_from` says where the builds look up what's already published.
+  - A new push to a build branch cancels its run in progress: the new run skips what the old one uploaded. Re-run failed jobs only in a build branch's newest run, since re-running an older one cancels the newer run.
 - **Repository variables:**
   - `ROBOSTACK_UPLOAD_CHANNEL`: upload only to this prefix.dev channel instead (for example a test channel), or `none` to build without uploading. Use the canonical reference: `<namespace>/<channel>` for a channel that isn't the namespace's primary one (e.g. `tobias-fischer/robostack-distro-test`).
   - Upload credentials:
