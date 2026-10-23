@@ -1,7 +1,7 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -106,15 +106,41 @@ pluginlib_export_plugin_description_file(
+@@ -106,15 +106,42 @@ pluginlib_export_plugin_description_file(
  pluginlib_export_plugin_description_file(
    rviz_common robot_state_rviz_plugin_description.xml)
  
@@ -32,6 +32,7 @@ diff --git a/CMakeLists.txt b/CMakeLists.txt
 +if(WIN32)
 +  install(
 +    TARGETS ${MOVEIT_ROS_VISUALIZATION_PLUGIN_LIBRARIES}
++    EXPORT moveit_ros_visualizationTargets
 +    LIBRARY DESTINATION lib
 +    ARCHIVE DESTINATION lib
 +    RUNTIME DESTINATION bin

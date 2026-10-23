@@ -1,0 +1,69 @@
+# Qt5 for the Qt5 rosdep keys: this distribution's rviz and GUI packages still build
+# against Qt5 (the shared mapping, for lyrical and newer, is Qt6). Packages already
+# ported to Qt6/PyQt6 swap qt-main in patch/dependencies.yaml.
+libqt5-core:
+  robostack:
+    linux: [qt-main, libopengl-devel, libgl-devel]
+    osx: [qt-main]
+    win64: [qt-main]
+libqt5-gui:
+  robostack:
+    linux: [qt-main, libopengl-devel, libgl-devel]
+    osx: [qt-main]
+    win64: [qt-main]
+libqt5-opengl:
+  robostack:
+    linux: [qt-main, libopengl-devel, libgl-devel]
+    osx: [qt-main]
+    win64: [qt-main]
+libqt5-opengl-dev:
+  robostack:
+    linux: [qt-main, libopengl-devel, libgl-devel]
+    osx: [qt-main]
+    win64: [qt-main]
+libqt5-svg:
+  robostack:
+    linux: [qt-main, libopengl-devel, libgl-devel]
+    osx: [qt-main]
+    win64: [qt-main]
+libqt5-svg-dev:
+  robostack:
+    linux: [qt-main, libopengl-devel, libgl-devel]
+    osx: [qt-main]
+    win64: [qt-main]
+libqt5-websockets-dev:
+  robostack:
+    linux: [qt-main, libopengl-devel, libgl-devel]
+    osx: [qt-main]
+    win64: [qt-main]
+libqt5-widgets:
+  robostack:
+    linux: [qt-main, libopengl-devel, libgl-devel]
+    osx: [qt-main]
+    win64: [qt-main]
+libqt5x11extras5-dev:
+  robostack:
+    linux: [qt-main, libopengl-devel, libgl-devel]
+    osx: [qt-main]
+    win64: [qt-main]
+qt5-image-formats-plugins:
+  robostack:
+    linux: [qt-main, libopengl-devel, libgl-devel]
+    osx: [qt-main]
+    win64: [qt-main]
+qt5-qmake:
+  robostack:
+    linux: [qt-main, libopengl-devel, libgl-devel]
+    osx: [qt-main]
+    win64: [qt-main]
+qtbase5-dev:
+  robostack:
+    linux: [qt-main, libopengl-devel, libgl-devel]
+    osx: [qt-main]
+    win64: [qt-main]
+python-qt5-bindings:
+  robostack: [pyqt, pyqt-builder]
+python3-qt5-bindings:
+  robostack: [pyqt, pyqt-builder]
+python3-qt5-bindings-gl:
+  robostack: [pyqt, pyqt-builder]

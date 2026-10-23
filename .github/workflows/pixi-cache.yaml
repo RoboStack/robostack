@@ -1,0 +1,32 @@
+# The pixi environment caches, saved from main only: pull requests restore them (a
+# pull request can read its base branch's caches) instead of each saving its own copy
+# for every lock file, which pushed the build caches out of the repository's 10 GB.
+name: pixi environment caches
+
+on:
+  push:
+    branches: [main]
+    paths: [pixi.toml, pixi.lock]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  save:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04-arm, macos-15-intel, macos-15, windows-2022]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Disable git auto-maintenance
+        run: git config --global maintenance.auto false && git config --global gc.auto 0 && git config --global core.longpaths true
+      - uses: prefix-dev/setup-pixi@v0.11.0
+        with:
+          locked: true  # the lock file must match pixi.toml
+          pixi-version: v0.81.0
+          cache-write: true
