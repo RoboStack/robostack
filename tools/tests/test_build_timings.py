@@ -39,7 +39,7 @@ def test_collect_merges_the_runs_journals(tmp_path, monkeypatch):
     # vinca-gha gets the average over the distributions
     out = tmp_path / "vinca.json"
     assert build_timings.vinca_timings("linux-64", out)
-    assert json.loads(out.read_text()) == {"recipes": {"ros2-a": 16.0, "ros2-b": 5.0}}
+    assert json.loads(out.read_text()) == {"recipes": {"ros2-a": 16.0, "ros2-b": 5.0}, "default": 10.5}
     assert not build_timings.vinca_timings("win-64", out)
 
 
@@ -84,4 +84,4 @@ def test_gha_keeps_the_journal_and_uses_the_times(tmp_path, monkeypatch):
     (tmp_path / "timings" / "linux-64.json").write_text('{"ros2-a": {"jazzy": 3.0}}\n')
     assert rs.generate_gha("jazzy", ["--platform", "linux-64"]) == 0
     assert calls[-1][calls[-1].index("--timings") + 1] == "build_timings.json"
-    assert json.loads((work / "build_timings.json").read_text()) == {"recipes": {"ros2-a": 3.0}}
+    assert json.loads((work / "build_timings.json").read_text()) == {"recipes": {"ros2-a": 3.0}, "default": 3.0}

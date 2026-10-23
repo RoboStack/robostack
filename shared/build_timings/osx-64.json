@@ -1,4 +1,3208 @@
 {
+"ros-humble-ackermann-msgs": {
+"humble": 0.4
+},
+"ros-humble-ackermann-steering-controller": {
+"humble": 0.3
+},
+"ros-humble-action-msgs": {
+"humble": 0.3
+},
+"ros-humble-action-tutorials-cpp": {
+"humble": 0.5
+},
+"ros-humble-action-tutorials-interfaces": {
+"humble": 0.3
+},
+"ros-humble-action-tutorials-py": {
+"humble": 0.4
+},
+"ros-humble-actionlib-msgs": {
+"humble": 0.7
+},
+"ros-humble-actuator-msgs": {
+"humble": 0.4
+},
+"ros-humble-admittance-controller": {
+"humble": 1.3
+},
+"ros-humble-ament-black": {
+"humble": 0.4
+},
+"ros-humble-ament-clang-format": {
+"humble": 0.3
+},
+"ros-humble-ament-clang-tidy": {
+"humble": 0.4
+},
+"ros-humble-ament-cmake": {
+"humble": 0.4
+},
+"ros-humble-ament-cmake-auto": {
+"humble": 0.5
+},
+"ros-humble-ament-cmake-black": {
+"humble": 0.5
+},
+"ros-humble-ament-cmake-catch2": {
+"humble": 0.3
+},
+"ros-humble-ament-cmake-clang-format": {
+"humble": 0.3
+},
+"ros-humble-ament-cmake-clang-tidy": {
+"humble": 0.3
+},
+"ros-humble-ament-cmake-copyright": {
+"humble": 0.3
+},
+"ros-humble-ament-cmake-core": {
+"humble": 0.3
+},
+"ros-humble-ament-cmake-cppcheck": {
+"humble": 0.3
+},
+"ros-humble-ament-cmake-cpplint": {
+"humble": 0.3
+},
+"ros-humble-ament-cmake-export-definitions": {
+"humble": 0.3
+},
+"ros-humble-ament-cmake-export-dependencies": {
+"humble": 0.4
+},
+"ros-humble-ament-cmake-export-include-directories": {
+"humble": 0.4
+},
+"ros-humble-ament-cmake-export-interfaces": {
+"humble": 0.5
+},
+"ros-humble-ament-cmake-export-libraries": {
+"humble": 0.4
+},
+"ros-humble-ament-cmake-export-link-flags": {
+"humble": 0.5
+},
+"ros-humble-ament-cmake-export-targets": {
+"humble": 0.5
+},
+"ros-humble-ament-cmake-flake8": {
+"humble": 0.3
+},
+"ros-humble-ament-cmake-gen-version-h": {
+"humble": 0.4
+},
+"ros-humble-ament-cmake-gmock": {
+"humble": 0.5
+},
+"ros-humble-ament-cmake-google-benchmark": {
+"humble": 0.4
+},
+"ros-humble-ament-cmake-gtest": {
+"humble": 0.4
+},
+"ros-humble-ament-cmake-include-directories": {
+"humble": 0.6
+},
+"ros-humble-ament-cmake-libraries": {
+"humble": 0.4
+},
+"ros-humble-ament-cmake-lint-cmake": {
+"humble": 0.5
+},
+"ros-humble-ament-cmake-mypy": {
+"humble": 0.3
+},
+"ros-humble-ament-cmake-pclint": {
+"humble": 0.3
+},
+"ros-humble-ament-cmake-pep257": {
+"humble": 0.3
+},
+"ros-humble-ament-cmake-pytest": {
+"humble": 0.5
+},
+"ros-humble-ament-cmake-python": {
+"humble": 0.3
+},
+"ros-humble-ament-cmake-ros": {
+"humble": 1.1
+},
+"ros-humble-ament-cmake-target-dependencies": {
+"humble": 0.5
+},
+"ros-humble-ament-cmake-test": {
+"humble": 0.5
+},
+"ros-humble-ament-cmake-uncrustify": {
+"humble": 0.3
+},
+"ros-humble-ament-cmake-vendor-package": {
+"humble": 0.5
+},
+"ros-humble-ament-cmake-version": {
+"humble": 0.3
+},
+"ros-humble-ament-cmake-xmllint": {
+"humble": 0.3
+},
+"ros-humble-ament-copyright": {
+"humble": 0.5
+},
+"ros-humble-ament-cppcheck": {
+"humble": 0.4
+},
+"ros-humble-ament-cpplint": {
+"humble": 0.5
+},
+"ros-humble-ament-flake8": {
+"humble": 0.5
+},
+"ros-humble-ament-index-cpp": {
+"humble": 0.2
+},
+"ros-humble-ament-index-python": {
+"humble": 0.3
+},
+"ros-humble-ament-lint": {
+"humble": 0.3
+},
+"ros-humble-ament-lint-auto": {
+"humble": 0.5
+},
+"ros-humble-ament-lint-cmake": {
+"humble": 0.4
+},
+"ros-humble-ament-lint-common": {
+"humble": 0.9
+},
+"ros-humble-ament-mypy": {
+"humble": 0.5
+},
+"ros-humble-ament-package": {
+"humble": 0.3
+},
+"ros-humble-ament-pclint": {
+"humble": 0.4
+},
+"ros-humble-ament-pep257": {
+"humble": 0.5
+},
+"ros-humble-ament-pycodestyle": {
+"humble": 0.3
+},
+"ros-humble-ament-uncrustify": {
+"humble": 0.3
+},
+"ros-humble-ament-xmllint": {
+"humble": 0.5
+},
+"ros-humble-angles": {
+"humble": 0.8
+},
+"ros-humble-apex-test-tools": {
+"humble": 0.3
+},
+"ros-humble-apriltag": {
+"humble": 0.4
+},
+"ros-humble-apriltag-detector": {
+"humble": 1.0
+},
+"ros-humble-apriltag-detector-mit": {
+"humble": 0.4
+},
+"ros-humble-apriltag-detector-umich": {
+"humble": 0.6
+},
+"ros-humble-apriltag-draw": {
+"humble": 1.1
+},
+"ros-humble-apriltag-mit": {
+"humble": 0.4
+},
+"ros-humble-apriltag-msgs": {
+"humble": 0.5
+},
+"ros-humble-apriltag-tools": {
+"humble": 0.3
+},
+"ros-humble-asio-cmake-module": {
+"humble": 0.2
+},
+"ros-humble-async-web-server-cpp": {
+"humble": 0.6
+},
+"ros-humble-automatika-embodied-agents": {
+"humble": 0.6
+},
+"ros-humble-automatika-ros-sugar": {
+"humble": 0.8
+},
+"ros-humble-autoware-adapi-adaptors": {
+"humble": 0.3
+},
+"ros-humble-autoware-adapi-specs": {
+"humble": 0.6
+},
+"ros-humble-autoware-adapi-v1-msgs": {
+"humble": 0.4
+},
+"ros-humble-autoware-adapi-version-msgs": {
+"humble": 0.4
+},
+"ros-humble-autoware-agnocast-wrapper": {
+"humble": 1.4
+},
+"ros-humble-autoware-auto-msgs": {
+"humble": 0.5
+},
+"ros-humble-autoware-behavior-velocity-planner": {
+"humble": 0.8
+},
+"ros-humble-autoware-behavior-velocity-planner-common": {
+"humble": 0.3
+},
+"ros-humble-autoware-behavior-velocity-stop-line-module": {
+"humble": 0.2
+},
+"ros-humble-autoware-cmake": {
+"humble": 0.6
+},
+"ros-humble-autoware-command-gate": {
+"humble": 1.0
+},
+"ros-humble-autoware-common-msgs": {
+"humble": 0.4
+},
+"ros-humble-autoware-component-interface-specs": {
+"humble": 0.4
+},
+"ros-humble-autoware-control-msgs": {
+"humble": 0.6
+},
+"ros-humble-autoware-core": {
+"humble": 0.3
+},
+"ros-humble-autoware-core-api": {
+"humble": 0.4
+},
+"ros-humble-autoware-core-control": {
+"humble": 0.4
+},
+"ros-humble-autoware-core-localization": {
+"humble": 0.8
+},
+"ros-humble-autoware-core-map": {
+"humble": 0.4
+},
+"ros-humble-autoware-core-perception": {
+"humble": 0.4
+},
+"ros-humble-autoware-core-planning": {
+"humble": 0.5
+},
+"ros-humble-autoware-core-sensing": {
+"humble": 0.3
+},
+"ros-humble-autoware-core-vehicle": {
+"humble": 0.6
+},
+"ros-humble-autoware-crop-box-filter": {
+"humble": 0.3
+},
+"ros-humble-autoware-default-adapi": {
+"humble": 1.1
+},
+"ros-humble-autoware-downsample-filters": {
+"humble": 0.3
+},
+"ros-humble-autoware-ekf-localizer": {
+"humble": 0.3
+},
+"ros-humble-autoware-euclidean-cluster-object-detector": {
+"humble": 1.3
+},
+"ros-humble-autoware-geography-utils": {
+"humble": 0.4
+},
+"ros-humble-autoware-global-parameter-loader": {
+"humble": 0.3
+},
+"ros-humble-autoware-ground-filter": {
+"humble": 0.3
+},
+"ros-humble-autoware-internal-debug-msgs": {
+"humble": 0.5
+},
+"ros-humble-autoware-internal-localization-msgs": {
+"humble": 0.2
+},
+"ros-humble-autoware-internal-metric-msgs": {
+"humble": 0.7
+},
+"ros-humble-autoware-internal-msgs": {
+"humble": 0.9
+},
+"ros-humble-autoware-internal-perception-msgs": {
+"humble": 0.6
+},
+"ros-humble-autoware-internal-planning-msgs": {
+"humble": 0.5
+},
+"ros-humble-autoware-interpolation": {
+"humble": 0.8
+},
+"ros-humble-autoware-kalman-filter": {
+"humble": 0.4
+},
+"ros-humble-autoware-lanelet2-extension": {
+"humble": 0.5
+},
+"ros-humble-autoware-lanelet2-extension-python": {
+"humble": 0.4
+},
+"ros-humble-autoware-lanelet2-map-visualizer": {
+"humble": 0.3
+},
+"ros-humble-autoware-lanelet2-utils": {
+"humble": 0.3
+},
+"ros-humble-autoware-lint-common": {
+"humble": 0.6
+},
+"ros-humble-autoware-localization-msgs": {
+"humble": 0.3
+},
+"ros-humble-autoware-localization-util": {
+"humble": 0.5
+},
+"ros-humble-autoware-map-height-fitter": {
+"humble": 0.4
+},
+"ros-humble-autoware-map-loader": {
+"humble": 0.4
+},
+"ros-humble-autoware-map-msgs": {
+"humble": 0.4
+},
+"ros-humble-autoware-map-projection-loader": {
+"humble": 0.5
+},
+"ros-humble-autoware-mission-planner": {
+"humble": 0.4
+},
+"ros-humble-autoware-motion-utils": {
+"humble": 0.3
+},
+"ros-humble-autoware-motion-velocity-obstacle-stop-module": {
+"humble": 0.3
+},
+"ros-humble-autoware-motion-velocity-planner": {
+"humble": 0.4
+},
+"ros-humble-autoware-motion-velocity-planner-common": {
+"humble": 1.2
+},
+"ros-humble-autoware-msgs": {
+"humble": 0.8
+},
+"ros-humble-autoware-ndt-scan-matcher": {
+"humble": 0.4
+},
+"ros-humble-autoware-node": {
+"humble": 0.5
+},
+"ros-humble-autoware-object-recognition-utils": {
+"humble": 0.3
+},
+"ros-humble-autoware-objects-of-interest-marker-interface": {
+"humble": 0.5
+},
+"ros-humble-autoware-osqp-interface": {
+"humble": 0.6
+},
+"ros-humble-autoware-path-generator": {
+"humble": 0.4
+},
+"ros-humble-autoware-perception-msgs": {
+"humble": 0.3
+},
+"ros-humble-autoware-perception-objects-converter": {
+"humble": 0.9
+},
+"ros-humble-autoware-planning-factor-interface": {
+"humble": 0.4
+},
+"ros-humble-autoware-planning-msgs": {
+"humble": 0.5
+},
+"ros-humble-autoware-planning-test-manager": {
+"humble": 0.7
+},
+"ros-humble-autoware-planning-topic-converter": {
+"humble": 0.4
+},
+"ros-humble-autoware-point-types": {
+"humble": 0.5
+},
+"ros-humble-autoware-pose-initializer": {
+"humble": 0.4
+},
+"ros-humble-autoware-pyplot": {
+"humble": 0.5
+},
+"ros-humble-autoware-qos-utils": {
+"humble": 0.4
+},
+"ros-humble-autoware-qp-interface": {
+"humble": 0.7
+},
+"ros-humble-autoware-route-handler": {
+"humble": 0.4
+},
+"ros-humble-autoware-sensing-msgs": {
+"humble": 0.6
+},
+"ros-humble-autoware-signal-processing": {
+"humble": 0.8
+},
+"ros-humble-autoware-simple-pure-pursuit": {
+"humble": 0.4
+},
+"ros-humble-autoware-simulation-msgs": {
+"humble": 0.6
+},
+"ros-humble-autoware-stop-filter": {
+"humble": 0.4
+},
+"ros-humble-autoware-system-msgs": {
+"humble": 0.5
+},
+"ros-humble-autoware-test-utils": {
+"humble": 0.7
+},
+"ros-humble-autoware-testing": {
+"humble": 0.7
+},
+"ros-humble-autoware-trajectory": {
+"humble": 0.4
+},
+"ros-humble-autoware-twist2accel": {
+"humble": 0.5
+},
+"ros-humble-autoware-utils": {
+"humble": 0.4
+},
+"ros-humble-autoware-utils-debug": {
+"humble": 0.6
+},
+"ros-humble-autoware-utils-diagnostics": {
+"humble": 0.6
+},
+"ros-humble-autoware-utils-geometry": {
+"humble": 0.9
+},
+"ros-humble-autoware-utils-logging": {
+"humble": 0.7
+},
+"ros-humble-autoware-utils-math": {
+"humble": 0.6
+},
+"ros-humble-autoware-utils-pcl": {
+"humble": 0.4
+},
+"ros-humble-autoware-utils-rclcpp": {
+"humble": 0.6
+},
+"ros-humble-autoware-utils-system": {
+"humble": 0.3
+},
+"ros-humble-autoware-utils-tf": {
+"humble": 0.4
+},
+"ros-humble-autoware-utils-uuid": {
+"humble": 0.4
+},
+"ros-humble-autoware-utils-visualization": {
+"humble": 1.0
+},
+"ros-humble-autoware-v2x-msgs": {
+"humble": 0.3
+},
+"ros-humble-autoware-vehicle-info-utils": {
+"humble": 0.6
+},
+"ros-humble-autoware-vehicle-msgs": {
+"humble": 0.6
+},
+"ros-humble-autoware-vehicle-velocity-converter": {
+"humble": 0.5
+},
+"ros-humble-autoware-velocity-smoother": {
+"humble": 0.4
+},
+"ros-humble-axis-description": {
+"humble": 1.0
+},
+"ros-humble-backward-ros": {
+"humble": 0.5
+},
+"ros-humble-battery-state-broadcaster": {
+"humble": 0.4
+},
+"ros-humble-behaviortree-cpp": {
+"humble": 0.3
+},
+"ros-humble-behaviortree-cpp-v3": {
+"humble": 0.3
+},
+"ros-humble-bicycle-steering-controller": {
+"humble": 0.7
+},
+"ros-humble-bno055": {
+"humble": 0.4
+},
+"ros-humble-bond": {
+"humble": 0.4
+},
+"ros-humble-bond-core": {
+"humble": 0.5
+},
+"ros-humble-bondcpp": {
+"humble": 0.7
+},
+"ros-humble-bonxai-ros": {
+"humble": 0.5
+},
+"ros-humble-builtin-interfaces": {
+"humble": 0.5
+},
+"ros-humble-camera-calibration": {
+"humble": 0.5
+},
+"ros-humble-camera-calibration-parsers": {
+"humble": 0.3
+},
+"ros-humble-camera-info-manager": {
+"humble": 0.6
+},
+"ros-humble-can-msgs": {
+"humble": 0.5
+},
+"ros-humble-cartographer": {
+"humble": 0.4
+},
+"ros-humble-cartographer-ros": {
+"humble": 0.5
+},
+"ros-humble-cartographer-ros-msgs": {
+"humble": 0.3
+},
+"ros-humble-cascade-lifecycle-msgs": {
+"humble": 0.3
+},
+"ros-humble-chained-filter-controller": {
+"humble": 0.4
+},
+"ros-humble-chomp-motion-planner": {
+"humble": 0.3
+},
+"ros-humble-class-loader": {
+"humble": 0.3
+},
+"ros-humble-clearpath-bt-joy": {
+"humble": 0.5
+},
+"ros-humble-clearpath-common": {
+"humble": 0.3
+},
+"ros-humble-clearpath-config": {
+"humble": 0.9
+},
+"ros-humble-clearpath-control": {
+"humble": 0.8
+},
+"ros-humble-clearpath-description": {
+"humble": 0.6
+},
+"ros-humble-clearpath-diagnostics": {
+"humble": 0.4
+},
+"ros-humble-clearpath-generator-common": {
+"humble": 0.6
+},
+"ros-humble-clearpath-manipulators": {
+"humble": 0.3
+},
+"ros-humble-clearpath-manipulators-description": {
+"humble": 0.6
+},
+"ros-humble-clearpath-mounts-description": {
+"humble": 1.1
+},
+"ros-humble-clearpath-platform-description": {
+"humble": 0.5
+},
+"ros-humble-clearpath-platform-msgs": {
+"humble": 0.4
+},
+"ros-humble-clearpath-sensors-description": {
+"humble": 0.4
+},
+"ros-humble-cloudini-lib": {
+"humble": 0.5
+},
+"ros-humble-cloudini-ros": {
+"humble": 0.5
+},
+"ros-humble-cm-executors": {
+"humble": 0.3
+},
+"ros-humble-coal": {
+"humble": 0.6
+},
+"ros-humble-color-util": {
+"humble": 0.3
+},
+"ros-humble-common-interfaces": {
+"humble": 0.5
+},
+"ros-humble-composition": {
+"humble": 0.6
+},
+"ros-humble-composition-interfaces": {
+"humble": 0.4
+},
+"ros-humble-compressed-depth-image-transport": {
+"humble": 1.7
+},
+"ros-humble-compressed-image-transport": {
+"humble": 1.1
+},
+"ros-humble-console-bridge-vendor": {
+"humble": 0.8
+},
+"ros-humble-control-msgs": {
+"humble": 0.4
+},
+"ros-humble-control-toolbox": {
+"humble": 0.7
+},
+"ros-humble-controller-interface": {
+"humble": 0.7
+},
+"ros-humble-controller-manager": {
+"humble": 0.3
+},
+"ros-humble-controller-manager-msgs": {
+"humble": 0.4
+},
+"ros-humble-costmap-queue": {
+"humble": 0.4
+},
+"ros-humble-cv-bridge": {
+"humble": 0.4
+},
+"ros-humble-cyclonedds": {
+"humble": 0.6
+},
+"ros-humble-data-tamer-cpp": {
+"humble": 0.4
+},
+"ros-humble-data-tamer-msgs": {
+"humble": 0.5
+},
+"ros-humble-demo-nodes-cpp": {
+"humble": 0.8
+},
+"ros-humble-demo-nodes-cpp-native": {
+"humble": 0.5
+},
+"ros-humble-demo-nodes-py": {
+"humble": 0.3
+},
+"ros-humble-depth-image-proc": {
+"humble": 0.5
+},
+"ros-humble-depthimage-to-laserscan": {
+"humble": 0.9
+},
+"ros-humble-desktop": {
+"humble": 0.4
+},
+"ros-humble-desktop-full": {
+"humble": 0.3
+},
+"ros-humble-diagnostic-aggregator": {
+"humble": 0.3
+},
+"ros-humble-diagnostic-common-diagnostics": {
+"humble": 0.5
+},
+"ros-humble-diagnostic-msgs": {
+"humble": 0.3
+},
+"ros-humble-diagnostic-remote-logging": {
+"humble": 0.7
+},
+"ros-humble-diagnostic-updater": {
+"humble": 0.8
+},
+"ros-humble-diagnostics": {
+"humble": 1.0
+},
+"ros-humble-diff-drive-controller": {
+"humble": 0.4
+},
+"ros-humble-domain-coordinator": {
+"humble": 0.3
+},
+"ros-humble-draco-point-cloud-transport": {
+"humble": 0.9
+},
+"ros-humble-dual-laser-merger": {
+"humble": 0.5
+},
+"ros-humble-dummy-map-server": {
+"humble": 0.5
+},
+"ros-humble-dummy-robot-bringup": {
+"humble": 0.4
+},
+"ros-humble-dummy-sensors": {
+"humble": 0.4
+},
+"ros-humble-dwb-core": {
+"humble": 0.4
+},
+"ros-humble-dwb-critics": {
+"humble": 0.5
+},
+"ros-humble-dwb-msgs": {
+"humble": 0.9
+},
+"ros-humble-dwb-plugins": {
+"humble": 0.5
+},
+"ros-humble-dynamixel-sdk": {
+"humble": 0.6
+},
+"ros-humble-effort-controllers": {
+"humble": 0.5
+},
+"ros-humble-eigen-stl-containers": {
+"humble": 0.5
+},
+"ros-humble-eigen3-cmake-module": {
+"humble": 0.4
+},
+"ros-humble-eigenpy": {
+"humble": 0.5
+},
+"ros-humble-event-camera-codecs": {
+"humble": 0.5
+},
+"ros-humble-event-camera-msgs": {
+"humble": 0.3
+},
+"ros-humble-event-camera-renderer": {
+"humble": 0.3
+},
+"ros-humble-ewellix-description": {
+"humble": 0.6
+},
+"ros-humble-example-interfaces": {
+"humble": 0.4
+},
+"ros-humble-examples-rclcpp-minimal-action-client": {
+"humble": 0.7
+},
+"ros-humble-examples-rclcpp-minimal-action-server": {
+"humble": 0.6
+},
+"ros-humble-examples-rclcpp-minimal-client": {
+"humble": 0.3
+},
+"ros-humble-examples-rclcpp-minimal-composition": {
+"humble": 1.1
+},
+"ros-humble-examples-rclcpp-minimal-publisher": {
+"humble": 0.3
+},
+"ros-humble-examples-rclcpp-minimal-service": {
+"humble": 0.3
+},
+"ros-humble-examples-rclcpp-minimal-subscriber": {
+"humble": 0.4
+},
+"ros-humble-examples-rclcpp-minimal-timer": {
+"humble": 0.3
+},
+"ros-humble-examples-rclcpp-multithreaded-executor": {
+"humble": 0.3
+},
+"ros-humble-examples-rclpy-executors": {
+"humble": 0.3
+},
+"ros-humble-examples-rclpy-minimal-action-client": {
+"humble": 0.3
+},
+"ros-humble-examples-rclpy-minimal-action-server": {
+"humble": 0.3
+},
+"ros-humble-examples-rclpy-minimal-client": {
+"humble": 0.3
+},
+"ros-humble-examples-rclpy-minimal-publisher": {
+"humble": 0.3
+},
+"ros-humble-examples-rclpy-minimal-service": {
+"humble": 0.3
+},
+"ros-humble-examples-rclpy-minimal-subscriber": {
+"humble": 0.3
+},
+"ros-humble-fastcdr": {
+"humble": 0.7
+},
+"ros-humble-fastrtps": {
+"humble": 0.3
+},
+"ros-humble-fastrtps-cmake-module": {
+"humble": 0.3
+},
+"ros-humble-ffmpeg-encoder-decoder": {
+"humble": 0.8
+},
+"ros-humble-ffmpeg-image-transport": {
+"humble": 0.7
+},
+"ros-humble-ffmpeg-image-transport-msgs": {
+"humble": 0.3
+},
+"ros-humble-filters": {
+"humble": 0.3
+},
+"ros-humble-flex-sync": {
+"humble": 0.7
+},
+"ros-humble-flir-ptu-description": {
+"humble": 0.5
+},
+"ros-humble-foonathan-memory-vendor": {
+"humble": 0.6
+},
+"ros-humble-force-torque-sensor-broadcaster": {
+"humble": 0.4
+},
+"ros-humble-forward-command-controller": {
+"humble": 0.4
+},
+"ros-humble-foxglove-bridge": {
+"humble": 0.5
+},
+"ros-humble-foxglove-compressed-video-transport": {
+"humble": 0.7
+},
+"ros-humble-foxglove-msgs": {
+"humble": 0.3
+},
+"ros-humble-gazebo-msgs": {
+"humble": 0.3
+},
+"ros-humble-generate-parameter-library": {
+"humble": 0.7
+},
+"ros-humble-generate-parameter-library-py": {
+"humble": 0.7
+},
+"ros-humble-geodesy": {
+"humble": 0.3
+},
+"ros-humble-geographic-info": {
+"humble": 0.6
+},
+"ros-humble-geographic-msgs": {
+"humble": 0.3
+},
+"ros-humble-geometric-shapes": {
+"humble": 0.6
+},
+"ros-humble-geometry-msgs": {
+"humble": 0.3
+},
+"ros-humble-geometry-tutorials": {
+"humble": 0.5
+},
+"ros-humble-geometry2": {
+"humble": 0.5
+},
+"ros-humble-gmock-vendor": {
+"humble": 0.5
+},
+"ros-humble-google-benchmark-vendor": {
+"humble": 0.4
+},
+"ros-humble-gpio-controllers": {
+"humble": 0.4
+},
+"ros-humble-gps-msgs": {
+"humble": 0.3
+},
+"ros-humble-gps-sensor-broadcaster": {
+"humble": 0.4
+},
+"ros-humble-graph-msgs": {
+"humble": 0.3
+},
+"ros-humble-grid-map": {
+"humble": 0.3
+},
+"ros-humble-grid-map-cmake-helpers": {
+"humble": 0.3
+},
+"ros-humble-grid-map-core": {
+"humble": 0.3
+},
+"ros-humble-grid-map-costmap-2d": {
+"humble": 0.4
+},
+"ros-humble-grid-map-cv": {
+"humble": 0.7
+},
+"ros-humble-grid-map-demos": {
+"humble": 0.4
+},
+"ros-humble-grid-map-filters": {
+"humble": 0.3
+},
+"ros-humble-grid-map-loader": {
+"humble": 0.3
+},
+"ros-humble-grid-map-msgs": {
+"humble": 0.3
+},
+"ros-humble-grid-map-octomap": {
+"humble": 0.3
+},
+"ros-humble-grid-map-pcl": {
+"humble": 0.3
+},
+"ros-humble-grid-map-ros": {
+"humble": 0.4
+},
+"ros-humble-grid-map-rviz-plugin": {
+"humble": 0.3
+},
+"ros-humble-grid-map-sdf": {
+"humble": 0.3
+},
+"ros-humble-grid-map-visualization": {
+"humble": 0.3
+},
+"ros-humble-gripper-controllers": {
+"humble": 0.4
+},
+"ros-humble-gtest-vendor": {
+"humble": 0.3
+},
+"ros-humble-gtsam": {
+"humble": 0.4
+},
+"ros-humble-gz-cmake-vendor": {
+"humble": 0.6
+},
+"ros-humble-gz-common-vendor": {
+"humble": 0.3
+},
+"ros-humble-gz-dartsim-vendor": {
+"humble": 0.7
+},
+"ros-humble-gz-fuel-tools-vendor": {
+"humble": 0.3
+},
+"ros-humble-gz-gui-vendor": {
+"humble": 0.5
+},
+"ros-humble-gz-math-vendor": {
+"humble": 0.3
+},
+"ros-humble-gz-msgs-vendor": {
+"humble": 0.3
+},
+"ros-humble-gz-ogre-next-vendor": {
+"humble": 0.5
+},
+"ros-humble-gz-physics-vendor": {
+"humble": 0.4
+},
+"ros-humble-gz-plugin-vendor": {
+"humble": 0.4
+},
+"ros-humble-gz-rendering-vendor": {
+"humble": 0.4
+},
+"ros-humble-gz-ros2-control": {
+"humble": 0.4
+},
+"ros-humble-gz-ros2-control-demos": {
+"humble": 0.7
+},
+"ros-humble-gz-sensors-vendor": {
+"humble": 0.3
+},
+"ros-humble-gz-sim-vendor": {
+"humble": 0.3
+},
+"ros-humble-gz-tools-vendor": {
+"humble": 0.3
+},
+"ros-humble-gz-transport-vendor": {
+"humble": 0.4
+},
+"ros-humble-gz-utils-vendor": {
+"humble": 0.3
+},
+"ros-humble-hardware-interface": {
+"humble": 0.7
+},
+"ros-humble-hardware-interface-testing": {
+"humble": 0.6
+},
+"ros-humble-hls-lfcd-lds-driver": {
+"humble": 0.4
+},
+"ros-humble-iceoryx-binding-c": {
+"humble": 0.6
+},
+"ros-humble-iceoryx-hoofs": {
+"humble": 0.4
+},
+"ros-humble-iceoryx-posh": {
+"humble": 0.5
+},
+"ros-humble-iiwa14-moveit-config": {
+"humble": 0.4
+},
+"ros-humble-iiwa7-moveit-config": {
+"humble": 0.4
+},
+"ros-humble-image-common": {
+"humble": 0.7
+},
+"ros-humble-image-geometry": {
+"humble": 0.3
+},
+"ros-humble-image-pipeline": {
+"humble": 0.3
+},
+"ros-humble-image-proc": {
+"humble": 0.7
+},
+"ros-humble-image-publisher": {
+"humble": 0.8
+},
+"ros-humble-image-rotate": {
+"humble": 0.7
+},
+"ros-humble-image-tools": {
+"humble": 0.8
+},
+"ros-humble-image-transport": {
+"humble": 0.4
+},
+"ros-humble-image-transport-plugins": {
+"humble": 0.7
+},
+"ros-humble-image-view": {
+"humble": 0.8
+},
+"ros-humble-imu-complementary-filter": {
+"humble": 0.9
+},
+"ros-humble-imu-filter-madgwick": {
+"humble": 0.6
+},
+"ros-humble-imu-sensor-broadcaster": {
+"humble": 0.4
+},
+"ros-humble-imu-tools": {
+"humble": 0.4
+},
+"ros-humble-imu-transformer": {
+"humble": 0.6
+},
+"ros-humble-interactive-marker-twist-server": {
+"humble": 0.7
+},
+"ros-humble-interactive-markers": {
+"humble": 0.6
+},
+"ros-humble-intra-process-demo": {
+"humble": 0.3
+},
+"ros-humble-io-context": {
+"humble": 0.3
+},
+"ros-humble-irobot-create-common-bringup": {
+"humble": 0.9
+},
+"ros-humble-irobot-create-control": {
+"humble": 0.4
+},
+"ros-humble-irobot-create-description": {
+"humble": 0.3
+},
+"ros-humble-irobot-create-gz-bringup": {
+"humble": 0.3
+},
+"ros-humble-irobot-create-gz-plugins": {
+"humble": 0.7
+},
+"ros-humble-irobot-create-gz-sim": {
+"humble": 0.4
+},
+"ros-humble-irobot-create-gz-toolbox": {
+"humble": 1.2
+},
+"ros-humble-irobot-create-msgs": {
+"humble": 0.3
+},
+"ros-humble-irobot-create-nodes": {
+"humble": 0.6
+},
+"ros-humble-irobot-create-toolbox": {
+"humble": 0.3
+},
+"ros-humble-joint-limits": {
+"humble": 0.8
+},
+"ros-humble-joint-state-broadcaster": {
+"humble": 0.4
+},
+"ros-humble-joint-state-publisher": {
+"humble": 0.3
+},
+"ros-humble-joint-state-publisher-gui": {
+"humble": 0.5
+},
+"ros-humble-joint-trajectory-controller": {
+"humble": 0.4
+},
+"ros-humble-joy": {
+"humble": 1.0
+},
+"ros-humble-joy-linux": {
+"humble": 0.6
+},
+"ros-humble-joy-teleop": {
+"humble": 0.8
+},
+"ros-humble-jrl-cmakemodules": {
+"humble": 0.4
+},
+"ros-humble-kdl-parser": {
+"humble": 0.5
+},
+"ros-humble-key-teleop": {
+"humble": 0.3
+},
+"ros-humble-keyboard-handler": {
+"humble": 0.4
+},
+"ros-humble-kinematics-interface": {
+"humble": 0.8
+},
+"ros-humble-kinematics-interface-kdl": {
+"humble": 0.5
+},
+"ros-humble-kinova-gen3-7dof-robotiq-2f-85-moveit-config": {
+"humble": 0.5
+},
+"ros-humble-kortex-description": {
+"humble": 0.4
+},
+"ros-humble-lanelet2": {
+"humble": 0.3
+},
+"ros-humble-lanelet2-core": {
+"humble": 0.6
+},
+"ros-humble-lanelet2-examples": {
+"humble": 0.3
+},
+"ros-humble-lanelet2-io": {
+"humble": 0.5
+},
+"ros-humble-lanelet2-maps": {
+"humble": 0.5
+},
+"ros-humble-lanelet2-matching": {
+"humble": 0.7
+},
+"ros-humble-lanelet2-projection": {
+"humble": 0.3
+},
+"ros-humble-lanelet2-python": {
+"humble": 0.3
+},
+"ros-humble-lanelet2-routing": {
+"humble": 0.3
+},
+"ros-humble-lanelet2-traffic-rules": {
+"humble": 0.5
+},
+"ros-humble-lanelet2-validation": {
+"humble": 0.6
+},
+"ros-humble-laser-filters": {
+"humble": 0.6
+},
+"ros-humble-laser-geometry": {
+"humble": 0.5
+},
+"ros-humble-laser-proc": {
+"humble": 0.7
+},
+"ros-humble-laser-segmentation": {
+"humble": 1.0
+},
+"ros-humble-launch": {
+"humble": 0.8
+},
+"ros-humble-launch-param-builder": {
+"humble": 0.4
+},
+"ros-humble-launch-pytest": {
+"humble": 0.5
+},
+"ros-humble-launch-ros": {
+"humble": 0.6
+},
+"ros-humble-launch-testing": {
+"humble": 0.4
+},
+"ros-humble-launch-testing-ament-cmake": {
+"humble": 0.3
+},
+"ros-humble-launch-testing-ros": {
+"humble": 0.6
+},
+"ros-humble-launch-xml": {
+"humble": 0.4
+},
+"ros-humble-launch-yaml": {
+"humble": 0.4
+},
+"ros-humble-lbr-bringup": {
+"humble": 0.2
+},
+"ros-humble-lbr-demos-advanced-cpp": {
+"humble": 0.4
+},
+"ros-humble-lbr-demos-advanced-py": {
+"humble": 0.4
+},
+"ros-humble-lbr-demos-cpp": {
+"humble": 0.3
+},
+"ros-humble-lbr-demos-py": {
+"humble": 0.3
+},
+"ros-humble-lbr-description": {
+"humble": 0.8
+},
+"ros-humble-lbr-fri-idl": {
+"humble": 0.4
+},
+"ros-humble-lbr-fri-ros2": {
+"humble": 0.3
+},
+"ros-humble-lbr-fri-ros2-stack": {
+"humble": 0.4
+},
+"ros-humble-lbr-moveit": {
+"humble": 0.3
+},
+"ros-humble-lbr-moveit-cpp": {
+"humble": 0.3
+},
+"ros-humble-lbr-ros2-control": {
+"humble": 0.4
+},
+"ros-humble-libcurl-vendor": {
+"humble": 0.6
+},
+"ros-humble-libg2o": {
+"humble": 0.6
+},
+"ros-humble-liblz4-vendor": {
+"humble": 0.6
+},
+"ros-humble-libmavconn": {
+"humble": 0.3
+},
+"ros-humble-libnabo": {
+"humble": 1.9
+},
+"ros-humble-libpointmatcher": {
+"humble": 0.5
+},
+"ros-humble-librealsense2": {
+"humble": 1.0
+},
+"ros-humble-libstatistics-collector": {
+"humble": 0.5
+},
+"ros-humble-libyaml-vendor": {
+"humble": 0.3
+},
+"ros-humble-lifecycle": {
+"humble": 0.4
+},
+"ros-humble-lifecycle-msgs": {
+"humble": 0.6
+},
+"ros-humble-livox-ros-driver2": {
+"humble": 2.7
+},
+"ros-humble-logging-demo": {
+"humble": 1.0
+},
+"ros-humble-lttngpy": {
+"humble": 0.3
+},
+"ros-humble-magic-enum": {
+"humble": 0.4
+},
+"ros-humble-magnetometer-broadcaster": {
+"humble": 0.4
+},
+"ros-humble-map-msgs": {
+"humble": 0.3
+},
+"ros-humble-marine-acoustic-msgs": {
+"humble": 0.3
+},
+"ros-humble-marker-msgs": {
+"humble": 0.3
+},
+"ros-humble-mavlink": {
+"humble": 0.5
+},
+"ros-humble-mavros": {
+"humble": 1.3
+},
+"ros-humble-mavros-extras": {
+"humble": 0.6
+},
+"ros-humble-mavros-msgs": {
+"humble": 0.3
+},
+"ros-humble-mcap-vendor": {
+"humble": 0.3
+},
+"ros-humble-mecanum-drive-controller": {
+"humble": 0.2
+},
+"ros-humble-med14-moveit-config": {
+"humble": 0.4
+},
+"ros-humble-med7-moveit-config": {
+"humble": 0.3
+},
+"ros-humble-message-filters": {
+"humble": 0.6
+},
+"ros-humble-microstrain-inertial-description": {
+"humble": 0.3
+},
+"ros-humble-microstrain-inertial-driver": {
+"humble": 0.6
+},
+"ros-humble-microstrain-inertial-examples": {
+"humble": 0.3
+},
+"ros-humble-microstrain-inertial-msgs": {
+"humble": 0.3
+},
+"ros-humble-microstrain-inertial-rqt": {
+"humble": 0.3
+},
+"ros-humble-mimick-vendor": {
+"humble": 0.3
+},
+"ros-humble-mobile-robot-simulator": {
+"humble": 0.6
+},
+"ros-humble-mocap4r2-msgs": {
+"humble": 0.3
+},
+"ros-humble-motion-capture-tracking": {
+"humble": 1.1
+},
+"ros-humble-motion-capture-tracking-interfaces": {
+"humble": 0.3
+},
+"ros-humble-mouse-teleop": {
+"humble": 0.3
+},
+"ros-humble-moveit": {
+"humble": 0.4
+},
+"ros-humble-moveit-common": {
+"humble": 0.5
+},
+"ros-humble-moveit-configs-utils": {
+"humble": 0.3
+},
+"ros-humble-moveit-core": {
+"humble": 0.4
+},
+"ros-humble-moveit-hybrid-planning": {
+"humble": 0.3
+},
+"ros-humble-moveit-kinematics": {
+"humble": 0.3
+},
+"ros-humble-moveit-msgs": {
+"humble": 0.9
+},
+"ros-humble-moveit-planners": {
+"humble": 0.3
+},
+"ros-humble-moveit-planners-chomp": {
+"humble": 0.2
+},
+"ros-humble-moveit-planners-ompl": {
+"humble": 0.3
+},
+"ros-humble-moveit-planners-stomp": {
+"humble": 0.3
+},
+"ros-humble-moveit-plugins": {
+"humble": 0.3
+},
+"ros-humble-moveit-py": {
+"humble": 0.3
+},
+"ros-humble-moveit-resources": {
+"humble": 0.4
+},
+"ros-humble-moveit-resources-fanuc-description": {
+"humble": 0.6
+},
+"ros-humble-moveit-resources-fanuc-moveit-config": {
+"humble": 0.4
+},
+"ros-humble-moveit-resources-panda-description": {
+"humble": 0.5
+},
+"ros-humble-moveit-resources-panda-moveit-config": {
+"humble": 0.3
+},
+"ros-humble-moveit-resources-pr2-description": {
+"humble": 0.6
+},
+"ros-humble-moveit-resources-prbt-ikfast-manipulator-plugin": {
+"humble": 0.4
+},
+"ros-humble-moveit-resources-prbt-moveit-config": {
+"humble": 0.3
+},
+"ros-humble-moveit-resources-prbt-pg70-support": {
+"humble": 0.3
+},
+"ros-humble-moveit-resources-prbt-support": {
+"humble": 0.3
+},
+"ros-humble-moveit-ros": {
+"humble": 0.2
+},
+"ros-humble-moveit-ros-benchmarks": {
+"humble": 0.4
+},
+"ros-humble-moveit-ros-control-interface": {
+"humble": 0.3
+},
+"ros-humble-moveit-ros-move-group": {
+"humble": 0.4
+},
+"ros-humble-moveit-ros-occupancy-map-monitor": {
+"humble": 0.3
+},
+"ros-humble-moveit-ros-perception": {
+"humble": 0.3
+},
+"ros-humble-moveit-ros-planning": {
+"humble": 0.3
+},
+"ros-humble-moveit-ros-planning-interface": {
+"humble": 0.3
+},
+"ros-humble-moveit-ros-robot-interaction": {
+"humble": 0.3
+},
+"ros-humble-moveit-ros-trajectory-cache": {
+"humble": 0.3
+},
+"ros-humble-moveit-ros-visualization": {
+"humble": 0.3
+},
+"ros-humble-moveit-ros-warehouse": {
+"humble": 0.3
+},
+"ros-humble-moveit-runtime": {
+"humble": 0.4
+},
+"ros-humble-moveit-servo": {
+"humble": 0.3
+},
+"ros-humble-moveit-setup-app-plugins": {
+"humble": 0.3
+},
+"ros-humble-moveit-setup-assistant": {
+"humble": 0.4
+},
+"ros-humble-moveit-setup-controllers": {
+"humble": 0.3
+},
+"ros-humble-moveit-setup-core-plugins": {
+"humble": 0.4
+},
+"ros-humble-moveit-setup-framework": {
+"humble": 0.3
+},
+"ros-humble-moveit-setup-srdf-plugins": {
+"humble": 0.6
+},
+"ros-humble-moveit-simple-controller-manager": {
+"humble": 0.3
+},
+"ros-humble-moveit-task-constructor-capabilities": {
+"humble": 0.4
+},
+"ros-humble-moveit-task-constructor-core": {
+"humble": 0.3
+},
+"ros-humble-moveit-task-constructor-demo": {
+"humble": 0.4
+},
+"ros-humble-moveit-task-constructor-msgs": {
+"humble": 0.5
+},
+"ros-humble-moveit-task-constructor-visualization": {
+"humble": 0.5
+},
+"ros-humble-moveit-visual-tools": {
+"humble": 0.3
+},
+"ros-humble-moveit2-tutorials": {
+"humble": 0.5
+},
+"ros-humble-mrt-cmake-modules": {
+"humble": 0.5
+},
+"ros-humble-mujoco-3d-lidar": {
+"humble": 0.3
+},
+"ros-humble-mujoco-ros2-control-msgs": {
+"humble": 0.3
+},
+"ros-humble-mujoco-vendor": {
+"humble": 0.7
+},
+"ros-humble-nav-2d-msgs": {
+"humble": 0.6
+},
+"ros-humble-nav-2d-utils": {
+"humble": 0.6
+},
+"ros-humble-nav-msgs": {
+"humble": 0.2
+},
+"ros-humble-nav2-amcl": {
+"humble": 1.3
+},
+"ros-humble-nav2-behavior-tree": {
+"humble": 0.4
+},
+"ros-humble-nav2-behaviors": {
+"humble": 0.3
+},
+"ros-humble-nav2-bringup": {
+"humble": 0.3
+},
+"ros-humble-nav2-bt-navigator": {
+"humble": 0.3
+},
+"ros-humble-nav2-collision-monitor": {
+"humble": 0.6
+},
+"ros-humble-nav2-common": {
+"humble": 0.5
+},
+"ros-humble-nav2-constrained-smoother": {
+"humble": 0.5
+},
+"ros-humble-nav2-controller": {
+"humble": 0.5
+},
+"ros-humble-nav2-core": {
+"humble": 0.5
+},
+"ros-humble-nav2-costmap-2d": {
+"humble": 0.3
+},
+"ros-humble-nav2-dwb-controller": {
+"humble": 0.4
+},
+"ros-humble-nav2-graceful-controller": {
+"humble": 0.3
+},
+"ros-humble-nav2-lifecycle-manager": {
+"humble": 0.4
+},
+"ros-humble-nav2-loopback-sim": {
+"humble": 1.0
+},
+"ros-humble-nav2-map-server": {
+"humble": 0.4
+},
+"ros-humble-nav2-minimal-tb3-sim": {
+"humble": 0.5
+},
+"ros-humble-nav2-minimal-tb4-description": {
+"humble": 1.0
+},
+"ros-humble-nav2-minimal-tb4-sim": {
+"humble": 0.4
+},
+"ros-humble-nav2-mppi-controller": {
+"humble": 0.4
+},
+"ros-humble-nav2-msgs": {
+"humble": 0.3
+},
+"ros-humble-nav2-navfn-planner": {
+"humble": 0.4
+},
+"ros-humble-nav2-planner": {
+"humble": 0.3
+},
+"ros-humble-nav2-regulated-pure-pursuit-controller": {
+"humble": 0.3
+},
+"ros-humble-nav2-rotation-shim-controller": {
+"humble": 0.3
+},
+"ros-humble-nav2-route": {
+"humble": 0.5
+},
+"ros-humble-nav2-rviz-plugins": {
+"humble": 0.3
+},
+"ros-humble-nav2-simple-commander": {
+"humble": 0.8
+},
+"ros-humble-nav2-smac-planner": {
+"humble": 0.3
+},
+"ros-humble-nav2-smoother": {
+"humble": 0.3
+},
+"ros-humble-nav2-theta-star-planner": {
+"humble": 0.6
+},
+"ros-humble-nav2-util": {
+"humble": 1.9
+},
+"ros-humble-nav2-velocity-smoother": {
+"humble": 0.4
+},
+"ros-humble-nav2-voxel-grid": {
+"humble": 0.3
+},
+"ros-humble-nav2-waypoint-follower": {
+"humble": 0.4
+},
+"ros-humble-navigation2": {
+"humble": 0.3
+},
+"ros-humble-negotiated": {
+"humble": 0.4
+},
+"ros-humble-negotiated-interfaces": {
+"humble": 0.4
+},
+"ros-humble-nmea-msgs": {
+"humble": 0.6
+},
+"ros-humble-nmea-navsat-driver": {
+"humble": 0.3
+},
+"ros-humble-nonpersistent-voxel-layer": {
+"humble": 0.4
+},
+"ros-humble-ntrip-client": {
+"humble": 0.6
+},
+"ros-humble-ntrip-client-node": {
+"humble": 0.5
+},
+"ros-humble-object-recognition-msgs": {
+"humble": 0.4
+},
+"ros-humble-octomap": {
+"humble": 0.5
+},
+"ros-humble-octomap-msgs": {
+"humble": 0.4
+},
+"ros-humble-octomap-ros": {
+"humble": 0.5
+},
+"ros-humble-octomap-rviz-plugins": {
+"humble": 0.3
+},
+"ros-humble-octomap-server": {
+"humble": 0.4
+},
+"ros-humble-odom-to-tf-ros2": {
+"humble": 0.6
+},
+"ros-humble-omni-wheel-drive-controller": {
+"humble": 0.4
+},
+"ros-humble-ompl": {
+"humble": 0.6
+},
+"ros-humble-opennav-docking": {
+"humble": 0.4
+},
+"ros-humble-opennav-docking-bt": {
+"humble": 0.5
+},
+"ros-humble-opennav-docking-core": {
+"humble": 0.4
+},
+"ros-humble-openvdb-vendor": {
+"humble": 0.6
+},
+"ros-humble-orbbec-camera-msgs": {
+"humble": 0.5
+},
+"ros-humble-orbbec-description": {
+"humble": 0.3
+},
+"ros-humble-orocos-kdl-vendor": {
+"humble": 0.2
+},
+"ros-humble-osqp-vendor": {
+"humble": 0.3
+},
+"ros-humble-osrf-pycommon": {
+"humble": 0.3
+},
+"ros-humble-osrf-testing-tools-cpp": {
+"humble": 0.4
+},
+"ros-humble-ouster-ros": {
+"humble": 0.5
+},
+"ros-humble-ouster-sensor-msgs": {
+"humble": 0.6
+},
+"ros-humble-pal-statistics": {
+"humble": 0.9
+},
+"ros-humble-pal-statistics-msgs": {
+"humble": 0.6
+},
+"ros-humble-parallel-gripper-controller": {
+"humble": 0.5
+},
+"ros-humble-parameter-traits": {
+"humble": 0.7
+},
+"ros-humble-pcl-conversions": {
+"humble": 0.5
+},
+"ros-humble-pcl-msgs": {
+"humble": 0.6
+},
+"ros-humble-pcl-ros": {
+"humble": 0.9
+},
+"ros-humble-pendulum-msgs": {
+"humble": 0.5
+},
+"ros-humble-perception": {
+"humble": 0.4
+},
+"ros-humble-perception-pcl": {
+"humble": 0.3
+},
+"ros-humble-performance-test-fixture": {
+"humble": 0.3
+},
+"ros-humble-persist-parameter-server": {
+"humble": 0.7
+},
+"ros-humble-pick-ik": {
+"humble": 0.3
+},
+"ros-humble-picknik-ament-copyright": {
+"humble": 0.4
+},
+"ros-humble-picknik-reset-fault-controller": {
+"humble": 0.3
+},
+"ros-humble-picknik-twist-controller": {
+"humble": 0.3
+},
+"ros-humble-pid-controller": {
+"humble": 0.4
+},
+"ros-humble-pilz-industrial-motion-planner": {
+"humble": 0.3
+},
+"ros-humble-pilz-industrial-motion-planner-testutils": {
+"humble": 0.3
+},
+"ros-humble-pinocchio": {
+"humble": 0.5
+},
+"ros-humble-plansys2-bringup": {
+"humble": 0.3
+},
+"ros-humble-plansys2-bt-actions": {
+"humble": 0.4
+},
+"ros-humble-plansys2-core": {
+"humble": 0.6
+},
+"ros-humble-plansys2-domain-expert": {
+"humble": 0.6
+},
+"ros-humble-plansys2-executor": {
+"humble": 0.5
+},
+"ros-humble-plansys2-lifecycle-manager": {
+"humble": 0.6
+},
+"ros-humble-plansys2-msgs": {
+"humble": 0.6
+},
+"ros-humble-plansys2-pddl-parser": {
+"humble": 1.5
+},
+"ros-humble-plansys2-planner": {
+"humble": 0.3
+},
+"ros-humble-plansys2-popf-plan-solver": {
+"humble": 0.7
+},
+"ros-humble-plansys2-problem-expert": {
+"humble": 0.3
+},
+"ros-humble-plotjuggler": {
+"humble": 0.3
+},
+"ros-humble-plotjuggler-msgs": {
+"humble": 0.7
+},
+"ros-humble-plotjuggler-ros": {
+"humble": 0.4
+},
+"ros-humble-pluginlib": {
+"humble": 0.4
+},
+"ros-humble-point-cloud-interfaces": {
+"humble": 0.7
+},
+"ros-humble-point-cloud-msg-wrapper": {
+"humble": 0.4
+},
+"ros-humble-point-cloud-transport": {
+"humble": 0.6
+},
+"ros-humble-point-cloud-transport-plugins": {
+"humble": 0.6
+},
+"ros-humble-point-cloud-transport-py": {
+"humble": 0.9
+},
+"ros-humble-pointcloud-to-laserscan": {
+"humble": 0.4
+},
+"ros-humble-polygon-msgs": {
+"humble": 0.6
+},
+"ros-humble-polygon-utils": {
+"humble": 0.3
+},
+"ros-humble-popf": {
+"humble": 0.5
+},
+"ros-humble-pose-broadcaster": {
+"humble": 0.5
+},
+"ros-humble-position-controllers": {
+"humble": 0.3
+},
+"ros-humble-proxsuite": {
+"humble": 0.4
+},
+"ros-humble-ptz-action-server-msgs": {
+"humble": 0.4
+},
+"ros-humble-py-binding-tools": {
+"humble": 0.6
+},
+"ros-humble-py-trees": {
+"humble": 0.4
+},
+"ros-humble-py-trees-js": {
+"humble": 0.4
+},
+"ros-humble-py-trees-ros": {
+"humble": 0.6
+},
+"ros-humble-py-trees-ros-interfaces": {
+"humble": 0.5
+},
+"ros-humble-py-trees-ros-tutorials": {
+"humble": 1.0
+},
+"ros-humble-py-trees-ros-viewer": {
+"humble": 0.4
+},
+"ros-humble-pybind11-vendor": {
+"humble": 0.6
+},
+"ros-humble-python-cmake-module": {
+"humble": 0.3
+},
+"ros-humble-python-orocos-kdl-vendor": {
+"humble": 0.3
+},
+"ros-humble-python-qt-binding": {
+"humble": 0.6
+},
+"ros-humble-qt-dotgraph": {
+"humble": 0.3
+},
+"ros-humble-qt-gui": {
+"humble": 0.4
+},
+"ros-humble-qt-gui-cpp": {
+"humble": 0.5
+},
+"ros-humble-qt-gui-py-common": {
+"humble": 0.3
+},
+"ros-humble-quality-of-service-demo-cpp": {
+"humble": 0.4
+},
+"ros-humble-quality-of-service-demo-py": {
+"humble": 0.5
+},
+"ros-humble-radar-msgs": {
+"humble": 0.4
+},
+"ros-humble-random-numbers": {
+"humble": 0.4
+},
+"ros-humble-range-sensor-broadcaster": {
+"humble": 0.5
+},
+"ros-humble-rcl": {
+"humble": 0.3
+},
+"ros-humble-rcl-action": {
+"humble": 0.3
+},
+"ros-humble-rcl-interfaces": {
+"humble": 0.7
+},
+"ros-humble-rcl-lifecycle": {
+"humble": 0.3
+},
+"ros-humble-rcl-logging-interface": {
+"humble": 0.4
+},
+"ros-humble-rcl-logging-spdlog": {
+"humble": 0.4
+},
+"ros-humble-rcl-yaml-param-parser": {
+"humble": 0.5
+},
+"ros-humble-rclc": {
+"humble": 0.4
+},
+"ros-humble-rclc-examples": {
+"humble": 0.8
+},
+"ros-humble-rclc-lifecycle": {
+"humble": 0.6
+},
+"ros-humble-rclc-parameter": {
+"humble": 0.6
+},
+"ros-humble-rclcpp": {
+"humble": 0.4
+},
+"ros-humble-rclcpp-action": {
+"humble": 0.4
+},
+"ros-humble-rclcpp-cascade-lifecycle": {
+"humble": 0.4
+},
+"ros-humble-rclcpp-components": {
+"humble": 0.4
+},
+"ros-humble-rclcpp-lifecycle": {
+"humble": 0.8
+},
+"ros-humble-rclpy": {
+"humble": 0.6
+},
+"ros-humble-rclpy-message-converter": {
+"humble": 1.0
+},
+"ros-humble-rclpy-message-converter-msgs": {
+"humble": 0.3
+},
+"ros-humble-rcpputils": {
+"humble": 0.4
+},
+"ros-humble-rcutils": {
+"humble": 0.3
+},
+"ros-humble-realsense2-camera": {
+"humble": 0.4
+},
+"ros-humble-realsense2-camera-msgs": {
+"humble": 0.6
+},
+"ros-humble-realsense2-description": {
+"humble": 0.4
+},
+"ros-humble-realtime-tools": {
+"humble": 0.5
+},
+"ros-humble-resource-retriever": {
+"humble": 0.4
+},
+"ros-humble-rmf-utils": {
+"humble": 0.5
+},
+"ros-humble-rmw": {
+"humble": 0.4
+},
+"ros-humble-rmw-connextdds": {
+"humble": 0.5
+},
+"ros-humble-rmw-connextdds-common": {
+"humble": 0.4
+},
+"ros-humble-rmw-cyclonedds-cpp": {
+"humble": 0.4
+},
+"ros-humble-rmw-dds-common": {
+"humble": 0.4
+},
+"ros-humble-rmw-fastrtps-cpp": {
+"humble": 0.5
+},
+"ros-humble-rmw-fastrtps-dynamic-cpp": {
+"humble": 0.4
+},
+"ros-humble-rmw-fastrtps-shared-cpp": {
+"humble": 0.4
+},
+"ros-humble-rmw-implementation": {
+"humble": 0.5
+},
+"ros-humble-rmw-implementation-cmake": {
+"humble": 0.3
+},
+"ros-humble-rmw-stats-shim": {
+"humble": 0.4
+},
+"ros-humble-rmw-zenoh-cpp": {
+"humble": 0.4
+},
+"ros-humble-roboplan": {
+"humble": 0.5
+},
+"ros-humble-roboplan-cartesian-planning": {
+"humble": 0.7
+},
+"ros-humble-roboplan-common": {
+"humble": 0.6
+},
+"ros-humble-roboplan-core": {
+"humble": 0.5
+},
+"ros-humble-roboplan-example-models": {
+"humble": 0.4
+},
+"ros-humble-roboplan-examples": {
+"humble": 0.6
+},
+"ros-humble-roboplan-oink": {
+"humble": 0.4
+},
+"ros-humble-roboplan-ros-cpp": {
+"humble": 0.6
+},
+"ros-humble-roboplan-ros-examples": {
+"humble": 0.5
+},
+"ros-humble-roboplan-ros-franka": {
+"humble": 0.6
+},
+"ros-humble-roboplan-ros-py": {
+"humble": 0.3
+},
+"ros-humble-roboplan-ros-visualization": {
+"humble": 0.4
+},
+"ros-humble-roboplan-rrt": {
+"humble": 0.4
+},
+"ros-humble-roboplan-simple-ik": {
+"humble": 0.4
+},
+"ros-humble-roboplan-toppra": {
+"humble": 0.4
+},
+"ros-humble-robot-localization": {
+"humble": 0.7
+},
+"ros-humble-robot-state-publisher": {
+"humble": 1.8
+},
+"ros-humble-robotiq-controllers": {
+"humble": 0.3
+},
+"ros-humble-robotiq-description": {
+"humble": 0.4
+},
+"ros-humble-ros-base": {
+"humble": 0.3
+},
+"ros-humble-ros-core": {
+"humble": 0.6
+},
+"ros-humble-ros-environment": {
+"humble": 0.3
+},
+"ros-humble-ros-gz": {
+"humble": 0.3
+},
+"ros-humble-ros-gz-bridge": {
+"humble": 0.6
+},
+"ros-humble-ros-gz-image": {
+"humble": 0.3
+},
+"ros-humble-ros-gz-interfaces": {
+"humble": 0.4
+},
+"ros-humble-ros-gz-sim": {
+"humble": 0.4
+},
+"ros-humble-ros-gz-sim-demos": {
+"humble": 0.3
+},
+"ros-humble-ros-industrial-cmake-boilerplate": {
+"humble": 0.4
+},
+"ros-humble-ros-testing": {
+"humble": 0.6
+},
+"ros-humble-ros-workspace": {
+"humble": 0.4
+},
+"ros-humble-ros2-control": {
+"humble": 0.6
+},
+"ros-humble-ros2-control-cmake": {
+"humble": 0.3
+},
+"ros-humble-ros2-control-test-assets": {
+"humble": 0.5
+},
+"ros-humble-ros2-controllers": {
+"humble": 0.3
+},
+"ros-humble-ros2-controllers-test-nodes": {
+"humble": 0.6
+},
+"ros-humble-ros2-easy-test": {
+"humble": 0.4
+},
+"ros-humble-ros2-fmt-logger": {
+"humble": 0.6
+},
+"ros-humble-ros2-socketcan-msgs": {
+"humble": 0.4
+},
+"ros-humble-ros2action": {
+"humble": 0.4
+},
+"ros-humble-ros2bag": {
+"humble": 0.3
+},
+"ros-humble-ros2cli": {
+"humble": 0.5
+},
+"ros-humble-ros2cli-common-extensions": {
+"humble": 0.4
+},
+"ros-humble-ros2cli-test-interfaces": {
+"humble": 0.4
+},
+"ros-humble-ros2component": {
+"humble": 0.6
+},
+"ros-humble-ros2controlcli": {
+"humble": 0.7
+},
+"ros-humble-ros2doctor": {
+"humble": 0.4
+},
+"ros-humble-ros2interface": {
+"humble": 0.4
+},
+"ros-humble-ros2launch": {
+"humble": 0.6
+},
+"ros-humble-ros2lifecycle": {
+"humble": 0.7
+},
+"ros-humble-ros2lifecycle-test-fixtures": {
+"humble": 0.3
+},
+"ros-humble-ros2multicast": {
+"humble": 0.5
+},
+"ros-humble-ros2node": {
+"humble": 0.4
+},
+"ros-humble-ros2param": {
+"humble": 0.7
+},
+"ros-humble-ros2pkg": {
+"humble": 0.4
+},
+"ros-humble-ros2plugin": {
+"humble": 0.5
+},
+"ros-humble-ros2run": {
+"humble": 0.7
+},
+"ros-humble-ros2service": {
+"humble": 0.6
+},
+"ros-humble-ros2test": {
+"humble": 0.4
+},
+"ros-humble-ros2topic": {
+"humble": 0.4
+},
+"ros-humble-rosapi": {
+"humble": 0.5
+},
+"ros-humble-rosapi-msgs": {
+"humble": 0.4
+},
+"ros-humble-rosbag2": {
+"humble": 0.3
+},
+"ros-humble-rosbag2-compression": {
+"humble": 0.4
+},
+"ros-humble-rosbag2-compression-zstd": {
+"humble": 0.3
+},
+"ros-humble-rosbag2-cpp": {
+"humble": 0.6
+},
+"ros-humble-rosbag2-interfaces": {
+"humble": 0.4
+},
+"ros-humble-rosbag2-performance-benchmarking": {
+"humble": 0.4
+},
+"ros-humble-rosbag2-performance-benchmarking-msgs": {
+"humble": 0.4
+},
+"ros-humble-rosbag2-py": {
+"humble": 0.6
+},
+"ros-humble-rosbag2-storage": {
+"humble": 0.4
+},
+"ros-humble-rosbag2-storage-default-plugins": {
+"humble": 0.4
+},
+"ros-humble-rosbag2-storage-mcap": {
+"humble": 0.5
+},
+"ros-humble-rosbag2-storage-sqlite3": {
+"humble": 0.5
+},
+"ros-humble-rosbag2-test-common": {
+"humble": 0.6
+},
+"ros-humble-rosbag2-test-msgdefs": {
+"humble": 0.5
+},
+"ros-humble-rosbag2-tests": {
+"humble": 0.4
+},
+"ros-humble-rosbag2-transport": {
+"humble": 0.3
+},
+"ros-humble-rosbridge-library": {
+"humble": 0.6
+},
+"ros-humble-rosbridge-msgs": {
+"humble": 0.5
+},
+"ros-humble-rosbridge-server": {
+"humble": 0.6
+},
+"ros-humble-rosbridge-suite": {
+"humble": 0.8
+},
+"ros-humble-rosbridge-test-msgs": {
+"humble": 0.3
+},
+"ros-humble-rosgraph-monitor": {
+"humble": 0.4
+},
+"ros-humble-rosgraph-monitor-msgs": {
+"humble": 0.4
+},
+"ros-humble-rosgraph-msgs": {
+"humble": 0.4
+},
+"ros-humble-rosidl-adapter": {
+"humble": 0.3
+},
+"ros-humble-rosidl-cli": {
+"humble": 0.7
+},
+"ros-humble-rosidl-cmake": {
+"humble": 0.4
+},
+"ros-humble-rosidl-core-generators": {
+"humble": 0.6
+},
+"ros-humble-rosidl-core-runtime": {
+"humble": 0.7
+},
+"ros-humble-rosidl-default-generators": {
+"humble": 0.3
+},
+"ros-humble-rosidl-default-runtime": {
+"humble": 0.4
+},
+"ros-humble-rosidl-dynamic-typesupport": {
+"humble": 0.4
+},
+"ros-humble-rosidl-dynamic-typesupport-fastrtps": {
+"humble": 0.4
+},
+"ros-humble-rosidl-generator-c": {
+"humble": 0.4
+},
+"ros-humble-rosidl-generator-cpp": {
+"humble": 0.4
+},
+"ros-humble-rosidl-generator-dds-idl": {
+"humble": 0.4
+},
+"ros-humble-rosidl-generator-py": {
+"humble": 0.6
+},
+"ros-humble-rosidl-generator-rs": {
+"humble": 0.7
+},
+"ros-humble-rosidl-generator-type-description": {
+"humble": 0.4
+},
+"ros-humble-rosidl-parser": {
+"humble": 0.3
+},
+"ros-humble-rosidl-pycommon": {
+"humble": 0.4
+},
+"ros-humble-rosidl-runtime-c": {
+"humble": 0.4
+},
+"ros-humble-rosidl-runtime-cpp": {
+"humble": 0.4
+},
+"ros-humble-rosidl-runtime-py": {
+"humble": 0.5
+},
+"ros-humble-rosidl-typesupport-c": {
+"humble": 0.5
+},
+"ros-humble-rosidl-typesupport-cpp": {
+"humble": 0.6
+},
+"ros-humble-rosidl-typesupport-fastrtps-c": {
+"humble": 0.5
+},
+"ros-humble-rosidl-typesupport-fastrtps-cpp": {
+"humble": 0.4
+},
+"ros-humble-rosidl-typesupport-interface": {
+"humble": 0.3
+},
+"ros-humble-rosidl-typesupport-introspection-c": {
+"humble": 0.4
+},
+"ros-humble-rosidl-typesupport-introspection-cpp": {
+"humble": 0.4
+},
+"ros-humble-rosidlcpp": {
+"humble": 0.6
+},
+"ros-humble-rosidlcpp-generator-c": {
+"humble": 0.4
+},
+"ros-humble-rosidlcpp-generator-core": {
+"humble": 0.3
+},
+"ros-humble-rosidlcpp-generator-cpp": {
+"humble": 0.4
+},
+"ros-humble-rosidlcpp-generator-py": {
+"humble": 0.6
+},
+"ros-humble-rosidlcpp-generator-type-description": {
+"humble": 0.4
+},
+"ros-humble-rosidlcpp-parser": {
+"humble": 0.3
+},
+"ros-humble-rosidlcpp-typesupport-c": {
+"humble": 0.5
+},
+"ros-humble-rosidlcpp-typesupport-cpp": {
+"humble": 0.7
+},
+"ros-humble-rosidlcpp-typesupport-fastrtps-c": {
+"humble": 0.5
+},
+"ros-humble-rosidlcpp-typesupport-fastrtps-cpp": {
+"humble": 0.6
+},
+"ros-humble-rosidlcpp-typesupport-introspection-c": {
+"humble": 0.4
+},
+"ros-humble-rosidlcpp-typesupport-introspection-cpp": {
+"humble": 0.4
+},
+"ros-humble-rosx-introspection": {
+"humble": 0.3
+},
+"ros-humble-rplidar-ros": {
+"humble": 0.7
+},
+"ros-humble-rpyutils": {
+"humble": 1.0
+},
+"ros-humble-rqt": {
+"humble": 0.5
+},
+"ros-humble-rqt-action": {
+"humble": 0.5
+},
+"ros-humble-rqt-bag": {
+"humble": 0.3
+},
+"ros-humble-rqt-bag-plugins": {
+"humble": 0.3
+},
+"ros-humble-rqt-common-plugins": {
+"humble": 0.3
+},
+"ros-humble-rqt-console": {
+"humble": 0.5
+},
+"ros-humble-rqt-controller-manager": {
+"humble": 0.4
+},
+"ros-humble-rqt-graph": {
+"humble": 0.5
+},
+"ros-humble-rqt-gui": {
+"humble": 0.4
+},
+"ros-humble-rqt-gui-cpp": {
+"humble": 0.9
+},
+"ros-humble-rqt-gui-py": {
+"humble": 0.5
+},
+"ros-humble-rqt-image-view": {
+"humble": 0.8
+},
+"ros-humble-rqt-joint-trajectory-controller": {
+"humble": 0.5
+},
+"ros-humble-rqt-moveit": {
+"humble": 0.6
+},
+"ros-humble-rqt-msg": {
+"humble": 0.9
+},
+"ros-humble-rqt-plot": {
+"humble": 0.4
+},
+"ros-humble-rqt-publisher": {
+"humble": 0.4
+},
+"ros-humble-rqt-py-common": {
+"humble": 0.4
+},
+"ros-humble-rqt-py-console": {
+"humble": 0.4
+},
+"ros-humble-rqt-reconfigure": {
+"humble": 0.6
+},
+"ros-humble-rqt-robot-dashboard": {
+"humble": 0.6
+},
+"ros-humble-rqt-robot-monitor": {
+"humble": 0.6
+},
+"ros-humble-rqt-robot-steering": {
+"humble": 0.4
+},
+"ros-humble-rqt-runtime-monitor": {
+"humble": 0.6
+},
+"ros-humble-rqt-service-caller": {
+"humble": 0.4
+},
+"ros-humble-rqt-shell": {
+"humble": 0.5
+},
+"ros-humble-rqt-srv": {
+"humble": 0.6
+},
+"ros-humble-rqt-tf-tree": {
+"humble": 0.3
+},
+"ros-humble-rqt-topic": {
+"humble": 0.5
+},
+"ros-humble-rsl": {
+"humble": 0.6
+},
+"ros-humble-rslidar-msg": {
+"humble": 0.5
+},
+"ros-humble-rslidar-sdk": {
+"humble": 0.6
+},
+"ros-humble-rtabmap": {
+"humble": 0.8
+},
+"ros-humble-rtcm-msgs": {
+"humble": 0.8
+},
+"ros-humble-rtest": {
+"humble": 0.4
+},
+"ros-humble-rti-connext-dds-cmake-module": {
+"humble": 0.3
+},
+"ros-humble-ruckig": {
+"humble": 0.4
+},
+"ros-humble-rviz-2d-overlay-msgs": {
+"humble": 0.6
+},
+"ros-humble-rviz-2d-overlay-plugins": {
+"humble": 0.6
+},
+"ros-humble-rviz-assimp-vendor": {
+"humble": 0.5
+},
+"ros-humble-rviz-common": {
+"humble": 0.3
+},
+"ros-humble-rviz-default-plugins": {
+"humble": 0.4
+},
+"ros-humble-rviz-imu-plugin": {
+"humble": 0.6
+},
+"ros-humble-rviz-marker-tools": {
+"humble": 0.5
+},
+"ros-humble-rviz-ogre-vendor": {
+"humble": 0.5
+},
+"ros-humble-rviz-rendering": {
+"humble": 0.4
+},
+"ros-humble-rviz-rendering-tests": {
+"humble": 0.4
+},
+"ros-humble-rviz-satellite": {
+"humble": 0.3
+},
+"ros-humble-rviz-visual-testing-framework": {
+"humble": 0.7
+},
+"ros-humble-rviz-visual-tools": {
+"humble": 0.3
+},
+"ros-humble-rviz2": {
+"humble": 0.4
+},
+"ros-humble-sbg-driver": {
+"humble": 0.6
+},
+"ros-humble-sdformat-test-files": {
+"humble": 0.4
+},
+"ros-humble-sdformat-urdf": {
+"humble": 0.4
+},
+"ros-humble-sdformat-vendor": {
+"humble": 0.4
+},
+"ros-humble-sdl2-vendor": {
+"humble": 0.3
+},
+"ros-humble-self-test": {
+"humble": 0.7
+},
+"ros-humble-sensor-msgs": {
+"humble": 0.4
+},
+"ros-humble-sensor-msgs-py": {
+"humble": 0.5
+},
+"ros-humble-serial-driver": {
+"humble": 0.7
+},
+"ros-humble-service-msgs": {
+"humble": 0.6
+},
+"ros-humble-shape-msgs": {
+"humble": 0.4
+},
+"ros-humble-sick-safetyscanners-base": {
+"humble": 0.4
+},
+"ros-humble-sick-safetyscanners2": {
+"humble": 0.3
+},
+"ros-humble-sick-safetyscanners2-interfaces": {
+"humble": 0.5
+},
+"ros-humble-sick-scan-xd": {
+"humble": 0.4
+},
+"ros-humble-simulation": {
+"humble": 0.3
+},
+"ros-humble-simulation-interfaces": {
+"humble": 0.6
+},
+"ros-humble-slam-toolbox": {
+"humble": 0.3
+},
+"ros-humble-slg-msgs": {
+"humble": 0.4
+},
+"ros-humble-smacc2": {
+"humble": 1.2
+},
+"ros-humble-smacc2-msgs": {
+"humble": 0.6
+},
+"ros-humble-smclib": {
+"humble": 0.6
+},
+"ros-humble-spacenav": {
+"humble": 0.6
+},
+"ros-humble-spdlog-vendor": {
+"humble": 0.4
+},
+"ros-humble-sqlite3-vendor": {
+"humble": 0.4
+},
+"ros-humble-srdfdom": {
+"humble": 0.7
+},
+"ros-humble-sros2": {
+"humble": 0.6
+},
+"ros-humble-sros2-cmake": {
+"humble": 0.7
+},
+"ros-humble-state-interfaces-broadcaster": {
+"humble": 0.6
+},
+"ros-humble-statistics-msgs": {
+"humble": 1.0
+},
+"ros-humble-std-msgs": {
+"humble": 0.3
+},
+"ros-humble-std-srvs": {
+"humble": 0.5
+},
+"ros-humble-steering-controllers-library": {
+"humble": 0.5
+},
+"ros-humble-stereo-image-proc": {
+"humble": 0.5
+},
+"ros-humble-stereo-msgs": {
+"humble": 0.6
+},
+"ros-humble-stomp": {
+"humble": 0.6
+},
+"ros-humble-swri-console": {
+"humble": 0.6
+},
+"ros-humble-swri-serial-util": {
+"humble": 0.4
+},
+"ros-humble-system-modes": {
+"humble": 0.5
+},
+"ros-humble-system-modes-msgs": {
+"humble": 0.6
+},
+"ros-humble-tango-icons-vendor": {
+"humble": 0.8
+},
+"ros-humble-tcb-span": {
+"humble": 0.3
+},
+"ros-humble-teleop-tools": {
+"humble": 0.6
+},
+"ros-humble-teleop-tools-msgs": {
+"humble": 0.5
+},
+"ros-humble-teleop-twist-joy": {
+"humble": 1.0
+},
+"ros-humble-teleop-twist-keyboard": {
+"humble": 0.4
+},
+"ros-humble-test-interface-files": {
+"humble": 0.4
+},
+"ros-humble-test-msgs": {
+"humble": 0.4
+},
+"ros-humble-tf-transformations": {
+"humble": 0.6
+},
+"ros-humble-tf2": {
+"humble": 0.4
+},
+"ros-humble-tf2-bullet": {
+"humble": 0.3
+},
+"ros-humble-tf2-eigen": {
+"humble": 0.4
+},
+"ros-humble-tf2-eigen-kdl": {
+"humble": 0.7
+},
+"ros-humble-tf2-geometry-msgs": {
+"humble": 0.3
+},
+"ros-humble-tf2-kdl": {
+"humble": 0.4
+},
+"ros-humble-tf2-msgs": {
+"humble": 0.4
+},
+"ros-humble-tf2-py": {
+"humble": 0.6
+},
+"ros-humble-tf2-ros": {
+"humble": 0.5
+},
+"ros-humble-tf2-ros-py": {
+"humble": 0.8
+},
+"ros-humble-tf2-sensor-msgs": {
+"humble": 0.5
+},
+"ros-humble-tf2-tools": {
+"humble": 0.5
+},
+"ros-humble-theora-image-transport": {
+"humble": 0.4
+},
+"ros-humble-tinyxml2-vendor": {
+"humble": 0.3
+},
+"ros-humble-topic-based-ros2-control": {
+"humble": 0.4
+},
+"ros-humble-topic-monitor": {
+"humble": 0.5
+},
+"ros-humble-topic-tools": {
+"humble": 0.6
+},
+"ros-humble-topic-tools-interfaces": {
+"humble": 0.4
+},
+"ros-humble-toppra": {
+"humble": 0.4
+},
+"ros-humble-trac-ik": {
+"humble": 0.3
+},
+"ros-humble-trac-ik-kinematics-plugin": {
+"humble": 0.4
+},
+"ros-humble-trac-ik-lib": {
+"humble": 0.5
+},
+"ros-humble-tracetools": {
+"humble": 0.3
+},
+"ros-humble-tracetools-image-pipeline": {
+"humble": 0.3
+},
+"ros-humble-tracetools-launch": {
+"humble": 0.5
+},
+"ros-humble-tracetools-trace": {
+"humble": 0.4
+},
+"ros-humble-trajectory-msgs": {
+"humble": 0.4
+},
+"ros-humble-transmission-interface": {
+"humble": 0.5
+},
+"ros-humble-tricycle-controller": {
+"humble": 0.4
+},
+"ros-humble-tricycle-steering-controller": {
+"humble": 0.6
+},
+"ros-humble-turtle-tf2-cpp": {
+"humble": 1.0
+},
+"ros-humble-turtle-tf2-py": {
+"humble": 0.5
+},
+"ros-humble-turtlebot3": {
+"humble": 0.5
+},
+"ros-humble-turtlebot3-bringup": {
+"humble": 0.4
+},
+"ros-humble-turtlebot3-cartographer": {
+"humble": 0.3
+},
+"ros-humble-turtlebot3-description": {
+"humble": 0.6
+},
+"ros-humble-turtlebot3-example": {
+"humble": 0.6
+},
+"ros-humble-turtlebot3-fake-node": {
+"humble": 0.2
+},
+"ros-humble-turtlebot3-gazebo": {
+"humble": 0.3
+},
+"ros-humble-turtlebot3-msgs": {
+"humble": 0.4
+},
+"ros-humble-turtlebot3-navigation2": {
+"humble": 0.3
+},
+"ros-humble-turtlebot3-node": {
+"humble": 0.3
+},
+"ros-humble-turtlebot3-simulations": {
+"humble": 0.4
+},
+"ros-humble-turtlebot3-teleop": {
+"humble": 0.4
+},
+"ros-humble-turtlebot4-description": {
+"humble": 0.3
+},
+"ros-humble-turtlebot4-desktop": {
+"humble": 0.4
+},
+"ros-humble-turtlebot4-gz-bringup": {
+"humble": 0.4
+},
+"ros-humble-turtlebot4-gz-gui-plugins": {
+"humble": 0.4
+},
+"ros-humble-turtlebot4-gz-toolbox": {
+"humble": 0.6
+},
+"ros-humble-turtlebot4-msgs": {
+"humble": 0.5
+},
+"ros-humble-turtlebot4-navigation": {
+"humble": 0.4
+},
+"ros-humble-turtlebot4-node": {
+"humble": 0.5
+},
+"ros-humble-turtlebot4-simulator": {
+"humble": 0.4
+},
+"ros-humble-turtlebot4-viz": {
+"humble": 0.4
+},
+"ros-humble-turtlesim": {
+"humble": 0.6
+},
+"ros-humble-twist-mux": {
+"humble": 0.5
+},
+"ros-humble-twist-mux-msgs": {
+"humble": 0.5
+},
+"ros-humble-twist-stamper": {
+"humble": 0.4
+},
+"ros-humble-type-description-interfaces": {
+"humble": 0.3
+},
+"ros-humble-ublox": {
+"humble": 0.4
+},
+"ros-humble-ublox-dgnss": {
+"humble": 0.6
+},
+"ros-humble-ublox-dgnss-node": {
+"humble": 0.7
+},
+"ros-humble-ublox-gps": {
+"humble": 0.6
+},
+"ros-humble-ublox-msgs": {
+"humble": 0.4
+},
+"ros-humble-ublox-nav-sat-fix-hp-node": {
+"humble": 0.8
+},
+"ros-humble-ublox-serialization": {
+"humble": 0.4
+},
+"ros-humble-ublox-ubx-interfaces": {
+"humble": 0.5
+},
+"ros-humble-ublox-ubx-msgs": {
+"humble": 0.5
+},
+"ros-humble-udp-driver": {
+"humble": 0.5
+},
+"ros-humble-udp-msgs": {
+"humble": 0.5
+},
+"ros-humble-uncrustify-vendor": {
+"humble": 0.4
+},
+"ros-humble-unique-identifier-msgs": {
+"humble": 0.5
+},
+"ros-humble-ur": {
+"humble": 0.4
+},
+"ros-humble-ur-calibration": {
+"humble": 0.4
+},
+"ros-humble-ur-client-library": {
+"humble": 0.4
+},
+"ros-humble-ur-controllers": {
+"humble": 0.3
+},
+"ros-humble-ur-dashboard-msgs": {
+"humble": 0.5
+},
+"ros-humble-ur-description": {
+"humble": 0.3
+},
+"ros-humble-ur-moveit-config": {
+"humble": 0.4
+},
+"ros-humble-ur-msgs": {
+"humble": 0.5
+},
+"ros-humble-ur-robot-driver": {
+"humble": 0.4
+},
+"ros-humble-ur-simulation-gz": {
+"humble": 0.4
+},
+"ros-humble-urdf": {
+"humble": 1.0
+},
+"ros-humble-urdf-launch": {
+"humble": 1.0
+},
+"ros-humble-urdf-parser-plugin": {
+"humble": 0.3
+},
+"ros-humble-urdf-tutorial": {
+"humble": 0.3
+},
+"ros-humble-urdfdom": {
+"humble": 0.4
+},
+"ros-humble-urdfdom-headers": {
+"humble": 0.4
+},
+"ros-humble-urdfdom-py": {
+"humble": 0.6
+},
+"ros-humble-urg-c": {
+"humble": 0.4
+},
+"ros-humble-urg-node": {
+"humble": 0.9
+},
+"ros-humble-urg-node-msgs": {
+"humble": 0.5
+},
+"ros-humble-vector-pursuit-controller": {
+"humble": 0.4
+},
+"ros-humble-velocity-controllers": {
+"humble": 0.3
+},
+"ros-humble-velodyne": {
+"humble": 0.3
+},
+"ros-humble-velodyne-description": {
+"humble": 0.6
+},
+"ros-humble-velodyne-driver": {
+"humble": 0.4
+},
+"ros-humble-velodyne-laserscan": {
+"humble": 0.5
+},
+"ros-humble-velodyne-msgs": {
+"humble": 0.5
+},
+"ros-humble-velodyne-pointcloud": {
+"humble": 0.6
+},
+"ros-humble-vision-msgs": {
+"humble": 0.5
+},
+"ros-humble-vision-msgs-rviz-plugins": {
+"humble": 0.2
+},
+"ros-humble-vision-opencv": {
+"humble": 0.6
+},
+"ros-humble-visp": {
+"humble": 0.4
+},
+"ros-humble-visualization-msgs": {
+"humble": 0.6
+},
+"ros-humble-warehouse-ros": {
+"humble": 0.3
+},
+"ros-humble-warehouse-ros-sqlite": {
+"humble": 0.4
+},
+"ros-humble-web-video-server": {
+"humble": 0.2
+},
+"ros-humble-xacro": {
+"humble": 0.4
+},
+"ros-humble-yaml-cpp-vendor": {
+"humble": 0.4
+},
+"ros-humble-yasmin": {
+"humble": 0.4
+},
+"ros-humble-yasmin-cli": {
+"humble": 0.4
+},
+"ros-humble-yasmin-demos": {
+"humble": 0.3
+},
+"ros-humble-yasmin-editor": {
+"humble": 0.3
+},
+"ros-humble-yasmin-factory": {
+"humble": 0.5
+},
+"ros-humble-yasmin-msgs": {
+"humble": 0.6
+},
+"ros-humble-yasmin-pcl": {
+"humble": 0.7
+},
+"ros-humble-yasmin-plugins-manager": {
+"humble": 0.4
+},
+"ros-humble-yasmin-ros": {
+"humble": 0.4
+},
+"ros-humble-yasmin-viewer": {
+"humble": 0.3
+},
+"ros-humble-zed-description": {
+"humble": 0.3
+},
+"ros-humble-zed-msgs": {
+"humble": 0.5
+},
+"ros-humble-zenoh-cpp-vendor": {
+"humble": 0.4
+},
+"ros-humble-zlib-point-cloud-transport": {
+"humble": 0.4
+},
+"ros-humble-zstd-image-transport": {
+"humble": 0.4
+},
+"ros-humble-zstd-point-cloud-transport": {
+"humble": 0.5
+},
+"ros-humble-zstd-vendor": {
+"humble": 0.5
+},
 "ros-jazzy-ackermann-msgs": {
 "jazzy": 0.4
 },

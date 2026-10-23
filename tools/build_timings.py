@@ -70,7 +70,10 @@ def vinca_timings(platform: str, path: Path) -> bool:
     if not source.is_file():
         return False
     recipes = {r: round(statistics.fmean(by.values()), 1) for r, by in json.loads(source.read_text()).items()}
-    path.write_text(json.dumps({"recipes": recipes}) + "\n")
+    # unmeasured recipes: the median of the packages (ros2-*); the compatibility recipes,
+    # about half the entries and almost no time each, would make it nearly zero
+    packages = [s for r, s in recipes.items() if r.startswith("ros2-")] or list(recipes.values())
+    path.write_text(json.dumps({"recipes": recipes, "default": statistics.median(packages)}) + "\n")
     return True
 
 
