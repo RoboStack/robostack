@@ -319,15 +319,20 @@ def upload(distro: str, files: list[str], cwd: Path) -> int:
     return rc
 
 
+UPLOAD_ATTEMPTS = 5
+UPLOAD_WAIT = 30  # doubled on each retry: 30 s, 1, 2, 4 minutes (anaconda.org's 503s can last minutes)
+
+
 def retry(cmd: list[str], cwd: Path, what: str) -> int:
     # the channels (and Sigstore, for attestations) fail now and then; uploads are
     # idempotent, so retry
-    for attempt in range(1, 4):
+    for attempt in range(1, UPLOAD_ATTEMPTS + 1):
         rc = run(cmd, cwd)
-        if rc == 0 or attempt == 3:
+        if rc == 0 or attempt == UPLOAD_ATTEMPTS:
             return rc
-        print(f"{what} upload attempt {attempt} failed, retrying in {30 * attempt} s", file=sys.stderr)
-        time.sleep(30 * attempt)
+        wait = UPLOAD_WAIT * 2 ** (attempt - 1)
+        print(f"{what} upload attempt {attempt} failed, retrying in {wait} s", file=sys.stderr)
+        time.sleep(wait)
     return rc
 
 

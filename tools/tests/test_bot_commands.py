@@ -296,3 +296,11 @@ def test_on_anaconda_retries_network_errors(monkeypatch):
     monkeypatch.setattr(rs.time, "sleep", lambda seconds: None)
     assert rs.on_anaconda("robostack-lyrical", Path("osx-64/ros2-a-1.0.0-h_30.conda")) is False
     assert len(calls) == 3
+
+
+def test_uploads_retry_five_times_waiting_longer(monkeypatch):
+    calls, waits = [], []
+    monkeypatch.setattr(rs, "run", lambda cmd, cwd: calls.append(cmd) or (0 if len(calls) == 5 else 1))
+    monkeypatch.setattr(rs.time, "sleep", waits.append)
+    assert rs.retry(["upload"], rs.ROOT, "anaconda.org") == 0
+    assert waits == [30, 60, 120, 240]
