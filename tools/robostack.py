@@ -340,14 +340,23 @@ def on_anaconda(channel: str, package: Path) -> bool:
     stem = package.name.removesuffix(".conda").removesuffix(".tar.bz2")
     name, version, _build = stem.rsplit("-", 2)
     url = f"https://api.anaconda.org/dist/{channel}/{name}/{version}/{package.parent.name}/{package.name}"
-    try:
-        with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "robostack"}), timeout=60):
-            print(f"{package.name} is already on anaconda.org/{channel}")
-            return True
-    except urllib.error.HTTPError as e:
-        if e.code == 404:
-            return False
-        raise
+    # the runner's network fails now and then (e.g. a DNS lookup): retry, waiting longer each time
+    for attempt in range(1, 5):
+        try:
+            with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "robostack"}), timeout=60):
+                print(f"{package.name} is already on anaconda.org/{channel}")
+                return True
+        except urllib.error.HTTPError as e:
+            if e.code == 404:
+                return False
+            if attempt == 4 or e.code < 500:
+                raise
+        except OSError as e:  # URLError, timeouts, DNS failures
+            if attempt == 4:
+                raise
+            print(f"anaconda.org unreachable ({e}); retrying in {30 * attempt} s", file=sys.stderr, flush=True)
+        time.sleep(30 * attempt)
+    return False
 
 
 def task(distro: str, name: str, args: list[str]) -> int:

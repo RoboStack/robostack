@@ -277,3 +277,22 @@ def test_build_retries_when_the_channel_index_lags(monkeypatch, tmp_path):
     monkeypatch.setattr(rs.time, "sleep", lambda seconds: None)
     assert rs.run_build(["rattler-build", "build"], rs.ROOT) == 0
     assert len(calls) == 2  # retried once the index has the package
+
+
+def test_on_anaconda_retries_network_errors(monkeypatch):
+    import urllib.error
+    import urllib.request
+    from pathlib import Path
+
+    calls = []
+
+    def urlopen(request, timeout):
+        calls.append(request.full_url)
+        if len(calls) < 3:
+            raise urllib.error.URLError("[Errno 8] nodename nor servname provided, or not known")
+        raise urllib.error.HTTPError(request.full_url, 404, "Not Found", {}, None)
+
+    monkeypatch.setattr(urllib.request, "urlopen", urlopen)
+    monkeypatch.setattr(rs.time, "sleep", lambda seconds: None)
+    assert rs.on_anaconda("robostack-lyrical", Path("osx-64/ros2-a-1.0.0-h_30.conda")) is False
+    assert len(calls) == 3
