@@ -44,10 +44,10 @@ def test_summary_puts_the_snippet_under_the_table():
                "ok": {"verdict": "compatible", "old": "1", "new": "2", "libraries": {}, "removed_libraries": [],
                       "headers": [], "pins": []}}
     text = "\n".join(abi_check.pr_summary(results, "jazzy", "linux-64", ["https://x/test", "https://x/jazzy"], 26))
-    assert text.index("| foo |") < text.index("bar:\n  build_number: 26") < text.index("<details>")
+    assert text.index("| foo |") < text.index("bar:\n  build_number: 26") < text.index("<details>", 1)
     assert "https://x/test/linux-64 and https://x/jazzy/linux-64" in text
-    # one section per distribution, open (with the count in the summary) when dependents need a rebuild
-    assert text.startswith("<details open><summary><b>jazzy linux-64</b>: **1 need their dependents rebuilt**, "
+    # one collapsed section per distribution, the count of breaking changes in its summary
+    assert text.startswith("<details><summary><b>jazzy linux-64</b>: **1 need their dependents rebuilt**, "
                            "1 can be bumped on their own</summary>")
     assert text.rstrip().endswith("</details>")
     quiet = "\n".join(abi_check.pr_summary({"ok": results["ok"]}, "jazzy", "linux-64", "https://x/jazzy", 26))

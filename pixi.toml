@@ -1,5 +1,5 @@
 [workspace]
-name = "robostack-distros"
+name = "robostack"
 description = "RoboStack: conda packages for all ROS 2 distributions, from one repository"
 authors = ["Tobias Fischer <tobias.fischer@qut.edu.au>", "Wolf Vollprecht <w.vollprecht@gmail.com>", "Silvio Traversaro <silvio@traversaro.it>", "Daisuke Nishimatsu <daisuke.nishimatsu1021@gmail.com>"]
 channels = ["https://prefix.dev/conda-forge"]
@@ -25,6 +25,8 @@ pyyaml = "*"
 # Some git repos need git-lfs, see https://github.com/RoboStack/ros-jazzy/issues/118
 git-lfs = "*"
 pytest = ">=9.1.1,<10"
+# gh for the workflows: one version everywhere (the runner's is not on PATH on Windows)
+gh = ">=2.102.0,<3"
 
 [target.win-64.dependencies]
 # patch is required by rattler-build
@@ -34,8 +36,7 @@ git = "*"
 
 [pypi-dependencies]
 # One vinca for all distributions.
-# Tobias-Fischer/vinca robostack-integration (extends, test selectors, gha fix, rebuild planner, mutex build number: RoboStack/vinca#163-#169) until merged upstream
-vinca = { git = "https://github.com/Tobias-Fischer/vinca.git", rev = "63469bad308fe64612410eb2d9f7098e3fb34912" }
+vinca = { git = "https://github.com/RoboStack/vinca.git", rev = "d6aa28ff0477f6656865db95461001fb4ace40c7" }
 # For local development, temporarily use (and regenerate pixi.lock):
 # vinca = { path = "../vinca", editable = true }
 

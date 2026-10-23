@@ -1,7 +1,10 @@
 # Settings of ros-humble that differ from the other distributions
 # (everything else is shared, see the README).
-channel_name: robostack-staging
-upload_target: anaconda
+# upload_to: where packages are uploaded, to this channel on each (prefix.dev, anaconda.org);
+# read_from: where the builds look up what is already published
+channel_name: robostack-humble
+upload_to: [anaconda]
+read_from: anaconda
 pinning_overrides:
   # nav2_mppi_controller lists xsimd before xtensor: unpinned, the solver takes the newest
   # xsimd (14), which no xtensor >= 0.25 accepts, and falls back to xtensor 0.23.9, whose
