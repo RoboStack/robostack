@@ -3,6 +3,8 @@ ros_distro: rolling
 patch_dir: patch
 rosdistro_snapshot: rosdistro_snapshot.yaml
 rosdistro_additional_recipes: rosdistro_additional_recipes.yaml
+# Qt5 for the Qt5 rosdep keys (see robostack.yaml) until #99; layered over shared/robostack.yaml
+conda_index: [robostack.yaml]
 
 build_number: 29
 
