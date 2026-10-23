@@ -95,7 +95,9 @@ MAX_BATCH_SIZE = 100
 # prefix.dev's sharded repodata (what rattler reads) lists a new upload a few minutes
 # after repodata.json does, so a stage that starts right after the previous one
 # uploaded can find no candidates for a package that is on the channel.
-INDEX_LAG_MESSAGE = b"No candidates were found"
+# rattler words it "No candidates were found for X" or "…, for which no candidates were
+# found" (wrapped over two lines): match its lowercase start, and the summary line
+INDEX_LAG_MESSAGES = (b"no candidates were", b"there are no viable options")
 INDEX_LAG_RETRIES = 2
 INDEX_LAG_WAIT = 180
 # Network failures of the runners (GitHub or prefix.dev unreachable for a moment) end
@@ -103,7 +105,7 @@ INDEX_LAG_WAIT = 180
 # continues where it stopped.
 NETWORK_MESSAGES = (b"Git fetch failed", b"Failed to connect to github.com", b"error sending request for url",
                     b"stream closed because of a broken pipe", b"RPC failed; curl", b"Could not resolve host",
-                    b"connection error",
+                    b"connection error", b"error decoding response body", b"error reading a body from connection",
                     # prefix.dev's sharded repodata answers 409 / 5xx now and then while a channel updates
                     b"HTTP status client error (409 Conflict)", b"HTTP status server error")
 NETWORK_RETRIES = 4
@@ -123,7 +125,7 @@ def run_build(cmd: list[str], cwd: Path) -> int:
             for line in proc.stdout:
                 sys.stdout.buffer.write(line)
                 sys.stdout.buffer.flush()
-                missing = missing or INDEX_LAG_MESSAGE in line
+                missing = missing or any(m in line.lower() for m in INDEX_LAG_MESSAGES)
                 network = network or any(m in line for m in NETWORK_MESSAGES)
         if proc.returncode == 0:
             return 0
@@ -317,15 +319,20 @@ def upload(distro: str, files: list[str], cwd: Path) -> int:
     return rc
 
 
+UPLOAD_ATTEMPTS = 5
+UPLOAD_WAIT = 30  # doubled on each retry: 30 s, 1, 2, 4 minutes (anaconda.org's 503s can last minutes)
+
+
 def retry(cmd: list[str], cwd: Path, what: str) -> int:
     # the channels (and Sigstore, for attestations) fail now and then; uploads are
     # idempotent, so retry
-    for attempt in range(1, 4):
+    for attempt in range(1, UPLOAD_ATTEMPTS + 1):
         rc = run(cmd, cwd)
-        if rc == 0 or attempt == 3:
+        if rc == 0 or attempt == UPLOAD_ATTEMPTS:
             return rc
-        print(f"{what} upload attempt {attempt} failed, retrying in {30 * attempt} s", file=sys.stderr)
-        time.sleep(30 * attempt)
+        wait = UPLOAD_WAIT * 2 ** (attempt - 1)
+        print(f"{what} upload attempt {attempt} failed, retrying in {wait} s", file=sys.stderr)
+        time.sleep(wait)
     return rc
 
 
@@ -338,14 +345,23 @@ def on_anaconda(channel: str, package: Path) -> bool:
     stem = package.name.removesuffix(".conda").removesuffix(".tar.bz2")
     name, version, _build = stem.rsplit("-", 2)
     url = f"https://api.anaconda.org/dist/{channel}/{name}/{version}/{package.parent.name}/{package.name}"
-    try:
-        with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "robostack"}), timeout=60):
-            print(f"{package.name} is already on anaconda.org/{channel}")
-            return True
-    except urllib.error.HTTPError as e:
-        if e.code == 404:
-            return False
-        raise
+    # the runner's network fails now and then (e.g. a DNS lookup): retry, waiting longer each time
+    for attempt in range(1, 5):
+        try:
+            with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "robostack"}), timeout=60):
+                print(f"{package.name} is already on anaconda.org/{channel}")
+                return True
+        except urllib.error.HTTPError as e:
+            if e.code == 404:
+                return False
+            if attempt == 4 or e.code < 500:
+                raise
+        except OSError as e:  # URLError, timeouts, DNS failures
+            if attempt == 4:
+                raise
+            print(f"anaconda.org unreachable ({e}); retrying in {30 * attempt} s", file=sys.stderr, flush=True)
+        time.sleep(30 * attempt)
+    return False
 
 
 def task(distro: str, name: str, args: list[str]) -> int:
