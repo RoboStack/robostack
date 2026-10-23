@@ -152,6 +152,20 @@ There are three ways to trigger a command:
 
 "Maintainers" means the repository's owners, members and collaborators.
 
+### Nightly package tests
+
+`.github/workflows/package-tests.yaml` runs `tools/package_tests.py` every night (or via *Actions › package-tests › Run workflow*, for some distributions):
+- **What:** every package with a test file (`shared/tests/<package>.yaml`, `distros/<distro>/tests/<package>.yaml`), in its newest build on the distribution's channel, with every variant of that build (e.g. each Python), on all five platforms.
+- **How:** `rattler-build test` runs the tests bundled in the published package, with the newest dependencies from the distribution's channel and conda-forge. This catches breakages that come from conda-forge rather than from RoboStack, e.g. an ABI change in a dependency a package was built against.
+- **Report:** one issue per distribution, *`<distro>`: package tests* (label `package-tests`), with the failed tests and their output; it is closed when every test passes. Builds from before their test file was added carry no tests and are listed as such.
+
+Locally:
+
+```bash
+pixi run python tools/package_tests.py run --distro jazzy --platform osx-arm64 --results results/jazzy.json [--package ros2-rclpy]
+pixi run python tools/package_tests.py report results/
+```
+
 ### New distribution
 
 ```bash
