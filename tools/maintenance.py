@@ -43,6 +43,7 @@ BOT_COMMANDS = {
     "rebuild-dependents": "on a pull request: add the rebuilds its ABI check suggests (pushes to its branch)",
     "update-vinca": "move the vinca pin to the newest commit of its branch (opens a PR)",
     "dependency-report": "check the dependencies against the pins, in the distribution's dependency-report issue",
+    "update-build-timings": "record the build times of the last week's build-branch runs, for batching by time (opens a PR)",
 }
 PER_DISTRO_COMMANDS = ("update-rosdistro-snapshot", "find-stale-packages", "update-conda-forge-pinning",
                        "dependency-report")
@@ -1127,6 +1128,20 @@ def dependency_report(distro: str) -> Result:
     return Result(title, f"Report: {url}" if url else "No conflicts, and no report issue to close.")
 
 
+def update_build_timings() -> Result:
+    """Merge the build times of the last week's build-branch runs into shared/build_timings/."""
+    import build_timings
+
+    before = {p: p.read_text() for p in build_timings.TIMINGS.glob("*.json")}
+    count = build_timings.collect()
+    changed = sorted(p.name for p in build_timings.TIMINGS.glob("*.json") if before.get(p) != p.read_text())
+    if not changed:
+        return Result("Build times are up to date", "No new build times in the last week's build-branch runs.")
+    return Result("Update the build times", f"{count} build times from the last week's build-branch runs, in "
+                  + ", ".join(f"`shared/build_timings/{name}`" for name in changed)
+                  + ". `rs <distro> gha` packs each stage's recipes into jobs by them.", changed=True)
+
+
 def _default_ci_yaml() -> str:
     return (rs.TOOLS / "ci_default.yaml").read_text()
 
@@ -1340,6 +1355,8 @@ def main(command: str, argv: list[str], distro: str | None = None) -> int:
         return report(update_vinca(args.ref), args.summary)
     if command == "dependency-report":
         return report(dependency_report(distro), args.summary)
+    if command == "update-build-timings":
+        return report(update_build_timings(), args.summary)
     if command == "add-package":
         known = set(rs.distros())
         distros = [n for n in args.names if n in known]

@@ -404,7 +404,14 @@ def task(distro: str, name: str, args: list[str]) -> int:
     if name == "build":
         return run_build(rattler_build(distro, ["--recipe-dir", "./recipes", *args]), w)
     if name == "build-ci":  # used by .scripts/build_unix.sh / build_win.bat
-        return run_build(rattler_build(distro, args, skip_existing=False), w)
+        started = time.monotonic()
+        rc = run_build(rattler_build(distro, args, skip_existing=False), w)
+        if rc == 0 and "--recipe" in args[:-1] and os.environ.get("GITHUB_ACTIONS"):
+            import build_timings  # for packing the build jobs by time
+
+            recipe = Path(args[args.index("--recipe") + 1].rstrip("\\/")).name
+            build_timings.note(distro, recipe, time.monotonic() - started)
+        return rc
     if name == "build-one":
         pkg = args[0] if args else "ros2-ros-workspace"
         for patch in (d / "patch").glob(f"{pkg}.*patch"):
@@ -429,10 +436,26 @@ def generate_gha(distro: str, args: list[str]) -> int:
     # GitHub refuses workflow files over 500 KiB, which a full rebuild's many batches can
     # reach (jazzy's win-64 at 25): then retry with larger, hence fewer, batches.
     batch_size = int(ns.batch_size)
+    # each job keeps the build times it records (build-ci); with times for the platform,
+    # vinca-gha packs each stage's recipes into jobs by time instead of by count
+    import build_timings
+
+    extra = ["--keep-file", f"distros/{distro}/work/{build_timings.JOURNAL}"]
+    timed = build_timings.vinca_timings(ns.platform, d / "build_timings.json")
+    if timed:
+        extra += ["--timings", "build_timings.json"]
+    runners = 20
     while True:
         rc, output = run_tee(["vinca-gha", "--platform", ns.platform, "--trigger-branch", branch, "-d",
-                              "./recipes", "--batch_size", str(batch_size)], d)
-        if not rc or WORKFLOW_SIZE_MESSAGE not in output or batch_size >= MAX_BATCH_SIZE:
+                              "./recipes", "--batch_size", str(batch_size), *extra], d)
+        if not rc or WORKFLOW_SIZE_MESSAGE not in output:
+            break
+        if timed and runners > 2:  # planning for fewer runners makes fewer jobs
+            runners //= 2
+            extra = [a for a in extra if not a.startswith("--runners")] + [f"--runners={runners}"]
+            print(f"The workflow is too large; retrying with --runners {runners}", flush=True)
+            continue
+        if batch_size >= MAX_BATCH_SIZE:
             break
         batch_size = min(batch_size * 3 // 2, MAX_BATCH_SIZE)
         print(f"The workflow is too large; retrying with --batch_size {batch_size}", flush=True)
@@ -506,7 +529,7 @@ def changed_distros(base: str) -> list[str]:
 
 
 REPO_COMMANDS = ("check", "update-pinning", "new-distro", "parse-command", "add-package", "rosdistro-syncs",
-                 "rebuild", "rebuild-dependents", "update-vinca")
+                 "rebuild", "rebuild-dependents", "update-vinca", "update-build-timings")
 
 
 def main() -> int:
