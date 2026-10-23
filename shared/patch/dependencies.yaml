@@ -95,6 +95,9 @@ octomap_rviz_plugins:
   add_host: ["octomap"]
 ompl:
   add_host: ["ompl"]
+onnxruntime_vendor:
+  add_host: [onnxruntime-cpp]
+  add_run: [onnxruntime-cpp]
 open3d_conversions:
   # Open3D's own CMake config calls find_dependency(TBB), but conda-forge's
   # open3d package only depends on the runtime "tbb" lib, not "tbb-devel"
