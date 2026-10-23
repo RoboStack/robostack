@@ -105,7 +105,7 @@ INDEX_LAG_WAIT = 180
 # continues where it stopped.
 NETWORK_MESSAGES = (b"Git fetch failed", b"Failed to connect to github.com", b"error sending request for url",
                     b"stream closed because of a broken pipe", b"RPC failed; curl", b"Could not resolve host",
-                    b"connection error",
+                    b"connection error", b"error decoding response body", b"error reading a body from connection",
                     # prefix.dev's sharded repodata answers 409 / 5xx now and then while a channel updates
                     b"HTTP status client error (409 Conflict)", b"HTTP status server error")
 NETWORK_RETRIES = 4
