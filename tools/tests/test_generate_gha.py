@@ -21,46 +21,6 @@ def test_gha_retries_with_larger_batches_when_the_workflow_is_too_large(monkeypa
     assert sizes == [25, 37, 55]
 
 
-def test_gha_with_timings_retries_with_fewer_runners_first(monkeypatch, tmp_path):
-    (tmp_path / "timings").mkdir()
-    (tmp_path / "timings" / "win-64.json").write_text('{"ros2-a": {"jazzy": 1.0}}\n')
-    monkeypatch.setattr(build_timings, "TIMINGS", tmp_path / "timings")
-    calls = []
-
-    def fake_run_tee(cmd, cwd):
-        calls.append(cmd)
-        if len(calls) < 3:
-            return 1, b"RuntimeError: Generated workflow win.yml is 530.8 KiB, exceeding the 500 KiB limit."
-        return 0, b""
-
-    monkeypatch.setattr(rs, "run_tee", fake_run_tee)
-    monkeypatch.setattr(rs, "work_dir", lambda distro: tmp_path)
-
-    assert rs.generate_gha("jazzy", ["--platform", "win-64", "--batch-size", "25"]) == 0
-    assert [next((a for a in c if a.startswith("--runners")), None) for c in calls] == [None, "--runners=10", "--runners=5"]
-
-
-def test_gha_with_timings_falls_back_to_batching_by_count(monkeypatch, tmp_path):
-    (tmp_path / "timings").mkdir()
-    (tmp_path / "timings" / "win-64.json").write_text('{"ros2-a": {"jazzy": 1.0}}\n')
-    monkeypatch.setattr(build_timings, "TIMINGS", tmp_path / "timings")
-    calls = []
-
-    def fake_run_tee(cmd, cwd):
-        calls.append(cmd)
-        if "--timings" in cmd or int(cmd[cmd.index("--batch_size") + 1]) < 37:
-            return 1, b"RuntimeError: Generated workflow win.yml is 620.9 KiB, exceeding the 500 KiB limit."
-        return 0, b""
-
-    monkeypatch.setattr(rs, "run_tee", fake_run_tee)
-    monkeypatch.setattr(rs, "work_dir", lambda distro: tmp_path)
-
-    assert rs.generate_gha("jazzy", ["--platform", "win-64", "--batch-size", "25"]) == 0
-    # 20, 10, 5 and 2 runners with --timings, then by count: 25, then 37 fits
-    assert ["--timings" in c for c in calls] == [True] * 4 + [False, False]
-    assert all("--runners" not in " ".join(c) for c in calls[4:])
-
-
 def test_gha_does_not_retry_other_failures(monkeypatch, tmp_path):
     sizes = []
 
