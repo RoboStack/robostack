@@ -19,7 +19,7 @@ def test_collect_merges_the_runs_journals(tmp_path, monkeypatch):
     runs = [{"databaseId": 2, "headBranch": "buildbranch_jazzy_linux_64", "createdAt": "2026-10-22T02:00:00Z"},
             {"databaseId": 1, "headBranch": "buildbranch_jazzy_linux_64", "createdAt": "2026-10-22T01:00:00Z"},
             {"databaseId": 3, "headBranch": "buildbranch_lyrical_linux_64", "createdAt": "2026-10-22T03:00:00Z"}]
-    journals = {1: [("ros2-a", 10.0), ("ros2-b", 5.0)], 2: [("ros2-a", 12.0)], 3: [("ros2-a", 20.0)]}
+    journals = {1: [("ros2-a", 10.0), ("ros2-b", 5.0), ("ros-jazzy-a", 0.2)], 2: [("ros2-a", 12.0)], 3: [("ros2-a", 20.0)]}
 
     def run(cmd, **kwargs):
         if cmd[1:3] == ["run", "list"]:
@@ -32,15 +32,20 @@ def test_collect_merges_the_runs_journals(tmp_path, monkeypatch):
         return subprocess.CompletedProcess(cmd, 0, b"", b"")
 
     monkeypatch.setattr(build_timings.subprocess, "run", run)
-    assert build_timings.collect() == 4
-    # the newer jazzy run wins; each distribution keeps its own time
-    assert json.loads((tmp_path / "timings" / "linux-64.json").read_text()) == {
-        "ros2-a": {"jazzy": 12.0, "lyrical": 20.0}, "ros2-b": {"jazzy": 5.0}}
+    assert build_timings.collect() == 4  # the compatibility recipe is not kept
+    # the newer jazzy run wins; each distribution keeps its own time; compatibility
+    # recipes aren't kept; one recipe per line
+    text = (tmp_path / "timings" / "linux-64.json").read_text()
+    assert json.loads(text) == {"ros2-a": {"jazzy": 12.0, "lyrical": 20.0}, "ros2-b": {"jazzy": 5.0}}
+    assert text.splitlines()[1] == '"ros2-a": {"jazzy": 12.0, "lyrical": 20.0},'
     # vinca-gha gets the average over the distributions
     out = tmp_path / "vinca.json"
-    assert build_timings.vinca_timings("linux-64", out)
-    assert json.loads(out.read_text()) == {"recipes": {"ros2-a": 16.0, "ros2-b": 5.0}}
-    assert not build_timings.vinca_timings("win-64", out)
+    assert build_timings.vinca_timings("humble", "linux-64", out)
+    assert json.loads(out.read_text()) == {
+        "recipes": {"ros2-a": 16.0, "ros2-b": 5.0, "ros-humble-a": build_timings.ALIAS_SECONDS,
+                    "ros-humble-b": build_timings.ALIAS_SECONDS},
+        "default": 10.5}
+    assert not build_timings.vinca_timings("humble", "win-64", out)
 
 
 def test_update_build_timings_command(tmp_path, monkeypatch):
@@ -84,4 +89,5 @@ def test_gha_keeps_the_journal_and_uses_the_times(tmp_path, monkeypatch):
     (tmp_path / "timings" / "linux-64.json").write_text('{"ros2-a": {"jazzy": 3.0}}\n')
     assert rs.generate_gha("jazzy", ["--platform", "linux-64"]) == 0
     assert calls[-1][calls[-1].index("--timings") + 1] == "build_timings.json"
-    assert json.loads((work / "build_timings.json").read_text()) == {"recipes": {"ros2-a": 3.0}}
+    assert json.loads((work / "build_timings.json").read_text()) == {
+        "recipes": {"ros2-a": 3.0, "ros-jazzy-a": build_timings.ALIAS_SECONDS}, "default": 3.0}
