@@ -455,6 +455,11 @@ def generate_gha(distro: str, args: list[str]) -> int:
             extra = [a for a in extra if not a.startswith("--runners")] + [f"--runners={runners}"]
             print(f"The workflow is too large; retrying with --runners {runners}", flush=True)
             continue
+        if timed:  # still too large (many short stages, e.g. win-64's long jobs): batch by count
+            timed = False
+            extra = [a for a in extra if not a.startswith("--runners") and a not in ("--timings", "build_timings.json")]
+            print("The workflow is too large; retrying without --timings (batches by count)", flush=True)
+            continue
         if batch_size >= MAX_BATCH_SIZE:
             break
         batch_size = min(batch_size * 3 // 2, MAX_BATCH_SIZE)
