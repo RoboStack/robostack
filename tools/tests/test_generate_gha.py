@@ -1,9 +1,11 @@
 """rs <distro> gha: larger batches when the generated workflow is too large for GitHub."""
 
+import build_timings
 import robostack as rs
 
 
 def test_gha_retries_with_larger_batches_when_the_workflow_is_too_large(monkeypatch, tmp_path):
+    monkeypatch.setattr(build_timings, "TIMINGS", tmp_path / "no-timings")  # batching by count
     sizes = []
 
     def fake_run_tee(cmd, cwd):
@@ -17,6 +19,25 @@ def test_gha_retries_with_larger_batches_when_the_workflow_is_too_large(monkeypa
 
     assert rs.generate_gha("jazzy", ["--platform", "win-64", "--batch-size", "25"]) == 0
     assert sizes == [25, 37, 55]
+
+
+def test_gha_with_timings_retries_with_fewer_runners_first(monkeypatch, tmp_path):
+    (tmp_path / "timings").mkdir()
+    (tmp_path / "timings" / "win-64.json").write_text('{"ros2-a": {"jazzy": 1.0}}\n')
+    monkeypatch.setattr(build_timings, "TIMINGS", tmp_path / "timings")
+    calls = []
+
+    def fake_run_tee(cmd, cwd):
+        calls.append(cmd)
+        if len(calls) < 3:
+            return 1, b"RuntimeError: Generated workflow win.yml is 530.8 KiB, exceeding the 500 KiB limit."
+        return 0, b""
+
+    monkeypatch.setattr(rs, "run_tee", fake_run_tee)
+    monkeypatch.setattr(rs, "work_dir", lambda distro: tmp_path)
+
+    assert rs.generate_gha("jazzy", ["--platform", "win-64", "--batch-size", "25"]) == 0
+    assert [next((a for a in c if a.startswith("--runners")), None) for c in calls] == [None, "--runners=10", "--runners=5"]
 
 
 def test_gha_does_not_retry_other_failures(monkeypatch, tmp_path):
