@@ -95,7 +95,9 @@ MAX_BATCH_SIZE = 100
 # prefix.dev's sharded repodata (what rattler reads) lists a new upload a few minutes
 # after repodata.json does, so a stage that starts right after the previous one
 # uploaded can find no candidates for a package that is on the channel.
-INDEX_LAG_MESSAGE = b"No candidates were found"
+# rattler words it "No candidates were found for X" or "…, for which no candidates were
+# found" (wrapped over two lines): match its lowercase start, and the summary line
+INDEX_LAG_MESSAGES = (b"no candidates were", b"there are no viable options")
 INDEX_LAG_RETRIES = 2
 INDEX_LAG_WAIT = 180
 # Network failures of the runners (GitHub or prefix.dev unreachable for a moment) end
@@ -123,7 +125,7 @@ def run_build(cmd: list[str], cwd: Path) -> int:
             for line in proc.stdout:
                 sys.stdout.buffer.write(line)
                 sys.stdout.buffer.flush()
-                missing = missing or INDEX_LAG_MESSAGE in line
+                missing = missing or any(m in line.lower() for m in INDEX_LAG_MESSAGES)
                 network = network or any(m in line for m in NETWORK_MESSAGES)
         if proc.returncode == 0:
             return 0
