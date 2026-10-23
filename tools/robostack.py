@@ -457,7 +457,7 @@ def generate_gha(distro: str, args: list[str]) -> int:
     import build_timings
 
     extra = ["--keep-file", f"distros/{distro}/work/{build_timings.JOURNAL}"]
-    if build_timings.vinca_timings(ns.platform, d / "build_timings.json"):
+    if build_timings.vinca_timings(distro, ns.platform, d / "build_timings.json"):
         extra += ["--timings", "build_timings.json"]
     # vinca-gha keeps the workflow under GitHub's size limit itself (a job budget); only
     # when even the fewest jobs the batch size allows are too many, retry with larger batches
