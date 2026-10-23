@@ -466,12 +466,12 @@ def generate_gha(distro: str, args: list[str]) -> int:
         lines = wf.read_text().splitlines()
         # all build branches share .github/workflows/build.yaml, which GitHub lists as one
         # workflow: run-name tells the runs apart
-        # one run per distribution and platform at a time: an older run can't upload
-        # alongside a newer one; a newer pending run replaces older pending ones (not
-        # cancel-in-progress: re-running a failed job of an older run would cancel the
-        # newer run)
+        # one run per distribution and platform at a time: a newer run (the latest main's
+        # recipes and workflow) cancels the older one, and skips what that one uploaded
+        # already. Re-run failed jobs only in the newest run: re-running an older one
+        # would cancel the newer run.
         lines = [f"name: build\nrun-name: {distro} {ns.platform}\n"
-                 f"concurrency:\n  group: build-{distro}-{ns.platform}\n  cancel-in-progress: false"
+                 f"concurrency:\n  group: build-{distro}-{ns.platform}\n  cancel-in-progress: true"
                  if l.startswith("name: ") else l for l in lines]
         # vinca-gha passes secrets.ANACONDA_API_TOKEN to the build jobs, for the anaconda.org
         # upload (prefix.dev uses trusted publishing, id-token: write): each distribution
