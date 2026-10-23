@@ -1997,6 +1997,9 @@
 "ros-jazzy-ompl": {
 "jazzy": 0.1
 },
+"ros-jazzy-onnxruntime-vendor": {
+"jazzy": 0.1
+},
 "ros-jazzy-opennav-docking": {
 "jazzy": 0.1
 },
@@ -3615,7 +3618,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-ament-cmake-clang-tidy": {
-"lyrical": 0.3
+"lyrical": 0.1
 },
 "ros-lyrical-ament-cmake-copyright": {
 "lyrical": 0.1
@@ -3642,7 +3645,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-ament-cmake-export-libraries": {
-"lyrical": 0.4
+"lyrical": 0.3
 },
 "ros-lyrical-ament-cmake-export-link-flags": {
 "lyrical": 0.1
@@ -3669,10 +3672,10 @@
 "lyrical": 0.1
 },
 "ros-lyrical-ament-cmake-libraries": {
-"lyrical": 0.1
+"lyrical": 0.3
 },
 "ros-lyrical-ament-cmake-lint-cmake": {
-"lyrical": 0.1
+"lyrical": 0.3
 },
 "ros-lyrical-ament-cmake-mypy": {
 "lyrical": 0.1
@@ -3690,9 +3693,12 @@
 "lyrical": 0.1
 },
 "ros-lyrical-ament-cmake-python": {
-"lyrical": 0.1
+"lyrical": 0.2
 },
 "ros-lyrical-ament-cmake-ros": {
+"lyrical": 0.1
+},
+"ros-lyrical-ament-cmake-ros-core": {
 "lyrical": 0.1
 },
 "ros-lyrical-ament-cmake-target-dependencies": {
@@ -3708,7 +3714,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-ament-cmake-version": {
-"lyrical": 0.1
+"lyrical": 0.3
 },
 "ros-lyrical-ament-cmake-xmllint": {
 "lyrical": 0.1
@@ -3720,16 +3726,16 @@
 "lyrical": 0.1
 },
 "ros-lyrical-ament-cpplint": {
-"lyrical": 0.1
+"lyrical": 0.3
 },
 "ros-lyrical-ament-flake8": {
 "lyrical": 0.1
 },
 "ros-lyrical-ament-index-cpp": {
-"lyrical": 0.1
+"lyrical": 0.2
 },
 "ros-lyrical-ament-index-python": {
-"lyrical": 0.6
+"lyrical": 0.1
 },
 "ros-lyrical-ament-lint": {
 "lyrical": 0.1
@@ -3738,22 +3744,22 @@
 "lyrical": 0.1
 },
 "ros-lyrical-ament-lint-cmake": {
-"lyrical": 0.3
+"lyrical": 0.1
 },
 "ros-lyrical-ament-lint-common": {
-"lyrical": 0.1
+"lyrical": 0.3
 },
 "ros-lyrical-ament-mypy": {
-"lyrical": 0.1
+"lyrical": 0.4
 },
 "ros-lyrical-ament-package": {
 "lyrical": 0.1
 },
 "ros-lyrical-ament-pclint": {
-"lyrical": 0.3
+"lyrical": 0.1
 },
 "ros-lyrical-ament-pep257": {
-"lyrical": 0.1
+"lyrical": 0.4
 },
 "ros-lyrical-ament-pycodestyle": {
 "lyrical": 0.1
@@ -3765,7 +3771,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-ament-xmllint": {
-"lyrical": 0.3
+"lyrical": 0.1
 },
 "ros-lyrical-angles": {
 "lyrical": 0.1
@@ -3798,7 +3804,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-apriltag-tools": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-asio-cmake-module": {
 "lyrical": 0.1
@@ -3834,13 +3840,13 @@
 "lyrical": 0.1
 },
 "ros-lyrical-autoware-behavior-velocity-planner-common": {
-"lyrical": 0.1
+"lyrical": 0.2
 },
 "ros-lyrical-autoware-behavior-velocity-stop-line-module": {
 "lyrical": 0.1
 },
 "ros-lyrical-autoware-cmake": {
-"lyrical": 0.1
+"lyrical": 0.4
 },
 "ros-lyrical-autoware-command-gate": {
 "lyrical": 0.1
@@ -3894,7 +3900,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-autoware-euclidean-cluster-object-detector": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-autoware-geography-utils": {
 "lyrical": 0.1
@@ -3906,7 +3912,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-autoware-internal-debug-msgs": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-autoware-internal-localization-msgs": {
 "lyrical": 0.1
@@ -3945,7 +3951,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-autoware-localization-msgs": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-autoware-localization-util": {
 "lyrical": 0.1
@@ -4071,7 +4077,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-autoware-utils-diagnostics": {
-"lyrical": 0.3
+"lyrical": 0.1
 },
 "ros-lyrical-autoware-utils-geometry": {
 "lyrical": 0.1
@@ -4089,7 +4095,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-autoware-utils-system": {
-"lyrical": 0.3
+"lyrical": 0.1
 },
 "ros-lyrical-autoware-utils-tf": {
 "lyrical": 0.1
@@ -4098,16 +4104,16 @@
 "lyrical": 0.1
 },
 "ros-lyrical-autoware-utils-visualization": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-autoware-v2x-msgs": {
-"lyrical": 0.3
+"lyrical": 0.1
 },
 "ros-lyrical-autoware-vehicle-info-utils": {
 "lyrical": 0.1
 },
 "ros-lyrical-autoware-vehicle-msgs": {
-"lyrical": 0.3
+"lyrical": 0.1
 },
 "ros-lyrical-autoware-vehicle-velocity-converter": {
 "lyrical": 0.1
@@ -4131,6 +4137,9 @@
 "lyrical": 0.1
 },
 "ros-lyrical-behaviortree-cpp-v3": {
+"lyrical": 0.1
+},
+"ros-lyrical-better-launch": {
 "lyrical": 0.1
 },
 "ros-lyrical-bicycle-steering-controller": {
@@ -4164,6 +4173,9 @@
 "lyrical": 0.1
 },
 "ros-lyrical-camera-ros": {
+"lyrical": 0.1
+},
+"ros-lyrical-can-dbc-parser": {
 "lyrical": 0.1
 },
 "ros-lyrical-can-msgs": {
@@ -4260,7 +4272,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-console-bridge-vendor": {
-"lyrical": 0.3
+"lyrical": 0.1
 },
 "ros-lyrical-control-msgs": {
 "lyrical": 0.1
@@ -4371,7 +4383,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-dummy-sensors": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-dwb-core": {
 "lyrical": 0.1
@@ -4404,7 +4416,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-easynav-costmap-common": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-easynav-costmap-localizer": {
 "lyrical": 0.1
@@ -4428,7 +4440,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-easynav-maps-manager": {
-"lyrical": 0.3
+"lyrical": 0.1
 },
 "ros-lyrical-easynav-mhamcl-localizer": {
 "lyrical": 0.1
@@ -4476,7 +4488,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-easynav-playground-summit": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-easynav-playground-summit-description": {
 "lyrical": 0.1
@@ -4494,7 +4506,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-easynav-recovery": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-easynav-regulated-pp-controller": {
 "lyrical": 0.1
@@ -4530,13 +4542,13 @@
 "lyrical": 0.1
 },
 "ros-lyrical-easynav-system": {
-"lyrical": 0.6
+"lyrical": 0.1
 },
 "ros-lyrical-easynav-tools": {
 "lyrical": 0.1
 },
 "ros-lyrical-easynav-vff-controller": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-effort-controllers": {
 "lyrical": 0.1
@@ -4578,7 +4590,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-examples-rclcpp-minimal-publisher": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-examples-rclcpp-minimal-service": {
 "lyrical": 0.1
@@ -4616,6 +4628,9 @@
 "ros-lyrical-fastcdr": {
 "lyrical": 0.1
 },
+"ros-lyrical-fastdds": {
+"lyrical": 0.1
+},
 "ros-lyrical-fastrtps": {
 "lyrical": 0.1
 },
@@ -4644,10 +4659,10 @@
 "lyrical": 0.1
 },
 "ros-lyrical-force-torque-sensor-broadcaster": {
-"lyrical": 0.6
+"lyrical": 0.1
 },
 "ros-lyrical-forward-command-controller": {
-"lyrical": 0.3
+"lyrical": 0.1
 },
 "ros-lyrical-foxglove-bridge": {
 "lyrical": 0.1
@@ -4665,7 +4680,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-generate-parameter-library-py": {
-"lyrical": 0.1
+"lyrical": 0.2
 },
 "ros-lyrical-geodesy": {
 "lyrical": 0.1
@@ -4683,10 +4698,10 @@
 "lyrical": 0.1
 },
 "ros-lyrical-geometry-tutorials": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-geometry2": {
-"lyrical": 0.1
+"lyrical": 0.4
 },
 "ros-lyrical-gmock-vendor": {
 "lyrical": 0.1
@@ -4806,7 +4821,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-gz-tools-vendor": {
-"lyrical": 0.1
+"lyrical": 0.5
 },
 "ros-lyrical-gz-transport-vendor": {
 "lyrical": 0.1
@@ -4839,10 +4854,10 @@
 "lyrical": 0.1
 },
 "ros-lyrical-image-common": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-image-geometry": {
-"lyrical": 0.3
+"lyrical": 0.1
 },
 "ros-lyrical-image-pipeline": {
 "lyrical": 0.1
@@ -4878,10 +4893,10 @@
 "lyrical": 0.1
 },
 "ros-lyrical-imu-tools": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-imu-transformer": {
-"lyrical": 0.4
+"lyrical": 0.1
 },
 "ros-lyrical-interactive-marker-twist-server": {
 "lyrical": 0.1
@@ -4890,7 +4905,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-intra-process-demo": {
-"lyrical": 0.3
+"lyrical": 0.1
 },
 "ros-lyrical-io-context": {
 "lyrical": 0.1
@@ -4941,7 +4956,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-joy": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-joy-linux": {
 "lyrical": 0.1
@@ -4998,7 +5013,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-lanelet2-routing": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-lanelet2-traffic-rules": {
 "lyrical": 0.1
@@ -5013,7 +5028,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-laser-proc": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-laser-segmentation": {
 "lyrical": 0.1
@@ -5034,10 +5049,10 @@
 "lyrical": 0.1
 },
 "ros-lyrical-launch-testing-ament-cmake": {
-"lyrical": 0.1
+"lyrical": 0.5
 },
 "ros-lyrical-launch-testing-ros": {
-"lyrical": 0.1
+"lyrical": 0.3
 },
 "ros-lyrical-launch-xml": {
 "lyrical": 0.1
@@ -5126,8 +5141,11 @@
 "ros-lyrical-lttngpy": {
 "lyrical": 0.1
 },
-"ros-lyrical-magic-enum": {
+"ros-lyrical-lz4-cmake-module": {
 "lyrical": 0.1
+},
+"ros-lyrical-magic-enum": {
+"lyrical": 0.2
 },
 "ros-lyrical-magnetometer-broadcaster": {
 "lyrical": 0.1
@@ -5145,7 +5163,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-mavros": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-mavros-extras": {
 "lyrical": 0.1
@@ -5189,13 +5207,40 @@
 "ros-lyrical-mobile-robot-simulator": {
 "lyrical": 0.1
 },
+"ros-lyrical-mocap4r2-control": {
+"lyrical": 0.1
+},
+"ros-lyrical-mocap4r2-control-msgs": {
+"lyrical": 0.1
+},
+"ros-lyrical-mocap4r2-dummy-driver": {
+"lyrical": 0.1
+},
+"ros-lyrical-mocap4r2-marker-publisher": {
+"lyrical": 0.1
+},
+"ros-lyrical-mocap4r2-marker-viz": {
+"lyrical": 0.1
+},
+"ros-lyrical-mocap4r2-marker-viz-srvs": {
+"lyrical": 0.1
+},
 "ros-lyrical-mocap4r2-msgs": {
+"lyrical": 0.1
+},
+"ros-lyrical-mocap4r2-robot-gt": {
+"lyrical": 0.1
+},
+"ros-lyrical-mocap4r2-robot-gt-msgs": {
 "lyrical": 0.1
 },
 "ros-lyrical-motion-capture-tracking": {
 "lyrical": 0.1
 },
 "ros-lyrical-motion-capture-tracking-interfaces": {
+"lyrical": 0.1
+},
+"ros-lyrical-motion-primitives-controllers": {
 "lyrical": 0.1
 },
 "ros-lyrical-mouse-teleop": {
@@ -5223,7 +5268,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-moveit-planners": {
-"lyrical": 0.1
+"lyrical": 0.2
 },
 "ros-lyrical-moveit-planners-chomp": {
 "lyrical": 0.1
@@ -5232,7 +5277,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-moveit-planners-stomp": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-moveit-plugins": {
 "lyrical": 0.1
@@ -5247,13 +5292,13 @@
 "lyrical": 0.1
 },
 "ros-lyrical-moveit-resources-fanuc-moveit-config": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-moveit-resources-panda-description": {
 "lyrical": 0.1
 },
 "ros-lyrical-moveit-resources-panda-moveit-config": {
-"lyrical": 0.1
+"lyrical": 0.2
 },
 "ros-lyrical-moveit-resources-pr2-description": {
 "lyrical": 0.1
@@ -5262,7 +5307,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-moveit-resources-prbt-moveit-config": {
-"lyrical": 0.1
+"lyrical": 0.2
 },
 "ros-lyrical-moveit-resources-prbt-pg70-support": {
 "lyrical": 0.1
@@ -5286,7 +5331,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-moveit-ros-perception": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-moveit-ros-planning": {
 "lyrical": 0.1
@@ -5301,7 +5346,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-moveit-ros-visualization": {
-"lyrical": 0.1
+"lyrical": 0.2
 },
 "ros-lyrical-moveit-ros-warehouse": {
 "lyrical": 0.1
@@ -5349,7 +5394,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-moveit-visual-tools": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-moveit2-tutorials": {
 "lyrical": 0.1
@@ -5403,7 +5448,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-nav2-common": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-nav2-constrained-smoother": {
 "lyrical": 0.1
@@ -5412,7 +5457,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-nav2-core": {
-"lyrical": 0.1
+"lyrical": 0.2
 },
 "ros-lyrical-nav2-costmap-2d": {
 "lyrical": 0.1
@@ -5433,10 +5478,10 @@
 "lyrical": 0.1
 },
 "ros-lyrical-nav2-minimal-tb3-sim": {
-"lyrical": 0.5
+"lyrical": 0.1
 },
 "ros-lyrical-nav2-minimal-tb4-description": {
-"lyrical": 0.3
+"lyrical": 0.1
 },
 "ros-lyrical-nav2-minimal-tb4-sim": {
 "lyrical": 0.1
@@ -5454,10 +5499,13 @@
 "lyrical": 0.1
 },
 "ros-lyrical-nav2-regulated-pure-pursuit-controller": {
-"lyrical": 0.2
+"lyrical": 0.1
+},
+"ros-lyrical-nav2-ros-common": {
+"lyrical": 0.1
 },
 "ros-lyrical-nav2-rotation-shim-controller": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-nav2-route": {
 "lyrical": 0.1
@@ -5478,13 +5526,13 @@
 "lyrical": 0.1
 },
 "ros-lyrical-nav2-util": {
-"lyrical": 0.6
+"lyrical": 0.1
 },
 "ros-lyrical-nav2-velocity-smoother": {
 "lyrical": 0.1
 },
 "ros-lyrical-nav2-voxel-grid": {
-"lyrical": 0.1
+"lyrical": 0.2
 },
 "ros-lyrical-nav2-waypoint-follower": {
 "lyrical": 0.1
@@ -5499,7 +5547,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-navmap-ros": {
-"lyrical": 0.2
+"lyrical": 0.3
 },
 "ros-lyrical-navmap-ros-interfaces": {
 "lyrical": 0.1
@@ -5514,6 +5562,9 @@
 "lyrical": 0.1
 },
 "ros-lyrical-negotiated-interfaces": {
+"lyrical": 0.1
+},
+"ros-lyrical-nlohmann-json-schema-validator-vendor": {
 "lyrical": 0.1
 },
 "ros-lyrical-nmea-msgs": {
@@ -5561,6 +5612,9 @@
 "ros-lyrical-ompl": {
 "lyrical": 0.1
 },
+"ros-lyrical-onnxruntime-vendor": {
+"lyrical": 0.1
+},
 "ros-lyrical-opennav-docking": {
 "lyrical": 0.1
 },
@@ -5568,6 +5622,9 @@
 "lyrical": 0.1
 },
 "ros-lyrical-opennav-docking-core": {
+"lyrical": 0.1
+},
+"ros-lyrical-opennav-following": {
 "lyrical": 0.1
 },
 "ros-lyrical-openvdb-vendor": {
@@ -5583,7 +5640,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-orocos-kdl-vendor": {
-"lyrical": 0.1
+"lyrical": 0.2
 },
 "ros-lyrical-osqp-vendor": {
 "lyrical": 0.1
@@ -5610,7 +5667,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-parallel-gripper-controller": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-parameter-traits": {
 "lyrical": 0.1
@@ -5637,7 +5694,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-performance-test-fixture": {
-"lyrical": 0.1
+"lyrical": 0.5
 },
 "ros-lyrical-persist-parameter-server": {
 "lyrical": 0.1
@@ -5730,10 +5787,10 @@
 "lyrical": 0.1
 },
 "ros-lyrical-point-cloud-transport": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-point-cloud-transport-plugins": {
-"lyrical": 0.1
+"lyrical": 0.2
 },
 "ros-lyrical-point-cloud-transport-py": {
 "lyrical": 0.1
@@ -5778,12 +5835,15 @@
 "lyrical": 0.1
 },
 "ros-lyrical-py-trees-ros-interfaces": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-py-trees-ros-tutorials": {
 "lyrical": 0.1
 },
 "ros-lyrical-py-trees-ros-viewer": {
+"lyrical": 0.1
+},
+"ros-lyrical-pybind11-json-vendor": {
 "lyrical": 0.1
 },
 "ros-lyrical-pybind11-vendor": {
@@ -5802,7 +5862,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-qt-gui": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-qt-gui-cpp": {
 "lyrical": 0.1
@@ -5826,7 +5886,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-range-sensor-broadcaster": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-rcl": {
 "lyrical": 0.1
@@ -5835,12 +5895,18 @@
 "lyrical": 0.1
 },
 "ros-lyrical-rcl-interfaces": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-rcl-lifecycle": {
-"lyrical": 0.2
+"lyrical": 0.1
+},
+"ros-lyrical-rcl-logging-implementation": {
+"lyrical": 0.1
 },
 "ros-lyrical-rcl-logging-interface": {
+"lyrical": 0.1
+},
+"ros-lyrical-rcl-logging-noop": {
 "lyrical": 0.1
 },
 "ros-lyrical-rcl-logging-spdlog": {
@@ -5879,6 +5945,9 @@
 "ros-lyrical-rclpy": {
 "lyrical": 0.1
 },
+"ros-lyrical-rclpy-cascade-lifecycle": {
+"lyrical": 0.1
+},
 "ros-lyrical-rclpy-message-converter": {
 "lyrical": 0.1
 },
@@ -5901,19 +5970,136 @@
 "lyrical": 0.1
 },
 "ros-lyrical-realtime-tools": {
-"lyrical": 0.1
+"lyrical": 0.2
 },
 "ros-lyrical-resource-retriever": {
 "lyrical": 0.1
 },
+"ros-lyrical-resource-retriever-interfaces": {
+"lyrical": 0.1
+},
+"ros-lyrical-resource-retriever-service-plugin": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-api-msgs": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-battery": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-building-map-msgs": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-building-map-tools": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-demos": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-demos-assets": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-demos-fleet-adapter": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-demos-maps": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-demos-tasks": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-dispenser-msgs": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-door-msgs": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-fleet-adapter": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-fleet-adapter-python": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-fleet-msgs": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-ingestor-msgs": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-lift-msgs": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-obstacle-msgs": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-reservation-msgs": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-reservation-node": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-site-map-msgs": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-task": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-task-msgs": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-task-ros2": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-task-sequence": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-traffic": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-traffic-msgs": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-traffic-ros2": {
+"lyrical": 0.1
+},
 "ros-lyrical-rmf-utils": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-visualization": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-visualization-building-systems": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-visualization-fleet-states": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-visualization-floorplans": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-visualization-msgs": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-visualization-navgraphs": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-visualization-obstacles": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-visualization-rviz2-plugins": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-visualization-schedule": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmf-websocket": {
 "lyrical": 0.1
 },
 "ros-lyrical-rmw": {
 "lyrical": 0.1
 },
 "ros-lyrical-rmw-connextdds": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-rmw-connextdds-common": {
 "lyrical": 0.1
@@ -5931,15 +6117,24 @@
 "lyrical": 0.1
 },
 "ros-lyrical-rmw-fastrtps-shared-cpp": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-rmw-implementation": {
 "lyrical": 0.1
 },
 "ros-lyrical-rmw-implementation-cmake": {
+"lyrical": 0.6
+},
+"ros-lyrical-rmw-security-common": {
 "lyrical": 0.1
 },
 "ros-lyrical-rmw-stats-shim": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmw-test-fixture": {
+"lyrical": 0.1
+},
+"ros-lyrical-rmw-test-fixture-implementation": {
 "lyrical": 0.1
 },
 "ros-lyrical-rmw-zenoh-cpp": {
@@ -5949,7 +6144,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-roboplan-cartesian-planning": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-roboplan-common": {
 "lyrical": 0.1
@@ -5970,7 +6165,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-roboplan-ros-examples": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-roboplan-ros-franka": {
 "lyrical": 0.1
@@ -6003,10 +6198,10 @@
 "lyrical": 0.1
 },
 "ros-lyrical-robotiq-description": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-ros-base": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-ros-core": {
 "lyrical": 0.1
@@ -6075,7 +6270,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-ros2-medkit-diagnostic-bridge": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-ros2-medkit-fault-manager": {
 "lyrical": 0.1
@@ -6117,19 +6312,19 @@
 "lyrical": 0.1
 },
 "ros-lyrical-ros2-socketcan-msgs": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-ros2action": {
-"lyrical": 0.1
-},
-"ros-lyrical-ros2bag": {
-"lyrical": 0.1
-},
-"ros-lyrical-ros2cli": {
 "lyrical": 0.2
 },
-"ros-lyrical-ros2cli-common-extensions": {
+"ros-lyrical-ros2bag": {
+"lyrical": 0.2
+},
+"ros-lyrical-ros2cli": {
 "lyrical": 0.1
+},
+"ros-lyrical-ros2cli-common-extensions": {
+"lyrical": 0.2
 },
 "ros-lyrical-ros2cli-test-interfaces": {
 "lyrical": 0.1
@@ -6141,10 +6336,10 @@
 "lyrical": 0.1
 },
 "ros-lyrical-ros2doctor": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-ros2interface": {
-"lyrical": 0.4
+"lyrical": 0.1
 },
 "ros-lyrical-ros2launch": {
 "lyrical": 0.1
@@ -6162,19 +6357,19 @@
 "lyrical": 0.1
 },
 "ros-lyrical-ros2param": {
-"lyrical": 0.1
+"lyrical": 0.2
 },
 "ros-lyrical-ros2pkg": {
-"lyrical": 0.1
+"lyrical": 0.3
 },
 "ros-lyrical-ros2plugin": {
 "lyrical": 0.1
 },
 "ros-lyrical-ros2run": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-ros2service": {
-"lyrical": 0.1
+"lyrical": 0.2
 },
 "ros-lyrical-ros2test": {
 "lyrical": 0.1
@@ -6195,7 +6390,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-rosbag2-compression-zstd": {
-"lyrical": 0.6
+"lyrical": 0.1
 },
 "ros-lyrical-rosbag2-cpp": {
 "lyrical": 0.1
@@ -6216,7 +6411,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-rosbag2-storage-default-plugins": {
-"lyrical": 0.1
+"lyrical": 0.5
 },
 "ros-lyrical-rosbag2-storage-mcap": {
 "lyrical": 0.1
@@ -6261,13 +6456,25 @@
 "lyrical": 0.1
 },
 "ros-lyrical-rosidl-adapter": {
+"lyrical": 0.7
+},
+"ros-lyrical-rosidl-buffer": {
+"lyrical": 0.1
+},
+"ros-lyrical-rosidl-buffer-backend": {
+"lyrical": 0.5
+},
+"ros-lyrical-rosidl-buffer-backend-registry": {
+"lyrical": 0.1
+},
+"ros-lyrical-rosidl-buffer-py": {
 "lyrical": 0.1
 },
 "ros-lyrical-rosidl-cli": {
 "lyrical": 0.1
 },
 "ros-lyrical-rosidl-cmake": {
-"lyrical": 0.1
+"lyrical": 0.6
 },
 "ros-lyrical-rosidl-core-generators": {
 "lyrical": 0.1
@@ -6288,10 +6495,10 @@
 "lyrical": 0.1
 },
 "ros-lyrical-rosidl-generator-c": {
-"lyrical": 0.1
+"lyrical": 0.2
 },
 "ros-lyrical-rosidl-generator-cpp": {
-"lyrical": 0.1
+"lyrical": 0.8
 },
 "ros-lyrical-rosidl-generator-dds-idl": {
 "lyrical": 0.1
@@ -6306,13 +6513,13 @@
 "lyrical": 0.1
 },
 "ros-lyrical-rosidl-parser": {
-"lyrical": 0.1
+"lyrical": 0.6
 },
 "ros-lyrical-rosidl-pycommon": {
-"lyrical": 0.1
+"lyrical": 0.2
 },
 "ros-lyrical-rosidl-runtime-c": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-rosidl-runtime-cpp": {
 "lyrical": 0.1
@@ -6321,7 +6528,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-rosidl-typesupport-c": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-rosidl-typesupport-cpp": {
 "lyrical": 0.1
@@ -6333,10 +6540,10 @@
 "lyrical": 0.1
 },
 "ros-lyrical-rosidl-typesupport-interface": {
-"lyrical": 0.1
+"lyrical": 0.4
 },
 "ros-lyrical-rosidl-typesupport-introspection-c": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-rosidl-typesupport-introspection-cpp": {
 "lyrical": 0.1
@@ -6375,7 +6582,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-rosidlcpp-typesupport-introspection-c": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-rosidlcpp-typesupport-introspection-cpp": {
 "lyrical": 0.1
@@ -6390,7 +6597,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-rpyutils": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-rqt": {
 "lyrical": 0.1
@@ -6405,7 +6612,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-rqt-common-plugins": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-rqt-console": {
 "lyrical": 0.1
@@ -6435,6 +6642,9 @@
 "lyrical": 0.1
 },
 "ros-lyrical-rqt-joint-trajectory-controller": {
+"lyrical": 0.1
+},
+"ros-lyrical-rqt-mocap4r2-control": {
 "lyrical": 0.1
 },
 "ros-lyrical-rqt-moveit": {
@@ -6504,7 +6714,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-rti-connext-dds-cmake-module": {
-"lyrical": 0.1
+"lyrical": 0.3
 },
 "ros-lyrical-rttest": {
 "lyrical": 0.1
@@ -6525,13 +6735,13 @@
 "lyrical": 0.1
 },
 "ros-lyrical-rviz-default-plugins": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-rviz-imu-plugin": {
 "lyrical": 0.1
 },
 "ros-lyrical-rviz-marker-tools": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-rviz-ogre-vendor": {
 "lyrical": 0.1
@@ -6576,13 +6786,13 @@
 "lyrical": 0.1
 },
 "ros-lyrical-sensor-msgs-py": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-septentrio-gnss-driver": {
 "lyrical": 0.1
 },
 "ros-lyrical-serial-driver": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-service-msgs": {
 "lyrical": 0.1
@@ -6615,7 +6825,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-slg-msgs": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-slider-publisher": {
 "lyrical": 0.1
@@ -6687,7 +6897,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-tango-icons-vendor": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-tcb-span": {
 "lyrical": 0.1
@@ -6720,7 +6930,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-tf2-eigen": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-tf2-eigen-kdl": {
 "lyrical": 0.1
@@ -6741,10 +6951,10 @@
 "lyrical": 0.1
 },
 "ros-lyrical-tf2-ros-py": {
-"lyrical": 0.1
+"lyrical": 0.3
 },
 "ros-lyrical-tf2-sensor-msgs": {
-"lyrical": 0.1
+"lyrical": 0.4
 },
 "ros-lyrical-tf2-tools": {
 "lyrical": 0.1
@@ -6807,7 +7017,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-tricycle-steering-controller": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-turtle-tf2-cpp": {
 "lyrical": 0.1
@@ -6902,6 +7112,9 @@
 "ros-lyrical-turtlesim": {
 "lyrical": 0.1
 },
+"ros-lyrical-turtlesim-msgs": {
+"lyrical": 0.1
+},
 "ros-lyrical-twist-mux": {
 "lyrical": 0.1
 },
@@ -6963,7 +7176,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-ur-controllers": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-ur-dashboard-msgs": {
 "lyrical": 0.1
@@ -6993,7 +7206,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-urdf-tutorial": {
-"lyrical": 0.6
+"lyrical": 0.1
 },
 "ros-lyrical-urdfdom": {
 "lyrical": 0.1
@@ -7059,7 +7272,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-warehouse-ros": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-warehouse-ros-sqlite": {
 "lyrical": 0.1
@@ -7080,7 +7293,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-yasmin-cli": {
-"lyrical": 0.2
+"lyrical": 0.1
 },
 "ros-lyrical-yasmin-demos": {
 "lyrical": 0.1
@@ -7089,7 +7302,7 @@
 "lyrical": 0.1
 },
 "ros-lyrical-yasmin-factory": {
-"lyrical": 0.3
+"lyrical": 0.1
 },
 "ros-lyrical-yasmin-msgs": {
 "lyrical": 0.1
@@ -7116,7 +7329,10 @@
 "lyrical": 0.1
 },
 "ros-lyrical-zlib-point-cloud-transport": {
-"lyrical": 0.2
+"lyrical": 0.1
+},
+"ros-lyrical-zstd-cmake-module": {
+"lyrical": 0.1
 },
 "ros-lyrical-zstd-image-transport": {
 "lyrical": 0.1
@@ -7127,632 +7343,843 @@
 "ros-lyrical-zstd-vendor": {
 "lyrical": 0.1
 },
+"ros-rolling-onnxruntime-vendor": {
+"rolling": 0.1
+},
 "ros2-ackermann-msgs": {
-"jazzy": 9.6
+"jazzy": 9.6,
+"lyrical": 8.2
 },
 "ros2-ackermann-steering-controller": {
-"jazzy": 13.6
+"jazzy": 13.6,
+"lyrical": 15.5
 },
 "ros2-action-msgs": {
-"jazzy": 11.1
+"jazzy": 11.1,
+"lyrical": 10.8
 },
 "ros2-action-tutorials-cpp": {
-"jazzy": 11.2
+"jazzy": 11.2,
+"lyrical": 12.6
 },
 "ros2-action-tutorials-interfaces": {
 "jazzy": 10.7
 },
 "ros2-action-tutorials-py": {
-"jazzy": 3.2
+"jazzy": 3.2,
+"lyrical": 4.0
 },
 "ros2-actionlib-msgs": {
 "jazzy": 8.6
 },
 "ros2-actuator-msgs": {
-"jazzy": 12.2
+"jazzy": 12.2,
+"lyrical": 13.8
 },
 "ros2-admittance-controller": {
-"jazzy": 48.6
+"jazzy": 48.6,
+"lyrical": 42.4
 },
 "ros2-ament-black": {
-"jazzy": 4.5
+"jazzy": 4.5,
+"lyrical": 3.8
 },
 "ros2-ament-clang-format": {
-"jazzy": 4.1
+"jazzy": 4.1,
+"lyrical": 3.9
 },
 "ros2-ament-clang-tidy": {
-"jazzy": 4.2
+"jazzy": 4.2,
+"lyrical": 4.0
 },
 "ros2-ament-cmake": {
-"jazzy": 4.3
+"jazzy": 4.3,
+"lyrical": 3.0
 },
 "ros2-ament-cmake-auto": {
-"jazzy": 5.9
+"jazzy": 5.9,
+"lyrical": 3.1
 },
 "ros2-ament-cmake-black": {
-"jazzy": 4.0
+"jazzy": 4.0,
+"lyrical": 2.8
 },
 "ros2-ament-cmake-catch2": {
-"jazzy": 2.7
+"jazzy": 2.7,
+"lyrical": 2.6
 },
 "ros2-ament-cmake-clang-format": {
-"jazzy": 4.7
+"jazzy": 4.7,
+"lyrical": 3.8
 },
 "ros2-ament-cmake-clang-tidy": {
-"jazzy": 4.9
+"jazzy": 4.9,
+"lyrical": 3.7
 },
 "ros2-ament-cmake-copyright": {
-"jazzy": 12.6
+"jazzy": 12.6,
+"lyrical": 10.4
 },
 "ros2-ament-cmake-core": {
-"jazzy": 3.0
+"jazzy": 3.0,
+"lyrical": 3.1
 },
 "ros2-ament-cmake-cppcheck": {
-"jazzy": 4.0
+"jazzy": 4.0,
+"lyrical": 3.7
 },
 "ros2-ament-cmake-cpplint": {
-"jazzy": 4.2
+"jazzy": 4.2,
+"lyrical": 3.4
 },
 "ros2-ament-cmake-export-definitions": {
-"jazzy": 3.5
+"jazzy": 3.5,
+"lyrical": 3.9
 },
 "ros2-ament-cmake-export-dependencies": {
-"jazzy": 3.5
+"jazzy": 3.5,
+"lyrical": 3.0
 },
 "ros2-ament-cmake-export-include-directories": {
-"jazzy": 3.9
+"jazzy": 3.9,
+"lyrical": 3.9
 },
 "ros2-ament-cmake-export-interfaces": {
 "jazzy": 3.3
 },
 "ros2-ament-cmake-export-libraries": {
-"jazzy": 3.6
+"jazzy": 3.6,
+"lyrical": 10.3
 },
 "ros2-ament-cmake-export-link-flags": {
-"jazzy": 3.6
+"jazzy": 3.6,
+"lyrical": 2.8
 },
 "ros2-ament-cmake-export-targets": {
-"jazzy": 3.4
+"jazzy": 3.4,
+"lyrical": 3.3
 },
 "ros2-ament-cmake-flake8": {
-"jazzy": 3.9
+"jazzy": 3.9,
+"lyrical": 3.3
 },
 "ros2-ament-cmake-gen-version-h": {
-"jazzy": 3.9
+"jazzy": 3.9,
+"lyrical": 3.2
 },
 "ros2-ament-cmake-gmock": {
-"jazzy": 3.1
+"jazzy": 3.1,
+"lyrical": 2.9
 },
 "ros2-ament-cmake-google-benchmark": {
-"jazzy": 3.9
+"jazzy": 3.9,
+"lyrical": 3.3
 },
 "ros2-ament-cmake-gtest": {
-"jazzy": 5.6
+"jazzy": 5.6,
+"lyrical": 3.6
 },
 "ros2-ament-cmake-include-directories": {
-"jazzy": 3.4
+"jazzy": 3.4,
+"lyrical": 3.7
 },
 "ros2-ament-cmake-libraries": {
-"jazzy": 3.4
+"jazzy": 3.4,
+"lyrical": 14.7
 },
 "ros2-ament-cmake-lint-cmake": {
-"jazzy": 13.8
+"jazzy": 13.8,
+"lyrical": 9.6
 },
 "ros2-ament-cmake-mypy": {
-"jazzy": 6.8
+"jazzy": 6.8,
+"lyrical": 3.2
 },
 "ros2-ament-cmake-pclint": {
-"jazzy": 5.7
+"jazzy": 5.7,
+"lyrical": 3.5
 },
 "ros2-ament-cmake-pep257": {
-"jazzy": 4.2
+"jazzy": 4.2,
+"lyrical": 3.5
 },
 "ros2-ament-cmake-pyflakes": {
-"jazzy": 5.4
+"jazzy": 5.4,
+"lyrical": 3.6
 },
 "ros2-ament-cmake-pytest": {
-"jazzy": 3.0
+"jazzy": 3.0,
+"lyrical": 2.9
 },
 "ros2-ament-cmake-python": {
-"jazzy": 4.6
+"jazzy": 4.6,
+"lyrical": 10.4
 },
 "ros2-ament-cmake-ros": {
-"jazzy": 3.4
+"jazzy": 3.4,
+"lyrical": 3.0
+},
+"ros2-ament-cmake-ros-core": {
+"lyrical": 3.4
 },
 "ros2-ament-cmake-target-dependencies": {
-"jazzy": 3.5
+"jazzy": 3.5,
+"lyrical": 3.1
 },
 "ros2-ament-cmake-test": {
-"jazzy": 4.7
+"jazzy": 4.7,
+"lyrical": 4.2
 },
 "ros2-ament-cmake-uncrustify": {
-"jazzy": 5.5
+"jazzy": 5.5,
+"lyrical": 3.4
 },
 "ros2-ament-cmake-vendor-package": {
-"jazzy": 3.7
+"jazzy": 3.7,
+"lyrical": 2.7
 },
 "ros2-ament-cmake-version": {
-"jazzy": 3.5
+"jazzy": 3.5,
+"lyrical": 10.0
 },
 "ros2-ament-cmake-xmllint": {
-"jazzy": 13.8
+"jazzy": 13.8,
+"lyrical": 3.1
 },
 "ros2-ament-copyright": {
-"jazzy": 14.1
+"jazzy": 14.1,
+"lyrical": 4.1
 },
 "ros2-ament-cppcheck": {
-"jazzy": 4.1
+"jazzy": 4.1,
+"lyrical": 4.0
 },
 "ros2-ament-cpplint": {
-"jazzy": 4.6
+"jazzy": 4.6,
+"lyrical": 4.6
 },
 "ros2-ament-flake8": {
-"jazzy": 13.5
+"jazzy": 13.5,
+"lyrical": 11.0
 },
 "ros2-ament-index-cpp": {
-"jazzy": 4.7
+"jazzy": 4.7,
+"lyrical": 14.8
 },
 "ros2-ament-index-python": {
-"jazzy": 3.8
+"jazzy": 3.8,
+"lyrical": 5.2
 },
 "ros2-ament-lint": {
-"jazzy": 13.1
+"jazzy": 13.1,
+"lyrical": 10.3
 },
 "ros2-ament-lint-auto": {
-"jazzy": 3.1
+"jazzy": 3.1,
+"lyrical": 2.7
 },
 "ros2-ament-lint-cmake": {
-"jazzy": 14.3
+"jazzy": 14.3,
+"lyrical": 9.9
 },
 "ros2-ament-lint-common": {
-"jazzy": 12.5
+"jazzy": 12.5,
+"lyrical": 9.0
 },
 "ros2-ament-mypy": {
-"jazzy": 4.0
+"jazzy": 4.0,
+"lyrical": 3.7
 },
 "ros2-ament-package": {
-"jazzy": 10.0
+"jazzy": 10.0,
+"lyrical": 8.7
 },
 "ros2-ament-pclint": {
-"jazzy": 4.2
+"jazzy": 4.2,
+"lyrical": 4.0
 },
 "ros2-ament-pep257": {
-"jazzy": 15.4
+"jazzy": 15.4,
+"lyrical": 10.8
 },
 "ros2-ament-pycodestyle": {
-"jazzy": 3.9
+"jazzy": 3.9,
+"lyrical": 3.6
 },
 "ros2-ament-pyflakes": {
-"jazzy": 7.7
+"jazzy": 7.7,
+"lyrical": 3.8
 },
 "ros2-ament-uncrustify": {
-"jazzy": 5.9
+"jazzy": 5.9,
+"lyrical": 4.4
 },
 "ros2-ament-xmllint": {
-"jazzy": 4.8
+"jazzy": 4.8,
+"lyrical": 4.6
 },
 "ros2-angles": {
-"jazzy": 4.0
+"jazzy": 4.0,
+"lyrical": 3.7
 },
 "ros2-apex-test-tools": {
-"jazzy": 4.5
+"jazzy": 4.5,
+"lyrical": 4.0
 },
 "ros2-apriltag": {
-"jazzy": 3.6
+"jazzy": 3.6,
+"lyrical": 11.0
 },
 "ros2-apriltag-detector": {
-"jazzy": 22.5
+"jazzy": 22.5,
+"lyrical": 23.7
 },
 "ros2-apriltag-detector-mit": {
-"jazzy": 19.0
+"jazzy": 19.0,
+"lyrical": 11.9
 },
 "ros2-apriltag-detector-umich": {
-"jazzy": 13.2
+"jazzy": 13.2,
+"lyrical": 11.2
 },
 "ros2-apriltag-draw": {
-"jazzy": 22.1
+"jazzy": 22.1,
+"lyrical": 23.7
 },
 "ros2-apriltag-mit": {
-"jazzy": 13.8
+"jazzy": 13.8,
+"lyrical": 12.9
 },
 "ros2-apriltag-msgs": {
-"jazzy": 10.1
+"jazzy": 10.1,
+"lyrical": 9.3
 },
 "ros2-apriltag-ros": {
-"jazzy": 23.6
+"jazzy": 23.6,
+"lyrical": 21.5
 },
 "ros2-apriltag-tools": {
-"jazzy": 18.4
+"jazzy": 18.4,
+"lyrical": 16.6
 },
 "ros2-asio-cmake-module": {
-"jazzy": 3.5
+"jazzy": 3.5,
+"lyrical": 3.6
 },
 "ros2-async-web-server-cpp": {
-"jazzy": 15.0
+"jazzy": 15.0,
+"lyrical": 15.6
 },
 "ros2-automatika-embodied-agents": {
-"jazzy": 21.9
+"jazzy": 21.9,
+"lyrical": 22.9
 },
 "ros2-automatika-ros-sugar": {
-"jazzy": 17.9
+"jazzy": 17.9,
+"lyrical": 18.2
 },
 "ros2-autoware-adapi-adaptors": {
-"jazzy": 69.2
+"jazzy": 69.2,
+"lyrical": 31.2
 },
 "ros2-autoware-adapi-specs": {
-"jazzy": 4.1
+"jazzy": 4.1,
+"lyrical": 4.8
 },
 "ros2-autoware-adapi-v1-msgs": {
-"jazzy": 76.1
+"jazzy": 76.1,
+"lyrical": 84.9
 },
 "ros2-autoware-adapi-version-msgs": {
-"jazzy": 8.2
+"jazzy": 8.2,
+"lyrical": 7.3
 },
 "ros2-autoware-agnocast-wrapper": {
 "jazzy": 22.2
 },
 "ros2-autoware-auto-msgs": {
-"jazzy": 29.5
+"jazzy": 29.5,
+"lyrical": 34.4
 },
 "ros2-autoware-behavior-velocity-planner": {
-"jazzy": 167.1
+"jazzy": 167.1,
+"lyrical": 117.1
 },
 "ros2-autoware-behavior-velocity-planner-common": {
-"jazzy": 112.3
+"jazzy": 112.3,
+"lyrical": 76.1
 },
 "ros2-autoware-behavior-velocity-stop-line-module": {
-"jazzy": 94.4
+"jazzy": 94.4,
+"lyrical": 46.3
 },
 "ros2-autoware-cmake": {
-"jazzy": 3.3
+"jazzy": 3.3,
+"lyrical": 9.9
 },
 "ros2-autoware-command-gate": {
 "jazzy": 17.0
 },
 "ros2-autoware-common-msgs": {
-"jazzy": 7.7
+"jazzy": 7.7,
+"lyrical": 16.4
 },
 "ros2-autoware-component-interface-specs": {
-"jazzy": 10.3
+"jazzy": 10.3,
+"lyrical": 6.7
 },
 "ros2-autoware-control-msgs": {
-"jazzy": 12.9
+"jazzy": 12.9,
+"lyrical": 10.2
 },
 "ros2-autoware-core": {
-"jazzy": 5.6
+"jazzy": 5.6,
+"lyrical": 5.0
 },
 "ros2-autoware-core-api": {
-"jazzy": 4.2
+"jazzy": 4.2,
+"lyrical": 6.2
 },
 "ros2-autoware-core-control": {
-"jazzy": 4.0
+"jazzy": 4.0,
+"lyrical": 5.5
 },
 "ros2-autoware-core-localization": {
-"jazzy": 4.2
+"jazzy": 4.2,
+"lyrical": 5.2
 },
 "ros2-autoware-core-map": {
-"jazzy": 7.1
+"jazzy": 7.1,
+"lyrical": 6.2
 },
 "ros2-autoware-core-perception": {
-"jazzy": 4.0
+"jazzy": 4.0,
+"lyrical": 4.0
 },
 "ros2-autoware-core-planning": {
-"jazzy": 6.0
+"jazzy": 6.0,
+"lyrical": 5.3
 },
 "ros2-autoware-core-sensing": {
-"jazzy": 3.5
+"jazzy": 3.5,
+"lyrical": 5.1
 },
 "ros2-autoware-core-vehicle": {
-"jazzy": 3.8
+"jazzy": 3.8,
+"lyrical": 5.7
 },
 "ros2-autoware-crop-box-filter": {
-"jazzy": 59.8
+"jazzy": 59.8,
+"lyrical": 39.6
 },
 "ros2-autoware-default-adapi": {
-"jazzy": 40.8
+"jazzy": 40.8,
+"lyrical": 39.6
 },
 "ros2-autoware-downsample-filters": {
-"jazzy": 69.4
+"jazzy": 69.4,
+"lyrical": 45.7
 },
 "ros2-autoware-ekf-localizer": {
-"jazzy": 47.9
+"jazzy": 47.9,
+"lyrical": 40.6
 },
 "ros2-autoware-euclidean-cluster-object-detector": {
-"jazzy": 178.9
+"jazzy": 178.9,
+"lyrical": 57.1
 },
 "ros2-autoware-geography-utils": {
-"jazzy": 18.5
+"jazzy": 18.5,
+"lyrical": 9.1
 },
 "ros2-autoware-global-parameter-loader": {
-"jazzy": 4.7
+"jazzy": 4.7,
+"lyrical": 5.1
 },
 "ros2-autoware-ground-filter": {
-"jazzy": 83.6
+"jazzy": 83.6,
+"lyrical": 55.3
 },
 "ros2-autoware-internal-debug-msgs": {
-"jazzy": 16.4
+"jazzy": 16.4,
+"lyrical": 18.1
 },
 "ros2-autoware-internal-localization-msgs": {
-"jazzy": 9.9
+"jazzy": 9.9,
+"lyrical": 9.2
 },
 "ros2-autoware-internal-metric-msgs": {
-"jazzy": 8.8
+"jazzy": 8.8,
+"lyrical": 8.4
 },
 "ros2-autoware-internal-msgs": {
-"jazzy": 13.0
+"jazzy": 13.0,
+"lyrical": 9.7
 },
 "ros2-autoware-internal-perception-msgs": {
-"jazzy": 13.4
+"jazzy": 13.4,
+"lyrical": 7.9
 },
 "ros2-autoware-internal-planning-msgs": {
-"jazzy": 32.7
+"jazzy": 32.7,
+"lyrical": 30.7
 },
 "ros2-autoware-interpolation": {
-"jazzy": 12.6
+"jazzy": 12.6,
+"lyrical": 15.1
 },
 "ros2-autoware-kalman-filter": {
-"jazzy": 10.7
+"jazzy": 10.7,
+"lyrical": 11.2
 },
 "ros2-autoware-lanelet2-extension": {
-"jazzy": 57.4
+"jazzy": 57.4,
+"lyrical": 62.0
 },
 "ros2-autoware-lanelet2-extension-python": {
-"jazzy": 32.6
+"jazzy": 32.6,
+"lyrical": 32.1
 },
 "ros2-autoware-lanelet2-map-visualizer": {
-"jazzy": 35.4
+"jazzy": 35.4,
+"lyrical": 37.9
 },
 "ros2-autoware-lanelet2-utils": {
-"jazzy": 44.4
+"jazzy": 44.4,
+"lyrical": 38.0
 },
 "ros2-autoware-lint-common": {
-"jazzy": 3.1
+"jazzy": 3.1,
+"lyrical": 2.4
 },
 "ros2-autoware-localization-msgs": {
-"jazzy": 9.8
+"jazzy": 9.8,
+"lyrical": 9.4
 },
 "ros2-autoware-localization-util": {
-"jazzy": 18.9
+"jazzy": 18.9,
+"lyrical": 19.1
 },
 "ros2-autoware-map-height-fitter": {
-"jazzy": 75.1
+"jazzy": 75.1,
+"lyrical": 44.7
 },
 "ros2-autoware-map-loader": {
-"jazzy": 99.2
+"jazzy": 99.2,
+"lyrical": 49.1
 },
 "ros2-autoware-map-msgs": {
-"jazzy": 20.7
+"jazzy": 20.7,
+"lyrical": 21.9
 },
 "ros2-autoware-map-projection-loader": {
-"jazzy": 18.9
+"jazzy": 18.9,
+"lyrical": 21.0
 },
 "ros2-autoware-mission-planner": {
-"jazzy": 62.0
+"jazzy": 62.0,
+"lyrical": 59.4
 },
 "ros2-autoware-motion-utils": {
-"jazzy": 37.7
+"jazzy": 37.7,
+"lyrical": 46.7
 },
 "ros2-autoware-motion-velocity-obstacle-stop-module": {
-"jazzy": 97.8
+"jazzy": 97.8,
+"lyrical": 56.7
 },
 "ros2-autoware-motion-velocity-planner": {
-"jazzy": 169.0
+"jazzy": 169.0,
+"lyrical": 115.2
 },
 "ros2-autoware-motion-velocity-planner-common": {
-"jazzy": 90.2
+"jazzy": 90.2,
+"lyrical": 45.5
 },
 "ros2-autoware-msgs": {
-"jazzy": 3.1
+"jazzy": 3.1,
+"lyrical": 3.2
 },
 "ros2-autoware-ndt-scan-matcher": {
-"jazzy": 172.7
+"jazzy": 172.7,
+"lyrical": 95.5
 },
 "ros2-autoware-node": {
-"jazzy": 8.5
+"jazzy": 8.5,
+"lyrical": 8.3
 },
 "ros2-autoware-object-recognition-utils": {
-"jazzy": 23.9
+"jazzy": 23.9,
+"lyrical": 24.7
 },
 "ros2-autoware-objects-of-interest-marker-interface": {
-"jazzy": 17.4
+"jazzy": 17.4,
+"lyrical": 14.6
 },
 "ros2-autoware-osqp-interface": {
-"jazzy": 11.4
+"jazzy": 11.4,
+"lyrical": 10.2
 },
 "ros2-autoware-path-generator": {
-"jazzy": 46.4
+"jazzy": 46.4,
+"lyrical": 56.4
 },
 "ros2-autoware-perception-msgs": {
-"jazzy": 23.0
+"jazzy": 23.0,
+"lyrical": 23.6
 },
 "ros2-autoware-perception-objects-converter": {
-"jazzy": 19.2
+"jazzy": 19.2,
+"lyrical": 22.3
 },
 "ros2-autoware-planning-factor-interface": {
-"jazzy": 14.8
+"jazzy": 14.8,
+"lyrical": 12.8
 },
 "ros2-autoware-planning-msgs": {
-"jazzy": 19.1
+"jazzy": 19.1,
+"lyrical": 18.5
 },
 "ros2-autoware-planning-test-manager": {
-"jazzy": 28.0
+"jazzy": 28.0,
+"lyrical": 29.6
 },
 "ros2-autoware-planning-topic-converter": {
-"jazzy": 33.8
+"jazzy": 33.8,
+"lyrical": 27.6
 },
 "ros2-autoware-point-types": {
-"jazzy": 12.3
+"jazzy": 12.3,
+"lyrical": 16.0
 },
 "ros2-autoware-pose-initializer": {
-"jazzy": 68.1
+"jazzy": 68.1,
+"lyrical": 52.4
 },
 "ros2-autoware-pyplot": {
-"jazzy": 19.2
+"jazzy": 19.2,
+"lyrical": 19.7
 },
 "ros2-autoware-qos-utils": {
-"jazzy": 5.9
+"jazzy": 5.9,
+"lyrical": 5.2
 },
 "ros2-autoware-qp-interface": {
-"jazzy": 28.8
+"jazzy": 28.8,
+"lyrical": 25.7
 },
 "ros2-autoware-route-handler": {
-"jazzy": 29.7
+"jazzy": 29.7,
+"lyrical": 40.8
 },
 "ros2-autoware-sensing-msgs": {
-"jazzy": 14.3
+"jazzy": 14.3,
+"lyrical": 15.4
 },
 "ros2-autoware-signal-processing": {
-"jazzy": 8.5
+"jazzy": 8.5,
+"lyrical": 8.3
 },
 "ros2-autoware-simple-pure-pursuit": {
-"jazzy": 29.6
+"jazzy": 29.6,
+"lyrical": 27.5
 },
 "ros2-autoware-simulation-msgs": {
 "jazzy": 9.0
 },
 "ros2-autoware-stop-filter": {
-"jazzy": 21.0
+"jazzy": 21.0,
+"lyrical": 20.4
 },
 "ros2-autoware-system-msgs": {
-"jazzy": 12.4
+"jazzy": 12.4,
+"lyrical": 11.5
 },
 "ros2-autoware-test-utils": {
-"jazzy": 57.3
+"jazzy": 57.3,
+"lyrical": 62.6
 },
 "ros2-autoware-testing": {
 "jazzy": 7.0
 },
 "ros2-autoware-trajectory": {
-"jazzy": 43.5
+"jazzy": 43.5,
+"lyrical": 100.1
 },
 "ros2-autoware-twist2accel": {
-"jazzy": 23.9
+"jazzy": 23.9,
+"lyrical": 24.6
 },
 "ros2-autoware-utils": {
-"jazzy": 14.6
+"jazzy": 14.6,
+"lyrical": 10.2
 },
 "ros2-autoware-utils-debug": {
-"jazzy": 20.5
+"jazzy": 20.5,
+"lyrical": 10.9
 },
 "ros2-autoware-utils-diagnostics": {
-"jazzy": 6.9
+"jazzy": 6.9,
+"lyrical": 10.8
 },
 "ros2-autoware-utils-geometry": {
-"jazzy": 32.4
+"jazzy": 32.4,
+"lyrical": 32.0
 },
 "ros2-autoware-utils-logging": {
-"jazzy": 6.6
+"jazzy": 6.6,
+"lyrical": 9.2
 },
 "ros2-autoware-utils-math": {
-"jazzy": 3.5
+"jazzy": 3.5,
+"lyrical": 3.6
 },
 "ros2-autoware-utils-pcl": {
-"jazzy": 13.0
+"jazzy": 13.0,
+"lyrical": 15.1
 },
 "ros2-autoware-utils-rclcpp": {
-"jazzy": 4.7
+"jazzy": 4.7,
+"lyrical": 3.6
 },
 "ros2-autoware-utils-system": {
-"jazzy": 9.8
+"jazzy": 9.8,
+"lyrical": 17.3
 },
 "ros2-autoware-utils-tf": {
-"jazzy": 5.1
+"jazzy": 5.1,
+"lyrical": 5.3
 },
 "ros2-autoware-utils-uuid": {
-"jazzy": 5.7
+"jazzy": 5.7,
+"lyrical": 4.5
 },
 "ros2-autoware-utils-visualization": {
-"jazzy": 5.4
+"jazzy": 5.4,
+"lyrical": 5.5
 },
 "ros2-autoware-v2x-msgs": {
-"jazzy": 10.1
+"jazzy": 10.1,
+"lyrical": 10.3
 },
 "ros2-autoware-vehicle-info-utils": {
-"jazzy": 10.8
+"jazzy": 10.8,
+"lyrical": 13.7
 },
 "ros2-autoware-vehicle-msgs": {
-"jazzy": 22.3
+"jazzy": 22.3,
+"lyrical": 17.6
 },
 "ros2-autoware-vehicle-velocity-converter": {
-"jazzy": 19.7
+"jazzy": 19.7,
+"lyrical": 19.2
 },
 "ros2-autoware-velocity-smoother": {
-"jazzy": 66.9
+"jazzy": 66.9,
+"lyrical": 86.3
 },
 "ros2-avt-vimba-camera": {
-"jazzy": 26.6
+"jazzy": 26.6,
+"lyrical": 22.8
 },
 "ros2-axis-description": {
 "jazzy": 3.5
 },
 "ros2-backward-ros": {
-"jazzy": 6.9
+"jazzy": 6.9,
+"lyrical": 6.1
 },
 "ros2-battery-state-broadcaster": {
-"jazzy": 25.0
+"jazzy": 25.0,
+"lyrical": 21.8
 },
 "ros2-behaviortree-cpp": {
-"jazzy": 88.5
+"jazzy": 88.5,
+"lyrical": 84.6
 },
 "ros2-behaviortree-cpp-v3": {
 "jazzy": 26.9
 },
+"ros2-better-launch": {
+"lyrical": 5.7
+},
 "ros2-bicycle-steering-controller": {
-"jazzy": 16.0
+"jazzy": 16.0,
+"lyrical": 18.6
 },
 "ros2-bno055": {
-"jazzy": 3.1
+"jazzy": 3.1,
+"lyrical": 3.4
 },
 "ros2-bond": {
-"jazzy": 7.8
+"jazzy": 7.8,
+"lyrical": 17.7
 },
 "ros2-bond-core": {
-"jazzy": 3.1
+"jazzy": 3.1,
+"lyrical": 3.0
 },
 "ros2-bondcpp": {
-"jazzy": 18.1
+"jazzy": 18.1,
+"lyrical": 19.8
 },
 "ros2-bonxai-ros": {
 "jazzy": 37.6
 },
 "ros2-builtin-interfaces": {
-"jazzy": 8.3
+"jazzy": 8.3,
+"lyrical": 17.2
 },
 "ros2-camera-calibration": {
-"jazzy": 5.7
+"jazzy": 5.7,
+"lyrical": 7.3
 },
 "ros2-camera-calibration-parsers": {
-"jazzy": 8.9
+"jazzy": 8.9,
+"lyrical": 8.9
 },
 "ros2-camera-info-manager": {
-"jazzy": 14.1
+"jazzy": 14.1,
+"lyrical": 9.5
 },
 "ros2-camera-ros": {
-"jazzy": 31.5
+"jazzy": 31.5,
+"lyrical": 28.3
+},
+"ros2-can-dbc-parser": {
+"lyrical": 6.7
 },
 "ros2-can-msgs": {
-"jazzy": 7.5
+"jazzy": 7.5,
+"lyrical": 7.0
 },
 "ros2-cartographer": {
-"jazzy": 10.3
+"jazzy": 10.3,
+"lyrical": 2.5
 },
 "ros2-cartographer-ros": {
-"jazzy": 93.3
+"jazzy": 93.3,
+"lyrical": 105.3
 },
 "ros2-cartographer-ros-msgs": {
-"jazzy": 27.3
+"jazzy": 27.3,
+"lyrical": 31.3
 },
 "ros2-cascade-lifecycle-msgs": {
-"jazzy": 7.5
+"jazzy": 7.5,
+"lyrical": 8.5
 },
 "ros2-chained-filter-controller": {
-"jazzy": 26.8
+"jazzy": 26.8,
+"lyrical": 20.3
 },
 "ros2-chomp-motion-planner": {
-"jazzy": 28.2
+"jazzy": 28.2,
+"lyrical": 31.9
 },
 "ros2-class-loader": {
-"jazzy": 5.4
+"jazzy": 5.4,
+"lyrical": 5.0
 },
 "ros2-clearpath-bt-joy": {
 "jazzy": 6.6
@@ -7794,82 +8221,107 @@
 "jazzy": 8.2
 },
 "ros2-cloudini-lib": {
-"jazzy": 17.0
+"jazzy": 17.0,
+"lyrical": 20.8
 },
 "ros2-cloudini-ros": {
-"jazzy": 41.6
+"jazzy": 41.6,
+"lyrical": 38.1
 },
 "ros2-cm-executors": {
-"jazzy": 14.7
+"jazzy": 14.7,
+"lyrical": 12.8
 },
 "ros2-coal": {
-"jazzy": 4.7
+"jazzy": 4.7,
+"lyrical": 2.9
 },
 "ros2-color-util": {
-"jazzy": 4.3
+"jazzy": 4.3,
+"lyrical": 4.2
 },
 "ros2-common-interfaces": {
-"jazzy": 3.2
+"jazzy": 3.2,
+"lyrical": 3.8
 },
 "ros2-composition": {
-"jazzy": 27.8
+"jazzy": 27.8,
+"lyrical": 20.5
 },
 "ros2-composition-interfaces": {
-"jazzy": 15.0
+"jazzy": 15.0,
+"lyrical": 11.8
 },
 "ros2-compressed-depth-image-transport": {
-"jazzy": 24.6
+"jazzy": 24.6,
+"lyrical": 20.9
 },
 "ros2-compressed-image-transport": {
-"jazzy": 30.3
+"jazzy": 30.3,
+"lyrical": 25.9
 },
 "ros2-console-bridge-vendor": {
-"jazzy": 5.1
+"jazzy": 5.1,
+"lyrical": 3.6
 },
 "ros2-control-msgs": {
-"jazzy": 55.8
+"jazzy": 55.8,
+"lyrical": 88.6
 },
 "ros2-control-toolbox": {
-"jazzy": 24.8
+"jazzy": 24.8,
+"lyrical": 24.4
 },
 "ros2-controller-interface": {
-"jazzy": 12.7
+"jazzy": 12.7,
+"lyrical": 26.5
 },
 "ros2-controller-manager": {
-"jazzy": 82.5
+"jazzy": 82.5,
+"lyrical": 79.8
 },
 "ros2-controller-manager-msgs": {
-"jazzy": 28.8
+"jazzy": 28.8,
+"lyrical": 37.7
 },
 "ros2-costmap-queue": {
-"jazzy": 24.8
+"jazzy": 24.8,
+"lyrical": 27.3
 },
 "ros2-create3-republisher": {
 "jazzy": 44.3
 },
 "ros2-cv-bridge": {
-"jazzy": 16.9
+"jazzy": 16.9,
+"lyrical": 18.8
 },
 "ros2-cyclonedds": {
-"jazzy": 1.2
+"jazzy": 1.2,
+"lyrical": 0.9
 },
 "ros2-data-tamer-cpp": {
-"jazzy": 16.2
+"jazzy": 16.2,
+"lyrical": 21.9
 },
 "ros2-data-tamer-msgs": {
-"jazzy": 12.3
+"jazzy": 12.3,
+"lyrical": 19.3
 },
 "ros2-demo-nodes-cpp": {
-"jazzy": 84.5
+"jazzy": 84.5,
+"lyrical": 99.3
 },
 "ros2-demo-nodes-cpp-native": {
-"jazzy": 12.2
+"jazzy": 12.2,
+"lyrical": 14.1
 },
 "ros2-demo-nodes-py": {
-"jazzy": 5.0
+"jazzy": 5.0,
+"lyrical": 4.0
 },
 "ros2-depth-image-proc": {
-"jazzy": 68.9
+"jazzy": 68.9,
+"lyrical": 74.3
 },
 "ros2-depthai": {
 "jazzy": 156.2
@@ -7890,298 +8342,396 @@
 "jazzy": 19.8
 },
 "ros2-depthimage-to-laserscan": {
-"jazzy": 27.3
+"jazzy": 27.3,
+"lyrical": 26.6
 },
 "ros2-desktop": {
-"jazzy": 17.9
+"jazzy": 17.9,
+"lyrical": 19.2
 },
 "ros2-desktop-full": {
-"jazzy": 14.5
+"jazzy": 14.5,
+"lyrical": 25.7
 },
 "ros2-diagnostic-aggregator": {
-"jazzy": 25.7
+"jazzy": 25.7,
+"lyrical": 25.9
 },
 "ros2-diagnostic-common-diagnostics": {
-"jazzy": 7.9
+"jazzy": 7.9,
+"lyrical": 4.4
 },
 "ros2-diagnostic-msgs": {
-"jazzy": 12.4
+"jazzy": 12.4,
+"lyrical": 21.6
 },
 "ros2-diagnostic-remote-logging": {
-"jazzy": 23.3
+"jazzy": 23.3,
+"lyrical": 22.1
 },
 "ros2-diagnostic-updater": {
-"jazzy": 11.6
+"jazzy": 11.6,
+"lyrical": 21.7
 },
 "ros2-diagnostics": {
-"jazzy": 4.4
+"jazzy": 4.4,
+"lyrical": 3.2
 },
 "ros2-diff-drive-controller": {
-"jazzy": 36.8
+"jazzy": 36.8,
+"lyrical": 34.7
 },
 "ros2-distro-mutex": {
-"jazzy": 0.2
+"jazzy": 0.2,
+"lyrical": 0.1
 },
 "ros2-domain-coordinator": {
-"jazzy": 3.8
+"jazzy": 3.8,
+"lyrical": 10.0
 },
 "ros2-draco-point-cloud-transport": {
-"jazzy": 15.9
+"jazzy": 15.9,
+"lyrical": 17.5
 },
 "ros2-dual-laser-merger": {
-"jazzy": 73.4
+"jazzy": 73.4,
+"lyrical": 48.1
 },
 "ros2-dummy-map-server": {
-"jazzy": 14.0
+"jazzy": 14.0,
+"lyrical": 12.0
 },
 "ros2-dummy-robot-bringup": {
-"jazzy": 5.5
+"jazzy": 5.5,
+"lyrical": 4.2
 },
 "ros2-dummy-sensors": {
-"jazzy": 10.4
+"jazzy": 10.4,
+"lyrical": 11.1
 },
 "ros2-dwb-core": {
-"jazzy": 20.8
+"jazzy": 20.8,
+"lyrical": 36.8
 },
 "ros2-dwb-critics": {
-"jazzy": 22.9
+"jazzy": 22.9,
+"lyrical": 31.5
 },
 "ros2-dwb-msgs": {
-"jazzy": 20.0
+"jazzy": 20.0,
+"lyrical": 20.0
 },
 "ros2-dwb-plugins": {
-"jazzy": 16.7
+"jazzy": 16.7,
+"lyrical": 12.4
 },
 "ros2-dynamixel-sdk": {
 "jazzy": 9.5
 },
 "ros2-easynav": {
-"jazzy": 14.6
+"jazzy": 14.6,
+"lyrical": 6.2
 },
 "ros2-easynav-bonxai-maps-manager": {
-"jazzy": 37.1
+"jazzy": 37.1,
+"lyrical": 42.2
 },
 "ros2-easynav-common": {
-"jazzy": 5.7
+"jazzy": 5.7,
+"lyrical": 4.8
 },
 "ros2-easynav-controller": {
-"jazzy": 23.0
+"jazzy": 23.0,
+"lyrical": 30.6
 },
 "ros2-easynav-core": {
-"jazzy": 22.7
+"jazzy": 22.7,
+"lyrical": 22.5
 },
 "ros2-easynav-costmap-common": {
-"jazzy": 10.5
+"jazzy": 10.5,
+"lyrical": 7.0
 },
 "ros2-easynav-costmap-localizer": {
-"jazzy": 44.6
+"jazzy": 44.6,
+"lyrical": 46.1
 },
 "ros2-easynav-costmap-maps-manager": {
-"jazzy": 41.2
+"jazzy": 41.2,
+"lyrical": 37.7
 },
 "ros2-easynav-costmap-planner": {
-"jazzy": 16.4
+"jazzy": 16.4,
+"lyrical": 14.4
 },
 "ros2-easynav-diagnostic-recovery": {
-"jazzy": 98.7
+"jazzy": 98.7,
+"lyrical": 42.8
 },
 "ros2-easynav-fusion-localizer": {
-"jazzy": 512.0
+"jazzy": 512.0,
+"lyrical": 123.3
 },
 "ros2-easynav-interfaces": {
-"jazzy": 11.1
+"jazzy": 11.1,
+"lyrical": 11.3
 },
 "ros2-easynav-localizer": {
-"jazzy": 15.4
+"jazzy": 15.4,
+"lyrical": 24.3
 },
 "ros2-easynav-maps-manager": {
-"jazzy": 17.9
+"jazzy": 17.9,
+"lyrical": 23.0
 },
 "ros2-easynav-mhamcl-localizer": {
-"jazzy": 42.8
+"jazzy": 42.8,
+"lyrical": 37.6
 },
 "ros2-easynav-mpc-controller": {
-"jazzy": 65.5
+"jazzy": 65.5,
+"lyrical": 30.2
 },
 "ros2-easynav-mppi-controller": {
-"jazzy": 47.3
+"jazzy": 47.3,
+"lyrical": 30.4
 },
 "ros2-easynav-nav2-bridge": {
-"jazzy": 33.8
+"jazzy": 33.8,
+"lyrical": 17.6
 },
 "ros2-easynav-navmap-localizer": {
-"jazzy": 44.0
+"jazzy": 44.0,
+"lyrical": 47.8
 },
 "ros2-easynav-navmap-maps-manager": {
-"jazzy": 55.3
+"jazzy": 55.3,
+"lyrical": 48.2
 },
 "ros2-easynav-navmap-planner": {
-"jazzy": 22.9
+"jazzy": 22.9,
+"lyrical": 27.6
 },
 "ros2-easynav-octomap-maps-manager": {
-"jazzy": 56.3
+"jazzy": 56.3,
+"lyrical": 40.3
 },
 "ros2-easynav-planner": {
-"jazzy": 16.2
+"jazzy": 16.2,
+"lyrical": 13.6
 },
 "ros2-easynav-playground-kobuki": {
-"jazzy": 20.2
+"jazzy": 20.2,
+"lyrical": 7.4
 },
 "ros2-easynav-playground-kobuki-description": {
-"jazzy": 9.2
+"jazzy": 9.2,
+"lyrical": 7.0
 },
 "ros2-easynav-playground-kobuki-worlds": {
-"jazzy": 12.3
+"jazzy": 12.3,
+"lyrical": 10.0
 },
 "ros2-easynav-playground-omni": {
-"jazzy": 4.7
+"jazzy": 4.7,
+"lyrical": 6.9
 },
 "ros2-easynav-playground-omni-description": {
-"jazzy": 8.4
+"jazzy": 8.4,
+"lyrical": 13.0
 },
 "ros2-easynav-playground-omni-worlds": {
-"jazzy": 42.3
+"jazzy": 42.3,
+"lyrical": 45.7
 },
 "ros2-easynav-playground-summit": {
-"jazzy": 6.7
+"jazzy": 6.7,
+"lyrical": 8.4
 },
 "ros2-easynav-playground-summit-description": {
-"jazzy": 5.4
+"jazzy": 5.4,
+"lyrical": 6.1
 },
 "ros2-easynav-playground-summit-worlds": {
-"jazzy": 12.5
+"jazzy": 12.5,
+"lyrical": 9.9
 },
 "ros2-easynav-playground-tiago": {
-"jazzy": 9.0
+"jazzy": 9.0,
+"lyrical": 6.8
 },
 "ros2-easynav-playground-tiago-description": {
-"jazzy": 6.7
+"jazzy": 6.7,
+"lyrical": 6.3
 },
 "ros2-easynav-playground-tiago-worlds": {
-"jazzy": 10.8
+"jazzy": 10.8,
+"lyrical": 10.8
 },
 "ros2-easynav-recovery": {
-"jazzy": 17.5
+"jazzy": 17.5,
+"lyrical": 21.8
 },
 "ros2-easynav-regulated-pp-controller": {
-"jazzy": 32.7
+"jazzy": 32.7,
+"lyrical": 40.5
 },
 "ros2-easynav-routes-maps-manager": {
-"jazzy": 36.1
+"jazzy": 36.1,
+"lyrical": 31.4
 },
 "ros2-easynav-sensors": {
-"jazzy": 83.7
+"jazzy": 83.7,
+"lyrical": 79.5
 },
 "ros2-easynav-serest-controller": {
-"jazzy": 28.6
+"jazzy": 28.6,
+"lyrical": 19.3
 },
 "ros2-easynav-simple-common": {
-"jazzy": 6.7
+"jazzy": 6.7,
+"lyrical": 18.2
 },
 "ros2-easynav-simple-controller": {
-"jazzy": 12.1
+"jazzy": 12.1,
+"lyrical": 13.3
 },
 "ros2-easynav-simple-localizer": {
-"jazzy": 43.3
+"jazzy": 43.3,
+"lyrical": 35.1
 },
 "ros2-easynav-simple-maps-manager": {
-"jazzy": 33.8
+"jazzy": 33.8,
+"lyrical": 34.0
 },
 "ros2-easynav-simple-planner": {
-"jazzy": 15.9
+"jazzy": 15.9,
+"lyrical": 15.4
 },
 "ros2-easynav-simple-recovery": {
-"jazzy": 30.2
+"jazzy": 30.2,
+"lyrical": 25.7
 },
 "ros2-easynav-support-py": {
-"jazzy": 4.2
+"jazzy": 4.2,
+"lyrical": 4.0
 },
 "ros2-easynav-system": {
-"jazzy": 57.7
+"jazzy": 57.7,
+"lyrical": 39.8
 },
 "ros2-easynav-tools": {
-"jazzy": 6.6
+"jazzy": 6.6,
+"lyrical": 5.8
 },
 "ros2-easynav-vff-controller": {
-"jazzy": 45.2
+"jazzy": 45.2,
+"lyrical": 20.6
 },
 "ros2-effort-controllers": {
 "jazzy": 10.9
 },
 "ros2-eigen-stl-containers": {
-"jazzy": 3.5
+"jazzy": 3.5,
+"lyrical": 2.8
 },
 "ros2-eigen3-cmake-module": {
-"jazzy": 6.7
+"jazzy": 6.7,
+"lyrical": 3.0
 },
 "ros2-eigenpy": {
-"jazzy": 4.4
+"jazzy": 4.4,
+"lyrical": 3.9
 },
 "ros2-event-camera-codecs": {
-"jazzy": 8.2
+"jazzy": 8.2,
+"lyrical": 5.9
 },
 "ros2-event-camera-msgs": {
-"jazzy": 20.7
+"jazzy": 20.7,
+"lyrical": 8.2
 },
 "ros2-event-camera-renderer": {
-"jazzy": 23.1
+"jazzy": 23.1,
+"lyrical": 23.4
 },
 "ros2-ewellix-description": {
 "jazzy": 4.2
 },
 "ros2-example-interfaces": {
-"jazzy": 35.2
+"jazzy": 35.2,
+"lyrical": 49.7
 },
 "ros2-examples-rclcpp-minimal-action-client": {
-"jazzy": 10.7
+"jazzy": 10.7,
+"lyrical": 12.7
 },
 "ros2-examples-rclcpp-minimal-action-server": {
-"jazzy": 23.3
+"jazzy": 23.3,
+"lyrical": 11.4
 },
 "ros2-examples-rclcpp-minimal-client": {
-"jazzy": 21.1
+"jazzy": 21.1,
+"lyrical": 10.0
 },
 "ros2-examples-rclcpp-minimal-composition": {
-"jazzy": 20.4
+"jazzy": 20.4,
+"lyrical": 18.2
 },
 "ros2-examples-rclcpp-minimal-publisher": {
-"jazzy": 16.9
+"jazzy": 16.9,
+"lyrical": 15.8
 },
 "ros2-examples-rclcpp-minimal-service": {
-"jazzy": 9.4
+"jazzy": 9.4,
+"lyrical": 9.2
 },
 "ros2-examples-rclcpp-minimal-subscriber": {
-"jazzy": 40.0
+"jazzy": 40.0,
+"lyrical": 47.1
 },
 "ros2-examples-rclcpp-minimal-timer": {
-"jazzy": 7.3
+"jazzy": 7.3,
+"lyrical": 8.4
 },
 "ros2-examples-rclcpp-multithreaded-executor": {
-"jazzy": 15.0
+"jazzy": 15.0,
+"lyrical": 16.7
 },
 "ros2-examples-rclpy-executors": {
-"jazzy": 2.8
+"jazzy": 2.8,
+"lyrical": 3.2
 },
 "ros2-examples-rclpy-minimal-action-client": {
-"jazzy": 2.7
+"jazzy": 2.7,
+"lyrical": 2.8
 },
 "ros2-examples-rclpy-minimal-action-server": {
-"jazzy": 5.7
+"jazzy": 5.7,
+"lyrical": 2.9
 },
 "ros2-examples-rclpy-minimal-client": {
-"jazzy": 2.8
+"jazzy": 2.8,
+"lyrical": 3.0
 },
 "ros2-examples-rclpy-minimal-publisher": {
-"jazzy": 2.9
+"jazzy": 2.9,
+"lyrical": 3.2
 },
 "ros2-examples-rclpy-minimal-service": {
-"jazzy": 3.1
+"jazzy": 3.1,
+"lyrical": 2.9
 },
 "ros2-examples-rclpy-minimal-subscriber": {
-"jazzy": 2.9
+"jazzy": 2.9,
+"lyrical": 3.0
 },
 "ros2-fastcdr": {
-"jazzy": 5.6
+"jazzy": 5.6,
+"lyrical": 5.4
+},
+"ros2-fastdds": {
+"lyrical": 229.5
 },
 "ros2-fastrtps": {
 "jazzy": 210.1
@@ -8190,103 +8740,131 @@
 "jazzy": 3.3
 },
 "ros2-ffmpeg-encoder-decoder": {
-"jazzy": 16.2
+"jazzy": 16.2,
+"lyrical": 15.0
 },
 "ros2-ffmpeg-image-transport": {
-"jazzy": 21.8
+"jazzy": 21.8,
+"lyrical": 22.7
 },
 "ros2-ffmpeg-image-transport-msgs": {
-"jazzy": 7.4
+"jazzy": 7.4,
+"lyrical": 8.6
 },
 "ros2-filters": {
-"jazzy": 11.4
+"jazzy": 11.4,
+"lyrical": 13.0
 },
 "ros2-flex-sync": {
-"jazzy": 4.5
+"jazzy": 4.5,
+"lyrical": 4.1
 },
 "ros2-flir-ptu-description": {
 "jazzy": 4.5
 },
 "ros2-foonathan-memory-vendor": {
-"jazzy": 4.4
+"jazzy": 4.4,
+"lyrical": 2.7
 },
 "ros2-force-torque-sensor-broadcaster": {
-"jazzy": 31.9
+"jazzy": 31.9,
+"lyrical": 23.6
 },
 "ros2-forward-command-controller": {
-"jazzy": 44.8
+"jazzy": 44.8,
+"lyrical": 22.3
 },
 "ros2-foxglove-bridge": {
-"jazzy": 40.6
+"jazzy": 40.6,
+"lyrical": 42.6
 },
 "ros2-foxglove-compressed-video-transport": {
-"jazzy": 20.9
+"jazzy": 20.9,
+"lyrical": 20.7
 },
 "ros2-foxglove-msgs": {
-"jazzy": 50.3
+"jazzy": 50.3,
+"lyrical": 57.7
 },
 "ros2-gazebo-msgs": {
 "jazzy": 65.2
 },
 "ros2-generate-parameter-library": {
-"jazzy": 19.7
+"jazzy": 19.7,
+"lyrical": 4.7
 },
 "ros2-generate-parameter-library-py": {
-"jazzy": 4.2
+"jazzy": 4.2,
+"lyrical": 10.8
 },
 "ros2-geodesy": {
-"jazzy": 5.2
+"jazzy": 5.2,
+"lyrical": 4.9
 },
 "ros2-geographic-info": {
-"jazzy": 3.6
+"jazzy": 3.6,
+"lyrical": 3.9
 },
 "ros2-geographic-msgs": {
-"jazzy": 27.5
+"jazzy": 27.5,
+"lyrical": 36.9
 },
 "ros2-geometric-shapes": {
-"jazzy": 21.6
+"jazzy": 21.6,
+"lyrical": 21.6
 },
 "ros2-geometry-msgs": {
-"jazzy": 30.8
+"jazzy": 30.8,
+"lyrical": 43.0
 },
 "ros2-geometry-tutorials": {
-"jazzy": 2.8
+"jazzy": 2.8,
+"lyrical": 2.7
 },
 "ros2-geometry2": {
-"jazzy": 6.7
+"jazzy": 6.7,
+"lyrical": 10.7
 },
 "ros2-gmock-vendor": {
 "jazzy": 2.9
 },
 "ros2-google-benchmark-vendor": {
-"jazzy": 2.9
+"jazzy": 2.9,
+"lyrical": 3.6
 },
 "ros2-gpio-controllers": {
-"jazzy": 26.7
+"jazzy": 26.7,
+"lyrical": 28.5
 },
 "ros2-gps-msgs": {
-"jazzy": 10.9
+"jazzy": 10.9,
+"lyrical": 9.5
 },
 "ros2-gps-sensor-broadcaster": {
-"jazzy": 18.5
+"jazzy": 18.5,
+"lyrical": 16.0
 },
 "ros2-graph-msgs": {
-"jazzy": 8.1
+"jazzy": 8.1,
+"lyrical": 8.1
 },
 "ros2-grid-map": {
 "jazzy": 3.3
 },
 "ros2-grid-map-cmake-helpers": {
-"jazzy": 3.7
+"jazzy": 3.7,
+"lyrical": 3.1
 },
 "ros2-grid-map-core": {
-"jazzy": 17.0
+"jazzy": 17.0,
+"lyrical": 21.9
 },
 "ros2-grid-map-costmap-2d": {
 "jazzy": 5.8
 },
 "ros2-grid-map-cv": {
-"jazzy": 26.2
+"jazzy": 26.2,
+"lyrical": 21.2
 },
 "ros2-grid-map-demos": {
 "jazzy": 272.9
@@ -8298,7 +8876,8 @@
 "jazzy": 17.5
 },
 "ros2-grid-map-msgs": {
-"jazzy": 15.6
+"jazzy": 15.6,
+"lyrical": 15.2
 },
 "ros2-grid-map-octomap": {
 "jazzy": 9.8
@@ -8307,10 +8886,12 @@
 "jazzy": 26.9
 },
 "ros2-grid-map-ros": {
-"jazzy": 22.9
+"jazzy": 22.9,
+"lyrical": 23.6
 },
 "ros2-grid-map-rviz-plugin": {
-"jazzy": 53.6
+"jazzy": 53.6,
+"lyrical": 34.7
 },
 "ros2-grid-map-sdf": {
 "jazzy": 12.4
@@ -8322,82 +8903,107 @@
 "jazzy": 19.9
 },
 "ros2-gtest-vendor": {
-"jazzy": 3.0
+"jazzy": 3.0,
+"lyrical": 2.8
 },
 "ros2-gtsam": {
-"jazzy": 3.2
+"jazzy": 3.2,
+"lyrical": 0.9
 },
 "ros2-gz-cmake-vendor": {
-"jazzy": 5.4
+"jazzy": 5.4,
+"lyrical": 2.9
 },
 "ros2-gz-common-vendor": {
-"jazzy": 8.5
+"jazzy": 8.5,
+"lyrical": 6.3
 },
 "ros2-gz-dartsim-vendor": {
-"jazzy": 8.1
+"jazzy": 8.1,
+"lyrical": 7.5
 },
 "ros2-gz-fuel-tools-vendor": {
-"jazzy": 6.6
+"jazzy": 6.6,
+"lyrical": 7.9
 },
 "ros2-gz-gui-vendor": {
-"jazzy": 13.2
+"jazzy": 13.2,
+"lyrical": 12.9
 },
 "ros2-gz-math-vendor": {
-"jazzy": 3.8
+"jazzy": 3.8,
+"lyrical": 3.4
 },
 "ros2-gz-msgs-vendor": {
-"jazzy": 5.3
+"jazzy": 5.3,
+"lyrical": 4.0
 },
 "ros2-gz-ogre-next-vendor": {
-"jazzy": 5.4
+"jazzy": 5.4,
+"lyrical": 5.8
 },
 "ros2-gz-physics-vendor": {
-"jazzy": 10.0
+"jazzy": 10.0,
+"lyrical": 11.5
 },
 "ros2-gz-plugin-vendor": {
-"jazzy": 6.1
+"jazzy": 6.1,
+"lyrical": 3.3
 },
 "ros2-gz-rendering-vendor": {
-"jazzy": 9.9
+"jazzy": 9.9,
+"lyrical": 9.8
 },
 "ros2-gz-ros2-control": {
-"jazzy": 55.6
+"jazzy": 55.6,
+"lyrical": 42.6
 },
 "ros2-gz-ros2-control-demos": {
-"jazzy": 41.5
+"jazzy": 41.5,
+"lyrical": 39.4
 },
 "ros2-gz-sensors-vendor": {
-"jazzy": 13.7
+"jazzy": 13.7,
+"lyrical": 11.1
 },
 "ros2-gz-sim-vendor": {
-"jazzy": 25.2
+"jazzy": 25.2,
+"lyrical": 19.4
 },
 "ros2-gz-tools-vendor": {
-"jazzy": 3.6
+"jazzy": 3.6,
+"lyrical": 11.5
 },
 "ros2-gz-transport-vendor": {
-"jazzy": 5.4
+"jazzy": 5.4,
+"lyrical": 5.4
 },
 "ros2-gz-utils-vendor": {
-"jazzy": 3.5
+"jazzy": 3.5,
+"lyrical": 3.3
 },
 "ros2-hardware-interface": {
-"jazzy": 52.4
+"jazzy": 52.4,
+"lyrical": 42.9
 },
 "ros2-hardware-interface-testing": {
-"jazzy": 27.8
+"jazzy": 27.8,
+"lyrical": 26.8
 },
 "ros2-hls-lfcd-lds-driver": {
 "jazzy": 15.5
 },
 "ros2-iceoryx-binding-c": {
-"jazzy": 1.3
+"jazzy": 1.3,
+"lyrical": 0.8
 },
 "ros2-iceoryx-hoofs": {
-"jazzy": 1.4
+"jazzy": 1.4,
+"lyrical": 1.0
 },
 "ros2-iceoryx-posh": {
-"jazzy": 1.6
+"jazzy": 1.6,
+"lyrical": 1.4
 },
 "ros2-iiwa14-moveit-config": {
 "jazzy": 2.8
@@ -8406,61 +9012,79 @@
 "jazzy": 2.8
 },
 "ros2-image-common": {
-"jazzy": 14.6
+"jazzy": 14.6,
+"lyrical": 3.8
 },
 "ros2-image-geometry": {
-"jazzy": 6.7
+"jazzy": 6.7,
+"lyrical": 9.3
 },
 "ros2-image-pipeline": {
-"jazzy": 4.4
+"jazzy": 4.4,
+"lyrical": 3.9
 },
 "ros2-image-proc": {
-"jazzy": 37.0
+"jazzy": 37.0,
+"lyrical": 37.0
 },
 "ros2-image-publisher": {
-"jazzy": 15.5
+"jazzy": 15.5,
+"lyrical": 16.0
 },
 "ros2-image-rotate": {
-"jazzy": 23.1
+"jazzy": 23.1,
+"lyrical": 22.7
 },
 "ros2-image-tools": {
-"jazzy": 22.5
+"jazzy": 22.5,
+"lyrical": 22.8
 },
 "ros2-image-transport": {
-"jazzy": 25.2
+"jazzy": 25.2,
+"lyrical": 28.5
 },
 "ros2-image-transport-plugins": {
-"jazzy": 3.5
+"jazzy": 3.5,
+"lyrical": 3.6
 },
 "ros2-image-view": {
-"jazzy": 39.5
+"jazzy": 39.5,
+"lyrical": 39.0
 },
 "ros2-imu-complementary-filter": {
-"jazzy": 32.1
+"jazzy": 32.1,
+"lyrical": 30.3
 },
 "ros2-imu-filter-madgwick": {
-"jazzy": 34.7
+"jazzy": 34.7,
+"lyrical": 32.9
 },
 "ros2-imu-sensor-broadcaster": {
-"jazzy": 18.3
+"jazzy": 18.3,
+"lyrical": 22.8
 },
 "ros2-imu-tools": {
-"jazzy": 3.6
+"jazzy": 3.6,
+"lyrical": 3.2
 },
 "ros2-imu-transformer": {
-"jazzy": 36.2
+"jazzy": 36.2,
+"lyrical": 28.4
 },
 "ros2-interactive-marker-twist-server": {
 "jazzy": 13.5
 },
 "ros2-interactive-markers": {
-"jazzy": 22.0
+"jazzy": 22.0,
+"lyrical": 22.2
 },
 "ros2-intra-process-demo": {
-"jazzy": 31.2
+"jazzy": 31.2,
+"lyrical": 38.7
 },
 "ros2-io-context": {
-"jazzy": 6.8
+"jazzy": 6.8,
+"lyrical": 7.1
 },
 "ros2-irobot-create-common-bringup": {
 "jazzy": 7.1
@@ -8484,7 +9108,8 @@
 "jazzy": 55.4
 },
 "ros2-irobot-create-msgs": {
-"jazzy": 50.8
+"jazzy": 50.8,
+"lyrical": 51.5
 },
 "ros2-irobot-create-nodes": {
 "jazzy": 73.6
@@ -8493,46 +9118,60 @@
 "jazzy": 5.1
 },
 "ros2-joint-limits": {
-"jazzy": 30.7
+"jazzy": 30.7,
+"lyrical": 25.2
 },
 "ros2-joint-state-broadcaster": {
-"jazzy": 23.1
+"jazzy": 23.1,
+"lyrical": 20.0
 },
 "ros2-joint-state-publisher": {
-"jazzy": 3.6
+"jazzy": 3.6,
+"lyrical": 3.8
 },
 "ros2-joint-state-publisher-gui": {
-"jazzy": 3.0
+"jazzy": 3.0,
+"lyrical": 2.7
 },
 "ros2-joint-trajectory-controller": {
-"jazzy": 50.2
+"jazzy": 50.2,
+"lyrical": 54.4
 },
 "ros2-joy": {
-"jazzy": 20.5
+"jazzy": 20.5,
+"lyrical": 21.1
 },
 "ros2-joy-linux": {
-"jazzy": 18.0
+"jazzy": 18.0,
+"lyrical": 18.4
 },
 "ros2-joy-teleop": {
-"jazzy": 4.3
+"jazzy": 4.3,
+"lyrical": 3.6
 },
 "ros2-jrl-cmakemodules": {
-"jazzy": 7.4
+"jazzy": 7.4,
+"lyrical": 7.1
 },
 "ros2-kdl-parser": {
-"jazzy": 5.7
+"jazzy": 5.7,
+"lyrical": 5.4
 },
 "ros2-key-teleop": {
-"jazzy": 2.7
+"jazzy": 2.7,
+"lyrical": 2.6
 },
 "ros2-keyboard-handler": {
-"jazzy": 6.0
+"jazzy": 6.0,
+"lyrical": 6.5
 },
 "ros2-kinematics-interface": {
-"jazzy": 10.4
+"jazzy": 10.4,
+"lyrical": 8.8
 },
 "ros2-kinematics-interface-kdl": {
-"jazzy": 14.5
+"jazzy": 14.5,
+"lyrical": 12.6
 },
 "ros2-kinova-gen3-7dof-robotiq-2f-85-moveit-config": {
 "jazzy": 5.1
@@ -8541,76 +9180,100 @@
 "jazzy": 6.0
 },
 "ros2-lanelet2": {
-"jazzy": 3.3
+"jazzy": 3.3,
+"lyrical": 2.9
 },
 "ros2-lanelet2-core": {
-"jazzy": 39.3
+"jazzy": 39.3,
+"lyrical": 40.7
 },
 "ros2-lanelet2-examples": {
-"jazzy": 22.8
+"jazzy": 22.8,
+"lyrical": 20.1
 },
 "ros2-lanelet2-io": {
-"jazzy": 20.5
+"jazzy": 20.5,
+"lyrical": 18.1
 },
 "ros2-lanelet2-maps": {
-"jazzy": 4.0
+"jazzy": 4.0,
+"lyrical": 3.7
 },
 "ros2-lanelet2-matching": {
-"jazzy": 18.0
+"jazzy": 18.0,
+"lyrical": 17.5
 },
 "ros2-lanelet2-projection": {
-"jazzy": 9.7
+"jazzy": 9.7,
+"lyrical": 6.6
 },
 "ros2-lanelet2-python": {
-"jazzy": 82.5
+"jazzy": 82.5,
+"lyrical": 89.0
 },
 "ros2-lanelet2-routing": {
-"jazzy": 27.0
+"jazzy": 27.0,
+"lyrical": 26.2
 },
 "ros2-lanelet2-traffic-rules": {
-"jazzy": 14.6
+"jazzy": 14.6,
+"lyrical": 12.5
 },
 "ros2-lanelet2-validation": {
-"jazzy": 18.3
+"jazzy": 18.3,
+"lyrical": 18.4
 },
 "ros2-laser-filters": {
-"jazzy": 41.7
+"jazzy": 41.7,
+"lyrical": 34.2
 },
 "ros2-laser-geometry": {
-"jazzy": 6.8
+"jazzy": 6.8,
+"lyrical": 7.0
 },
 "ros2-laser-proc": {
-"jazzy": 16.8
+"jazzy": 16.8,
+"lyrical": 15.6
 },
 "ros2-laser-segmentation": {
-"jazzy": 21.6
+"jazzy": 21.6,
+"lyrical": 20.6
 },
 "ros2-launch": {
-"jazzy": 5.6
+"jazzy": 5.6,
+"lyrical": 6.1
 },
 "ros2-launch-param-builder": {
-"jazzy": 3.5
+"jazzy": 3.5,
+"lyrical": 3.2
 },
 "ros2-launch-pytest": {
-"jazzy": 5.1
+"jazzy": 5.1,
+"lyrical": 4.2
 },
 "ros2-launch-ros": {
-"jazzy": 4.6
+"jazzy": 4.6,
+"lyrical": 3.9
 },
 "ros2-launch-testing": {
-"jazzy": 5.5
+"jazzy": 5.5,
+"lyrical": 4.9
 },
 "ros2-launch-testing-ament-cmake": {
-"jazzy": 13.4
+"jazzy": 13.4,
+"lyrical": 11.5
 },
 "ros2-launch-testing-ros": {
-"jazzy": 3.5
+"jazzy": 3.5,
+"lyrical": 11.6
 },
 "ros2-launch-xml": {
-"jazzy": 4.0
+"jazzy": 4.0,
+"lyrical": 4.3
 },
 "ros2-launch-yaml": {
-"jazzy": 5.9
+"jazzy": 5.9,
+"lyrical": 4.6
 },
 "ros2-lbr-bringup": {
 "jazzy": 9.2
@@ -8649,82 +9312,109 @@
 "jazzy": 45.1
 },
 "ros2-libcamera": {
-"jazzy": 2.3
+"jazzy": 2.3,
+"lyrical": 1.2
 },
 "ros2-libcurl-vendor": {
 "jazzy": 4.6
 },
 "ros2-libg2o": {
-"jazzy": 285.7
+"jazzy": 285.7,
+"lyrical": 153.6
 },
 "ros2-liblz4-vendor": {
 "jazzy": 3.7
 },
 "ros2-libmavconn": {
-"jazzy": 16.9
+"jazzy": 16.9,
+"lyrical": 23.6
 },
 "ros2-libnabo": {
-"jazzy": 17.5
+"jazzy": 17.5,
+"lyrical": 14.0
 },
 "ros2-libpointmatcher": {
-"jazzy": 169.9
+"jazzy": 169.9,
+"lyrical": 162.3
 },
 "ros2-librealsense2": {
-"jazzy": 1.8
+"jazzy": 1.8,
+"lyrical": 1.3
 },
 "ros2-libstatistics-collector": {
-"jazzy": 16.0
+"jazzy": 16.0,
+"lyrical": 16.4
 },
 "ros2-libyaml-vendor": {
-"jazzy": 4.8
+"jazzy": 4.8,
+"lyrical": 3.3
 },
 "ros2-lifecycle": {
-"jazzy": 24.2
+"jazzy": 24.2,
+"lyrical": 19.5
 },
 "ros2-lifecycle-msgs": {
-"jazzy": 18.7
+"jazzy": 18.7,
+"lyrical": 24.3
 },
 "ros2-livox-ros-driver2": {
-"jazzy": 40.6
+"jazzy": 40.6,
+"lyrical": 35.4
 },
 "ros2-logging-demo": {
-"jazzy": 16.7
+"jazzy": 16.7,
+"lyrical": 15.6
 },
 "ros2-lttngpy": {
-"jazzy": 8.1
+"jazzy": 8.1,
+"lyrical": 8.6
+},
+"ros2-lz4-cmake-module": {
+"lyrical": 3.5
 },
 "ros2-magic-enum": {
-"jazzy": 1.1
+"jazzy": 1.1,
+"lyrical": 1.6
 },
 "ros2-magnetometer-broadcaster": {
-"jazzy": 18.4
+"jazzy": 18.4,
+"lyrical": 15.9
 },
 "ros2-map-msgs": {
-"jazzy": 17.7
+"jazzy": 17.7,
+"lyrical": 18.3
 },
 "ros2-marine-acoustic-msgs": {
-"jazzy": 18.6
+"jazzy": 18.6,
+"lyrical": 15.7
 },
 "ros2-marker-msgs": {
-"jazzy": 16.8
+"jazzy": 16.8,
+"lyrical": 14.5
 },
 "ros2-mavlink": {
-"jazzy": 8.3
+"jazzy": 8.3,
+"lyrical": 8.3
 },
 "ros2-mavros": {
-"jazzy": 209.4
+"jazzy": 209.4,
+"lyrical": 215.3
 },
 "ros2-mavros-extras": {
-"jazzy": 236.5
+"jazzy": 236.5,
+"lyrical": 234.9
 },
 "ros2-mavros-msgs": {
-"jazzy": 149.8
+"jazzy": 149.8,
+"lyrical": 173.6
 },
 "ros2-mcap-vendor": {
-"jazzy": 11.6
+"jazzy": 11.6,
+"lyrical": 11.9
 },
 "ros2-mecanum-drive-controller": {
-"jazzy": 39.8
+"jazzy": 39.8,
+"lyrical": 37.3
 },
 "ros2-med14-moveit-config": {
 "jazzy": 2.8
@@ -8733,349 +9423,493 @@
 "jazzy": 5.5
 },
 "ros2-message-filters": {
-"jazzy": 5.4
+"jazzy": 5.4,
+"lyrical": 16.8
 },
 "ros2-microstrain-inertial-description": {
-"jazzy": 4.7
+"jazzy": 4.7,
+"lyrical": 4.3
 },
 "ros2-microstrain-inertial-driver": {
-"jazzy": 147.8
+"jazzy": 147.8,
+"lyrical": 149.0
 },
 "ros2-microstrain-inertial-examples": {
-"jazzy": 4.3
+"jazzy": 4.3,
+"lyrical": 3.8
 },
 "ros2-microstrain-inertial-msgs": {
-"jazzy": 42.3
+"jazzy": 42.3,
+"lyrical": 43.1
 },
 "ros2-microstrain-inertial-rqt": {
-"jazzy": 7.6
+"jazzy": 7.6,
+"lyrical": 6.8
 },
 "ros2-mimick-vendor": {
-"jazzy": 6.0
+"jazzy": 6.0,
+"lyrical": 5.4
 },
 "ros2-mobile-robot-simulator": {
-"jazzy": 26.5
+"jazzy": 26.5,
+"lyrical": 28.8
+},
+"ros2-mocap4r2-control": {
+"lyrical": 18.0
+},
+"ros2-mocap4r2-control-msgs": {
+"lyrical": 8.5
+},
+"ros2-mocap4r2-dummy-driver": {
+"lyrical": 13.3
+},
+"ros2-mocap4r2-marker-publisher": {
+"lyrical": 11.1
+},
+"ros2-mocap4r2-marker-viz": {
+"lyrical": 24.1
+},
+"ros2-mocap4r2-marker-viz-srvs": {
+"lyrical": 8.8
 },
 "ros2-mocap4r2-msgs": {
-"jazzy": 15.6
+"jazzy": 15.6,
+"lyrical": 12.5
+},
+"ros2-mocap4r2-robot-gt": {
+"lyrical": 21.7
+},
+"ros2-mocap4r2-robot-gt-msgs": {
+"lyrical": 7.7
 },
 "ros2-motion-capture-tracking": {
-"jazzy": 87.7
+"jazzy": 87.7,
+"lyrical": 64.6
 },
 "ros2-motion-capture-tracking-interfaces": {
-"jazzy": 8.2
+"jazzy": 8.2,
+"lyrical": 8.9
+},
+"ros2-motion-primitives-controllers": {
+"lyrical": 31.5
 },
 "ros2-mouse-teleop": {
-"jazzy": 3.1
+"jazzy": 3.1,
+"lyrical": 2.9
 },
 "ros2-moveit": {
-"jazzy": 21.6
+"jazzy": 21.6,
+"lyrical": 3.5
 },
 "ros2-moveit-common": {
-"jazzy": 5.4
+"jazzy": 5.4,
+"lyrical": 4.6
 },
 "ros2-moveit-configs-utils": {
-"jazzy": 7.6
+"jazzy": 7.6,
+"lyrical": 5.0
 },
 "ros2-moveit-core": {
-"jazzy": 174.7
+"jazzy": 174.7,
+"lyrical": 183.8
 },
 "ros2-moveit-hybrid-planning": {
-"jazzy": 57.8
+"jazzy": 57.8,
+"lyrical": 69.2
 },
 "ros2-moveit-kinematics": {
-"jazzy": 51.5
+"jazzy": 51.5,
+"lyrical": 46.4
 },
 "ros2-moveit-msgs": {
-"jazzy": 147.0
+"jazzy": 147.0,
+"lyrical": 159.5
 },
 "ros2-moveit-planners": {
-"jazzy": 7.0
+"jazzy": 7.0,
+"lyrical": 13.5
 },
 "ros2-moveit-planners-chomp": {
-"jazzy": 18.1
+"jazzy": 18.1,
+"lyrical": 19.8
 },
 "ros2-moveit-planners-ompl": {
-"jazzy": 70.8
+"jazzy": 70.8,
+"lyrical": 74.6
 },
 "ros2-moveit-planners-stomp": {
-"jazzy": 27.1
+"jazzy": 27.1,
+"lyrical": 44.4
 },
 "ros2-moveit-plugins": {
-"jazzy": 6.3
+"jazzy": 6.3,
+"lyrical": 3.5
 },
 "ros2-moveit-py": {
-"jazzy": 71.0
+"jazzy": 71.0,
+"lyrical": 82.6
 },
 "ros2-moveit-resources": {
-"jazzy": 5.5
+"jazzy": 5.5,
+"lyrical": 3.9
 },
 "ros2-moveit-resources-fanuc-description": {
-"jazzy": 6.6
+"jazzy": 6.6,
+"lyrical": 3.1
 },
 "ros2-moveit-resources-fanuc-moveit-config": {
-"jazzy": 4.1
+"jazzy": 4.1,
+"lyrical": 4.5
 },
 "ros2-moveit-resources-panda-description": {
-"jazzy": 8.6
+"jazzy": 8.6,
+"lyrical": 8.0
 },
 "ros2-moveit-resources-panda-moveit-config": {
-"jazzy": 16.1
+"jazzy": 16.1,
+"lyrical": 12.7
 },
 "ros2-moveit-resources-pr2-description": {
-"jazzy": 6.3
+"jazzy": 6.3,
+"lyrical": 6.7
 },
 "ros2-moveit-resources-prbt-ikfast-manipulator-plugin": {
-"jazzy": 35.0
+"jazzy": 35.0,
+"lyrical": 58.3
 },
 "ros2-moveit-resources-prbt-moveit-config": {
-"jazzy": 4.2
+"jazzy": 4.2,
+"lyrical": 11.9
 },
 "ros2-moveit-resources-prbt-pg70-support": {
-"jazzy": 8.2
+"jazzy": 8.2,
+"lyrical": 12.0
 },
 "ros2-moveit-resources-prbt-support": {
-"jazzy": 5.1
+"jazzy": 5.1,
+"lyrical": 5.1
 },
 "ros2-moveit-ros": {
-"jazzy": 13.3
+"jazzy": 13.3,
+"lyrical": 4.0
 },
 "ros2-moveit-ros-benchmarks": {
-"jazzy": 55.9
+"jazzy": 55.9,
+"lyrical": 50.0
 },
 "ros2-moveit-ros-control-interface": {
-"jazzy": 22.6
+"jazzy": 22.6,
+"lyrical": 24.3
 },
 "ros2-moveit-ros-move-group": {
-"jazzy": 101.6
+"jazzy": 101.6,
+"lyrical": 93.8
 },
 "ros2-moveit-ros-occupancy-map-monitor": {
-"jazzy": 45.3
+"jazzy": 45.3,
+"lyrical": 39.7
 },
 "ros2-moveit-ros-perception": {
-"jazzy": 45.9
+"jazzy": 45.9,
+"lyrical": 43.1
 },
 "ros2-moveit-ros-planning": {
-"jazzy": 146.6
+"jazzy": 146.6,
+"lyrical": 161.4
 },
 "ros2-moveit-ros-planning-interface": {
-"jazzy": 62.7
+"jazzy": 62.7,
+"lyrical": 50.3
 },
 "ros2-moveit-ros-robot-interaction": {
-"jazzy": 31.9
+"jazzy": 31.9,
+"lyrical": 33.6
 },
 "ros2-moveit-ros-trajectory-cache": {
-"jazzy": 28.9
+"jazzy": 28.9,
+"lyrical": 32.4
 },
 "ros2-moveit-ros-visualization": {
-"jazzy": 177.5
+"jazzy": 177.5,
+"lyrical": 185.2
 },
 "ros2-moveit-ros-warehouse": {
-"jazzy": 57.2
+"jazzy": 57.2,
+"lyrical": 83.7
 },
 "ros2-moveit-runtime": {
-"jazzy": 3.7
+"jazzy": 3.7,
+"lyrical": 3.4
 },
 "ros2-moveit-servo": {
-"jazzy": 74.2
+"jazzy": 74.2,
+"lyrical": 93.7
 },
 "ros2-moveit-setup-app-plugins": {
-"jazzy": 43.5
+"jazzy": 43.5,
+"lyrical": 45.7
 },
 "ros2-moveit-setup-assistant": {
-"jazzy": 54.3
+"jazzy": 54.3,
+"lyrical": 41.2
 },
 "ros2-moveit-setup-controllers": {
-"jazzy": 59.6
+"jazzy": 59.6,
+"lyrical": 79.0
 },
 "ros2-moveit-setup-core-plugins": {
-"jazzy": 61.0
+"jazzy": 61.0,
+"lyrical": 48.0
 },
 "ros2-moveit-setup-framework": {
-"jazzy": 38.4
+"jazzy": 38.4,
+"lyrical": 38.6
 },
 "ros2-moveit-setup-srdf-plugins": {
-"jazzy": 94.1
+"jazzy": 94.1,
+"lyrical": 94.8
 },
 "ros2-moveit-simple-controller-manager": {
-"jazzy": 18.6
+"jazzy": 18.6,
+"lyrical": 43.3
 },
 "ros2-moveit-task-constructor-capabilities": {
-"jazzy": 25.7
+"jazzy": 25.7,
+"lyrical": 27.0
 },
 "ros2-moveit-task-constructor-core": {
-"jazzy": 137.0
+"jazzy": 137.0,
+"lyrical": 159.6
 },
 "ros2-moveit-task-constructor-demo": {
-"jazzy": 35.2
+"jazzy": 35.2,
+"lyrical": 41.0
 },
 "ros2-moveit-task-constructor-msgs": {
-"jazzy": 27.9
+"jazzy": 27.9,
+"lyrical": 26.1
 },
 "ros2-moveit-task-constructor-visualization": {
-"jazzy": 77.1
+"jazzy": 77.1,
+"lyrical": 88.0
 },
 "ros2-moveit-visual-tools": {
-"jazzy": 32.8
+"jazzy": 32.8,
+"lyrical": 32.9
 },
 "ros2-moveit2-tutorials": {
 "jazzy": 111.6
 },
 "ros2-mrt-cmake-modules": {
-"jazzy": 4.5
+"jazzy": 4.5,
+"lyrical": 4.0
 },
 "ros2-mujoco-3d-lidar": {
-"jazzy": 5.8
+"jazzy": 5.8,
+"lyrical": 4.7
 },
 "ros2-mujoco-ros2-control": {
-"jazzy": 41.8
+"jazzy": 41.8,
+"lyrical": 30.2
 },
 "ros2-mujoco-ros2-control-demos": {
-"jazzy": 4.0
+"jazzy": 4.0,
+"lyrical": 4.1
 },
 "ros2-mujoco-ros2-control-msgs": {
-"jazzy": 21.3
+"jazzy": 21.3,
+"lyrical": 19.1
 },
 "ros2-mujoco-ros2-control-plugins": {
-"jazzy": 46.7
+"jazzy": 46.7,
+"lyrical": 27.0
 },
 "ros2-mujoco-vendor": {
-"jazzy": 3.6
+"jazzy": 3.6,
+"lyrical": 3.2
 },
 "ros2-nav-2d-msgs": {
-"jazzy": 12.8
+"jazzy": 12.8,
+"lyrical": 12.2
 },
 "ros2-nav-2d-utils": {
-"jazzy": 12.3
+"jazzy": 12.3,
+"lyrical": 26.1
 },
 "ros2-nav-msgs": {
-"jazzy": 19.7
+"jazzy": 19.7,
+"lyrical": 19.1
 },
 "ros2-nav2-amcl": {
-"jazzy": 45.8
+"jazzy": 45.8,
+"lyrical": 45.6
 },
 "ros2-nav2-behavior-tree": {
-"jazzy": 160.3
+"jazzy": 160.3,
+"lyrical": 258.9
 },
 "ros2-nav2-behaviors": {
-"jazzy": 38.3
+"jazzy": 38.3,
+"lyrical": 47.2
 },
 "ros2-nav2-bringup": {
-"jazzy": 18.4
+"jazzy": 18.4,
+"lyrical": 17.2
 },
 "ros2-nav2-bt-navigator": {
-"jazzy": 31.8
+"jazzy": 31.8,
+"lyrical": 36.5
 },
 "ros2-nav2-collision-monitor": {
-"jazzy": 66.7
+"jazzy": 66.7,
+"lyrical": 109.0
 },
 "ros2-nav2-common": {
-"jazzy": 5.8
+"jazzy": 5.8,
+"lyrical": 8.4
 },
 "ros2-nav2-constrained-smoother": {
-"jazzy": 21.6
+"jazzy": 21.6,
+"lyrical": 21.4
 },
 "ros2-nav2-controller": {
-"jazzy": 44.8
+"jazzy": 44.8,
+"lyrical": 74.6
 },
 "ros2-nav2-core": {
-"jazzy": 13.8
+"jazzy": 13.8,
+"lyrical": 19.0
 },
 "ros2-nav2-costmap-2d": {
-"jazzy": 90.7
+"jazzy": 90.7,
+"lyrical": 128.7
 },
 "ros2-nav2-dwb-controller": {
-"jazzy": 5.6
+"jazzy": 5.6,
+"lyrical": 4.6
 },
 "ros2-nav2-graceful-controller": {
-"jazzy": 42.8
+"jazzy": 42.8,
+"lyrical": 22.1
 },
 "ros2-nav2-lifecycle-manager": {
-"jazzy": 17.4
+"jazzy": 17.4,
+"lyrical": 20.2
 },
 "ros2-nav2-loopback-sim": {
-"jazzy": 7.0
+"jazzy": 7.0,
+"lyrical": 38.8
 },
 "ros2-nav2-map-server": {
-"jazzy": 28.4
+"jazzy": 28.4,
+"lyrical": 51.2
 },
 "ros2-nav2-minimal-tb3-sim": {
-"jazzy": 14.1
+"jazzy": 14.1,
+"lyrical": 20.4
 },
 "ros2-nav2-minimal-tb4-description": {
-"jazzy": 10.9
+"jazzy": 10.9,
+"lyrical": 8.8
 },
 "ros2-nav2-minimal-tb4-sim": {
-"jazzy": 17.9
+"jazzy": 17.9,
+"lyrical": 15.4
 },
 "ros2-nav2-mppi-controller": {
-"jazzy": 56.7
+"jazzy": 56.7,
+"lyrical": 67.5
 },
 "ros2-nav2-msgs": {
-"jazzy": 99.2
+"jazzy": 99.2,
+"lyrical": 118.6
 },
 "ros2-nav2-navfn-planner": {
-"jazzy": 11.5
+"jazzy": 11.5,
+"lyrical": 15.1
 },
 "ros2-nav2-planner": {
-"jazzy": 30.9
+"jazzy": 30.9,
+"lyrical": 27.7
 },
 "ros2-nav2-regulated-pure-pursuit-controller": {
-"jazzy": 17.0
+"jazzy": 17.0,
+"lyrical": 21.3
+},
+"ros2-nav2-ros-common": {
+"lyrical": 8.5
 },
 "ros2-nav2-rotation-shim-controller": {
-"jazzy": 19.0
+"jazzy": 19.0,
+"lyrical": 29.8
 },
 "ros2-nav2-route": {
-"jazzy": 61.5
+"jazzy": 61.5,
+"lyrical": 79.9
 },
 "ros2-nav2-rviz-plugins": {
-"jazzy": 64.4
+"jazzy": 64.4,
+"lyrical": 76.5
 },
 "ros2-nav2-simple-commander": {
-"jazzy": 16.6
+"jazzy": 16.6,
+"lyrical": 5.7
 },
 "ros2-nav2-smac-planner": {
-"jazzy": 67.0
+"jazzy": 67.0,
+"lyrical": 52.9
 },
 "ros2-nav2-smoother": {
-"jazzy": 31.6
+"jazzy": 31.6,
+"lyrical": 42.2
 },
 "ros2-nav2-theta-star-planner": {
-"jazzy": 12.9
+"jazzy": 12.9,
+"lyrical": 27.9
 },
 "ros2-nav2-util": {
-"jazzy": 30.3
+"jazzy": 30.3,
+"lyrical": 32.0
 },
 "ros2-nav2-velocity-smoother": {
-"jazzy": 23.3
+"jazzy": 23.3,
+"lyrical": 33.1
 },
 "ros2-nav2-voxel-grid": {
-"jazzy": 10.7
+"jazzy": 10.7,
+"lyrical": 17.5
 },
 "ros2-nav2-waypoint-follower": {
-"jazzy": 32.0
+"jazzy": 32.0,
+"lyrical": 40.5
 },
 "ros2-navigation2": {
-"jazzy": 6.2
+"jazzy": 6.2,
+"lyrical": 7.0
 },
 "ros2-navmap-core": {
-"jazzy": 9.4
+"jazzy": 9.4,
+"lyrical": 9.4
 },
 "ros2-navmap-examples": {
-"jazzy": 18.1
+"jazzy": 18.1,
+"lyrical": 21.3
 },
 "ros2-navmap-ros": {
-"jazzy": 34.0
+"jazzy": 34.0,
+"lyrical": 35.1
 },
 "ros2-navmap-ros-interfaces": {
-"jazzy": 12.5
+"jazzy": 12.5,
+"lyrical": 13.4
 },
 "ros2-navmap-rviz-plugin": {
-"jazzy": 37.2
+"jazzy": 37.2,
+"lyrical": 44.5
 },
 "ros2-navmap-tools": {
-"jazzy": 23.4
+"jazzy": 23.4,
+"lyrical": 24.0
 },
 "ros2-negotiated": {
 "jazzy": 18.4
@@ -9083,62 +9917,90 @@
 "ros2-negotiated-interfaces": {
 "jazzy": 9.3
 },
+"ros2-nlohmann-json-schema-validator-vendor": {
+"lyrical": 17.5
+},
 "ros2-nmea-msgs": {
-"jazzy": 13.6
+"jazzy": 13.6,
+"lyrical": 14.9
 },
 "ros2-nmea-navsat-driver": {
-"jazzy": 2.8
+"jazzy": 2.8,
+"lyrical": 2.5
 },
 "ros2-nobleo-socketcan-bridge": {
-"jazzy": 16.7
+"jazzy": 16.7,
+"lyrical": 17.3
 },
 "ros2-nonpersistent-voxel-layer": {
-"jazzy": 13.9
+"jazzy": 13.9,
+"lyrical": 18.1
 },
 "ros2-ntrip-client": {
-"jazzy": 3.9
+"jazzy": 3.9,
+"lyrical": 3.8
 },
 "ros2-ntrip-client-node": {
-"jazzy": 15.0
+"jazzy": 15.0,
+"lyrical": 12.4
 },
 "ros2-object-recognition-msgs": {
-"jazzy": 20.6
+"jazzy": 20.6,
+"lyrical": 18.4
 },
 "ros2-octomap": {
 "jazzy": 1.4
 },
 "ros2-octomap-msgs": {
-"jazzy": 11.1
+"jazzy": 11.1,
+"lyrical": 10.8
 },
 "ros2-octomap-ros": {
-"jazzy": 4.9
+"jazzy": 4.9,
+"lyrical": 5.3
 },
 "ros2-octomap-rviz-plugins": {
 "jazzy": 31.0
 },
 "ros2-octomap-server": {
-"jazzy": 232.0
+"jazzy": 232.0,
+"lyrical": 87.6
 },
 "ros2-odom-to-tf-ros2": {
-"jazzy": 22.8
+"jazzy": 22.8,
+"lyrical": 20.3
 },
 "ros2-omni-wheel-drive-controller": {
-"jazzy": 38.2
+"jazzy": 38.2,
+"lyrical": 31.0
 },
 "ros2-ompl": {
-"jazzy": 2.3
+"jazzy": 2.3,
+"lyrical": 2.3
+},
+"ros2-onnxruntime-vendor": {
+"jazzy": 14.7,
+"lyrical": 9.7,
+"rolling": 19.3
 },
 "ros2-opennav-docking": {
-"jazzy": 38.2
+"jazzy": 38.2,
+"lyrical": 56.8
 },
 "ros2-opennav-docking-bt": {
-"jazzy": 19.3
+"jazzy": 19.3,
+"lyrical": 23.8
 },
 "ros2-opennav-docking-core": {
-"jazzy": 8.7
+"jazzy": 8.7,
+"lyrical": 6.3
+},
+"ros2-opennav-following": {
+"lyrical": 42.0
 },
 "ros2-openvdb-vendor": {
-"jazzy": 4.5
+"jazzy": 4.5,
+"lyrical": 3.8
 },
 "ros2-orbbec-camera": {
 "jazzy": 168.2
@@ -9150,70 +10012,89 @@
 "jazzy": 9.7
 },
 "ros2-orocos-kdl-vendor": {
-"jazzy": 3.5
+"jazzy": 3.5,
+"lyrical": 12.4
 },
 "ros2-osqp-vendor": {
-"jazzy": 7.2
+"jazzy": 7.2,
+"lyrical": 16.8
 },
 "ros2-osrf-pycommon": {
 "jazzy": 3.7
 },
 "ros2-osrf-testing-tools-cpp": {
-"jazzy": 14.0
+"jazzy": 14.0,
+"lyrical": 14.5
 },
 "ros2-ouster-ros": {
-"jazzy": 181.0
+"jazzy": 181.0,
+"lyrical": 178.8
 },
 "ros2-ouster-sensor-msgs": {
-"jazzy": 13.6
+"jazzy": 13.6,
+"lyrical": 13.4
 },
 "ros2-ouxt-lint-common": {
 "jazzy": 3.7
 },
 "ros2-pal-statistics": {
-"jazzy": 17.5
+"jazzy": 17.5,
+"lyrical": 28.5
 },
 "ros2-pal-statistics-msgs": {
-"jazzy": 9.1
+"jazzy": 9.1,
+"lyrical": 10.8
 },
 "ros2-parallel-gripper-controller": {
-"jazzy": 19.7
+"jazzy": 19.7,
+"lyrical": 33.1
 },
 "ros2-parameter-traits": {
 "jazzy": 19.8
 },
 "ros2-pcl-conversions": {
-"jazzy": 16.2
+"jazzy": 16.2,
+"lyrical": 16.0
 },
 "ros2-pcl-msgs": {
-"jazzy": 16.3
+"jazzy": 16.3,
+"lyrical": 11.0
 },
 "ros2-pcl-ros": {
-"jazzy": 94.6
+"jazzy": 94.6,
+"lyrical": 116.3
 },
 "ros2-pendulum-control": {
-"jazzy": 27.9
+"jazzy": 27.9,
+"lyrical": 26.7
 },
 "ros2-pendulum-msgs": {
-"jazzy": 9.0
+"jazzy": 9.0,
+"lyrical": 8.6
 },
 "ros2-perception": {
-"jazzy": 3.0
+"jazzy": 3.0,
+"lyrical": 3.2
 },
 "ros2-perception-pcl": {
-"jazzy": 6.3
+"jazzy": 6.3,
+"lyrical": 3.1
 },
 "ros2-performance-test-fixture": {
-"jazzy": 4.6
+"jazzy": 4.6,
+"lyrical": 12.3
 },
 "ros2-persist-parameter-server": {
-"jazzy": 14.4
+"jazzy": 14.4,
+"lyrical": 13.7
 },
 "ros2-pick-ik": {
-"jazzy": 36.7
+"jazzy": 36.7,
+"lyrical": 34.0
 },
 "ros2-picknik-ament-copyright": {
-"jazzy": 3.8
+"jazzy": 3.8,
+"lyrical": 3.5
 },
 "ros2-picknik-reset-fault-controller": {
 "jazzy": 14.1
@@ -9222,103 +10103,136 @@
 "jazzy": 23.0
 },
 "ros2-pid-controller": {
-"jazzy": 34.3
+"jazzy": 34.3,
+"lyrical": 30.1
 },
 "ros2-pilz-industrial-motion-planner": {
-"jazzy": 65.3
+"jazzy": 65.3,
+"lyrical": 93.0
 },
 "ros2-pilz-industrial-motion-planner-testutils": {
-"jazzy": 24.2
+"jazzy": 24.2,
+"lyrical": 47.6
 },
 "ros2-pinocchio": {
-"jazzy": 8.1
+"jazzy": 8.1,
+"lyrical": 8.8
 },
 "ros2-plansys2-bringup": {
-"jazzy": 16.6
+"jazzy": 16.6,
+"lyrical": 18.0
 },
 "ros2-plansys2-bt-actions": {
-"jazzy": 15.9
+"jazzy": 15.9,
+"lyrical": 20.6
 },
 "ros2-plansys2-core": {
-"jazzy": 6.0
+"jazzy": 6.0,
+"lyrical": 11.3
 },
 "ros2-plansys2-domain-expert": {
-"jazzy": 21.3
+"jazzy": 21.3,
+"lyrical": 29.8
 },
 "ros2-plansys2-executor": {
-"jazzy": 83.6
+"jazzy": 83.6,
+"lyrical": 80.7
 },
 "ros2-plansys2-lifecycle-manager": {
-"jazzy": 14.7
+"jazzy": 14.7,
+"lyrical": 11.0
 },
 "ros2-plansys2-msgs": {
-"jazzy": 55.3
+"jazzy": 55.3,
+"lyrical": 64.6
 },
 "ros2-plansys2-pddl-parser": {
-"jazzy": 20.1
+"jazzy": 20.1,
+"lyrical": 25.1
 },
 "ros2-plansys2-planner": {
-"jazzy": 24.3
+"jazzy": 24.3,
+"lyrical": 19.9
 },
 "ros2-plansys2-popf-plan-solver": {
-"jazzy": 10.2
+"jazzy": 10.2,
+"lyrical": 10.9
 },
 "ros2-plansys2-problem-expert": {
-"jazzy": 47.4
+"jazzy": 47.4,
+"lyrical": 38.0
 },
 "ros2-plansys2-support-py": {
-"jazzy": 5.5
+"jazzy": 5.5,
+"lyrical": 3.2
 },
 "ros2-plansys2-terminal": {
-"jazzy": 26.6
+"jazzy": 26.6,
+"lyrical": 29.9
 },
 "ros2-plansys2-tests": {
-"jazzy": 38.6
+"jazzy": 38.6,
+"lyrical": 26.5
 },
 "ros2-plansys2-tools": {
-"jazzy": 37.2
+"jazzy": 37.2,
+"lyrical": 44.7
 },
 "ros2-plotjuggler": {
-"jazzy": 215.5
+"jazzy": 215.5,
+"lyrical": 232.9
 },
 "ros2-plotjuggler-msgs": {
-"jazzy": 12.1
+"jazzy": 12.1,
+"lyrical": 10.1
 },
 "ros2-plotjuggler-ros": {
-"jazzy": 36.2
+"jazzy": 36.2,
+"lyrical": 46.2
 },
 "ros2-pluginlib": {
-"jazzy": 10.0
+"jazzy": 10.0,
+"lyrical": 7.1
 },
 "ros2-point-cloud-interfaces": {
-"jazzy": 10.3
+"jazzy": 10.3,
+"lyrical": 8.7
 },
 "ros2-point-cloud-msg-wrapper": {
-"jazzy": 3.8
+"jazzy": 3.8,
+"lyrical": 3.6
 },
 "ros2-point-cloud-transport": {
-"jazzy": 31.2
+"jazzy": 31.2,
+"lyrical": 28.3
 },
 "ros2-point-cloud-transport-plugins": {
-"jazzy": 6.8
+"jazzy": 6.8,
+"lyrical": 10.7
 },
 "ros2-point-cloud-transport-py": {
-"jazzy": 14.9
+"jazzy": 14.9,
+"lyrical": 16.0
 },
 "ros2-pointcloud-to-laserscan": {
-"jazzy": 25.4
+"jazzy": 25.4,
+"lyrical": 27.8
 },
 "ros2-polygon-msgs": {
-"jazzy": 12.0
+"jazzy": 12.0,
+"lyrical": 12.3
 },
 "ros2-polygon-utils": {
-"jazzy": 19.1
+"jazzy": 19.1,
+"lyrical": 5.6
 },
 "ros2-popf": {
-"jazzy": 49.5
+"jazzy": 49.5,
+"lyrical": 49.6
 },
 "ros2-pose-broadcaster": {
-"jazzy": 35.1
+"jazzy": 35.1,
+"lyrical": 31.8
 },
 "ros2-position-controllers": {
 "jazzy": 28.1
@@ -9327,865 +10241,1299 @@
 "jazzy": 16.8
 },
 "ros2-proxsuite": {
-"jazzy": 2.5
+"jazzy": 2.5,
+"lyrical": 2.0
 },
 "ros2-ptz-action-server-msgs": {
 "jazzy": 16.2
 },
 "ros2-py-binding-tools": {
-"jazzy": 16.4
+"jazzy": 16.4,
+"lyrical": 15.2
 },
 "ros2-py-trees": {
-"jazzy": 1.3
+"jazzy": 1.3,
+"lyrical": 3.5
 },
 "ros2-py-trees-js": {
-"jazzy": 5.0
+"jazzy": 5.0,
+"lyrical": 4.5
 },
 "ros2-py-trees-ros": {
-"jazzy": 7.1
+"jazzy": 7.1,
+"lyrical": 5.9
 },
 "ros2-py-trees-ros-interfaces": {
-"jazzy": 35.8
+"jazzy": 35.8,
+"lyrical": 39.4
 },
 "ros2-py-trees-ros-tutorials": {
-"jazzy": 6.6
+"jazzy": 6.6,
+"lyrical": 4.9
 },
 "ros2-py-trees-ros-viewer": {
-"jazzy": 15.6
+"jazzy": 15.6,
+"lyrical": 4.2
+},
+"ros2-pybind11-json-vendor": {
+"lyrical": 3.5
 },
 "ros2-pybind11-vendor": {
-"jazzy": 4.6
+"jazzy": 4.6,
+"lyrical": 3.2
 },
 "ros2-python-cmake-module": {
-"jazzy": 14.6
+"jazzy": 14.6,
+"lyrical": 10.9
 },
 "ros2-python-orocos-kdl-vendor": {
 "jazzy": 3.6
 },
 "ros2-python-qt-binding": {
-"jazzy": 7.9
+"jazzy": 7.9,
+"lyrical": 6.4
 },
 "ros2-qt-dotgraph": {
-"jazzy": 4.2
+"jazzy": 4.2,
+"lyrical": 2.8
 },
 "ros2-qt-gui": {
-"jazzy": 8.4
+"jazzy": 8.4,
+"lyrical": 4.0
 },
 "ros2-qt-gui-cpp": {
-"jazzy": 56.1
+"jazzy": 56.1,
+"lyrical": 42.6
 },
 "ros2-qt-gui-py-common": {
-"jazzy": 3.9
+"jazzy": 3.9,
+"lyrical": 3.9
 },
 "ros2-quality-of-service-demo-cpp": {
-"jazzy": 50.5
+"jazzy": 50.5,
+"lyrical": 47.3
 },
 "ros2-quality-of-service-demo-py": {
-"jazzy": 5.5
+"jazzy": 5.5,
+"lyrical": 2.8
 },
 "ros2-quaternion-operation": {
 "jazzy": 7.3
 },
 "ros2-radar-msgs": {
-"jazzy": 9.8
+"jazzy": 9.8,
+"lyrical": 10.0
 },
 "ros2-random-numbers": {
-"jazzy": 7.6
+"jazzy": 7.6,
+"lyrical": 6.3
 },
 "ros2-range-sensor-broadcaster": {
-"jazzy": 18.4
+"jazzy": 18.4,
+"lyrical": 17.5
 },
 "ros2-rcl": {
-"jazzy": 9.8
+"jazzy": 9.8,
+"lyrical": 7.0
 },
 "ros2-rcl-action": {
-"jazzy": 5.4
+"jazzy": 5.4,
+"lyrical": 4.6
 },
 "ros2-rcl-interfaces": {
-"jazzy": 31.4
+"jazzy": 31.4,
+"lyrical": 40.4
 },
 "ros2-rcl-lifecycle": {
-"jazzy": 5.4
+"jazzy": 5.4,
+"lyrical": 4.3
+},
+"ros2-rcl-logging-implementation": {
+"lyrical": 4.1
 },
 "ros2-rcl-logging-interface": {
-"jazzy": 5.7
+"jazzy": 5.7,
+"lyrical": 3.4
+},
+"ros2-rcl-logging-noop": {
+"lyrical": 3.6
 },
 "ros2-rcl-logging-spdlog": {
-"jazzy": 4.9
+"jazzy": 4.9,
+"lyrical": 6.3
 },
 "ros2-rcl-yaml-param-parser": {
-"jazzy": 5.5
+"jazzy": 5.5,
+"lyrical": 4.7
 },
 "ros2-rclc": {
-"jazzy": 12.3
+"jazzy": 12.3,
+"lyrical": 6.0
 },
 "ros2-rclc-examples": {
-"jazzy": 6.4
+"jazzy": 6.4,
+"lyrical": 5.5
 },
 "ros2-rclc-lifecycle": {
-"jazzy": 4.8
+"jazzy": 4.8,
+"lyrical": 4.7
 },
 "ros2-rclc-parameter": {
-"jazzy": 6.2
+"jazzy": 6.2,
+"lyrical": 4.4
 },
 "ros2-rclcpp": {
-"jazzy": 107.5
+"jazzy": 107.5,
+"lyrical": 84.2
 },
 "ros2-rclcpp-action": {
-"jazzy": 9.6
+"jazzy": 9.6,
+"lyrical": 21.4
 },
 "ros2-rclcpp-cascade-lifecycle": {
-"jazzy": 22.4
+"jazzy": 22.4,
+"lyrical": 23.7
 },
 "ros2-rclcpp-components": {
-"jazzy": 14.6
+"jazzy": 14.6,
+"lyrical": 24.4
 },
 "ros2-rclcpp-lifecycle": {
-"jazzy": 11.4
+"jazzy": 11.4,
+"lyrical": 22.6
 },
 "ros2-rclpy": {
-"jazzy": 68.0
+"jazzy": 68.0,
+"lyrical": 57.0
+},
+"ros2-rclpy-cascade-lifecycle": {
+"lyrical": 3.5
 },
 "ros2-rclpy-message-converter": {
-"jazzy": 4.6
+"jazzy": 4.6,
+"lyrical": 3.7
 },
 "ros2-rclpy-message-converter-msgs": {
-"jazzy": 10.9
+"jazzy": 10.9,
+"lyrical": 11.1
 },
 "ros2-rcpputils": {
-"jazzy": 4.0
+"jazzy": 4.0,
+"lyrical": 3.9
 },
 "ros2-rcutils": {
-"jazzy": 19.9
+"jazzy": 19.9,
+"lyrical": 5.2
 },
 "ros2-realsense2-camera": {
-"jazzy": 60.4
+"jazzy": 60.4,
+"lyrical": 61.0
 },
 "ros2-realsense2-camera-msgs": {
-"jazzy": 27.2
+"jazzy": 27.2,
+"lyrical": 29.3
 },
 "ros2-realsense2-description": {
-"jazzy": 12.3
+"jazzy": 12.3,
+"lyrical": 10.2
 },
 "ros2-realtime-tools": {
-"jazzy": 7.3
+"jazzy": 7.3,
+"lyrical": 17.1
 },
 "ros2-resource-retriever": {
-"jazzy": 4.3
+"jazzy": 4.3,
+"lyrical": 4.3
+},
+"ros2-resource-retriever-interfaces": {
+"lyrical": 9.4
+},
+"ros2-resource-retriever-service-plugin": {
+"lyrical": 9.9
+},
+"ros2-rmf-api-msgs": {
+"lyrical": 3.5
+},
+"ros2-rmf-battery": {
+"lyrical": 21.9
+},
+"ros2-rmf-building-map-msgs": {
+"lyrical": 20.6
+},
+"ros2-rmf-building-map-tools": {
+"lyrical": 4.4
+},
+"ros2-rmf-demos": {
+"lyrical": 3.8
+},
+"ros2-rmf-demos-assets": {
+"lyrical": 4.4
+},
+"ros2-rmf-demos-fleet-adapter": {
+"lyrical": 3.6
+},
+"ros2-rmf-demos-maps": {
+"lyrical": 34.3
+},
+"ros2-rmf-demos-tasks": {
+"lyrical": 3.3
+},
+"ros2-rmf-dispenser-msgs": {
+"lyrical": 9.6
+},
+"ros2-rmf-door-msgs": {
+"lyrical": 11.8
+},
+"ros2-rmf-fleet-adapter": {
+"lyrical": 330.1
+},
+"ros2-rmf-fleet-adapter-python": {
+"lyrical": 58.7
+},
+"ros2-rmf-fleet-msgs": {
+"lyrical": 38.4
+},
+"ros2-rmf-ingestor-msgs": {
+"lyrical": 10.1
+},
+"ros2-rmf-lift-msgs": {
+"lyrical": 8.9
+},
+"ros2-rmf-obstacle-msgs": {
+"lyrical": 9.4
+},
+"ros2-rmf-reservation-msgs": {
+"lyrical": 14.0
+},
+"ros2-rmf-reservation-node": {
+"lyrical": 39.6
+},
+"ros2-rmf-site-map-msgs": {
+"lyrical": 8.1
+},
+"ros2-rmf-task": {
+"lyrical": 18.6
+},
+"ros2-rmf-task-msgs": {
+"lyrical": 47.7
+},
+"ros2-rmf-task-ros2": {
+"lyrical": 81.4
+},
+"ros2-rmf-task-sequence": {
+"lyrical": 38.8
+},
+"ros2-rmf-traffic": {
+"lyrical": 206.4
+},
+"ros2-rmf-traffic-msgs": {
+"lyrical": 64.7
+},
+"ros2-rmf-traffic-ros2": {
+"lyrical": 675.8
 },
 "ros2-rmf-utils": {
-"jazzy": 21.8
+"jazzy": 21.8,
+"lyrical": 21.7
+},
+"ros2-rmf-visualization": {
+"lyrical": 4.0
+},
+"ros2-rmf-visualization-building-systems": {
+"lyrical": 3.9
+},
+"ros2-rmf-visualization-fleet-states": {
+"lyrical": 23.8
+},
+"ros2-rmf-visualization-floorplans": {
+"lyrical": 28.8
+},
+"ros2-rmf-visualization-msgs": {
+"lyrical": 6.5
+},
+"ros2-rmf-visualization-navgraphs": {
+"lyrical": 31.8
+},
+"ros2-rmf-visualization-obstacles": {
+"lyrical": 21.5
+},
+"ros2-rmf-visualization-rviz2-plugins": {
+"lyrical": 36.3
+},
+"ros2-rmf-visualization-schedule": {
+"lyrical": 33.1
+},
+"ros2-rmf-websocket": {
+"lyrical": 28.9
 },
 "ros2-rmw": {
-"jazzy": 4.3
+"jazzy": 4.3,
+"lyrical": 4.5
 },
 "ros2-rmw-connextdds": {
-"jazzy": 4.5
+"jazzy": 4.5,
+"lyrical": 4.3
 },
 "ros2-rmw-connextdds-common": {
-"jazzy": 4.2
+"jazzy": 4.2,
+"lyrical": 3.8
 },
 "ros2-rmw-cyclonedds-cpp": {
-"jazzy": 12.1
+"jazzy": 12.1,
+"lyrical": 12.0
 },
 "ros2-rmw-dds-common": {
-"jazzy": 22.0
+"jazzy": 22.0,
+"lyrical": 19.3
 },
 "ros2-rmw-fastrtps-cpp": {
-"jazzy": 16.8
+"jazzy": 16.8,
+"lyrical": 40.1
 },
 "ros2-rmw-fastrtps-dynamic-cpp": {
-"jazzy": 31.1
+"jazzy": 31.1,
+"lyrical": 40.5
 },
 "ros2-rmw-fastrtps-shared-cpp": {
-"jazzy": 34.2
+"jazzy": 34.2,
+"lyrical": 45.3
 },
 "ros2-rmw-implementation": {
-"jazzy": 7.4
+"jazzy": 7.4,
+"lyrical": 5.4
 },
 "ros2-rmw-implementation-cmake": {
-"jazzy": 3.0
+"jazzy": 3.0,
+"lyrical": 10.7
+},
+"ros2-rmw-security-common": {
+"lyrical": 12.9
 },
 "ros2-rmw-stats-shim": {
-"jazzy": 6.6
+"jazzy": 6.6,
+"lyrical": 6.2
+},
+"ros2-rmw-test-fixture": {
+"lyrical": 3.5
+},
+"ros2-rmw-test-fixture-implementation": {
+"lyrical": 4.6
 },
 "ros2-rmw-zenoh-cpp": {
-"jazzy": 19.5
+"jazzy": 19.5,
+"lyrical": 26.1
 },
 "ros2-roboplan": {
-"jazzy": 1.4
+"jazzy": 1.4,
+"lyrical": 1.0
 },
 "ros2-roboplan-cartesian-planning": {
-"jazzy": 7.1
+"jazzy": 7.1,
+"lyrical": 5.2
 },
 "ros2-roboplan-common": {
-"jazzy": 1.3
+"jazzy": 1.3,
+"lyrical": 1.1
 },
 "ros2-roboplan-core": {
-"jazzy": 5.0
+"jazzy": 5.0,
+"lyrical": 4.1
 },
 "ros2-roboplan-example-models": {
-"jazzy": 1.9
+"jazzy": 1.9,
+"lyrical": 1.1
 },
 "ros2-roboplan-examples": {
-"jazzy": 29.4
+"jazzy": 29.4,
+"lyrical": 25.2
 },
 "ros2-roboplan-oink": {
-"jazzy": 4.3
+"jazzy": 4.3,
+"lyrical": 4.0
 },
 "ros2-roboplan-ros-cpp": {
-"jazzy": 29.3
+"jazzy": 29.3,
+"lyrical": 25.2
 },
 "ros2-roboplan-ros-examples": {
-"jazzy": 4.2
+"jazzy": 4.2,
+"lyrical": 3.6
 },
 "ros2-roboplan-ros-franka": {
-"jazzy": 8.1
+"jazzy": 8.1,
+"lyrical": 7.2
 },
 "ros2-roboplan-ros-py": {
-"jazzy": 8.1
+"jazzy": 8.1,
+"lyrical": 8.7
 },
 "ros2-roboplan-ros-visualization": {
-"jazzy": 33.1
+"jazzy": 33.1,
+"lyrical": 31.4
 },
 "ros2-roboplan-rrt": {
-"jazzy": 2.8
+"jazzy": 2.8,
+"lyrical": 2.7
 },
 "ros2-roboplan-simple-ik": {
-"jazzy": 9.5
+"jazzy": 9.5,
+"lyrical": 4.3
 },
 "ros2-roboplan-toppra": {
-"jazzy": 7.1
+"jazzy": 7.1,
+"lyrical": 4.5
 },
 "ros2-robot-localization": {
-"jazzy": 106.1
+"jazzy": 106.1,
+"lyrical": 102.4
 },
 "ros2-robot-state-publisher": {
-"jazzy": 28.9
+"jazzy": 28.9,
+"lyrical": 44.6
 },
 "ros2-robot-upstart": {
 "jazzy": 4.0
 },
 "ros2-robotiq-controllers": {
-"jazzy": 13.5
+"jazzy": 13.5,
+"lyrical": 12.7
 },
 "ros2-robotiq-description": {
-"jazzy": 4.7
+"jazzy": 4.7,
+"lyrical": 4.8
 },
 "ros2-ros-base": {
-"jazzy": 2.5
+"jazzy": 2.5,
+"lyrical": 3.1
 },
 "ros2-ros-core": {
-"jazzy": 5.1
+"jazzy": 5.1,
+"lyrical": 3.1
 },
 "ros2-ros-environment": {
-"jazzy": 2.6
+"jazzy": 2.6,
+"lyrical": 2.6
 },
 "ros2-ros-gz": {
-"jazzy": 15.5
+"jazzy": 15.5,
+"lyrical": 4.8
 },
 "ros2-ros-gz-bridge": {
-"jazzy": 208.8
+"jazzy": 208.8,
+"lyrical": 217.6
 },
 "ros2-ros-gz-image": {
-"jazzy": 21.2
+"jazzy": 21.2,
+"lyrical": 17.2
 },
 "ros2-ros-gz-interfaces": {
-"jazzy": 34.9
+"jazzy": 34.9,
+"lyrical": 36.8
 },
 "ros2-ros-gz-sim": {
-"jazzy": 112.8
+"jazzy": 112.8,
+"lyrical": 114.4
 },
 "ros2-ros-gz-sim-demos": {
-"jazzy": 11.9
+"jazzy": 11.9,
+"lyrical": 13.1
 },
 "ros2-ros-image-to-qimage": {
-"jazzy": 15.0
+"jazzy": 15.0,
+"lyrical": 13.2
 },
 "ros2-ros-industrial-cmake-boilerplate": {
-"jazzy": 4.0
+"jazzy": 4.0,
+"lyrical": 2.9
 },
 "ros2-ros-testing": {
-"jazzy": 4.3
+"jazzy": 4.3,
+"lyrical": 3.8
 },
 "ros2-ros-workspace": {
-"jazzy": 3.0
+"jazzy": 3.0,
+"lyrical": 3.8
 },
 "ros2-ros2-control": {
-"jazzy": 4.1
+"jazzy": 4.1,
+"lyrical": 4.2
 },
 "ros2-ros2-control-cmake": {
-"jazzy": 3.2
+"jazzy": 3.2,
+"lyrical": 3.7
 },
 "ros2-ros2-control-test-assets": {
-"jazzy": 6.5
+"jazzy": 6.5,
+"lyrical": 3.9
 },
 "ros2-ros2-controllers": {
-"jazzy": 4.0
+"jazzy": 4.0,
+"lyrical": 3.8
 },
 "ros2-ros2-controllers-test-nodes": {
-"jazzy": 4.6
+"jazzy": 4.6,
+"lyrical": 4.5
 },
 "ros2-ros2-easy-test": {
-"jazzy": 3.9
+"jazzy": 3.9,
+"lyrical": 3.6
 },
 "ros2-ros2-fmt-logger": {
-"jazzy": 4.9
+"jazzy": 4.9,
+"lyrical": 3.8
 },
 "ros2-ros2-medkit-action-status-bridge": {
-"jazzy": 20.2
+"jazzy": 20.2,
+"lyrical": 17.8
 },
 "ros2-ros2-medkit-beacon-common": {
-"jazzy": 14.5
+"jazzy": 14.5,
+"lyrical": 21.7
 },
 "ros2-ros2-medkit-cmake": {
-"jazzy": 13.6
+"jazzy": 13.6,
+"lyrical": 3.6
 },
 "ros2-ros2-medkit-diagnostic-bridge": {
-"jazzy": 17.8
+"jazzy": 17.8,
+"lyrical": 31.4
 },
 "ros2-ros2-medkit-fault-manager": {
-"jazzy": 34.3
+"jazzy": 34.3,
+"lyrical": 48.2
 },
 "ros2-ros2-medkit-fault-reporter": {
-"jazzy": 10.7
+"jazzy": 10.7,
+"lyrical": 21.9
 },
 "ros2-ros2-medkit-gateway": {
-"jazzy": 340.8
+"jazzy": 340.8,
+"lyrical": 405.0
 },
 "ros2-ros2-medkit-graph-provider": {
-"jazzy": 22.8
+"jazzy": 22.8,
+"lyrical": 23.5
 },
 "ros2-ros2-medkit-integration-tests": {
-"jazzy": 31.0
+"jazzy": 31.0,
+"lyrical": 31.8
 },
 "ros2-ros2-medkit-linux-introspection": {
-"jazzy": 10.0
+"jazzy": 10.0,
+"lyrical": 10.5
 },
 "ros2-ros2-medkit-log-bridge": {
-"jazzy": 19.3
+"jazzy": 19.3,
+"lyrical": 20.0
 },
 "ros2-ros2-medkit-msgs": {
-"jazzy": 36.9
+"jazzy": 36.9,
+"lyrical": 40.2
 },
 "ros2-ros2-medkit-param-beacon": {
-"jazzy": 29.5
+"jazzy": 29.5,
+"lyrical": 14.6
 },
 "ros2-ros2-medkit-serialization": {
-"jazzy": 13.1
+"jazzy": 13.1,
+"lyrical": 13.0
 },
 "ros2-ros2-medkit-sovd-service-interface": {
-"jazzy": 14.3
+"jazzy": 14.3,
+"lyrical": 16.1
 },
 "ros2-ros2-medkit-topic-beacon": {
-"jazzy": 29.1
+"jazzy": 29.1,
+"lyrical": 22.0
 },
 "ros2-ros2-socketcan": {
-"jazzy": 21.7
+"jazzy": 21.7,
+"lyrical": 22.0
 },
 "ros2-ros2-socketcan-msgs": {
-"jazzy": 7.7
+"jazzy": 7.7,
+"lyrical": 7.8
 },
 "ros2-ros2action": {
-"jazzy": 4.6
+"jazzy": 4.6,
+"lyrical": 15.5
 },
 "ros2-ros2bag": {
-"jazzy": 9.2
+"jazzy": 9.2,
+"lyrical": 16.6
 },
 "ros2-ros2cli": {
-"jazzy": 5.3
+"jazzy": 5.3,
+"lyrical": 5.5
 },
 "ros2-ros2cli-common-extensions": {
-"jazzy": 6.4
+"jazzy": 6.4,
+"lyrical": 12.0
 },
 "ros2-ros2cli-test-interfaces": {
-"jazzy": 16.0
+"jazzy": 16.0,
+"lyrical": 12.9
 },
 "ros2-ros2component": {
-"jazzy": 4.4
+"jazzy": 4.4,
+"lyrical": 4.4
 },
 "ros2-ros2controlcli": {
-"jazzy": 7.5
+"jazzy": 7.5,
+"lyrical": 6.8
 },
 "ros2-ros2doctor": {
-"jazzy": 6.5
+"jazzy": 6.5,
+"lyrical": 5.2
 },
 "ros2-ros2interface": {
-"jazzy": 7.1
+"jazzy": 7.1,
+"lyrical": 4.5
 },
 "ros2-ros2launch": {
-"jazzy": 4.5
+"jazzy": 4.5,
+"lyrical": 4.0
 },
 "ros2-ros2lifecycle": {
-"jazzy": 6.3
+"jazzy": 6.3,
+"lyrical": 15.7
 },
 "ros2-ros2lifecycle-test-fixtures": {
-"jazzy": 7.3
+"jazzy": 7.3,
+"lyrical": 10.3
 },
 "ros2-ros2multicast": {
-"jazzy": 3.8
+"jazzy": 3.8,
+"lyrical": 10.3
 },
 "ros2-ros2node": {
-"jazzy": 4.6
+"jazzy": 4.6,
+"lyrical": 4.7
 },
 "ros2-ros2param": {
-"jazzy": 5.1
+"jazzy": 5.1,
+"lyrical": 14.1
 },
 "ros2-ros2pkg": {
-"jazzy": 4.7
+"jazzy": 4.7,
+"lyrical": 16.2
 },
 "ros2-ros2plugin": {
-"jazzy": 3.7
+"jazzy": 3.7,
+"lyrical": 4.0
 },
 "ros2-ros2run": {
-"jazzy": 4.1
+"jazzy": 4.1,
+"lyrical": 4.0
 },
 "ros2-ros2service": {
-"jazzy": 5.0
+"jazzy": 5.0,
+"lyrical": 15.5
 },
 "ros2-ros2test": {
-"jazzy": 5.7
+"jazzy": 5.7,
+"lyrical": 3.8
 },
 "ros2-ros2topic": {
-"jazzy": 5.5
+"jazzy": 5.5,
+"lyrical": 5.6
 },
 "ros2-rosapi": {
-"jazzy": 5.7
+"jazzy": 5.7,
+"lyrical": 4.0
 },
 "ros2-rosapi-msgs": {
-"jazzy": 46.7
+"jazzy": 46.7,
+"lyrical": 58.0
 },
 "ros2-rosbag2": {
-"jazzy": 4.5
+"jazzy": 4.5,
+"lyrical": 4.6
 },
 "ros2-rosbag2-compression": {
-"jazzy": 13.4
+"jazzy": 13.4,
+"lyrical": 10.2
 },
 "ros2-rosbag2-compression-zstd": {
-"jazzy": 22.2
+"jazzy": 22.2,
+"lyrical": 38.0
 },
 "ros2-rosbag2-cpp": {
-"jazzy": 20.7
+"jazzy": 20.7,
+"lyrical": 33.1
 },
 "ros2-rosbag2-interfaces": {
-"jazzy": 29.9
+"jazzy": 29.9,
+"lyrical": 30.6
 },
 "ros2-rosbag2-performance-benchmarking": {
-"jazzy": 50.0
+"jazzy": 50.0,
+"lyrical": 53.3
 },
 "ros2-rosbag2-performance-benchmarking-msgs": {
-"jazzy": 7.3
+"jazzy": 7.3,
+"lyrical": 7.4
 },
 "ros2-rosbag2-py": {
-"jazzy": 38.8
+"jazzy": 38.8,
+"lyrical": 55.5
 },
 "ros2-rosbag2-storage": {
-"jazzy": 14.9
+"jazzy": 14.9,
+"lyrical": 12.0
 },
 "ros2-rosbag2-storage-default-plugins": {
-"jazzy": 3.6
+"jazzy": 3.6,
+"lyrical": 11.6
 },
 "ros2-rosbag2-storage-mcap": {
-"jazzy": 17.8
+"jazzy": 17.8,
+"lyrical": 29.1
 },
 "ros2-rosbag2-storage-sqlite3": {
-"jazzy": 18.3
+"jazzy": 18.3,
+"lyrical": 26.9
 },
 "ros2-rosbag2-test-common": {
-"jazzy": 5.4
+"jazzy": 5.4,
+"lyrical": 5.0
 },
 "ros2-rosbag2-test-msgdefs": {
-"jazzy": 17.7
+"jazzy": 17.7,
+"lyrical": 32.8
 },
 "ros2-rosbag2-tests": {
-"jazzy": 3.9
+"jazzy": 3.9,
+"lyrical": 5.0
 },
 "ros2-rosbag2-transport": {
-"jazzy": 35.7
+"jazzy": 35.7,
+"lyrical": 57.6
 },
 "ros2-rosbridge-library": {
-"jazzy": 6.1
+"jazzy": 6.1,
+"lyrical": 4.8
 },
 "ros2-rosbridge-msgs": {
-"jazzy": 7.8
+"jazzy": 7.8,
+"lyrical": 7.6
 },
 "ros2-rosbridge-server": {
-"jazzy": 6.9
+"jazzy": 6.9,
+"lyrical": 4.7
 },
 "ros2-rosbridge-suite": {
-"jazzy": 14.2
+"jazzy": 14.2,
+"lyrical": 2.7
 },
 "ros2-rosbridge-test-msgs": {
-"jazzy": 47.9
+"jazzy": 47.9,
+"lyrical": 48.7
 },
 "ros2-rosgraph-monitor": {
-"jazzy": 22.8
+"jazzy": 22.8,
+"lyrical": 24.8
 },
 "ros2-rosgraph-monitor-msgs": {
-"jazzy": 12.9
+"jazzy": 12.9,
+"lyrical": 12.5
 },
 "ros2-rosgraph-msgs": {
-"jazzy": 16.0
+"jazzy": 16.0,
+"lyrical": 16.6
 },
 "ros2-rosidl-adapter": {
-"jazzy": 4.4
+"jazzy": 4.4,
+"lyrical": 13.2
+},
+"ros2-rosidl-buffer": {
+"lyrical": 4.1
+},
+"ros2-rosidl-buffer-backend": {
+"lyrical": 12.4
+},
+"ros2-rosidl-buffer-backend-registry": {
+"lyrical": 6.9
+},
+"ros2-rosidl-buffer-py": {
+"lyrical": 9.6
 },
 "ros2-rosidl-cli": {
-"jazzy": 5.3
+"jazzy": 5.3,
+"lyrical": 4.6
 },
 "ros2-rosidl-cmake": {
-"jazzy": 3.7
+"jazzy": 3.7,
+"lyrical": 12.1
 },
 "ros2-rosidl-core-generators": {
-"jazzy": 4.1
+"jazzy": 4.1,
+"lyrical": 3.2
 },
 "ros2-rosidl-core-runtime": {
-"jazzy": 14.4
+"jazzy": 14.4,
+"lyrical": 3.2
 },
 "ros2-rosidl-default-generators": {
-"jazzy": 4.1
+"jazzy": 4.1,
+"lyrical": 3.1
 },
 "ros2-rosidl-default-runtime": {
-"jazzy": 15.4
+"jazzy": 15.4,
+"lyrical": 3.6
 },
 "ros2-rosidl-dynamic-typesupport": {
-"jazzy": 4.2
+"jazzy": 4.2,
+"lyrical": 3.9
 },
 "ros2-rosidl-dynamic-typesupport-fastrtps": {
-"jazzy": 6.4
+"jazzy": 6.4,
+"lyrical": 7.6
 },
 "ros2-rosidl-generator-c": {
-"jazzy": 6.2
+"jazzy": 6.2,
+"lyrical": 14.6
 },
 "ros2-rosidl-generator-cpp": {
-"jazzy": 17.1
+"jazzy": 17.1,
+"lyrical": 12.9
 },
 "ros2-rosidl-generator-dds-idl": {
-"jazzy": 6.0
+"jazzy": 6.0,
+"lyrical": 3.5
 },
 "ros2-rosidl-generator-py": {
-"jazzy": 5.2
+"jazzy": 5.2,
+"lyrical": 4.2
 },
 "ros2-rosidl-generator-rs": {
-"jazzy": 4.6
+"jazzy": 4.6,
+"lyrical": 3.7
 },
 "ros2-rosidl-generator-type-description": {
-"jazzy": 4.6
+"jazzy": 4.6,
+"lyrical": 3.9
 },
 "ros2-rosidl-parser": {
-"jazzy": 5.3
+"jazzy": 5.3,
+"lyrical": 12.7
 },
 "ros2-rosidl-pycommon": {
-"jazzy": 3.4
+"jazzy": 3.4,
+"lyrical": 10.1
 },
 "ros2-rosidl-runtime-c": {
-"jazzy": 15.5
+"jazzy": 15.5,
+"lyrical": 5.4
 },
 "ros2-rosidl-runtime-cpp": {
-"jazzy": 14.1
+"jazzy": 14.1,
+"lyrical": 3.4
 },
 "ros2-rosidl-runtime-py": {
-"jazzy": 4.2
+"jazzy": 4.2,
+"lyrical": 5.0
 },
 "ros2-rosidl-typesupport-c": {
-"jazzy": 17.4
+"jazzy": 17.4,
+"lyrical": 4.1
 },
 "ros2-rosidl-typesupport-cpp": {
-"jazzy": 4.7
+"jazzy": 4.7,
+"lyrical": 4.0
 },
 "ros2-rosidl-typesupport-fastrtps-c": {
-"jazzy": 15.1
+"jazzy": 15.1,
+"lyrical": 5.1
 },
 "ros2-rosidl-typesupport-fastrtps-cpp": {
-"jazzy": 15.2
+"jazzy": 15.2,
+"lyrical": 14.4
 },
 "ros2-rosidl-typesupport-interface": {
-"jazzy": 3.2
+"jazzy": 3.2,
+"lyrical": 10.9
 },
 "ros2-rosidl-typesupport-introspection-c": {
-"jazzy": 5.9
+"jazzy": 5.9,
+"lyrical": 15.1
 },
 "ros2-rosidl-typesupport-introspection-cpp": {
-"jazzy": 5.3
+"jazzy": 5.3,
+"lyrical": 4.1
 },
 "ros2-rosidlcpp": {
-"jazzy": 5.0
+"jazzy": 5.0,
+"lyrical": 3.4
 },
 "ros2-rosidlcpp-generator-c": {
-"jazzy": 24.3
+"jazzy": 24.3,
+"lyrical": 21.5
 },
 "ros2-rosidlcpp-generator-core": {
-"jazzy": 19.7
+"jazzy": 19.7,
+"lyrical": 20.1
 },
 "ros2-rosidlcpp-generator-cpp": {
-"jazzy": 21.0
+"jazzy": 21.0,
+"lyrical": 16.2
 },
 "ros2-rosidlcpp-generator-py": {
-"jazzy": 18.6
+"jazzy": 18.6,
+"lyrical": 16.1
 },
 "ros2-rosidlcpp-generator-type-description": {
-"jazzy": 23.2
+"jazzy": 23.2,
+"lyrical": 19.5
 },
 "ros2-rosidlcpp-parser": {
-"jazzy": 24.6
+"jazzy": 24.6,
+"lyrical": 11.7
 },
 "ros2-rosidlcpp-typesupport-c": {
-"jazzy": 13.6
+"jazzy": 13.6,
+"lyrical": 11.3
 },
 "ros2-rosidlcpp-typesupport-cpp": {
-"jazzy": 16.6
+"jazzy": 16.6,
+"lyrical": 11.3
 },
 "ros2-rosidlcpp-typesupport-fastrtps-c": {
-"jazzy": 16.4
+"jazzy": 16.4,
+"lyrical": 15.1
 },
 "ros2-rosidlcpp-typesupport-fastrtps-cpp": {
-"jazzy": 16.5
+"jazzy": 16.5,
+"lyrical": 15.0
 },
 "ros2-rosidlcpp-typesupport-introspection-c": {
-"jazzy": 15.0
+"jazzy": 15.0,
+"lyrical": 12.9
 },
 "ros2-rosidlcpp-typesupport-introspection-cpp": {
-"jazzy": 13.8
+"jazzy": 13.8,
+"lyrical": 12.5
 },
 "ros2-rosx-introspection": {
-"jazzy": 15.3
+"jazzy": 15.3,
+"lyrical": 14.7
 },
 "ros2-rot-conv": {
-"jazzy": 9.8
+"jazzy": 9.8,
+"lyrical": 9.4
 },
 "ros2-rplidar-ros": {
-"jazzy": 22.1
+"jazzy": 22.1,
+"lyrical": 21.5
 },
 "ros2-rpyutils": {
-"jazzy": 4.1
+"jazzy": 4.1,
+"lyrical": 3.8
 },
 "ros2-rqt": {
-"jazzy": 4.1
+"jazzy": 4.1,
+"lyrical": 3.9
 },
 "ros2-rqt-action": {
-"jazzy": 3.4
+"jazzy": 3.4,
+"lyrical": 2.2
 },
 "ros2-rqt-bag": {
-"jazzy": 6.3
+"jazzy": 6.3,
+"lyrical": 4.4
 },
 "ros2-rqt-bag-plugins": {
-"jazzy": 5.7
+"jazzy": 5.7,
+"lyrical": 4.5
 },
 "ros2-rqt-common-plugins": {
-"jazzy": 2.9
+"jazzy": 2.9,
+"lyrical": 2.9
 },
 "ros2-rqt-console": {
-"jazzy": 2.9
+"jazzy": 2.9,
+"lyrical": 2.8
 },
 "ros2-rqt-controller-manager": {
-"jazzy": 9.2
+"jazzy": 9.2,
+"lyrical": 4.4
 },
 "ros2-rqt-graph": {
-"jazzy": 3.6
+"jazzy": 3.6,
+"lyrical": 2.7
 },
 "ros2-rqt-gui": {
-"jazzy": 8.0
+"jazzy": 8.0,
+"lyrical": 6.4
 },
 "ros2-rqt-gui-cpp": {
-"jazzy": 18.5
+"jazzy": 18.5,
+"lyrical": 17.2
 },
 "ros2-rqt-gui-py": {
-"jazzy": 6.9
+"jazzy": 6.9,
+"lyrical": 2.9
 },
 "ros2-rqt-image-overlay": {
-"jazzy": 26.7
+"jazzy": 26.7,
+"lyrical": 32.7
 },
 "ros2-rqt-image-overlay-layer": {
-"jazzy": 7.4
+"jazzy": 7.4,
+"lyrical": 5.8
 },
 "ros2-rqt-image-view": {
-"jazzy": 24.5
+"jazzy": 24.5,
+"lyrical": 25.2
 },
 "ros2-rqt-joint-trajectory-controller": {
-"jazzy": 5.2
+"jazzy": 5.2,
+"lyrical": 4.1
+},
+"ros2-rqt-mocap4r2-control": {
+"lyrical": 23.6
 },
 "ros2-rqt-moveit": {
-"jazzy": 6.9
+"jazzy": 6.9,
+"lyrical": 2.8
 },
 "ros2-rqt-msg": {
-"jazzy": 8.2
+"jazzy": 8.2,
+"lyrical": 2.6
 },
 "ros2-rqt-plot": {
-"jazzy": 6.8
+"jazzy": 6.8,
+"lyrical": 4.8
 },
 "ros2-rqt-publisher": {
-"jazzy": 2.5
+"jazzy": 2.5,
+"lyrical": 2.6
 },
 "ros2-rqt-py-common": {
-"jazzy": 6.4
+"jazzy": 6.4,
+"lyrical": 6.9
 },
 "ros2-rqt-py-console": {
-"jazzy": 3.2
+"jazzy": 3.2,
+"lyrical": 2.8
 },
 "ros2-rqt-reconfigure": {
-"jazzy": 2.8
+"jazzy": 2.8,
+"lyrical": 2.5
 },
 "ros2-rqt-robot-dashboard": {
-"jazzy": 4.1
+"jazzy": 4.1,
+"lyrical": 3.7
 },
 "ros2-rqt-robot-monitor": {
-"jazzy": 16.3
+"jazzy": 16.3,
+"lyrical": 3.2
 },
 "ros2-rqt-robot-steering": {
-"jazzy": 2.6
+"jazzy": 2.6,
+"lyrical": 3.1
 },
 "ros2-rqt-runtime-monitor": {
-"jazzy": 2.9
+"jazzy": 2.9,
+"lyrical": 2.9
 },
 "ros2-rqt-service-caller": {
-"jazzy": 2.5
+"jazzy": 2.5,
+"lyrical": 2.6
 },
 "ros2-rqt-shell": {
-"jazzy": 2.6
+"jazzy": 2.6,
+"lyrical": 2.9
 },
 "ros2-rqt-srv": {
-"jazzy": 6.7
+"jazzy": 6.7,
+"lyrical": 2.9
 },
 "ros2-rqt-tf-tree": {
-"jazzy": 6.9
+"jazzy": 6.9,
+"lyrical": 3.4
 },
 "ros2-rqt-topic": {
-"jazzy": 5.9
+"jazzy": 5.9,
+"lyrical": 10.0
 },
 "ros2-rsl": {
-"jazzy": 22.3
+"jazzy": 22.3,
+"lyrical": 19.0
 },
 "ros2-rslidar-msg": {
-"jazzy": 7.9
+"jazzy": 7.9,
+"lyrical": 8.1
 },
 "ros2-rslidar-sdk": {
-"jazzy": 31.8
+"jazzy": 31.8,
+"lyrical": 28.8
 },
 "ros2-rtabmap": {
-"jazzy": 524.8
+"jazzy": 524.8,
+"lyrical": 488.7
 },
 "ros2-rtcm-msgs": {
-"jazzy": 8.7
+"jazzy": 8.7,
+"lyrical": 7.9
 },
 "ros2-rtest": {
-"jazzy": 9.4
+"jazzy": 9.4,
+"lyrical": 7.8
 },
 "ros2-rti-connext-dds-cmake-module": {
-"jazzy": 5.6
+"jazzy": 5.6,
+"lyrical": 11.2
 },
 "ros2-rttest": {
-"jazzy": 5.9
+"jazzy": 5.9,
+"lyrical": 4.6
 },
 "ros2-ruckig": {
-"jazzy": 24.2
+"jazzy": 24.2,
+"lyrical": 24.8
 },
 "ros2-rviz-2d-overlay-msgs": {
-"jazzy": 7.9
+"jazzy": 7.9,
+"lyrical": 7.3
 },
 "ros2-rviz-2d-overlay-plugins": {
-"jazzy": 35.3
+"jazzy": 35.3,
+"lyrical": 34.3
 },
 "ros2-rviz-assimp-vendor": {
 "jazzy": 6.8
 },
 "ros2-rviz-common": {
-"jazzy": 129.7
+"jazzy": 129.7,
+"lyrical": 171.1
 },
 "ros2-rviz-default-plugins": {
-"jazzy": 308.7
+"jazzy": 308.7,
+"lyrical": 381.1
 },
 "ros2-rviz-imu-plugin": {
-"jazzy": 33.8
+"jazzy": 33.8,
+"lyrical": 35.3
 },
 "ros2-rviz-marker-tools": {
-"jazzy": 10.8
+"jazzy": 10.8,
+"lyrical": 21.5
 },
 "ros2-rviz-ogre-vendor": {
-"jazzy": 154.7
+"jazzy": 154.7,
+"lyrical": 170.1
 },
 "ros2-rviz-rendering": {
-"jazzy": 25.9
+"jazzy": 25.9,
+"lyrical": 23.4
 },
 "ros2-rviz-rendering-tests": {
-"jazzy": 9.2
+"jazzy": 9.2,
+"lyrical": 6.9
 },
 "ros2-rviz-satellite": {
-"jazzy": 27.6
+"jazzy": 27.6,
+"lyrical": 28.0
 },
 "ros2-rviz-visual-testing-framework": {
-"jazzy": 31.3
+"jazzy": 31.3,
+"lyrical": 32.0
 },
 "ros2-rviz-visual-tools": {
-"jazzy": 51.6
+"jazzy": 51.6,
+"lyrical": 54.6
 },
 "ros2-rviz2": {
-"jazzy": 24.6
+"jazzy": 24.6,
+"lyrical": 26.5
 },
 "ros2-sbg-driver": {
-"jazzy": 100.1
+"jazzy": 100.1,
+"lyrical": 100.6
 },
 "ros2-sdformat-test-files": {
-"jazzy": 2.8
+"jazzy": 2.8,
+"lyrical": 2.3
 },
 "ros2-sdformat-urdf": {
-"jazzy": 11.3
+"jazzy": 11.3,
+"lyrical": 8.6
 },
 "ros2-sdformat-vendor": {
-"jazzy": 6.0
+"jazzy": 6.0,
+"lyrical": 4.1
 },
 "ros2-sdl2-vendor": {
-"jazzy": 7.3
+"jazzy": 7.3,
+"lyrical": 3.4
 },
 "ros2-self-test": {
-"jazzy": 11.6
+"jazzy": 11.6,
+"lyrical": 10.2
 },
 "ros2-sensor-msgs": {
-"jazzy": 40.7
+"jazzy": 40.7,
+"lyrical": 40.8
 },
 "ros2-sensor-msgs-py": {
-"jazzy": 3.0
+"jazzy": 3.0,
+"lyrical": 3.5
 },
 "ros2-septentrio-gnss-driver": {
-"jazzy": 124.5
+"jazzy": 124.5,
+"lyrical": 138.1
 },
 "ros2-serial-driver": {
-"jazzy": 31.7
+"jazzy": 31.7,
+"lyrical": 17.9
 },
 "ros2-service-msgs": {
-"jazzy": 7.7
+"jazzy": 7.7,
+"lyrical": 7.2
 },
 "ros2-shape-msgs": {
-"jazzy": 10.4
+"jazzy": 10.4,
+"lyrical": 10.2
 },
 "ros2-sick-safetyscanners-base": {
-"jazzy": 36.5
+"jazzy": 36.5,
+"lyrical": 39.0
 },
 "ros2-sick-safetyscanners2": {
-"jazzy": 33.8
+"jazzy": 33.8,
+"lyrical": 37.4
 },
 "ros2-sick-safetyscanners2-interfaces": {
-"jazzy": 20.9
+"jazzy": 20.9,
+"lyrical": 23.2
 },
 "ros2-sick-scan-xd": {
-"jazzy": 210.3
+"jazzy": 210.3,
+"lyrical": 265.4
 },
 "ros2-simple-term-menu-vendor": {
 "jazzy": 4.1
 },
 "ros2-simulation": {
-"jazzy": 3.3
+"jazzy": 3.3,
+"lyrical": 2.9
 },
 "ros2-simulation-interfaces": {
-"jazzy": 72.0
+"jazzy": 72.0,
+"lyrical": 56.9
 },
 "ros2-slam-toolbox": {
-"jazzy": 128.6
+"jazzy": 128.6,
+"lyrical": 181.0
 },
 "ros2-slg-msgs": {
-"jazzy": 8.4
+"jazzy": 8.4,
+"lyrical": 8.4
 },
 "ros2-slider-publisher": {
-"jazzy": 4.3
+"jazzy": 4.3,
+"lyrical": 2.8
 },
 "ros2-smacc2": {
 "jazzy": 60.6
@@ -10194,193 +11542,254 @@
 "jazzy": 22.3
 },
 "ros2-smclib": {
-"jazzy": 4.1
+"jazzy": 4.1,
+"lyrical": 4.3
 },
 "ros2-spacenav": {
-"jazzy": 15.6
+"jazzy": 15.6,
+"lyrical": 16.8
 },
 "ros2-spatio-temporal-voxel-layer": {
-"jazzy": 67.3
+"jazzy": 67.3,
+"lyrical": 58.4
 },
 "ros2-spdlog-vendor": {
-"jazzy": 3.6
+"jazzy": 3.6,
+"lyrical": 3.9
 },
 "ros2-sqlite3-vendor": {
 "jazzy": 3.7
 },
 "ros2-srdfdom": {
-"jazzy": 8.1
+"jazzy": 8.1,
+"lyrical": 8.2
 },
 "ros2-sros2": {
-"jazzy": 4.7
+"jazzy": 4.7,
+"lyrical": 6.0
 },
 "ros2-sros2-cmake": {
-"jazzy": 4.2
+"jazzy": 4.2,
+"lyrical": 3.9
 },
 "ros2-state-interfaces-broadcaster": {
-"jazzy": 21.3
+"jazzy": 21.3,
+"lyrical": 18.2
 },
 "ros2-statistics-msgs": {
-"jazzy": 9.3
+"jazzy": 9.3,
+"lyrical": 18.0
 },
 "ros2-std-msgs": {
-"jazzy": 34.3
+"jazzy": 34.3,
+"lyrical": 43.4
 },
 "ros2-std-srvs": {
-"jazzy": 10.6
+"jazzy": 10.6,
+"lyrical": 10.4
 },
 "ros2-steering-controllers-library": {
-"jazzy": 38.0
+"jazzy": 38.0,
+"lyrical": 36.3
 },
 "ros2-stereo-image-proc": {
-"jazzy": 37.3
+"jazzy": 37.3,
+"lyrical": 43.8
 },
 "ros2-stereo-msgs": {
-"jazzy": 8.1
+"jazzy": 8.1,
+"lyrical": 18.1
 },
 "ros2-stomp": {
-"jazzy": 12.2
+"jazzy": 12.2,
+"lyrical": 12.6
 },
 "ros2-swri-console": {
-"jazzy": 35.4
+"jazzy": 35.4,
+"lyrical": 47.1
 },
 "ros2-swri-serial-util": {
-"jazzy": 4.1
+"jazzy": 4.1,
+"lyrical": 4.1
 },
 "ros2-system-modes": {
-"jazzy": 37.3
+"jazzy": 37.3,
+"lyrical": 34.4
 },
 "ros2-system-modes-msgs": {
-"jazzy": 11.5
+"jazzy": 11.5,
+"lyrical": 11.3
 },
 "ros2-tango-icons-vendor": {
-"jazzy": 3.4
+"jazzy": 3.4,
+"lyrical": 3.3
 },
 "ros2-tcb-span": {
-"jazzy": 3.2
+"jazzy": 3.2,
+"lyrical": 2.8
 },
 "ros2-teleop-tools": {
-"jazzy": 3.0
+"jazzy": 3.0,
+"lyrical": 2.6
 },
 "ros2-teleop-tools-msgs": {
-"jazzy": 23.9
+"jazzy": 23.9,
+"lyrical": 9.2
 },
 "ros2-teleop-twist-joy": {
-"jazzy": 21.4
+"jazzy": 21.4,
+"lyrical": 21.1
 },
 "ros2-teleop-twist-keyboard": {
-"jazzy": 3.1
+"jazzy": 3.1,
+"lyrical": 2.7
 },
 "ros2-test-interface-files": {
-"jazzy": 5.6
+"jazzy": 5.6,
+"lyrical": 2.5
 },
 "ros2-test-msgs": {
-"jazzy": 39.4
+"jazzy": 39.4,
+"lyrical": 51.6
 },
 "ros2-tf-transformations": {
-"jazzy": 2.8
+"jazzy": 2.8,
+"lyrical": 2.8
 },
 "ros2-tf2": {
-"jazzy": 9.2
+"jazzy": 9.2,
+"lyrical": 17.9
 },
 "ros2-tf2-bullet": {
-"jazzy": 7.4
+"jazzy": 7.4,
+"lyrical": 5.4
 },
 "ros2-tf2-eigen": {
-"jazzy": 5.0
+"jazzy": 5.0,
+"lyrical": 4.4
 },
 "ros2-tf2-eigen-kdl": {
-"jazzy": 6.1
+"jazzy": 6.1,
+"lyrical": 6.2
 },
 "ros2-tf2-geometry-msgs": {
-"jazzy": 5.9
+"jazzy": 5.9,
+"lyrical": 6.2
 },
 "ros2-tf2-kdl": {
-"jazzy": 5.5
+"jazzy": 5.5,
+"lyrical": 6.3
 },
 "ros2-tf2-msgs": {
-"jazzy": 13.6
+"jazzy": 13.6,
+"lyrical": 20.6
 },
 "ros2-tf2-py": {
-"jazzy": 6.2
+"jazzy": 6.2,
+"lyrical": 16.7
 },
 "ros2-tf2-ros": {
-"jazzy": 38.3
+"jazzy": 38.3,
+"lyrical": 51.2
 },
 "ros2-tf2-ros-py": {
-"jazzy": 5.9
+"jazzy": 5.9,
+"lyrical": 11.4
 },
 "ros2-tf2-sensor-msgs": {
-"jazzy": 6.1
+"jazzy": 6.1,
+"lyrical": 14.9
 },
 "ros2-tf2-tools": {
-"jazzy": 3.4
+"jazzy": 3.4,
+"lyrical": 4.7
 },
 "ros2-theora-image-transport": {
-"jazzy": 35.4
+"jazzy": 35.4,
+"lyrical": 29.6
 },
 "ros2-tinyxml2-vendor": {
-"jazzy": 3.4
+"jazzy": 3.4,
+"lyrical": 3.0
 },
 "ros2-tlsf": {
-"jazzy": 3.5
+"jazzy": 3.5,
+"lyrical": 4.2
 },
 "ros2-tlsf-cpp": {
-"jazzy": 17.1
+"jazzy": 17.1,
+"lyrical": 16.9
 },
 "ros2-topic-based-ros2-control": {
 "jazzy": 21.4
 },
 "ros2-topic-monitor": {
-"jazzy": 5.6
+"jazzy": 5.6,
+"lyrical": 4.2
 },
 "ros2-topic-tools": {
-"jazzy": 28.2
+"jazzy": 28.2,
+"lyrical": 34.5
 },
 "ros2-topic-tools-interfaces": {
-"jazzy": 16.5
+"jazzy": 16.5,
+"lyrical": 16.9
 },
 "ros2-toppra": {
-"jazzy": 1.2
+"jazzy": 1.2,
+"lyrical": 2.6
 },
 "ros2-trac-ik": {
-"jazzy": 2.6
+"jazzy": 2.6,
+"lyrical": 3.9
 },
 "ros2-trac-ik-kinematics-plugin": {
-"jazzy": 24.4
+"jazzy": 24.4,
+"lyrical": 20.4
 },
 "ros2-trac-ik-lib": {
-"jazzy": 17.0
+"jazzy": 17.0,
+"lyrical": 18.2
 },
 "ros2-tracetools": {
-"jazzy": 5.9
+"jazzy": 5.9,
+"lyrical": 4.8
 },
 "ros2-tracetools-image-pipeline": {
-"jazzy": 4.0
+"jazzy": 4.0,
+"lyrical": 3.6
 },
 "ros2-tracetools-launch": {
-"jazzy": 5.4
+"jazzy": 5.4,
+"lyrical": 3.2
 },
 "ros2-tracetools-trace": {
-"jazzy": 6.9
+"jazzy": 6.9,
+"lyrical": 2.9
 },
 "ros2-trajectory-msgs": {
-"jazzy": 12.0
+"jazzy": 12.0,
+"lyrical": 18.8
 },
 "ros2-transmission-interface": {
-"jazzy": 13.0
+"jazzy": 13.0,
+"lyrical": 10.7
 },
 "ros2-tricycle-controller": {
-"jazzy": 37.1
+"jazzy": 37.1,
+"lyrical": 39.1
 },
 "ros2-tricycle-steering-controller": {
-"jazzy": 14.7
+"jazzy": 14.7,
+"lyrical": 18.1
 },
 "ros2-turtle-tf2-cpp": {
-"jazzy": 22.7
+"jazzy": 22.7,
+"lyrical": 24.3
 },
 "ros2-turtle-tf2-py": {
-"jazzy": 3.5
+"jazzy": 3.5,
+"lyrical": 3.5
 },
 "ros2-turtlebot3": {
 "jazzy": 13.9
@@ -10398,13 +11807,16 @@
 "jazzy": 4.5
 },
 "ros2-turtlebot3-fake-node": {
-"jazzy": 63.5
+"jazzy": 63.5,
+"lyrical": 23.0
 },
 "ros2-turtlebot3-gazebo": {
-"jazzy": 44.3
+"jazzy": 44.3,
+"lyrical": 39.8
 },
 "ros2-turtlebot3-msgs": {
-"jazzy": 17.5
+"jazzy": 17.5,
+"lyrical": 16.2
 },
 "ros2-turtlebot3-navigation2": {
 "jazzy": 4.0
@@ -10413,7 +11825,8 @@
 "jazzy": 40.3
 },
 "ros2-turtlebot3-simulations": {
-"jazzy": 4.5
+"jazzy": 4.5,
+"lyrical": 4.1
 },
 "ros2-turtlebot3-teleop": {
 "jazzy": 2.7
@@ -10467,124 +11880,167 @@
 "jazzy": 11.7
 },
 "ros2-turtlesim": {
-"jazzy": 45.4
+"jazzy": 45.4,
+"lyrical": 31.5
+},
+"ros2-turtlesim-msgs": {
+"lyrical": 15.9
 },
 "ros2-twist-mux": {
-"jazzy": 29.5
+"jazzy": 29.5,
+"lyrical": 28.9
 },
 "ros2-twist-mux-msgs": {
-"jazzy": 12.4
+"jazzy": 12.4,
+"lyrical": 10.6
 },
 "ros2-twist-stamper": {
-"jazzy": 8.3
+"jazzy": 8.3,
+"lyrical": 2.6
 },
 "ros2-type-description-interfaces": {
-"jazzy": 19.6
+"jazzy": 19.6,
+"lyrical": 16.7
 },
 "ros2-ublox": {
-"jazzy": 3.7
+"jazzy": 3.7,
+"lyrical": 3.7
 },
 "ros2-ublox-dgnss": {
-"jazzy": 4.8
+"jazzy": 4.8,
+"lyrical": 4.9
 },
 "ros2-ublox-dgnss-node": {
-"jazzy": 89.0
+"jazzy": 89.0,
+"lyrical": 109.1
 },
 "ros2-ublox-gps": {
-"jazzy": 66.7
+"jazzy": 66.7,
+"lyrical": 83.1
 },
 "ros2-ublox-msgs": {
-"jazzy": 106.7
+"jazzy": 106.7,
+"lyrical": 113.8
 },
 "ros2-ublox-nav-sat-fix-hp-node": {
-"jazzy": 25.2
+"jazzy": 25.2,
+"lyrical": 27.5
 },
 "ros2-ublox-serialization": {
-"jazzy": 3.2
+"jazzy": 3.2,
+"lyrical": 3.0
 },
 "ros2-ublox-ubx-interfaces": {
-"jazzy": 11.5
+"jazzy": 11.5,
+"lyrical": 10.6
 },
 "ros2-ublox-ubx-msgs": {
-"jazzy": 69.4
+"jazzy": 69.4,
+"lyrical": 81.8
 },
 "ros2-udp-driver": {
-"jazzy": 20.1
+"jazzy": 20.1,
+"lyrical": 21.1
 },
 "ros2-udp-msgs": {
-"jazzy": 9.7
+"jazzy": 9.7,
+"lyrical": 10.9
 },
 "ros2-uncrustify-vendor": {
-"jazzy": 7.3
+"jazzy": 7.3,
+"lyrical": 3.1
 },
 "ros2-unique-identifier-msgs": {
-"jazzy": 8.2
+"jazzy": 8.2,
+"lyrical": 6.9
 },
 "ros2-ur": {
-"jazzy": 5.1
+"jazzy": 5.1,
+"lyrical": 3.6
 },
 "ros2-ur-calibration": {
-"jazzy": 19.2
+"jazzy": 19.2,
+"lyrical": 23.7
 },
 "ros2-ur-client-library": {
-"jazzy": 44.3
+"jazzy": 44.3,
+"lyrical": 45.8
 },
 "ros2-ur-controllers": {
-"jazzy": 41.2
+"jazzy": 41.2,
+"lyrical": 45.4
 },
 "ros2-ur-dashboard-msgs": {
-"jazzy": 49.0
+"jazzy": 49.0,
+"lyrical": 57.7
 },
 "ros2-ur-description": {
-"jazzy": 14.0
+"jazzy": 14.0,
+"lyrical": 12.1
 },
 "ros2-ur-moveit-config": {
-"jazzy": 4.4
+"jazzy": 4.4,
+"lyrical": 23.1
 },
 "ros2-ur-msgs": {
-"jazzy": 40.9
+"jazzy": 40.9,
+"lyrical": 37.7
 },
 "ros2-ur-robot-driver": {
-"jazzy": 61.3
+"jazzy": 61.3,
+"lyrical": 77.6
 },
 "ros2-ur-simulation-gz": {
-"jazzy": 9.8
+"jazzy": 9.8,
+"lyrical": 3.8
 },
 "ros2-urdf": {
-"jazzy": 11.4
+"jazzy": 11.4,
+"lyrical": 7.0
 },
 "ros2-urdf-launch": {
-"jazzy": 7.5
+"jazzy": 7.5,
+"lyrical": 14.4
 },
 "ros2-urdf-parser-plugin": {
-"jazzy": 3.5
+"jazzy": 3.5,
+"lyrical": 3.4
 },
 "ros2-urdf-tutorial": {
-"jazzy": 3.4
+"jazzy": 3.4,
+"lyrical": 3.4
 },
 "ros2-urdfdom": {
-"jazzy": 1.6
+"jazzy": 1.6,
+"lyrical": 0.9
 },
 "ros2-urdfdom-headers": {
-"jazzy": 1.1
+"jazzy": 1.1,
+"lyrical": 0.8
 },
 "ros2-urdfdom-py": {
-"jazzy": 1.0
+"jazzy": 1.0,
+"lyrical": 0.8
 },
 "ros2-urg-c": {
-"jazzy": 3.9
+"jazzy": 3.9,
+"lyrical": 3.5
 },
 "ros2-urg-node": {
-"jazzy": 16.0
+"jazzy": 16.0,
+"lyrical": 16.8
 },
 "ros2-urg-node-msgs": {
-"jazzy": 7.5
+"jazzy": 7.5,
+"lyrical": 7.4
 },
 "ros2-usb-cam": {
-"jazzy": 20.0
+"jazzy": 20.0,
+"lyrical": 23.2
 },
 "ros2-v4l2-camera": {
-"jazzy": 20.5
+"jazzy": 20.5,
+"lyrical": 24.4
 },
 "ros2-vector-pursuit-controller": {
 "jazzy": 16.7
@@ -10593,103 +12049,138 @@
 "jazzy": 10.8
 },
 "ros2-velodyne": {
-"jazzy": 3.7
+"jazzy": 3.7,
+"lyrical": 3.5
 },
 "ros2-velodyne-description": {
 "jazzy": 3.4
 },
 "ros2-velodyne-driver": {
-"jazzy": 22.2
+"jazzy": 22.2,
+"lyrical": 22.7
 },
 "ros2-velodyne-laserscan": {
-"jazzy": 17.0
+"jazzy": 17.0,
+"lyrical": 17.4
 },
 "ros2-velodyne-msgs": {
-"jazzy": 8.0
+"jazzy": 8.0,
+"lyrical": 7.6
 },
 "ros2-velodyne-pointcloud": {
-"jazzy": 35.1
+"jazzy": 35.1,
+"lyrical": 33.4
 },
 "ros2-vision-msgs": {
-"jazzy": 21.1
+"jazzy": 21.1,
+"lyrical": 22.9
 },
 "ros2-vision-msgs-rviz-plugins": {
-"jazzy": 45.3
+"jazzy": 45.3,
+"lyrical": 54.3
 },
 "ros2-vision-opencv": {
-"jazzy": 3.8
+"jazzy": 3.8,
+"lyrical": 2.9
 },
 "ros2-visp": {
-"jazzy": 2.8
+"jazzy": 2.8,
+"lyrical": 4.1
 },
 "ros2-visualization-msgs": {
-"jazzy": 22.4
+"jazzy": 22.4,
+"lyrical": 24.4
 },
 "ros2-warehouse-ros": {
-"jazzy": 17.8
+"jazzy": 17.8,
+"lyrical": 13.5
 },
 "ros2-warehouse-ros-sqlite": {
-"jazzy": 13.2
+"jazzy": 13.2,
+"lyrical": 16.2
 },
 "ros2-web-video-server": {
-"jazzy": 29.4
+"jazzy": 29.4,
+"lyrical": 38.8
 },
 "ros2-xacro": {
-"jazzy": 5.2
+"jazzy": 5.2,
+"lyrical": 4.2
 },
 "ros2-yaets": {
-"jazzy": 8.1
+"jazzy": 8.1,
+"lyrical": 4.7
 },
 "ros2-yaml-cpp-vendor": {
-"jazzy": 3.5
+"jazzy": 3.5,
+"lyrical": 3.9
 },
 "ros2-yasmin": {
-"jazzy": 37.7
+"jazzy": 37.7,
+"lyrical": 39.3
 },
 "ros2-yasmin-cli": {
-"jazzy": 3.5
+"jazzy": 3.5,
+"lyrical": 2.8
 },
 "ros2-yasmin-demos": {
-"jazzy": 43.6
+"jazzy": 43.6,
+"lyrical": 47.9
 },
 "ros2-yasmin-editor": {
-"jazzy": 8.6
+"jazzy": 8.6,
+"lyrical": 7.7
 },
 "ros2-yasmin-factory": {
-"jazzy": 32.3
+"jazzy": 32.3,
+"lyrical": 27.1
 },
 "ros2-yasmin-msgs": {
-"jazzy": 13.5
+"jazzy": 13.5,
+"lyrical": 11.9
 },
 "ros2-yasmin-pcl": {
-"jazzy": 32.5
+"jazzy": 32.5,
+"lyrical": 37.4
 },
 "ros2-yasmin-plugins-manager": {
-"jazzy": 6.4
+"jazzy": 6.4,
+"lyrical": 16.0
 },
 "ros2-yasmin-ros": {
-"jazzy": 27.1
+"jazzy": 27.1,
+"lyrical": 38.1
 },
 "ros2-yasmin-viewer": {
-"jazzy": 32.7
+"jazzy": 32.7,
+"lyrical": 29.2
 },
 "ros2-zed-description": {
-"jazzy": 5.0
+"jazzy": 5.0,
+"lyrical": 4.3
 },
 "ros2-zed-msgs": {
-"jazzy": 28.8
+"jazzy": 28.8,
+"lyrical": 31.3
 },
 "ros2-zenoh-cpp-vendor": {
-"jazzy": 8.4
+"jazzy": 8.4,
+"lyrical": 8.0
 },
 "ros2-zlib-point-cloud-transport": {
-"jazzy": 15.1
+"jazzy": 15.1,
+"lyrical": 16.5
+},
+"ros2-zstd-cmake-module": {
+"lyrical": 3.9
 },
 "ros2-zstd-image-transport": {
-"jazzy": 16.4
+"jazzy": 16.4,
+"lyrical": 16.6
 },
 "ros2-zstd-point-cloud-transport": {
-"jazzy": 15.5
+"jazzy": 15.5,
+"lyrical": 17.2
 },
 "ros2-zstd-vendor": {
 "jazzy": 4.6
