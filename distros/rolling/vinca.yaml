@@ -14,4 +14,3 @@ packages_skip:
   - if: osx or win
     then:
       - mujoco_ros2_control_plugins
-
