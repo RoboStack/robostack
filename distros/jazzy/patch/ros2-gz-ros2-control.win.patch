@@ -1,15 +1,7 @@
-diff --git a/src/gz_system.cpp b/src/gz_system.cpp
-index 7d9eab3..92c6f5c 100644
---- a/src/gz_system.cpp
-+++ b/src/gz_system.cpp
-@@ -51,6 +51,10 @@
- #include <hardware_interface/lexical_casts.hpp>
- #include <hardware_interface/types/hardware_interface_type_values.hpp>
- 
-+#ifdef ERROR
-+#undef ERROR
-+#endif
-+
- struct jointData
- {
-   /// \brief Joint's names.
+diff --git a/hooks/gz_ros2_control.dsv.in b/hooks/gz_ros2_control.dsv.in
+index afbcf3a..45a35f1 100644
+--- a/hooks/gz_ros2_control.dsv.in
++++ b/hooks/gz_ros2_control.dsv.in
+@@ -1 +1 @@
+-prepend-non-duplicate;GZ_SIM_SYSTEM_PLUGIN_PATH;@CMAKE_INSTALL_PREFIX@/lib
++prepend-non-duplicate;GZ_SIM_SYSTEM_PLUGIN_PATH;@CMAKE_INSTALL_PREFIX@/bin

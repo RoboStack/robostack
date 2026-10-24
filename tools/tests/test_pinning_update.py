@@ -34,3 +34,15 @@ def test_no_shared_update_when_every_distribution_has_its_own(monkeypatch, tmp_p
                         lambda d: calls.append(d) or maintenance.Result(d, d))
     maintenance.main("update-pinning", ["--summary", str(tmp_path / "s.md")])
     assert calls == ["humble", "jazzy", "rolling"]
+
+
+def test_pin_report_lists_the_direct_users():
+    changed = {"shaderc": ("2026.3", "2026.4"), "zig-compiler": (None, "zig"), "libgdal": (["11.4.2"], ["10.7.4", "11.4.3"])}
+    packages = {"gz_ogre_next_vendor": "uses shaderc", "gz_rendering_vendor": "depends on gz_ogre_next_vendor"}
+    lines = maintenance.pin_report(changed, packages)
+    assert lines[:3] == ["| changed pin | before → after | used directly by |", "|---|---|---|",
+                         "| `shaderc` | `2026.3` → `2026.4` | `gz_ogre_next_vendor` |"]
+    assert "- `libgdal`: `11.4.2` → `10.7.4, 11.4.3`" in lines
+    assert "- `zig-compiler`: `(none)` → `zig`" in lines
+    # nothing used: the folded list comes first
+    assert maintenance.pin_report({"zig-compiler": (None, "zig")}, {})[0] == "<details>"
