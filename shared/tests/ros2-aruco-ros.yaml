@@ -4,3 +4,7 @@ tests:
     then:
       script:
         - python -c "import os, subprocess, sys, time; p = subprocess.Popen([os.path.join(os.environ['PREFIX'], 'lib', 'aruco_ros', 'single')]); time.sleep(5); r = p.poll(); p.terminate(); sys.exit(0 if r is None else 1)"
+  - if: win
+    then:
+      script:
+        - if not exist %LIBRARY_LIB%\aruco_ros\single.exe exit 1
