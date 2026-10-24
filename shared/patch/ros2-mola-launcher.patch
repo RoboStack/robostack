@@ -49,17 +49,21 @@ diff --git a/src/MolaDLL_Loader.cpp b/src/MolaDLL_Loader.cpp
 diff --git a/src/MolaLauncherApp.cpp b/src/MolaLauncherApp.cpp
 --- a/src/MolaLauncherApp.cpp
 +++ b/src/MolaLauncherApp.cpp
-@@ -119,6 +119,14 @@
+@@ -119,6 +119,18 @@
    // do not filter these ones by *directory* name, since *filenames* will be
    // filtered later on:
    from_env_var_to_list("LD_LIBRARY_PATH", lib_search_paths_);
 +
 +  // conda/RoboStack environments do not set LD_LIBRARY_PATH: also search
-+  // <prefix>/lib for every prefix in AMENT_PREFIX_PATH.
++  // <prefix>/lib (<prefix>/bin for Windows DLLs) for every prefix in AMENT_PREFIX_PATH.
 +  {
 +    std::vector<std::string> prefixes;
 +    from_env_var_to_list("AMENT_PREFIX_PATH", prefixes);
++#if defined(_WIN32)
++    for (const auto& prefix : prefixes) safe_add_to_list(prefix + "/bin", lib_search_paths_);
++#else
 +    for (const auto& prefix : prefixes) safe_add_to_list(prefix + "/lib", lib_search_paths_);
++#endif
 +  }
  }
  

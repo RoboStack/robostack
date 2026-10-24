@@ -186,6 +186,7 @@ packages_select_by_deps:
   - mocap4r2_msgs
   - mocap4r2_robot_gt
   - mocap4r2_robot_gt_msgs
+  - mola # requested in https://github.com/RoboStack/robostack/issues/106
   - motion_capture_tracking
   - mouse_teleop
   - moveit
@@ -554,7 +555,6 @@ packages_select_by_deps:
       - med14_moveit_config
       - med7_moveit_config
       - mobile_robot_simulator
-      - mola # requested in https://github.com/RoboStack/robostack/issues/106; Windows not tried yet
       - octomap_server
       - openvdb_vendor
       - orbbec_camera_msgs
