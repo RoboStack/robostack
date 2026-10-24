@@ -126,6 +126,7 @@ def build_ci_parallel(distro: str, recipes: list[str], args: list[str], cwd: Pat
     (ros-<distro>-<name>) only repackage, but wait for others while building alongside:
     they are left out (build_timings gives them ALIAS_SECONDS)."""
     span: dict[str, list[str]] = {}  # recipe -> [first, last] timestamp
+    finished: set[str] = set()
 
     def show(line: bytes) -> None:
         try:
@@ -136,6 +137,8 @@ def build_ci_parallel(distro: str, recipes: list[str], args: list[str], cwd: Pat
             # the build itself: rattler-build renders every recipe up front
             if name and any(s.get("name") == "Running build for" for s in spans):
                 span.setdefault(name, [entry["timestamp"]] * 2)[1] = entry["timestamp"]
+                if str(entry["fields"].get("message", "")).startswith("Archive written to"):
+                    finished.add(name)
             text = f"{entry['timestamp'][11:19]} [{name or '-'}] {entry['fields'].get('message', '')}\n"
             sys.stdout.write(text)
         except (ValueError, KeyError, AttributeError, TypeError):
@@ -144,6 +147,9 @@ def build_ci_parallel(distro: str, recipes: list[str], args: list[str], cwd: Pat
 
     args = [*args, "--parallel-builds", PARALLEL_BUILDS, "--log-style", "json"]
     rc = run_build(rattler_build(distro, args, skip_existing=False), cwd, show)
+    if rc != 0 and (unfinished := sorted(set(span) - finished)):
+        # rattler-build's final error doesn't say which of the parallel builds it is from
+        print(f"Started but not finished: {', '.join(unfinished)}", file=sys.stderr, flush=True)
     if rc == 0 and os.environ.get("GITHUB_ACTIONS"):
         import build_timings  # for packing the build jobs by time
         from datetime import datetime
