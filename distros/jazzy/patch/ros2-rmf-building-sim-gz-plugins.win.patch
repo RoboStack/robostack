@@ -1,0 +1,40 @@
+diff --git a/include/rmf_building_sim_gz_plugins/components/Door.hpp b/include/rmf_building_sim_gz_plugins/components/Door.hpp
+index 4de41c8..137cc7b 100644
+--- a/include/rmf_building_sim_gz_plugins/components/Door.hpp
++++ b/include/rmf_building_sim_gz_plugins/components/Door.hpp
+@@ -47,6 +47,9 @@ enum class DoorModeCmp
+   OPEN = 2
+ };
+ 
++// (MSVC) inside gz-sim's inline version namespace: a separate gz::sim::components next to
++// gz::sim::vN::components is ambiguous there (C2872), and Component/Factory aren't found
++inline namespace GZ_SIM_VERSION_NAMESPACE {
+ namespace components {
+ /// \brief A component used to describe an RMF door.
+ using Door = Component<DoorData, class DoorTag>;
+@@ -62,4 +65,5 @@ GZ_SIM_REGISTER_COMPONENT("rmf_components.DoorStateComp", DoorStateComp)
+ }
+ }
+ }
++}
+ #endif
+diff --git a/include/rmf_building_sim_gz_plugins/components/Lift.hpp b/include/rmf_building_sim_gz_plugins/components/Lift.hpp
+index a68a2b8..6f91357 100644
+--- a/include/rmf_building_sim_gz_plugins/components/Lift.hpp
++++ b/include/rmf_building_sim_gz_plugins/components/Lift.hpp
+@@ -57,6 +57,9 @@ struct LiftCommand
+   DoorModeCmp door_state;
+ };
+ 
++// (MSVC) inside gz-sim's inline version namespace: a separate gz::sim::components next to
++// gz::sim::vN::components is ambiguous there (C2872), and Component/Factory aren't found
++inline namespace GZ_SIM_VERSION_NAMESPACE {
+ namespace components {
+ /// \brief A component used to describe an RMF lift.
+ using Lift = Component<LiftData, class LiftTag>;
+@@ -68,4 +71,5 @@ GZ_SIM_REGISTER_COMPONENT("rmf_components.LiftCmd", LiftCmd)
+ }
+ }
+ }
++}
+ #endif
