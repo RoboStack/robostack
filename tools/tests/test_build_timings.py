@@ -9,8 +9,10 @@ def test_note_records_build_times(tmp_path, monkeypatch):
     monkeypatch.setattr(build_timings.rs, "work_dir", lambda distro: tmp_path)
     build_timings.note("jazzy", "ros2-a", 12.34)
     build_timings.note("jazzy", "ros-jazzy-a", 1.0)
+    build_timings.note("jazzy", "ros2-a", 2.0, upload=True)
     entries = [json.loads(line) for line in (tmp_path / build_timings.JOURNAL).read_text().splitlines()]
-    assert [(e["recipe"], e["seconds"]) for e in entries] == [("ros2-a", 12.3), ("ros-jazzy-a", 1.0)]
+    assert [(e["recipe"], e["seconds"], e.get("upload", False)) for e in entries] == [
+        ("ros2-a", 12.3, False), ("ros-jazzy-a", 1.0, False), ("ros2-a", 2.0, True)]
     assert all(e["platform"] for e in entries)
 
 
@@ -19,7 +21,10 @@ def test_collect_merges_the_runs_journals(tmp_path, monkeypatch):
     runs = [{"databaseId": 2, "headBranch": "buildbranch_jazzy_linux_64", "createdAt": "2026-10-22T02:00:00Z"},
             {"databaseId": 1, "headBranch": "buildbranch_jazzy_linux_64", "createdAt": "2026-10-22T01:00:00Z"},
             {"databaseId": 3, "headBranch": "buildbranch_lyrical_linux_64", "createdAt": "2026-10-22T03:00:00Z"}]
-    journals = {1: [("ros2-a", 10.0), ("ros2-b", 5.0), ("ros-jazzy-a", 0.2)], 2: [("ros2-a", 12.0)], 3: [("ros2-a", 20.0)]}
+    # (recipe, seconds, upload): the uploads come after the job's builds
+    journals = {1: [("ros2-a", 10.0, False), ("ros2-b", 5.0, False), ("ros-jazzy-a", 0.2, False), ("ros2-b", 1.0, True)],
+                2: [("ros2-a", 12.0, False), ("ros2-a", 2.0, True), ("ros-jazzy-a", 1.0, True)],
+                3: [("ros2-a", 20.0, False)]}
 
     def run(cmd, **kwargs):
         if cmd[1:3] == ["run", "list"]:
@@ -28,23 +33,24 @@ def test_collect_merges_the_runs_journals(tmp_path, monkeypatch):
         job = Path(cmd[cmd.index("--dir") + 1]) / "stage_0_job_0-1"
         job.mkdir(parents=True)
         (job / build_timings.JOURNAL).write_text("".join(
-            json.dumps({"platform": "linux-64", "recipe": r, "seconds": s}) + "\n" for r, s in journals[run_id]))
+            json.dumps({"platform": "linux-64", "recipe": r, "seconds": s, **({"upload": True} if u else {})}) + "\n"
+            for r, s, u in journals[run_id]))
         return subprocess.CompletedProcess(cmd, 0, b"", b"")
 
     monkeypatch.setattr(build_timings.subprocess, "run", run)
     assert build_timings.collect() == 4  # the compatibility recipe is not kept
-    # the newer jazzy run wins; each distribution keeps its own time; compatibility
-    # recipes aren't kept; one recipe per line
+    # the newer jazzy run wins; each distribution keeps its own time, build plus uploads;
+    # compatibility recipes aren't kept, their uploads count for ros2-<name>; one recipe per line
     text = (tmp_path / "timings" / "linux-64.json").read_text()
-    assert json.loads(text) == {"ros2-a": {"jazzy": 12.0, "lyrical": 20.0}, "ros2-b": {"jazzy": 5.0}}
-    assert text.splitlines()[1] == '"ros2-a": {"jazzy": 12.0, "lyrical": 20.0},'
+    assert json.loads(text) == {"ros2-a": {"jazzy": 15.0, "lyrical": 20.0}, "ros2-b": {"jazzy": 6.0}}
+    assert text.splitlines()[1] == '"ros2-a": {"jazzy": 15.0, "lyrical": 20.0},'
     # vinca-gha gets the average over the distributions
     out = tmp_path / "vinca.json"
     assert build_timings.vinca_timings("humble", "linux-64", out)
     assert json.loads(out.read_text()) == {
-        "recipes": {"ros2-a": 16.0, "ros2-b": 5.0, "ros-humble-a": build_timings.ALIAS_SECONDS,
+        "recipes": {"ros2-a": 17.5, "ros2-b": 6.0, "ros-humble-a": build_timings.ALIAS_SECONDS,
                     "ros-humble-b": build_timings.ALIAS_SECONDS},
-        "default": 10.5}
+        "default": 11.75}
     assert not build_timings.vinca_timings("humble", "win-64", out)
 
 
