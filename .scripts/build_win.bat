@@ -1,6 +1,10 @@
 
 setlocal EnableExtensions EnableDelayedExpansion
 
+:: Defender's real-time scan slows down installing and deleting the environments'
+:: files several times over; the runner is thrown away after the job
+powershell -NoProfile -Command "Set-MpPreference -DisableRealtimeMonitoring $true"
+
 set CONDA_BLD_PATH=C:\bld
 echo "PATH is %PATH%"
 

@@ -177,6 +177,9 @@ jobs:
       if: runner.os == 'Windows'
       shell: pwsh
       run: |
+        # Defender's real-time scan slows down installing and deleting the environments'
+        # files several times over; the runner is thrown away after the job
+        Set-MpPreference -DisableRealtimeMonitoring $true
         "CONDA_BLD_PATH=C:\bld\" | Out-File -FilePath $env:GITHUB_ENV -Append
         New-Item -ItemType Directory -Force -Path C:\bld | Out-Null
         New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
