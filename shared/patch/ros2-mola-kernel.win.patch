@@ -1,0 +1,17 @@
+diff --git a/include/mola_kernel/interfaces/DiagnosticsProvider.h b/include/mola_kernel/interfaces/DiagnosticsProvider.h
+index 9ee9be8..fb7423d 100644
+--- a/include/mola_kernel/interfaces/DiagnosticsProvider.h
++++ b/include/mola_kernel/interfaces/DiagnosticsProvider.h
+@@ -22,6 +22,12 @@
+ #include <string>
+ #include <vector>
+ 
++// windows.h (wingdi.h) defines ERROR, which breaks DiagnosticLevel::ERROR below
++// (the generated diagnostic_msgs headers do the same)
++#if defined(_WIN32) && defined(ERROR)
++#undef ERROR
++#endif
++
+ namespace mola
+ {
+ /** \addtogroup mola_kernel_interfaces_grp
