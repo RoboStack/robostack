@@ -51,3 +51,16 @@ index 9d7ad43..5cb6d95 100644
  };
  
  /// Implementation detail for the on_motion_fn object.
+diff --git a/include/beluga/sensor/ndt_sensor_model.hpp b/include/beluga/sensor/ndt_sensor_model.hpp
+index 21d4d6f..35aff49 100644
+--- a/include/beluga/sensor/ndt_sensor_model.hpp
++++ b/include/beluga/sensor/ndt_sensor_model.hpp
+@@ -271,7 +271,7 @@ NDTMapRepresentationT load_from_hdf5(const std::filesystem::path& path_to_hdf5_f
+     throw std::invalid_argument(ss.str());
+   }
+ 
+-  const H5::H5File file(path_to_hdf5_file, H5F_ACC_RDONLY);
++  const H5::H5File file(path_to_hdf5_file.string(), H5F_ACC_RDONLY);
+   const H5::DataSet means_dataset = file.openDataSet("means");
+   const H5::DataSet covariances_dataset = file.openDataSet("covariances");
+   const H5::DataSet resolution_dataset = file.openDataSet("resolution");
