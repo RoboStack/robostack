@@ -1,0 +1,29 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 8832292..4bafab9 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -34,11 +34,10 @@ find_package(libmavconn REQUIRED)
+ find_package(eigen3_cmake_module REQUIRED)
+ find_package(Eigen3 REQUIRED)
+ 
+-## Find GeographicLib
+-# Append to CMAKE_MODULE_PATH since debian/ubuntu installs
+-# FindGeographicLib.cmake in a nonstand location
+-set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH};/usr/share/cmake/geographiclib")
+-find_package(GeographicLib REQUIRED)
++# Find GeographicLib
++# Use CONFIG mode to find GeographicLib from conda package
++# (libmavconn already sets CMAKE_MODULE_PATH for CheckGeographicLibDatasets)
++find_package(GeographicLib REQUIRED CONFIG)
+ 
+ find_package(angles REQUIRED)
+ find_package(eigen_stl_containers REQUIRED)
+@@ -170,6 +169,8 @@ target_link_libraries(mavros_extras_plugins PUBLIC
+   ${mavros_LIBRARIES}
+ )
+ pluginlib_export_plugin_description_file(mavros mavros_plugins.xml)
++# Link GeographicLib - not handled by ament_target_dependencies
++target_link_libraries(mavros_extras_plugins PUBLIC ${GeographicLib_LIBRARIES})
+ 
+ add_library(mavros_extras SHARED
+   # [[[cog:
