@@ -338,6 +338,7 @@ packages_select_by_deps:
   - simulation_interfaces
   - slam_toolbox
   - smacc2_msgs
+  - small_gicp_vendor
   - stubborn_buddies
   - system_modes
   - teleop_tools
