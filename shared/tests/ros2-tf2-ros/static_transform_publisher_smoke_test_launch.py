@@ -30,7 +30,9 @@ def static_transform_publisher():
         additional_env={
             "RMW_IMPLEMENTATION": "rmw_zenoh_cpp",
             "RCUTILS_LOGGING_USE_STDOUT": "1",
-            "ZENOH_ROUTER_CHECK_ATTEMPTS": "10",
+            # the router can take a while on a loaded machine (a full rebuild runs the
+            # tests next to the builds)
+            "ZENOH_ROUTER_CHECK_ATTEMPTS": "30",
         },
     )
 
@@ -54,5 +56,7 @@ def test_node_initializes(static_transform_publisher, launch_context):
         launch_context,
         static_transform_publisher,
         validate_output,
-        timeout=10,
+        # on timeout the test shuts the context down, and the still-starting node then
+        # aborts ("could not create publisher: context_impl is shutdown")
+        timeout=60,
     )

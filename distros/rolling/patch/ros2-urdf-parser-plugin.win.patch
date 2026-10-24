@@ -1,17 +1,18 @@
 diff --git a/include/urdf_parser_plugin/parser.h b/include/urdf_parser_plugin/parser.h
-index 2d9922d..d68abaf 100644
+index b62735b..c0ab36f 100644
 --- a/include/urdf_parser_plugin/parser.h
 +++ b/include/urdf_parser_plugin/parser.h
-@@ -31,9 +31,13 @@
- #ifndef URDF_PARSER_PLUGIN__PARSER_H_
- #define URDF_PARSER_PLUGIN__PARSER_H_
- 
+@@ -34,10 +34,14 @@
+ #ifdef _MSC_VER
+ #pragma message("This header is obsolete, please include urdf_parser_plugin/parser.hpp instead")
+ #else
 +#ifdef _MSC_VER
 +#pragma message ("This header is obsolete, please include urdf_parser_plugin/parser.hpp instead")
 +#else
  #warning \
    This header is obsolete, please include \
    urdf_parser_plugin/parser.hpp instead
+ #endif
 +#endif
  
  #include <urdf_parser_plugin/parser.hpp>

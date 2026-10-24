@@ -1,3 +1,18 @@
+diff --git a/3rdparty/Qt-Advanced-Docking/CMakeLists.txt b/3rdparty/Qt-Advanced-Docking/CMakeLists.txt
+index 1df6d5d..ac3bb85 100644
+--- a/3rdparty/Qt-Advanced-Docking/CMakeLists.txt
++++ b/3rdparty/Qt-Advanced-Docking/CMakeLists.txt
+@@ -79,7 +79,9 @@ target_link_libraries(qt_advanced_docking PUBLIC Qt5::Core Qt5::Gui Qt5::Widgets
+ if(UNIX AND NOT APPLE)
+     target_include_directories(qt_advanced_docking PRIVATE ${Qt5Gui_PRIVATE_INCLUDE_DIRS})
+     target_link_libraries(qt_advanced_docking PUBLIC Qt5::X11Extras)
+-    target_link_libraries(qt_advanced_docking PRIVATE xcb)
++    find_package(XCB REQUIRED)
++    target_link_libraries(qt_advanced_docking PRIVATE ${XCB_LIBRARIES})
++    target_include_directories(qt_advanced_docking SYSTEM PUBLIC ${XCB_INCLUDE_DIRS})
+ endif()
+ 
+ set_target_properties(qt_advanced_docking PROPERTIES
 diff --git a/3rdparty/qwt/src/CMakeLists.txt b/3rdparty/qwt/src/CMakeLists.txt
 index 51e6f08..8971eca 100644
 --- a/3rdparty/qwt/src/CMakeLists.txt
@@ -11,10 +26,10 @@ index 51e6f08..8971eca 100644
  
  target_compile_definitions(plotjuggler_qwt PUBLIC QWT_MOC_INCLUDE)
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 4dab779..2c0fc4b 100644
+index 9fa9dc9..a0729ec 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -133,11 +133,9 @@ find_package(
+@@ -132,11 +132,9 @@ find_package(
  set(QT_LINK_LIBRARIES
      Qt5::Core
      Qt5::Widgets
@@ -26,7 +41,7 @@ index 4dab779..2c0fc4b 100644
      Qt5::WebSockets)
  
  if(NOT CMAKE_BUILD_TYPE)
-@@ -240,6 +238,22 @@ else()
+@@ -243,6 +241,22 @@ else()
                                        ${PLOTJUGGLER_BASE_MOCS})
  endif()
  
@@ -122,6 +137,21 @@ index 5591fa1..95342b3 100644
  {
    Q_OBJECT
  
+diff --git a/plotjuggler_base/include/PlotJuggler/range_slider.h b/plotjuggler_base/include/PlotJuggler/range_slider.h
+index 38e6766..a2682ec 100644
+--- a/plotjuggler_base/include/PlotJuggler/range_slider.h
++++ b/plotjuggler_base/include/PlotJuggler/range_slider.h
+@@ -7,7 +7,9 @@
+ 
+ #include <functional>
+ 
+-class RangeSlider : public QWidget
++#include "PlotJuggler/pj_export.h"
++
++class PJ_BASE_EXPORT RangeSlider : public QWidget
+ {
+   Q_OBJECT
+   Q_ENUMS(RangeSliderTypes)
 diff --git a/plotjuggler_base/include/PlotJuggler/statepublisher_base.h b/plotjuggler_base/include/PlotJuggler/statepublisher_base.h
 index 6b4bb61..b5e0e47 100644
 --- a/plotjuggler_base/include/PlotJuggler/statepublisher_base.h

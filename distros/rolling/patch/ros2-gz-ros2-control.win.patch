@@ -1,8 +1,18 @@
+diff --git a/hooks/gz_ros2_control.dsv.in b/hooks/gz_ros2_control.dsv.in
+index afbcf3a..45a35f1 100644
+--- a/hooks/gz_ros2_control.dsv.in
++++ b/hooks/gz_ros2_control.dsv.in
+@@ -1 +1 @@
+-prepend-non-duplicate;GZ_SIM_SYSTEM_PLUGIN_PATH;@CMAKE_INSTALL_PREFIX@/lib
++prepend-non-duplicate;GZ_SIM_SYSTEM_PLUGIN_PATH;@CMAKE_INSTALL_PREFIX@/bin
 diff --git a/src/gz_system.cpp b/src/gz_system.cpp
-index 5c9952b9..d5554d2c 100644
+index 5ac9614..3e6fbf0 100644
 --- a/src/gz_system.cpp
 +++ b/src/gz_system.cpp
-@@ -51,3 +51,7 @@
+@@ -67,6 +67,10 @@ struct InterfaceData
+   hardware_interface::CommandInterface::SharedPtr command;
+ };
+ 
 +#ifdef ERROR
 +#undef ERROR
 +#endif
