@@ -156,3 +156,23 @@ def test_build_ci_parallel_times_each_build(tmp_path, monkeypatch, capsys):
     assert [(r, round(s, 2)) for r, s in noted] == [("ros2-a", 6.61), ("ros2-b", 12.39)]
     out = capsys.readouterr().out
     assert "07:00:01 [ros2-a] Fetching source" in out and "not json" in out
+
+
+def test_build_ci_parallel_names_the_unfinished_builds(tmp_path, monkeypatch, capsys):
+    import robostack
+
+    def line(t, recipe, message):
+        return (json.dumps({"timestamp": f"2026-10-24T07:00:{t:02d}.0Z", "fields": {"message": message},
+                            "spans": [{"recipe": recipe, "name": "Running build for"}]}) + "\n").encode()
+
+    def run_build(cmd, cwd, show=None):
+        for entry in (line(1, "ros2-a-1.0-h0_1", "Fetching source"), line(2, "ros2-b-1.0-h0_1", "Applying patch"),
+                      line(3, "ros2-a-1.0-h0_1", "Archive written to '/bld/ros2-a-1.0-h0_1.conda'"),
+                      b"Error:   x Patch application error\n"):
+            show(entry)
+        return 1
+
+    monkeypatch.setattr(robostack, "run_build", run_build)
+    monkeypatch.setattr(robostack, "rattler_build", lambda distro, args, skip_existing=True: ["rattler-build", *args])
+    assert robostack.build_ci_parallel("rolling", ["ros2-a", "ros2-b"], ["--recipe", "a", "--recipe", "b"], tmp_path) == 1
+    assert "Started but not finished: ros2-b" in capsys.readouterr().err
