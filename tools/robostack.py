@@ -112,9 +112,9 @@ NETWORK_RETRIES = 4
 NETWORK_WAIT = 60  # doubled on each retry: 1, 2, 4, 8 minutes
 
 
-# a build job's recipes side by side; on Linux and macOS a shared jobserver keeps them at
-# the runner's cores in total (Windows has none)
-PARALLEL_BUILDS = "2" if sys.platform == "win32" else f"3:{os.cpu_count()}"
+# a build job's recipes side by side, with a shared jobserver keeping them at the runner's
+# cores in total; Windows has no jobserver, and was no faster with two (#154)
+PARALLEL_BUILDS = "1" if sys.platform == "win32" else f"3:{os.cpu_count()}"
 
 
 def build_ci_parallel(distro: str, recipes: list[str], args: list[str], cwd: Path) -> int:
