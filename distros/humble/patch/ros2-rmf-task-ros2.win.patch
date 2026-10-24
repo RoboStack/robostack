@@ -1,0 +1,33 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 48c9e42..fe49fde 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -28,14 +28,26 @@ find_package(nlohmann_json_schema_validator REQUIRED)
+ file(GLOB_RECURSE core_lib_srcs "src/rmf_task_ros2/*.cpp")
+ add_library(rmf_task_ros2 SHARED ${core_lib_srcs})
+ 
++if(MSVC)
++  # No explicit dllexport annotations anywhere in this target, so
++  # without this MSVC produces the .dll but no companion .lib, and
++  # rmf_task_dispatcher/rmf_bidder_node fail with LNK1181. Only 5
++  # source files here (vs. rmf_traffic_ros2's 26), so the LNK1189
++  # 65535-object import-lib limit isn't a concern.
++  set_target_properties(rmf_task_ros2 PROPERTIES
++    WINDOWS_EXPORT_ALL_SYMBOLS ON)
++endif()
++
+ target_link_libraries(rmf_task_ros2
+   PUBLIC
+     rmf_api_msgs::rmf_api_msgs
+     rmf_traffic::rmf_traffic
+     rmf_traffic_ros2::rmf_traffic_ros2
+     rmf_websocket::rmf_websocket
+-    ${rmf_task_msgs_LIBRARIES}
+-    ${rclcpp_LIBRARIES}
++    # (Windows) imported targets instead of ${..._LIBRARIES}: their repeated paths overflowed
++    # link.exe's command line limit (LNK1170)
++    rmf_task_msgs::rmf_task_msgs
++    rclcpp::rclcpp
+     nlohmann_json::nlohmann_json
+     nlohmann_json_schema_validator
+ )
