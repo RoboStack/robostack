@@ -230,6 +230,9 @@ def test_build_distros_labels_override_the_changed_ones():
     assert rs.build_distros(["humble", "jazzy"], ["automerge"]) == ["humble", "jazzy"]
     assert rs.build_distros(rs.distros(), ["build:humble", "automerge"]) == ["humble"]
     assert rs.build_distros([], ["build:rolling", "build:humble"]) == ["humble", "rolling"]
+    # only the checks
+    assert rs.build_distros(rs.distros(), ["build:none"]) == []
+    assert rs.build_distros(rs.distros(), ["build:none", "build:humble"]) == []
     with pytest.raises(SystemExit):
         rs.build_distros([], ["build:kinetic"])
 
@@ -243,3 +246,61 @@ def test_run_build_retries_network_errors(tmp_path, monkeypatch):
     # a real build failure is not retried
     script.write_text('echo "error: expected ;"; exit 1\n')
     assert rs.run_build(["bash", str(script)], rs.ROOT) == 1
+
+
+def test_build_retries_when_the_channel_index_lags(monkeypatch, tmp_path):
+    import subprocess
+
+    outputs = [
+        b"Error:   x Failed to resolve dependencies\n"
+        b"  `-> Cannot solve the request because of: ros2-rcpputils * cannot be\n"
+        b"      installed because there are no viable options:\n"
+        b"      |  `-- ros2-distro-mutex 0.21.* lyrical_*, for which no candidates were\n"
+        b"      found.\n",
+        b"built\n",
+    ]
+    calls = []
+
+    class FakePopen:
+        def __init__(self, cmd, **kwargs):
+            calls.append(cmd)
+            self.stdout = iter(outputs[len(calls) - 1].splitlines(keepends=True))
+            self.returncode = 1 if len(calls) == 1 else 0
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+    monkeypatch.setattr(subprocess, "Popen", FakePopen)
+    monkeypatch.setattr(rs.time, "sleep", lambda seconds: None)
+    assert rs.run_build(["rattler-build", "build"], rs.ROOT) == 0
+    assert len(calls) == 2  # retried once the index has the package
+
+
+def test_on_anaconda_retries_network_errors(monkeypatch):
+    import urllib.error
+    import urllib.request
+    from pathlib import Path
+
+    calls = []
+
+    def urlopen(request, timeout):
+        calls.append(request.full_url)
+        if len(calls) < 3:
+            raise urllib.error.URLError("[Errno 8] nodename nor servname provided, or not known")
+        raise urllib.error.HTTPError(request.full_url, 404, "Not Found", {}, None)
+
+    monkeypatch.setattr(urllib.request, "urlopen", urlopen)
+    monkeypatch.setattr(rs.time, "sleep", lambda seconds: None)
+    assert rs.on_anaconda("robostack-lyrical", Path("osx-64/ros2-a-1.0.0-h_30.conda")) is False
+    assert len(calls) == 3
+
+
+def test_uploads_retry_five_times_waiting_longer(monkeypatch):
+    calls, waits = [], []
+    monkeypatch.setattr(rs, "run", lambda cmd, cwd: calls.append(cmd) or (0 if len(calls) == 5 else 1))
+    monkeypatch.setattr(rs.time, "sleep", waits.append)
+    assert rs.retry(["upload"], rs.ROOT, "anaconda.org") == 0
+    assert waits == [30, 60, 120, 240]

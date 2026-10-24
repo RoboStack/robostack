@@ -15,14 +15,12 @@ index 8d23a299a..f58c62831 100644
  endif()
  
  ament_vendor(ogre_vendor
-diff --git a/patches/0005-fix-macos-arm64.patch b/patches/0005-fix-macos-arm64.patch
+diff --git a/patches/0008-fix-macos-sysroot.patch b/patches/0008-fix-macos-sysroot.patch
 new file mode 100644
-index 000000000..9494cc9ae
 --- /dev/null
-+++ b/patches/0005-fix-macos-arm64.patch
-@@ -0,0 +1,19 @@
++++ b/patches/0008-fix-macos-sysroot.patch
+@@ -0,0 +1,18 @@
 +diff --git a/CMakeLists.txt b/CMakeLists.txt
-+index f4d8fd4..ffae9c8 100644
 +--- a/CMakeLists.txt
 ++++ b/CMakeLists.txt
 +@@ -270,14 +270,6 @@ elseif(EMSCRIPTEN)
@@ -31,7 +29,7 @@ index 000000000..9494cc9ae
 + 
 +-  set(XCODE_ATTRIBUTE_SDKROOT macosx)
 +-  if(CMAKE_GENERATOR STREQUAL "Unix Makefiles")
-+-    execute_process(COMMAND xcodebuild -version -sdk "${XCODE_ATTRIBUTE_SDKROOT}" Path | head -n 1 OUTPUT_VARIABLE CMAKE_OSX_SYSROOT)
++-    execute_process(COMMAND xcrun --sdk macosx --show-sdk-path OUTPUT_VARIABLE CMAKE_OSX_SYSROOT)
 +-    string(REGEX REPLACE "(\r?\n)+$" "" CMAKE_OSX_SYSROOT "${CMAKE_OSX_SYSROOT}")
 +-  else()
 +-    set(CMAKE_OSX_SYSROOT macosx)
