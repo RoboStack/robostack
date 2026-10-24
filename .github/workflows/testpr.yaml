@@ -251,6 +251,9 @@ jobs:
         extra=()
         # shorter work dirs for MAX_PATH on Windows
         [ "$PLATFORM" == "win-64" ] && extra+=(--no-build-id)
+        # independent recipes side by side; on Linux and macOS a shared jobserver keeps
+        # them at the runner's cores in total (Windows has none: two at a time there)
+        if [ "$PLATFORM" == "win-64" ]; then extra+=(--parallel-builds 2); else extra+=(--parallel-builds "3:$(getconf _NPROCESSORS_ONLN)"); fi
         pixi run rs "$DISTRO" build --target-platform "$PLATFORM" "${extra[@]}" 2>&1 | tee rattler-build.log
         status=${PIPESTATUS[0]}
         echo "exit-code=${status}" >> "$GITHUB_OUTPUT"
