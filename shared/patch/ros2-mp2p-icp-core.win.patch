@@ -1,0 +1,64 @@
+diff --git a/mp2p_icp_common/src/load_plugin.cpp b/mp2p_icp_common/src/load_plugin.cpp
+index c3cf7d7..48d26eb 100644
+--- a/mp2p_icp_common/src/load_plugin.cpp
++++ b/mp2p_icp_common/src/load_plugin.cpp
+@@ -29,6 +29,11 @@ namespace fs = std::filesystem;
+ 
+ #if defined(__unix__) || defined(__APPLE__)
+ #include <dlfcn.h>
++#elif defined(_WIN32)
++#ifndef NOMINMAX
++#define NOMINMAX
++#endif
++#include <windows.h>  // LoadLibraryA()
+ #endif
+ 
+ namespace
+@@ -79,6 +84,16 @@ void mp2p_icp::load_plugin(
+         return load_plugin(fs::path(moduleToLoad).replace_extension(".dylib").string(), logger);
+     }
+ #endif
++#if defined(_WIN32)
++    // Plugin names are usually given as "lib<name>.so": MSVC builds "<name>.dll".
++    if (fs::path(moduleToLoad).extension() == ".so")
++    {
++        auto p    = fs::path(moduleToLoad).replace_extension(".dll");
++        auto name = p.filename().string();
++        if (name.rfind("lib", 0) == 0) p.replace_filename(name.substr(3));
++        return load_plugin(p.string(), logger);
++    }
++#endif
+ 
+     if (!fs::path(moduleToLoad).is_relative())
+     {
+@@ -96,7 +111,11 @@ void mp2p_icp::load_plugin(
+         {
+             std::vector<std::string> prefixes;
+             from_env_var_to_list("AMENT_PREFIX_PATH", prefixes);
++#if defined(_WIN32)
++            for (const auto& prefix : prefixes) safe_add_to_list(prefix + "/bin", lstPath);
++#else
+             for (const auto& prefix : prefixes) safe_add_to_list(prefix + "/lib", lstPath);
++#endif
+         }
+ 
+         for (const auto& p : lstPath)
+@@ -128,11 +147,17 @@ void mp2p_icp::load_plugin(
+     void* handle = dlopen(absPath.c_str(), RTLD_LAZY);
+ 
+ #else
+-    HMODULE    handle = LoadLibrary(absPath.c_str());
++    void* handle = LoadLibraryA(absPath.c_str());
+ #endif
+     if (handle == nullptr)
+     {
++#if defined(_WIN32)
++        const std::string err_str =
++            mrpt::format("LoadLibrary() error code %lu", static_cast<unsigned long>(GetLastError()));
++        const char* err = err_str.c_str();
++#else
+         const char* err = dlerror();
++#endif
+         if (!err)
+         {
+             err = "(error calling dlerror())";

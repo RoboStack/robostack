@@ -90,3 +90,16 @@ index ec376eb..6dcee68 100644
  #endif
    }
    loaded_lib_handled.clear();
+diff --git a/src/MolaLauncherApp.cpp b/src/MolaLauncherApp.cpp
+index d939bfe..37be9fc 100644
+--- a/src/MolaLauncherApp.cpp
++++ b/src/MolaLauncherApp.cpp
+@@ -99,7 +99,7 @@ std::string relative_to_abs_path(
+   if (f.is_relative())
+   {
+     f = fs::path(*basePath) / f;
+-    return f;
++    return f.string();  // no implicit conversion on Windows (wchar_t paths)
+   }
+   else
+     return path;
