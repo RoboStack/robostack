@@ -260,6 +260,7 @@ packages_select_by_deps:
   - realsense2_camera
   - realsense2_description
   - realtime_tools
+  - rko_lio # LiDAR-inertial odometry (PRBonn); requested in https://github.com/RoboStack/ros-kilted/pull/104
   - rmf_demos
   - rmw
   - rmw_stats_shim
