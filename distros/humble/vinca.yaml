@@ -6,12 +6,10 @@ rosdistro_additional_recipes: rosdistro_additional_recipes.yaml
 # Qt5 for the Qt5 rosdep keys (see robostack.yaml); layered over shared/robostack.yaml
 conda_index: [robostack.yaml]
 
-build_number: 20
+build_number: 22
 
 mutex_package:
-  # new build without run_constraints (same version as the published ones)
-  build_number: 21
-  version: "0.10.0"
+  version: "0.11.0"
 
 packages_exclude:
 

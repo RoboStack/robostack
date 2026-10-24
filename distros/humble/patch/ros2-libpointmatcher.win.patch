@@ -1,34 +1,35 @@
-diff --git a/pointmatcher/Timer.h b/pointmatcher/Timer.h
-index 316dbe2..ed85931 100644
---- a/pointmatcher/Timer.h
-+++ b/pointmatcher/Timer.h
-@@ -74,10 +74,24 @@ namespace PointMatcherSupport
- 	};
- } // namespace PointMatcherSupport
- #else // _POSIX_TIMERS
--#include <boost/timer.hpp>
-+// boost::timer (v1) is deprecated and, as of Boost 1.90, <boost/timer.hpp>
-+// hard-errors unless BOOST_TIMER_ENABLE_DEPRECATED is defined. Avoid the
-+// dependency entirely with a minimal std::chrono-based replacement that
-+// keeps the same interface (default-construct starts, restart(), elapsed()).
-+#include <chrono>
- namespace PointMatcherSupport
- {
--	typedef boost::timer timer;
-+	struct timer
-+	{
-+		timer() { restart(); }
-+		void restart() { _start = std::chrono::steady_clock::now(); }
-+		double elapsed() const
-+		{
-+			return std::chrono::duration<double>(std::chrono::steady_clock::now() - _start).count();
-+		}
-+	private:
-+		std::chrono::steady_clock::time_point _start;
-+	};
- }
- #endif // _POSIX_TIMERS
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 596179b..c073720 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -365,7 +365,13 @@ file(GLOB_RECURSE POINTMATCHER_HEADERS "pointmatcher/*.h")
+ # In CMake >=3.4 we can easily build shared libraries in Mac and Windows.
+ # No need to distinguish between operating systems while building targets
  
+-add_library(pointmatcher ${POINTMATCHER_SRC} ${POINTMATCHER_HEADERS} )
++if(WIN32)
++  # no dllexport annotations, and too many symbols to export them all (LNK1189):
++  # a static library on Windows
++  add_library(pointmatcher STATIC ${POINTMATCHER_SRC} ${POINTMATCHER_HEADERS} )
++else()
++  add_library(pointmatcher ${POINTMATCHER_SRC} ${POINTMATCHER_HEADERS} )
++endif()
+ 
+ target_include_directories(pointmatcher PUBLIC
+   $<INSTALL_INTERFACE:>
+diff --git a/pointmatcher/DataPointsFilters/SpectralDecomposition.cpp b/pointmatcher/DataPointsFilters/SpectralDecomposition.cpp
+index cddcbbc..9a1100e 100644
+--- a/pointmatcher/DataPointsFilters/SpectralDecomposition.cpp
++++ b/pointmatcher/DataPointsFilters/SpectralDecomposition.cpp
+@@ -143,7 +143,7 @@ void SpectralDecompositionDataPointsFilter<T>::addDescriptor(DataPoints& pts, co
+ 	if(keepLabels_ or keepLambdas_)
+ 	{
+ 	#pragma omp parallel for
+-		for(std::size_t i = 0; i < nbPts; ++i)
++		for(std::ptrdiff_t i = 0; i < static_cast<std::ptrdiff_t>(nbPts); ++i)
+ 		{
+ 			const T lambda1 = tv.surfaceness(i) + tv.curveness(i) + tv.pointness(i);
+ 			const T lambda2 = tv.curveness(i) + tv.pointness(i);
 diff --git a/pointmatcher/DataPointsFilters/utils/sparsetv.hpp b/pointmatcher/DataPointsFilters/utils/sparsetv.hpp
 index b75e990..8f3fd48 100644
 --- a/pointmatcher/DataPointsFilters/utils/sparsetv.hpp
@@ -141,16 +142,34 @@ index b75e990..8f3fd48 100644
  	{
  		surfaceness(i) = sparseStick(i)(0) / k;
  		curveness(i) = sparsePlate(i)(0) / k;
-diff --git a/pointmatcher/DataPointsFilters/SpectralDecomposition.cpp b/pointmatcher/DataPointsFilters/SpectralDecomposition.cpp
-index cddcbbc..9a1100e 100644
---- a/pointmatcher/DataPointsFilters/SpectralDecomposition.cpp
-+++ b/pointmatcher/DataPointsFilters/SpectralDecomposition.cpp
-@@ -143,7 +143,7 @@ void SpectralDecompositionDataPointsFilter<T>::addDescriptor(DataPoints& pts, co
- 	if(keepLabels_ or keepLambdas_)
- 	{
- 	#pragma omp parallel for
--		for(std::size_t i = 0; i < nbPts; ++i)
-+		for(std::ptrdiff_t i = 0; i < static_cast<std::ptrdiff_t>(nbPts); ++i)
- 		{
- 			const T lambda1 = tv.surfaceness(i) + tv.curveness(i) + tv.pointness(i);
- 			const T lambda2 = tv.curveness(i) + tv.pointness(i);
+diff --git a/pointmatcher/Timer.h b/pointmatcher/Timer.h
+index 316dbe2..ed85931 100644
+--- a/pointmatcher/Timer.h
++++ b/pointmatcher/Timer.h
+@@ -74,10 +74,24 @@ namespace PointMatcherSupport
+ 	};
+ } // namespace PointMatcherSupport
+ #else // _POSIX_TIMERS
+-#include <boost/timer.hpp>
++// boost::timer (v1) is deprecated and, as of Boost 1.90, <boost/timer.hpp>
++// hard-errors unless BOOST_TIMER_ENABLE_DEPRECATED is defined. Avoid the
++// dependency entirely with a minimal std::chrono-based replacement that
++// keeps the same interface (default-construct starts, restart(), elapsed()).
++#include <chrono>
+ namespace PointMatcherSupport
+ {
+-	typedef boost::timer timer;
++	struct timer
++	{
++		timer() { restart(); }
++		void restart() { _start = std::chrono::steady_clock::now(); }
++		double elapsed() const
++		{
++			return std::chrono::duration<double>(std::chrono::steady_clock::now() - _start).count();
++		}
++	private:
++		std::chrono::steady_clock::time_point _start;
++	};
+ }
+ #endif // _POSIX_TIMERS
+ 
