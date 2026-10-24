@@ -1,0 +1,48 @@
+diff --git a/apps/mola-cli.cpp b/apps/mola-cli.cpp
+index 2bd97ff..d77ceda 100644
+--- a/apps/mola-cli.cpp
++++ b/apps/mola-cli.cpp
+@@ -23,7 +23,11 @@
+ #include <mrpt/core/exceptions.h>
+ #include <mrpt/rtti/CObject.h>
+ #include <mrpt/system/filesystem.h>
++#if defined(_WIN32)
++#include <io.h>  // _write()
++#else
+ #include <unistd.h>  // write()
++#endif
+ 
+ #include <CLI/CLI.hpp>
+ #include <atomic>
+@@ -48,7 +52,11 @@ void mola_signal_handler([[maybe_unused]] int s)
+   // raw write() to stderr. The actual shutdown (which logs, sleeps and joins
+   // threads) is done by the main thread as soon as spin() returns.
+   static const char           msg[] = "\nTermination signal caught. Shutting down...\n";
++#if defined(_WIN32)
++  [[maybe_unused]] const auto n = ::_write(2, msg, sizeof(msg) - 1);
++#else
+   [[maybe_unused]] const auto n     = ::write(STDERR_FILENO, msg, sizeof(msg) - 1);
++#endif
+ 
+   if (auto* app = theApp.load())
+   {
+@@ -58,6 +66,11 @@ void mola_signal_handler([[maybe_unused]] int s)
+ 
+ void mola_install_signal_handler()
+ {
++#if defined(_WIN32)
++  // No sigaction() on Windows:
++  std::signal(SIGINT, &mola_signal_handler);
++  std::signal(SIGTERM, &mola_signal_handler);
++#else
+   struct sigaction sigIntHandler;
+ 
+   sigIntHandler.sa_handler = &mola_signal_handler;
+@@ -71,6 +84,7 @@ void mola_install_signal_handler()
+   // the main MOLA loop keeps running, so the process never exits and lingers
+   // with its ROS 2 endpoints still advertised but no longer served.
+   sigaction(SIGTERM, &sigIntHandler, nullptr);
++#endif
+ }
+ 
+ // Default task for mola-cli: launching a SLAM system
