@@ -81,6 +81,8 @@ cuda_compiler:
 cuda_compiler_version:
   - None
   - 12.9                         # [((linux and (x86_64 or aarch64)) or win64) and os.environ.get("CF_CUDA_ENABLED", "False") == "True"]
+  # libopencv 5.0.0 builds for openexr 3.5 need qt6-main >= 6.12, but pyqt6 6.11 (via
+  # qt6-multimedia 6.11) still requires qt6-main 6.11: stay on openexr 3.4 until pyqt6 is rebuilt
 cuda_compiler_version_min:
   - None                       # [not ((linux and (x86_64 or aarch64)) or win64)]
   - 12.9                       # [((linux and (x86_64 or aarch64)) or win64)]
@@ -916,7 +918,7 @@ oneloop:
 openblas:
   - 0.3.*
 openexr:
-  - 3.4
+  - '3.4'
 openh264:
   - 2.6.0
 openjpeg:
@@ -1002,7 +1004,6 @@ python:
 python_impl:
   - cpython
 
-  # ros-lyrical specific (distros/lyrical/distro.yaml)
 python_min:
   # minimum supported python version per CFEP-25
   # bump to next minor version when we drop python versions
