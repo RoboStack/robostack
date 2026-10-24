@@ -1,0 +1,50 @@
+diff --git a/motion_planning_rviz_plugin/src/interactive_marker_display.cpp b/motion_planning_rviz_plugin/src/interactive_marker_display.cpp
+index d0a4e0c..0064e39 100644
+--- a/motion_planning_rviz_plugin/src/interactive_marker_display.cpp
++++ b/motion_planning_rviz_plugin/src/interactive_marker_display.cpp
+@@ -34,6 +34,8 @@
+ #include <vector>
+ 
+ #include <rviz_common/properties/bool_property.hpp>
++#include <rviz_common/frame_manager_iface.hpp>
++#include <rviz_common/logging.hpp>
+ #include <rviz_common/validate_floats.hpp>
+ #include <rviz_common/display_context.hpp>
+ 
+diff --git a/planning_scene_rviz_plugin/src/planning_scene_display.cpp b/planning_scene_rviz_plugin/src/planning_scene_display.cpp
+index 903854a..1ad4553 100644
+--- a/planning_scene_rviz_plugin/src/planning_scene_display.cpp
++++ b/planning_scene_rviz_plugin/src/planning_scene_display.cpp
+@@ -41,6 +41,8 @@
+ #include <moveit/rviz_plugin_render_tools/octomap_render.hpp>
+ 
+ #include <rviz_common/transformation/transformation_manager.hpp>
++#include <rviz_common/frame_manager_iface.hpp>
++#include <rviz_common/logging.hpp>
+ #include <rviz_default_plugins/robot/robot.hpp>
+ #include <rviz_default_plugins/robot/robot_link.hpp>
+ 
+diff --git a/robot_state_rviz_plugin/src/robot_state_display.cpp b/robot_state_rviz_plugin/src/robot_state_display.cpp
+index e8c9134..07d6514 100644
+--- a/robot_state_rviz_plugin/src/robot_state_display.cpp
++++ b/robot_state_rviz_plugin/src/robot_state_display.cpp
+@@ -45,6 +45,7 @@
+ #include <rviz_default_plugins/robot/robot_link.hpp>
+ 
+ #include <rviz_common/properties/property.hpp>
++#include <rviz_common/logging.hpp>
+ #include <rviz_common/properties/string_property.hpp>
+ #include <rviz_common/properties/bool_property.hpp>
+ #include <rviz_common/properties/float_property.hpp>
+diff --git a/rviz_plugin_render_tools/src/trajectory_visualization.cpp b/rviz_plugin_render_tools/src/trajectory_visualization.cpp
+index 05fabc6..a5b1cdc 100644
+--- a/rviz_plugin_render_tools/src/trajectory_visualization.cpp
++++ b/rviz_plugin_render_tools/src/trajectory_visualization.cpp
+@@ -45,6 +45,7 @@
+ #include <moveit/utils/logger.hpp>
+ #include <moveit/trajectory_processing/trajectory_tools.hpp>
+ #include <rviz_common/display_context.hpp>
++#include <rviz_common/logging.hpp>
+ #include <rviz_common/properties/bool_property.hpp>
+ #include <rviz_common/properties/color_property.hpp>
+ #include <rviz_common/properties/editable_enum_property.hpp>

@@ -1,8 +1,8 @@
 diff --git a/include/webots_ros2_control/Ros2ControlSystem.hpp b/include/webots_ros2_control/Ros2ControlSystem.hpp
-index 1a938e2..917049f 100644
+index 1a938e2..2f13c57 100644
 --- a/include/webots_ros2_control/Ros2ControlSystem.hpp
 +++ b/include/webots_ros2_control/Ros2ControlSystem.hpp
-@@ -52,11 +52,12 @@ namespace webots_ros2_control {
+@@ -52,25 +52,35 @@ namespace webots_ros2_control {
      Ros2ControlSystem();
      void init(webots_ros2_driver::WebotsNode *node, const hardware_interface::HardwareInfo &info) override;
  
@@ -17,11 +17,45 @@ index 1a938e2..917049f 100644
  #endif
      rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_activate(
        const rclcpp_lifecycle::State & /*previous_state*/) override;
+     rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn on_deactivate(
+       const rclcpp_lifecycle::State & /*previous_state*/) override;
+ 
+-    std::vector<hardware_interface::StateInterface> export_state_interfaces() override;
+-    std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
++    // ros2_control 6.12 handles own their value instead of aliasing a double*: export our own
++    // handles, synced with the Joint doubles in read()/write().
++    std::vector<hardware_interface::StateInterface::ConstSharedPtr> on_export_state_interfaces() override;
++    std::vector<hardware_interface::CommandInterface::SharedPtr> on_export_command_interfaces() override;
+     hardware_interface::return_type read(const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/) override;
+     hardware_interface::return_type write(const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/) override;
+ 
+   private:
++    template <typename InterfaceT> struct Binding {
++      typename InterfaceT::SharedPtr handle;
++      double *value;
++    };
++
+     webots_ros2_driver::WebotsNode *mNode;
+     std::vector<Joint> mJoints;
++    std::vector<Binding<hardware_interface::StateInterface>> mStateBindings;
++    std::vector<Binding<hardware_interface::CommandInterface>> mCommandBindings;
+   };
+ }  // namespace webots_ros2_control
+ 
 diff --git a/src/Ros2ControlSystem.cpp b/src/Ros2ControlSystem.cpp
-index df6c8c1..ba4b742 100644
+index df6c8c1..916a9e7 100644
 --- a/src/Ros2ControlSystem.cpp
 +++ b/src/Ros2ControlSystem.cpp
-@@ -90,18 +90,19 @@ namespace webots_ros2_control {
+@@ -18,6 +18,8 @@
+ #include <cmath>
+ #include <limits>
+ #include <memory>
++#include <string>
++#include <tuple>
+ #include <vector>
+ 
+ #include "hardware_interface/types/hardware_interface_type_values.hpp"
+@@ -90,18 +92,19 @@ namespace webots_ros2_control {
      }
    }
  
@@ -46,3 +80,82 @@ index df6c8c1..ba4b742 100644
          rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS) {
        return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::ERROR;
      }
+@@ -109,34 +112,41 @@ namespace webots_ros2_control {
+   }
+ #endif
+ 
+-  std::vector<hardware_interface::StateInterface> Ros2ControlSystem::export_state_interfaces() {
+-    std::vector<hardware_interface::StateInterface> interfaces;
++  std::vector<hardware_interface::StateInterface::ConstSharedPtr> Ros2ControlSystem::on_export_state_interfaces() {
++    std::vector<hardware_interface::StateInterface::ConstSharedPtr> interfaces;
++    mStateBindings.clear();
++    auto add = [&](const std::string &name, const std::string &interface, double *value) {
++      auto handle = std::make_shared<hardware_interface::StateInterface>(name, interface);
++      std::ignore = handle->set_value(*value, true);
++      mStateBindings.push_back({handle, value});
++      interfaces.push_back(handle);
++    };
+     for (Joint &joint : mJoints)
+       if (joint.sensor) {
+-        interfaces.emplace_back(
+-          hardware_interface::StateInterface(joint.name, hardware_interface::HW_IF_POSITION, &(joint.position)));
+-        interfaces.emplace_back(
+-          hardware_interface::StateInterface(joint.name, hardware_interface::HW_IF_VELOCITY, &(joint.velocity)));
+-        interfaces.emplace_back(
+-          hardware_interface::StateInterface(joint.name, hardware_interface::HW_IF_ACCELERATION, &(joint.acceleration)));
++        add(joint.name, hardware_interface::HW_IF_POSITION, &joint.position);
++        add(joint.name, hardware_interface::HW_IF_VELOCITY, &joint.velocity);
++        add(joint.name, hardware_interface::HW_IF_ACCELERATION, &joint.acceleration);
+       }
+-
+     return interfaces;
+   }
+ 
+-  std::vector<hardware_interface::CommandInterface> Ros2ControlSystem::export_command_interfaces() {
+-    std::vector<hardware_interface::CommandInterface> interfaces;
++  std::vector<hardware_interface::CommandInterface::SharedPtr> Ros2ControlSystem::on_export_command_interfaces() {
++    std::vector<hardware_interface::CommandInterface::SharedPtr> interfaces;
++    mCommandBindings.clear();
++    auto add = [&](const std::string &name, const std::string &interface, double *value) {
++      auto handle = std::make_shared<hardware_interface::CommandInterface>(name, interface);
++      std::ignore = handle->set_value(*value, true);
++      mCommandBindings.push_back({handle, value});
++      interfaces.push_back(handle);
++    };
+     for (Joint &joint : mJoints)
+       if (joint.motor) {
+         if (joint.controlPosition)
+-          interfaces.emplace_back(
+-            hardware_interface::CommandInterface(joint.name, hardware_interface::HW_IF_POSITION, &(joint.positionCommand)));
++          add(joint.name, hardware_interface::HW_IF_POSITION, &joint.positionCommand);
+         if (joint.controlEffort)
+-          interfaces.emplace_back(
+-            hardware_interface::CommandInterface(joint.name, hardware_interface::HW_IF_EFFORT, &(joint.effortCommand)));
++          add(joint.name, hardware_interface::HW_IF_EFFORT, &joint.effortCommand);
+         if (joint.controlVelocity)
+-          interfaces.emplace_back(
+-            hardware_interface::CommandInterface(joint.name, hardware_interface::HW_IF_VELOCITY, &(joint.velocityCommand)));
++          add(joint.name, hardware_interface::HW_IF_VELOCITY, &joint.velocityCommand);
+       }
+     return interfaces;
+   }
+@@ -169,10 +179,19 @@ namespace webots_ros2_control {
+       }
+     }
+ 
++    // non-blocking: on a lock miss the controllers see the previous state
++    for (const auto &binding : mStateBindings)
++      std::ignore = binding.handle->set_value(*binding.value, false);
+     return hardware_interface::return_type::OK;
+   }
+ 
+   hardware_interface::return_type Ros2ControlSystem::write(const rclcpp::Time & /*time*/, const rclcpp::Duration & /*period*/) {
++    // non-blocking: on a lock miss the previous command stays
++    for (const auto &binding : mCommandBindings) {
++      double command = *binding.value;
++      if (binding.handle->get_value(command, false))
++        *binding.value = command;
++    }
+     for (Joint &joint : mJoints) {
+       if (joint.motor) {
+         if (joint.controlPosition && !std::isnan(joint.positionCommand))

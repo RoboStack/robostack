@@ -48,8 +48,9 @@ class TestRobotStatePublisher(unittest.TestCase):
     def test_node_output(self, proc_output):
         # robot_state_publisher logs "Robot initialized" once the URDF is loaded
         # (older releases, e.g. humble, log "got segment ..." for each link instead).
+        # generous timeouts: a full rebuild runs the tests next to the builds
         proc_output.assertWaitFor(
-            expected_output=re.compile("Robot initialized|got segment"), timeout=10, stream='stderr'
+            expected_output=re.compile("Robot initialized|got segment"), timeout=60, stream='stderr'
         )
 
     def test_parameter_service(self):
@@ -64,7 +65,7 @@ class TestRobotStatePublisher(unittest.TestCase):
                 GetParameters, '/robot_state_publisher/get_parameters'
             )
             self.assertTrue(
-                client.wait_for_service(timeout_sec=10.0),
+                client.wait_for_service(timeout_sec=60.0),
                 'robot_state_publisher parameter service was not ready'
             )
 
@@ -72,7 +73,7 @@ class TestRobotStatePublisher(unittest.TestCase):
             request.names = ['robot_description']
             future = client.call_async(request)
             rclpy.spin_until_future_complete(
-                node, future, executor=executor, timeout_sec=10.0
+                node, future, executor=executor, timeout_sec=60.0
             )
 
             self.assertTrue(future.done(), 'parameter request timed out')
