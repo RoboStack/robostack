@@ -131,3 +131,5 @@ urdfdom_headers:
 # Remove build_number fields below on new full rebuild
 zenoh_cpp_vendor:
   additional_cmake_args: "-DAMENT_VENDOR_POLICY=NEVER_VENDOR_IGNORE_SATISFIED_CHECK -DUSE_SYSTEM_ZENOH=ON"
+gz_ogre_next_vendor:
+  build_number: 28

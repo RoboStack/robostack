@@ -49,8 +49,11 @@ gz_msgs_vendor:
   add_host: ["gz-msgs10"]
   add_run: ["gz-msgs10"]
 gz_ogre_next_vendor:
+  # wraps conda-forge's ogre-next (no OGRE-Next build): no shaderc, as in lyrical
   add_host: ["ogre-next"]
   add_run: ["ogre-next"]
+  remove_host: ["shaderc"]
+  remove_run: ["shaderc"]
 gz_physics_vendor:
   add_host: ["gz-physics7"]
   add_run: ["gz-physics7"]
