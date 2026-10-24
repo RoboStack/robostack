@@ -1,0 +1,17 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index c890ff0..ff1d32a 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,6 +1,12 @@
+ cmake_minimum_required(VERSION 3.5)
+ project(rmf_building_sim_gz_classic_plugins)
+ 
++if(MSVC)
++  # windows.h (Menge, Gazebo) min/max macros break std::numeric_limits<...>::max() (C2589);
++  # M_PI needs _USE_MATH_DEFINES
++  add_compile_definitions(NOMINMAX _USE_MATH_DEFINES)
++endif()
++
+ find_package(Qt5 COMPONENTS Widgets REQUIRED)
+ set(CMAKE_AUTOMOC ON)
+ 
