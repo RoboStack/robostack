@@ -192,18 +192,49 @@ def bump_rebuild(distro: str) -> list[str]:
 FULL_REBUILD_SHARE = 0.5
 
 
-def plan_rebuild(distro: str, old_cbc: str) -> tuple[dict[str, str], int]:
+def _pin_values(value) -> list[str]:
+    return [str(v) for v in (value if isinstance(value, list) else [] if value is None else [value])]
+
+
+def plan_rebuild(distro: str, old_cbc: str) -> tuple[dict[str, str], int, dict[str, tuple]]:
     """Packages of the distribution that the change from old_cbc to its current
-    conda_build_config.yaml has to rebuild (with the reason), and how many packages
-    it has (vinca-rebuild-plan)."""
+    conda_build_config.yaml has to rebuild (with the reason), how many packages it has
+    (vinca-rebuild-plan), and the changed pins ({name: (before, after)})."""
     from vinca import rebuild
 
     new = yaml.safe_load((rs.DISTROS / distro / "conda_build_config.yaml").read_text()) or {}
     changed = rebuild.changed_pins(yaml.safe_load(old_cbc) or {}, new)
+    # only the quoting changed (e.g. '6' -> 6): the same pin
+    changed = {k: v for k, v in changed.items() if _pin_values(v[0]) != _pin_values(v[1])}
     if not changed:
-        return {}, 0
+        return {}, 0, {}
     requirements, prefix = rebuild.requirements_from_vinca(rs.prepare(distro))
-    return rebuild.plan(requirements, changed, prefix), len(requirements)
+    return rebuild.plan(requirements, changed, prefix), len(requirements), changed
+
+
+def pin_report(changed: dict[str, tuple], packages: dict[str, str]) -> list[str]:
+    """The changed pins, those packages use first (with the packages using them
+    directly), the others folded away."""
+    users: dict[str, list[str]] = {}
+    for name, reason in packages.items():
+        if reason.startswith("uses "):
+            for pin in reason[len("uses "):].split(", "):
+                users.setdefault(pin, []).append(name)
+
+    def change(pin: str) -> str:
+        before, after = (", ".join(_pin_values(v)) or "(none)" for v in changed[pin])
+        return f"`{before}` → `{after}`"
+
+    used = sorted(p for p in changed if p in users)
+    unused = sorted(p for p in changed if p not in users)
+    lines = []
+    if used:
+        lines += ["| changed pin | before → after | used directly by |", "|---|---|---|"]
+        lines += [f"| `{p}` | {change(p)} | {', '.join(f'`{n}`' for n in sorted(users[p]))} |" for p in used]
+    if unused:
+        lines += ["" if lines else None, *_details(f"Changed pins no package uses ({len(unused)})",
+                                [f"- `{p}`: {change(p)}" for p in unused])]
+    return [line for line in lines if line is not None]
 
 
 def bump_partial(distro: str, packages: dict[str, str]) -> list[str]:
@@ -520,7 +551,8 @@ def _move_pinning(distros: list[str], before: tuple, version: str, migrations: l
         f"Moves **{who}** from conda-forge-pinning `{before[0]}` to `{version}` (`{where}`).",
         "",
         "Migrations: " + (", ".join(f"`{m}`" for m in migrations) or "none")
-        + (f"; new: {', '.join(f'`{m}`' for m in added)}" if added else "")
+        + (f"; **new: {', '.join(f'`{m}`' for m in added)}**" if added
+           else "; none new (the pins below change with conda-forge-pinning itself)")
         + (f"; finished (now part of the base pinning): {', '.join(f'`{m}`' for m in finished)}" if finished else "")
         + (f"; dropped: {', '.join(f'`{m}`' for m in removed)}" if removed else ""),
     ]
@@ -559,18 +591,23 @@ def _rebuild_for_pins(distro: str, before_cbc: str, conflicts_before) -> tuple[l
         return ["The rendered pins don't change: nothing to rebuild."], False
     lines = []
     print(f"Planning the rebuild of {distro}", flush=True)
-    packages, total = plan_rebuild(distro, before_cbc)
+    packages, total, changed = plan_rebuild(distro, before_cbc)
+    if not changed:
+        return ["Only the formatting of the rendered pins changes: nothing to rebuild."], False
+    lines += [*pin_report(changed, packages), ""]
     if not packages:
-        lines.append("The pins change, but no package uses them: nothing to rebuild.")
+        lines.append("No package uses a changed pin: nothing to rebuild.")
     elif total and len(packages) > FULL_REBUILD_SHARE * total:
         lines.append(f"**Full rebuild**: {len(packages)} of {total} packages use a changed pin or depend "
                      "on one. " + "; ".join(bump_rebuild(distro)))
     else:
-        lines.append(f"**Rebuild {len(packages)} of {total} packages** (they use a changed pin or depend "
-                     "on one): " + "; ".join(bump_partial(distro, packages)))
-        if packages:
-            lines += ["", *_details(f"Packages to rebuild ({len(packages)})", [
-                f"- `{name}`: {reason}" for name, reason in sorted(packages.items())])]
+        direct = sum(reason.startswith("uses ") for reason in packages.values())
+        lines.append(f"**Rebuild {len(packages)} of {total} packages**: {direct} "
+                     f"{'uses' if direct == 1 else 'use'} a changed pin, {len(packages) - direct} "
+                     f"{'depends' if len(packages) - direct == 1 else 'depend'} on one. " + "; ".join(bump_partial(distro, packages)))
+        lines += ["", *_details(f"Packages to rebuild ({len(packages)})", [
+            f"- `{name}`: {reason}" for name, reason in sorted(
+                packages.items(), key=lambda item: (not item[1].startswith("uses "), item[0]))])]
     conflicts_after = dependency_conflicts(distro)
     if conflicts_after is None or conflicts_before is None:
         conflicts = conflicts_after is None
