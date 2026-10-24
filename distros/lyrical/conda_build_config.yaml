@@ -1001,9 +1001,11 @@ python:
   # conda-forge supports only 3.14+ for win-arm64 and linux-riscv64
   # part of a zip_keys: python, is_python_min
   - 3.14.* *_cp314
+  - 3.12.* *_cpython
 python_impl:
   - cpython
 
+  # ros-lyrical specific (distros/lyrical/distro.yaml)
 python_min:
   # minimum supported python version per CFEP-25
   # bump to next minor version when we drop python versions
@@ -1013,6 +1015,7 @@ is_freethreading:
   - false
 is_python_min:
   # part of a zip_keys: python, is_python_min
+  - false
   - false
 is_abi3:
   - true

@@ -6,3 +6,8 @@ channel_name: robostack-lyrical
 upload_to: [prefix, anaconda]
 read_from: prefix
 rosdistro_sync: lyrical/2026-10-05
+pinning_overrides:
+  # build every python package for 3.14 (the shared default) and 3.12;
+  # is_python_min is zipped with python, so it needs one entry per version
+  python: [3.14.* *_cp314, 3.12.* *_cpython]
+  is_python_min: [false, false]
