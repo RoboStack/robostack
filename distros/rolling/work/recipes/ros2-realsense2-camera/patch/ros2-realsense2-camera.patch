@@ -1,0 +1,33 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index c30e112..0893ff9 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -36,11 +36,14 @@ option(USE_LIFECYCLE_NODE "Enable lifecycle nodes (ON/OFF)" OFF)
+ # Compiler Defense Flags
+ if(UNIX OR APPLE)
+   # Linker flags.
+-  if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel")
++  # NOTE: these are Linux/ELF-specific (-z is a GNU ld option; Apple's ld doesn't
++  # understand it at all and fails outright), so they must not apply on APPLE
++  # even though APPLE also sets UNIX.
++  if(NOT APPLE AND (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Intel"))
+     # GCC specific flags. ICC is compatible with them.
+     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -z noexecstack -z relro -z now")
+     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -z noexecstack -z relro -z now")
+-  elseif(${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
++  elseif(NOT APPLE AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
+     # In Clang, -z flags are not compatible, they need to be passed to linker via -Wl.
+     set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now")
+     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-z,noexecstack -Wl,-z,relro -Wl,-z,now")
+@@ -152,9 +155,9 @@ else()
+   set(SENSOR_MSGS_TARGET ${sensor_msgs_LIBRARIES})
+ endif()
+ 
+-find_package(realsense2 2.59.0)
++find_package(realsense2 2.58.3)  # conda-forge has no 2.59 yet (librealsense-feedstock#91)
+ if (BUILD_ACCELERATE_GPU_WITH_GLSL)
+-  find_package(realsense2-gl 2.59.0)
++  find_package(realsense2-gl 2.58.3)
+ endif()
+ if(NOT realsense2_FOUND)
+     message(FATAL_ERROR "\n\n RealSense SDK 2.0 is missing, please install it from https://github.com/realsenseai/librealsense/releases\n\n")
