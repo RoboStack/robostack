@@ -511,6 +511,7 @@ packages_select_by_deps:
 
   - if: not win
     then:
+      - aruco_ros # Windows not tried yet; requested in https://github.com/RoboStack/ros-lyrical/pull/87
       - as2_cli
       - as2_msgs
       - automatika_embodied_agents
