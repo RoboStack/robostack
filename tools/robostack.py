@@ -383,7 +383,14 @@ def task(distro: str, name: str, args: list[str]) -> int:
         rc = run(["vinca-sort-vinca-lists", *args, "vinca.yaml"], d)
         return rc or run(["vinca-sort-yaml-keys", *args, *files], d)
     if name == "upload":
-        return upload(distro, args, w if w.is_dir() else d)
+        started = time.monotonic()
+        rc = upload(distro, args, w if w.is_dir() else d)
+        if rc == 0 and len(args) == 1 and os.environ.get("GITHUB_ACTIONS"):
+            import build_timings  # uploads take long too (attestations, two channels)
+
+            recipe = Path(args[0]).name.removesuffix(".conda").removesuffix(".tar.bz2").rsplit("-", 2)[0]
+            build_timings.note(distro, recipe, time.monotonic() - started, upload=True)
+        return rc
     if name in ("update-snapshot", "find-stale", "update-pinning", "dependency-report"):
         import maintenance
 

@@ -1,12 +1,14 @@
 """Measured build times, for packing the build jobs by time (vinca-gha --timings).
 
 Each build-branch job records how long each of its recipes took to build (`rs <distro>
-build-ci`, in distros/<distro>/work/build_timings.jsonl) and keeps that file as an artifact
-(vinca-gha --keep-file). `robostack-bot update-build-timings` merges the last week's into
-shared/build_timings/<platform>.json, {recipe: {distro: seconds}}, one recipe per line, and
-`rs <distro> gha` hands vinca-gha each recipe's average over the distributions: a recipe new
-to one distribution still has a time (the names are the same, ros2-<package>). The
-compatibility recipes (ros-<distro>-<name>) aren't kept: they get ALIAS_SECONDS.
+build-ci`) and to upload (`rs <distro> upload`), in distros/<distro>/work/build_timings.jsonl,
+and keeps that file as an artifact (vinca-gha --keep-file). `robostack-bot
+update-build-timings` merges the last week's into shared/build_timings/<platform>.json,
+{recipe: {distro: seconds}}, one recipe per line, and `rs <distro> gha` hands vinca-gha
+each recipe's average over the distributions: a recipe new to one distribution still has a
+time (the names are the same, ros2-<package>). The compatibility recipes
+(ros-<distro>-<name>) aren't kept: they get ALIAS_SECONDS, and their uploads count for
+ros2-<name>, which they are built right after.
 
     pixi run python tools/build_timings.py   # what the bot command does
 """
@@ -31,18 +33,21 @@ JOURNAL = "build_timings.jsonl"
 ALIAS_SECONDS = 0.3
 
 
-def note(distro: str, recipe: str, seconds: float) -> None:
-    """Record a recipe's build time in the work directory's journal."""
+def note(distro: str, recipe: str, seconds: float, upload: bool = False) -> None:
+    """Record a recipe's build (or upload) time in the work directory's journal."""
     from vinca.platforms import get_conda_subdir
 
     entry = {"platform": get_conda_subdir(), "recipe": recipe, "seconds": round(seconds, 1)}
+    if upload:
+        entry["upload"] = True
     with (rs.work_dir(distro) / JOURNAL).open("a", encoding="utf-8") as fh:
         fh.write(json.dumps(entry) + "\n")
 
 
 def collect(days: int = 8) -> int:
     """Merge the build times the build-branch runs of the last `days` days recorded into
-    shared/build_timings/ (newer runs win); returns how many times were recorded."""
+    shared/build_timings/ (newer runs win), uploads added to the build that precedes them in
+    the job's journal; returns how many build times were recorded."""
     since = (datetime.now(timezone.utc) - timedelta(days=days)).strftime("%Y-%m-%d")
     runs = json.loads(subprocess.run(
         ["gh", "run", "list", "--repo", "RoboStack/robostack", "--workflow", "build.yaml", "--status", "completed",
@@ -59,9 +64,16 @@ def collect(days: int = 8) -> int:
             for journal in sorted(out.rglob(JOURNAL)):
                 for line in journal.read_text().splitlines():
                     entry = json.loads(line)
-                    if entry["recipe"].startswith(f"ros-{distro}-"):
+                    recipe, alias = entry["recipe"], f"ros-{distro}-"
+                    by_distro = files.setdefault(entry["platform"], {})
+                    if entry.get("upload"):
+                        times = by_distro.get(recipe.replace(alias, "ros2-", 1), {})
+                        if distro in times:
+                            times[distro] = round(times[distro] + entry["seconds"], 1)
+                        continue
+                    if recipe.startswith(alias):
                         continue  # a compatibility recipe: ALIAS_SECONDS
-                    files.setdefault(entry["platform"], {}).setdefault(entry["recipe"], {})[distro] = entry["seconds"]
+                    by_distro.setdefault(recipe, {})[distro] = entry["seconds"]
                     count += 1
     TIMINGS.mkdir(parents=True, exist_ok=True)
     for platform, recipes in files.items():
