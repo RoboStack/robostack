@@ -122,7 +122,9 @@ def build_ci_parallel(distro: str, recipes: list[str], args: list[str], cwd: Pat
     independent ones in parallel. Its JSON log tells which recipe each line belongs to:
     printed as "HH:MM:SS [recipe] message", and each recipe's time (first to last line of
     its build) is recorded for packing the build jobs, scaled so that the times add up to
-    the builds' wall time: overlapping builds share it."""
+    the builds' wall time: overlapping builds share it. The compatibility recipes
+    (ros-<distro>-<name>) only repackage, but wait for others while building alongside:
+    they are left out (build_timings gives them ALIAS_SECONDS)."""
     span: dict[str, list[str]] = {}  # recipe -> [first, last] timestamp
 
     def show(line: bytes) -> None:
@@ -146,7 +148,8 @@ def build_ci_parallel(distro: str, recipes: list[str], args: list[str], cwd: Pat
         import build_timings  # for packing the build jobs by time
         from datetime import datetime
 
-        times = {r: [datetime.fromisoformat(t.replace("Z", "+00:00")) for t in span[r]] for r in recipes if r in span}
+        times = {r: [datetime.fromisoformat(t.replace("Z", "+00:00")) for t in span[r]]
+                 for r in recipes if r in span and not r.startswith(f"ros-{distro}-")}
         measured = {r: (last - first).total_seconds() for r, (first, last) in times.items()}
         if times and sum(measured.values()):
             wall = (max(last for _, last in times.values()) - min(first for first, _ in times.values())).total_seconds()

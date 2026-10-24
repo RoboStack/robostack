@@ -132,7 +132,8 @@ def test_build_ci_parallel_times_each_build(tmp_path, monkeypatch, capsys):
 
     log = [line(0, "", "rattler-build 0.77.0"), line(1, "ros2-a-1.0-h0_1", "Fetching source"),
            line(5, "ros2-b-1.0-h0_1", "Fetching source"), line(9, "ros2-a-1.0-h0_1", "Artifact"),
-           line(20, "ros2-b-1.0-h0_1", "Artifact"), b"not json\n",
+           line(20, "ros2-b-1.0-h0_1", "Artifact"), line(21, "ros-jazzy-a-1.0-h0_1", "Fetching source"),
+           line(40, "ros-jazzy-a-1.0-h0_1", "Artifact"), b"not json\n",
            line(30, "ros2-a-1.0-h0_1", "summary", span="Build summary for")]
     shown = []
 
@@ -147,9 +148,11 @@ def test_build_ci_parallel_times_each_build(tmp_path, monkeypatch, capsys):
     monkeypatch.setattr(robostack, "rattler_build", lambda distro, args, skip_existing=True: ["rattler-build", *args])
     monkeypatch.setattr(build_timings, "note", lambda distro, recipe, seconds: noted.append((recipe, seconds)))
     monkeypatch.setenv("GITHUB_ACTIONS", "true")
-    assert robostack.build_ci_parallel("jazzy", ["ros2-a", "ros2-b"], ["--recipe", "a", "--recipe", "b"], tmp_path) == 0
+    assert robostack.build_ci_parallel("jazzy", ["ros2-a", "ros2-b", "ros-jazzy-a"],
+                                       ["--recipe", "a", "--recipe", "b", "--recipe", "c"], tmp_path) == 0
     # from each recipe's first to its last line in the build (8 s, 15 s), not the summary at
-    # the end, scaled to add up to the builds' wall time (19 s): overlapping builds share it
+    # the end, scaled to add up to the builds' wall time (19 s): overlapping builds share it;
+    # not the compatibility recipe
     assert [(r, round(s, 2)) for r, s in noted] == [("ros2-a", 6.61), ("ros2-b", 12.39)]
     out = capsys.readouterr().out
     assert "07:00:01 [ros2-a] Fetching source" in out and "not json" in out
