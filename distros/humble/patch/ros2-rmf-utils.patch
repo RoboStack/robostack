@@ -1,0 +1,26 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a93554f..a08c67a 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -14,6 +14,9 @@ include(GNUInstallDirs)
+ 
+ file(GLOB_RECURSE lib_srcs "src/rmf_utils/*.cpp")
+ add_library(rmf_utils SHARED ${lib_srcs})
++if(WIN32)
++  set_target_properties(rmf_utils PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
++endif()
+ 
+ target_include_directories(rmf_utils
+   PUBLIC
+diff --git a/include/rmf_utils/Modular.hpp b/include/rmf_utils/Modular.hpp
+index c994808..ca8397c 100644
+--- a/include/rmf_utils/Modular.hpp
++++ b/include/rmf_utils/Modular.hpp
+@@ -19,6 +19,7 @@
+ #define RMF_UTILS__MODULAR_HPP
+ 
+ #include <stdexcept>
++#include <string>
+ #include <limits>
+ #include <type_traits>
+ 

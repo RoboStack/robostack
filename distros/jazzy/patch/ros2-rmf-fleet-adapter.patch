@@ -1,0 +1,154 @@
+diff --git a/rmf_rxcpp/RxCpp-4.1.0/Rx/v2/src/rxcpp/rx-notification.hpp b/rmf_rxcpp/RxCpp-4.1.0/Rx/v2/src/rxcpp/rx-notification.hpp
+index 20e0c69..0fae30f 100644
+--- a/rmf_rxcpp/RxCpp-4.1.0/Rx/v2/src/rxcpp/rx-notification.hpp
++++ b/rmf_rxcpp/RxCpp-4.1.0/Rx/v2/src/rxcpp/rx-notification.hpp
+@@ -150,7 +150,6 @@ private:
+         }
+         on_error_notification(const on_error_notification& o) : ep(o.ep) {}
+         on_error_notification(const on_error_notification&& o) : ep(std::move(o.ep)) {}
+-        on_error_notification& operator=(on_error_notification o) { ep = std::move(o.ep); return *this; }
+         virtual void out(std::ostream& os) const {
+             os << "on_error(";
+             os << rxu::what(ep);
+diff --git a/src/full_control/main.cpp b/src/full_control/main.cpp
+index 6cde76f..e6b50c3 100644
+--- a/src/full_control/main.cpp
++++ b/src/full_control/main.cpp
+@@ -1039,8 +1039,12 @@ std::shared_ptr<Connections> make_fleet(
+       request_msg->fleet_name.empty())
+         return;
+ 
+-      connections->fleet->open_lanes(request_msg->open_lanes);
+-      connections->fleet->close_lanes(request_msg->close_lanes);
++      connections->fleet->open_lanes(
++        std::vector<std::size_t>(
++          request_msg->open_lanes.begin(), request_msg->open_lanes.end()));
++      connections->fleet->close_lanes(
++        std::vector<std::size_t>(
++          request_msg->close_lanes.begin(), request_msg->close_lanes.end()));
+ 
+       std::unordered_set<std::size_t> newly_closed_lanes;
+       for (const auto& l : request_msg->close_lanes)
+@@ -1093,7 +1097,9 @@ std::shared_ptr<Connections> make_fleet(
+         requests.push_back(std::move(request));
+       }
+       connections->fleet->limit_lane_speeds(requests);
+-      connections->fleet->remove_speed_limits(request_msg->remove_limits);
++      connections->fleet->remove_speed_limits(
++        std::vector<std::size_t>(
++          request_msg->remove_limits.begin(), request_msg->remove_limits.end()));
+     });
+ 
+   connections->interrupt_request_sub =
+diff --git a/src/rmf_fleet_adapter/LegacyTask.cpp b/src/rmf_fleet_adapter/LegacyTask.cpp
+index bdbb184..191d04a 100644
+--- a/src/rmf_fleet_adapter/LegacyTask.cpp
++++ b/src/rmf_fleet_adapter/LegacyTask.cpp
+@@ -22,7 +22,9 @@
+ 
+ #include <rxcpp/rx-observable.hpp>
+ 
++#if defined(__linux__)
+ #include <malloc.h>
++#endif
+ 
+ namespace rmf_fleet_adapter {
+ 
+@@ -157,7 +159,9 @@ void LegacyTask::_start_next_phase()
+     //
+     // TODO(MXG): Remove this when the planner has been made more
+     // memory-efficient.
++#if defined(__linux__)
+     malloc_trim(0);
++#endif
+ 
+     return;
+   }
+diff --git a/src/rmf_fleet_adapter/TaskManager.cpp b/src/rmf_fleet_adapter/TaskManager.cpp
+index 38cca49..2651d22 100644
+--- a/src/rmf_fleet_adapter/TaskManager.cpp
++++ b/src/rmf_fleet_adapter/TaskManager.cpp
+@@ -322,9 +322,9 @@ nlohmann::json& copy_phase_data(
+   phase_state["category"] = header.category();
+   phase_state["detail"] = header.detail();
+   phase_state["original_estimate_millis"] =
+-    std::max(0l, to_millis(header.original_duration_estimate()).count());
++    std::max<int64_t>(0, to_millis(header.original_duration_estimate()).count());
+   phase_state["estimate_millis"] =
+-    std::max(0l, to_millis(snapshot.estimate_remaining_time()).count());
++    std::max<int64_t>(0, to_millis(snapshot.estimate_remaining_time()).count());
+   phase_state["final_event_id"] = snapshot.final_event()->id();
+   auto& event_states = phase_state["events"];
+ 
+@@ -388,7 +388,7 @@ void copy_phase_data(
+   phase["category"] = header.category();
+   phase["detail"] = header.detail();
+   phase["estimate_millis"] =
+-    std::max(0l, to_millis(header.original_duration_estimate()).count());
++    std::max<int64_t>(0, to_millis(header.original_duration_estimate()).count());
+ }
+ 
+ //==============================================================================
+@@ -467,9 +467,9 @@ void TaskManager::ActiveTask::publish_task_state(TaskManager& mgr)
+   _state_msg["unix_millis_finish_time"] =
+     to_millis(finish_estimate.time_since_epoch()).count();
+   _state_msg["original_estimate_millis"] =
+-    std::max(0l, to_millis(header.original_duration_estimate()).count());
++    std::max<int64_t>(0, to_millis(header.original_duration_estimate()).count());
+   _state_msg["estimate_millis"] =
+-    std::max(0l, to_millis(remaining_time_estimate).count());
++    std::max<int64_t>(0, to_millis(remaining_time_estimate).count());
+   copy_assignment(_state_msg["assigned_to"], *mgr._context);
+   _state_msg["status"] =
+     status_to_string(_task->status_overview());
+@@ -2090,7 +2090,7 @@ rmf_task::State TaskManager::_publish_pending_task(
+ 
+     const auto estimate =
+       pending.finish_state().time().value() - pending.deployment_time();
+-    t.original_estimate_millis = std::max(0l, to_millis(estimate).count());
++    t.original_estimate_millis = std::max<int64_t>(0, to_millis(estimate).count());
+ 
+     pending_json["unix_millis_finish_time"] = t.unix_millis_finish_time;
+     pending_json["original_estimate_millis"] = t.original_estimate_millis;
+diff --git a/src/rmf_fleet_adapter/agv/internal_FleetUpdateHandle.hpp b/src/rmf_fleet_adapter/agv/internal_FleetUpdateHandle.hpp
+index 7b58004..e7d2024 100644
+--- a/src/rmf_fleet_adapter/agv/internal_FleetUpdateHandle.hpp
++++ b/src/rmf_fleet_adapter/agv/internal_FleetUpdateHandle.hpp
+@@ -75,7 +75,9 @@
+ #include <iostream>
+ #include <unordered_set>
+ #include <optional>
++#if defined(__linux__)
+ #include <malloc.h>
++#endif
+ 
+ namespace rmf_fleet_adapter {
+ namespace agv {
+@@ -431,7 +433,12 @@ public:
+     // TODO(MXG): Remove this when the planner has been made more
+     // memory-efficient.
+     handle->_pimpl->memory_trim_timer = handle->_pimpl->node->create_wall_timer(
+-      std::chrono::minutes(5), []() { malloc_trim(0); });
++      std::chrono::minutes(5), []()
++      {
++#if defined(__linux__)
++        malloc_trim(0);
++#endif
++      });
+ 
+     // Create subs and pubs for bidding
+     auto transient_qos = rclcpp::QoS(10).transient_local();
+diff --git a/src/rmf_fleet_adapter/events/ExecutePlan.cpp b/src/rmf_fleet_adapter/events/ExecutePlan.cpp
+index 8e24390..e4484d9 100644
+--- a/src/rmf_fleet_adapter/events/ExecutePlan.cpp
++++ b/src/rmf_fleet_adapter/events/ExecutePlan.cpp
+@@ -117,7 +117,8 @@ void truncate_arrival(
+   std::size_t first_excluded_route = 0;
+   for (const auto& c : wp.arrival_checkpoints())
+   {
+-    first_excluded_route = std::max(first_excluded_route, c.route_id+1);
++    // route_id is uint64_t, which isn't std::size_t on macOS
++    first_excluded_route = std::max(first_excluded_route, static_cast<std::size_t>(c.route_id+1));
+     auto& r = previous_itinerary.at(c.route_id);
+     auto& t = r.trajectory();
+ 

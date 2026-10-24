@@ -135,9 +135,6 @@ py_trees_ros_tutorials:
   add_run: ["pyqt6"]
 py_trees_ros_viewer:
   add_host: ["poetry-core"]
-pybind11_json_vendor:
-  add_host: ["pybind11_json"]
-  add_run: ["pybind11_json"]
 python_qt_binding:
   add_host: ["pyqt-builder", "qt6-main", "pyqt6"]
   add_run: ["pyqt-builder", "qt6-main", "pyqt6"]
