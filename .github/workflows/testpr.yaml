@@ -41,7 +41,7 @@ jobs:
         with:
           locked: true  # the lock file must match pixi.toml
           pixi-version: v0.81.0
-          cache-write: false  # the build jobs save the pixi environment cache
+          cache-write: false  # saved from main only (pixi-cache.yaml)
       - name: Which distributions changed
         id: plan
         env:
@@ -76,7 +76,7 @@ jobs:
         with:
           locked: true  # the lock file must match pixi.toml
           pixi-version: v0.81.0
-          cache-write: false  # the build jobs save the pixi environment cache
+          cache-write: false  # saved from main only (pixi-cache.yaml)
       - name: Sanity checks (every distribution assembles, generated files up to date, sorted)
         run: pixi run rs check
       - name: Unit tests of the tooling
@@ -109,7 +109,7 @@ jobs:
         with:
           locked: true  # the lock file must match pixi.toml
           pixi-version: v0.81.0
-          cache-write: false  # the build jobs save the pixi environment cache
+          cache-write: false  # saved from main only (pixi-cache.yaml)
       - name: Generate the recipes of every platform
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -171,9 +171,7 @@ jobs:
       with:
         locked: true  # the lock file must match pixi.toml
         pixi-version: v0.81.0
-        # every distribution's job on a platform has the same cache key; let one
-        # of them save it instead of all racing ("Unable to reserve cache")
-        cache-write: ${{ matrix.distro == fromJSON(needs.plan.outputs.distros)[0] }}
+        cache-write: false  # saved from main only (pixi-cache.yaml)
 
     - name: Windows workarounds (short build path, long paths, PATH and SDK clean-up)
       if: runner.os == 'Windows'
@@ -352,7 +350,7 @@ jobs:
         with:
           locked: true  # the lock file must match pixi.toml
           pixi-version: v0.81.0
-          cache-write: false  # the build jobs save the pixi environment cache
+          cache-write: false  # saved from main only (pixi-cache.yaml)
       - uses: actions/download-artifact@v7
         with:
           pattern: abi-check-*

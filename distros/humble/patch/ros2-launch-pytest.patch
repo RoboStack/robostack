@@ -1,0 +1,40 @@
+diff --git a/launch_pytest/plugin.py b/launch_pytest/plugin.py
+index 57b7a52..b38a515 100644
+--- a/launch_pytest/plugin.py
++++ b/launch_pytest/plugin.py
+@@ -23,6 +23,8 @@ from _pytest.outcomes import skip
+ import launch
+ 
+ import pytest
++# pytest 8.4 replaced the private _pytestfixturefunction attribute; its getter works everywhere
++from _pytest.fixtures import getfixturemarker
+ 
+ from .actions import ReadyToTest
+ from .fixture import finalize_launch_service
+@@ -236,7 +238,7 @@ def pytest_pycollect_makeitem(collector, name, obj):
+                 return [item]
+             fixture = get_launch_test_fixture(item)
+             fixturename = fixture.__name__
+-            scope = fixture._pytestfixturefunction.scope
++            scope = getfixturemarker(fixture).scope
+             is_shutdown = has_shutdown_kwarg(item)
+             items = generate_test_items(
+                 collector, name, obj, fixturename, is_shutdown=is_shutdown, needs_renaming=False)
+@@ -264,7 +266,7 @@ def is_same_launch_test_fixture(left_item, right_item):
+         return False
+     if lfn is not rfn:
+         return False
+-    if lfn._pytestfixturefunction.scope == 'function':
++    if getfixturemarker(lfn).scope == 'function':
+         return False
+     name = lfn.__name__
+ 
+@@ -326,7 +328,7 @@ def pytest_pyfunc_call(pyfuncitem):
+         return
+     shutdown_test = is_shutdown_test(pyfuncitem)
+     fixture = get_launch_test_fixture(pyfuncitem)
+-    scope = fixture._pytestfixturefunction.scope
++    scope = getfixturemarker(fixture).scope
+     event_loop = pyfuncitem.funcargs['event_loop']
+     ls = pyfuncitem.funcargs['launch_service']
+     auto_shutdown = fixture._launch_pytest_fixture_options['auto_shutdown']

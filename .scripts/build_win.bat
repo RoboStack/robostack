@@ -32,8 +32,8 @@ for %%X in (%CURRENT_RECIPES%) do (
 :: Check if .conda files exist in the win-64 directory
 if exist "%CONDA_BLD_PATH%\win-64\*.conda" (
     echo Found .conda files, starting upload...
-    rem Upload packages one-by-one; the upload task (tools/robostack.py) skips or overwrites
-    rem packages that already exist, depending on the upload target.
+    rem Upload packages one-by-one; the upload task (tools/robostack.py) uploads them to
+    rem prefix.dev and anaconda.org and skips packages that are already there.
     for %%F in ("%CONDA_BLD_PATH%\win-64\*.conda") do (
         echo Uploading %%~fF
         pixi run rs %ROBOSTACK_DISTRO% upload "%%~fF"

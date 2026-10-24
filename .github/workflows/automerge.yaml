@@ -35,7 +35,7 @@ jobs:
         with:
           locked: true  # the lock file must match pixi.toml
           pixi-version: v0.81.0
-          cache-write: false  # the build jobs save the pixi environment cache
+          cache-write: false  # saved from main only (pixi-cache.yaml)
       # The merge has to come from the bot (or a PAT): a merge made with the
       # workflow's own token would not trigger the main build workflow.
       - name: Bot token
@@ -83,7 +83,7 @@ jobs:
         with:
           locked: true  # the lock file must match pixi.toml
           pixi-version: v0.81.0
-          cache-write: false  # the build jobs save the pixi environment cache
+          cache-write: false  # saved from main only (pixi-cache.yaml)
       # removing the label with this token doesn't start the unlabeled run above, so
       # turn auto-merge off here as well
       - name: Remove the automerge label
