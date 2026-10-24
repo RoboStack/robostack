@@ -167,6 +167,11 @@ jobs:
     # (e.g. vinca's), which breaks every later run restoring that cache
     - name: Disable git auto-maintenance
       run: git config --global maintenance.auto false && git config --global gc.auto 0 && git config --global core.longpaths true
+    # pixi's package cache on D:, with the builds' (see the Windows step below)
+    - name: "pixi's cache on D:"
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: '"PIXI_CACHE_DIR=D:\pixi-cache" | Out-File -FilePath $env:GITHUB_ENV -Append'
     - uses: prefix-dev/setup-pixi@v0.11.0
       with:
         locked: true  # the lock file must match pixi.toml
