@@ -131,3 +131,105 @@ urdfdom_headers:
 # Remove build_number fields below on new full rebuild
 zenoh_cpp_vendor:
   additional_cmake_args: "-DAMENT_VENDOR_POLICY=NEVER_VENDOR_IGNORE_SATISFIED_CHECK -DUSE_SYSTEM_ZENOH=ON"
+desktop_full:
+  build_number: 28
+easynav_playground_kobuki:
+  build_number: 28
+easynav_playground_kobuki_worlds:
+  build_number: 28
+easynav_playground_omni:
+  build_number: 28
+easynav_playground_omni_worlds:
+  build_number: 28
+easynav_playground_summit:
+  build_number: 28
+easynav_playground_summit_worlds:
+  build_number: 28
+easynav_playground_tiago:
+  build_number: 28
+easynav_playground_tiago_worlds:
+  build_number: 28
+gz_gui_vendor:
+  build_number: 28
+gz_ogre_next_vendor:
+  build_number: 28
+gz_rendering_vendor:
+  build_number: 28
+gz_ros2_control:
+  build_number: 28
+gz_ros2_control_demos:
+  build_number: 28
+gz_sensors_vendor:
+  build_number: 28
+gz_sim_vendor:
+  build_number: 28
+iiwa14_moveit_config:
+  build_number: 28
+iiwa7_moveit_config:
+  build_number: 28
+irobot_create_gz_bringup:
+  build_number: 28
+irobot_create_gz_plugins:
+  build_number: 28
+irobot_create_gz_sim:
+  build_number: 28
+kinova_gen3_7dof_robotiq_2f_85_moveit_config:
+  build_number: 28
+kortex_description:
+  build_number: 28
+lbr_bringup:
+  build_number: 28
+lbr_demos_advanced_cpp:
+  build_number: 28
+lbr_demos_advanced_py:
+  build_number: 28
+lbr_demos_cpp:
+  build_number: 28
+lbr_demos_py:
+  build_number: 28
+lbr_description:
+  build_number: 28
+lbr_fri_ros2:
+  build_number: 28
+lbr_fri_ros2_stack:
+  build_number: 28
+lbr_ros2_control:
+  build_number: 28
+med14_moveit_config:
+  build_number: 28
+med7_moveit_config:
+  build_number: 28
+moveit2_tutorials:
+  build_number: 28
+nav2_bringup:
+  build_number: 28
+nav2_minimal_tb3_sim:
+  build_number: 28
+nav2_minimal_tb4_sim:
+  build_number: 28
+ros_gz:
+  build_number: 28
+ros_gz_sim:
+  build_number: 28
+ros_gz_sim_demos:
+  build_number: 28
+simulation:
+  build_number: 28
+turtlebot3:
+  build_number: 28
+turtlebot3_gazebo:
+  build_number: 28
+turtlebot3_navigation2:
+  build_number: 28
+turtlebot3_simulations:
+  build_number: 28
+turtlebot4_gz_bringup:
+  build_number: 28
+turtlebot4_gz_gui_plugins:
+  build_number: 28
+turtlebot4_navigation:
+  build_number: 28
+turtlebot4_simulator:
+  build_number: 28
+ur_simulation_gz:
+  build_number: 28

@@ -130,6 +130,18 @@ target_gobin:
 rust_compiler:
   - rust
 
+# OCaml Compiler Options
+ocaml_compiler:
+  - ocaml
+ocaml_compiler_version:
+  - 5.4.0
+
+# Zig Compiler Options
+zig_compiler:
+  - zig
+zig_compiler_version:
+  - 0.17.0
+
 # the numbers here are the Darwin Kernel version for macOS 10.9 & 11.0;
 # this is used to form our target triple on osx, and nothing else. After
 # we bumped the minimum macOS version to 10.13, this was left unchanged,
@@ -415,7 +427,7 @@ gfal2:
 gflags:
   - '2.3'
 giflib:
-  - '6'
+  - 6
 givaro:
   - 4.2.2
 glew:
@@ -700,9 +712,9 @@ libopentelemetry_cpp:
 libosqp:
   - 1.0.0
 libopenvino:
-  - 2026.4.0
+  - 2026.4.1
 libopenvino_dev:
-  - 2026.4.0
+  - 2026.4.1
 libparu:
   - '1'
 libpcap:
@@ -783,6 +795,8 @@ libtiff:
   - '4.7'
 libtorch:
   - '2.12'
+libtrintrin:
+  - '0.3'
 libudev:
   - '257'
 libultrahdr:
@@ -1096,7 +1110,7 @@ sdl2_net:
 sdl2_ttf:
   - '2'
 shaderc:
-  - '2026.3'
+  - '2026.4'
 sherpa:
   - '3.0'
 singular:
