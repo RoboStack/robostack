@@ -15,3 +15,4 @@ mutex_package:
 
 packages_exclude:
   - rtabmap_rviz_plugins  # links PCL, whose VTK is Qt 6 on conda-forge, into a Qt 5 RViz plugin (jazzy's RViz is Qt 5); rtabmap_viz is fine, it uses only rtabmap's Qt 6
+
