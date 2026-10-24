@@ -1,0 +1,53 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/prefix-dev/recipe-format/main/schema.json
+
+package:
+  name: ros2-libfranka
+  version: 0.21.3
+
+build:
+  number: 22
+  script: ''
+  post_process:
+    - files:
+        - '*.pc'
+      regex: (?:-L|-I)?"?([^;\s]+/sysroot/)
+      replacement: $$(CONDA_BUILD_SYSROOT_S)
+    - files:
+        - '*.cmake'
+      regex: ([^;\s"]+/sysroot)
+      replacement: $$ENV{CONDA_BUILD_SYSROOT}
+    - files:
+        - '*.cmake'
+      regex: ([^;\s"]+/MacOSX\d*\.?\d*\.sdk)
+      replacement: $$ENV{CONDA_BUILD_SYSROOT}
+about:
+  homepage: http://wiki.ros.org/libfranka
+  repository: https://github.com/frankaemika/libfranka
+  license: Apache-2.0
+  summary: libfranka is a C++ library for Franka Robotics research robots
+extra:
+  recipe-maintainers:
+    - ros-forge
+
+requirements:
+  build: []
+  host:
+    - eigen
+    - eigen-abi-devel
+    - fmt
+    - poco
+    - python
+    - ros2-distro-mutex 0.11.* humble_*
+    - ros2-pinocchio
+    - ros2-ros-environment
+    - ros2-ros-workspace
+    - tinyxml2
+  run:
+    - fmt
+    - libfranka >=0.21.3, <0.21.4a0
+    - poco
+    - python
+    - ros2-distro-mutex 0.11.* humble_*
+    - ros2-pinocchio
+    - ros2-ros-workspace
+    - tinyxml2
