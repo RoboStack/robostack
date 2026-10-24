@@ -1,0 +1,30 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 5e1b4da..fc0f9e7 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -146,6 +146,12 @@ ELSE()
+ ENDIF()
+ target_link_libraries(rtabmap_sync_plugins PUBLIC rtabmap_sync)
+ 
++# Windows: export CommonDataSubscriber explicitly (exporting every symbol of
++# rtabmap_sync exceeds the 65535 limit of an import library, LNK1189), and
++# everything of the plugins, whose node classes the executables construct.
++target_compile_definitions(rtabmap_sync PRIVATE RTABMAP_SYNC_BUILDING_DLL)
++set_target_properties(rtabmap_sync_plugins PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
++
+ rclcpp_components_register_nodes(rtabmap_sync_plugins "rtabmap_sync::RGBDSync")
+ rclcpp_components_register_nodes(rtabmap_sync_plugins "rtabmap_sync::StereoSync")
+ rclcpp_components_register_nodes(rtabmap_sync_plugins "rtabmap_sync::RGBSync")
+diff --git a/include/rtabmap_sync/CommonDataSubscriber.h b/include/rtabmap_sync/CommonDataSubscriber.h
+index 1282a4c..bd06345 100644
+--- a/include/rtabmap_sync/CommonDataSubscriber.h
++++ b/include/rtabmap_sync/CommonDataSubscriber.h
+@@ -130,7 +130,7 @@ namespace rtabmap_sync {
+  * publishes -- which needs no rebuild and has no camera-count limit, at the cost of one
+  * extra node and one full-frame copy per camera.
+  */
+-class CommonDataSubscriber {
++class RTABMAP_SYNC_PUBLIC CommonDataSubscriber {
+ public:
+ 	/**
+ 	 * @brief Declares the `subscribe_*`, queue and QoS parameters on @p node.
