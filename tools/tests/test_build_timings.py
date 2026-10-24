@@ -120,3 +120,35 @@ def test_ci_estimate_uses_the_measured_times(tmp_path, monkeypatch, capsys):
     assert ci_estimate.main() == 0
     # ros2-a 150 s (average), its alias 0.3 s, ros2-new the median 80 s, ros2-b cached 2 s
     assert capsys.readouterr().out.startswith("3 packages to build, 1 restored from the cache: roughly 4 min")
+
+
+def test_build_ci_parallel_times_each_build(tmp_path, monkeypatch, capsys):
+    import robostack
+
+    def line(t, recipe, message, span="Running build for"):
+        spans = [{"recipe": recipe, "name": span}] if recipe else []
+        return (json.dumps({"timestamp": f"2026-10-24T07:00:{t:02d}.0Z", "fields": {"message": message},
+                            "spans": spans}) + "\n").encode()
+
+    log = [line(0, "", "rattler-build 0.77.0"), line(1, "ros2-a-1.0-h0_1", "Fetching source"),
+           line(5, "ros2-b-1.0-h0_1", "Fetching source"), line(9, "ros2-a-1.0-h0_1", "Artifact"),
+           line(20, "ros2-b-1.0-h0_1", "Artifact"), b"not json\n",
+           line(30, "ros2-a-1.0-h0_1", "summary", span="Build summary for")]
+    shown = []
+
+    def run_build(cmd, cwd, show=None):
+        assert "--parallel-builds" in cmd and "json" in cmd
+        for entry in log:
+            show(entry)
+        return 0
+
+    noted = []
+    monkeypatch.setattr(robostack, "run_build", run_build)
+    monkeypatch.setattr(robostack, "rattler_build", lambda distro, args, skip_existing=True: ["rattler-build", *args])
+    monkeypatch.setattr(build_timings, "note", lambda distro, recipe, seconds: noted.append((recipe, seconds)))
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
+    assert robostack.build_ci_parallel("jazzy", ["ros2-a", "ros2-b"], ["--recipe", "a", "--recipe", "b"], tmp_path) == 0
+    # from each recipe's first to its last line in the build, not the summary at the end
+    assert noted == [("ros2-a", 8.0), ("ros2-b", 15.0)]
+    out = capsys.readouterr().out
+    assert "07:00:01 [ros2-a] Fetching source" in out and "not json" in out

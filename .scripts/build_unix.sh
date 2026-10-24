@@ -30,13 +30,13 @@ if [[ "$target" == *"osx"* ]]; then
     export PATH=$(echo $PATH | tr ":" "\n" | grep -v 'homebrew' | xargs | tr ' ' ':')
 fi
 
+# All of the job's recipes in one build-ci run (tools/robostack.py), which builds
+# independent ones in parallel and adds the variant config and the distro's channels.
+recipe_args=()
 for recipe in ${CURRENT_RECIPES[@]}; do
-	# build-ci (tools/robostack.py) adds the variant config and the distro's channels.
-	pixi run -v rs "${ROBOSTACK_DISTRO}" build-ci \
-		--recipe ${FEEDSTOCK_ROOT}/recipes/${recipe} \
-		--output-dir $CONDA_BLD_PATH
-
+	recipe_args+=(--recipe "${FEEDSTOCK_ROOT}/recipes/${recipe}")
 done
+pixi run -v rs "${ROBOSTACK_DISTRO}" build-ci "${recipe_args[@]}" --output-dir $CONDA_BLD_PATH
 
 # Check if it build something, this is a hotfix for the skips inside additional_recipes
 shopt -s nullglob

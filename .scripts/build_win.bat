@@ -30,16 +30,12 @@ reg add HKLM\SYSTEM\CurrentControlSet\Control\FileSystem /v LongPathsEnabled /t 
 :: ... and in git, for sources that vendor packages clone during the build
 git config --global core.longpaths true
 
-for %%X in (%CURRENT_RECIPES%) do (
-    echo "BUILDING RECIPE %%X"
-    cd %FEEDSTOCK_ROOT%\recipes\%%X\
-    rem build-ci (tools/robostack.py) adds the variant config and the distro's channels.
-    pixi run -v rs %ROBOSTACK_DISTRO% build-ci --recipe %FEEDSTOCK_ROOT%\recipes\%%X\ ^
-        --output-dir %CONDA_BLD_PATH%
-
-    if errorlevel 1 exit 1
-    rem -m %FEEDSTOCK_ROOT%\.ci_support\conda_forge_pinnings.yaml
-)
+:: All of the job's recipes in one build-ci run (tools/robostack.py), which builds
+:: independent ones in parallel and adds the variant config and the distro's channels.
+set RECIPE_ARGS=
+for %%X in (%CURRENT_RECIPES%) do set "RECIPE_ARGS=!RECIPE_ARGS! --recipe %FEEDSTOCK_ROOT%\recipes\%%X\"
+pixi run -v rs %ROBOSTACK_DISTRO% build-ci !RECIPE_ARGS! --output-dir %CONDA_BLD_PATH%
+if errorlevel 1 exit 1
 
 :: Check if .conda files exist in the win-64 directory
 if exist "%CONDA_BLD_PATH%\win-64\*.conda" (
