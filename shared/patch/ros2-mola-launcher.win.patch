@@ -46,3 +46,47 @@ index 2bd97ff..d77ceda 100644
  }
  
  // Default task for mola-cli: launching a SLAM system
+diff --git a/src/MolaDLL_Loader.cpp b/src/MolaDLL_Loader.cpp
+index ec376eb..6dcee68 100644
+--- a/src/MolaDLL_Loader.cpp
++++ b/src/MolaDLL_Loader.cpp
+@@ -26,6 +26,11 @@
+ 
+ #if defined(__unix__) || defined(__APPLE__)
+ #include <dlfcn.h>
++#elif defined(_WIN32)
++#ifndef NOMINMAX
++#define NOMINMAX
++#endif
++#include <windows.h>  // LoadLibraryA(), FreeLibrary()
+ #endif
+ 
+ /** From internal_load_lib_modules() */
+@@ -81,11 +86,17 @@ void internal_load_lib_modules(
+ 
+       void* handle = dlopen(lib.wholePath.c_str(), RTLD_LAZY);
+ #else
+-      HMODULE handle = LoadLibrary(lib.wholePath.c_str());
++      void* handle = LoadLibraryA(lib.wholePath.c_str());
+ #endif
+       if (handle == nullptr)
+       {
++#if defined(_WIN32)
++        const std::string err_str =
++            mrpt::format("LoadLibrary() error code %lu", static_cast<unsigned long>(GetLastError()));
++        const char* err = err_str.c_str();
++#else
+         const char* err = dlerror();
++#endif
+         if (!err) err = "(error calling dlerror())";
+         THROW_EXCEPTION(mrpt::format(
+             "Error loading module: `%s`\ndlerror(): `%s`", lib.wholePath.c_str(), err));
+@@ -117,7 +128,7 @@ void internal_unload_lib_modules()
+ #if defined(__unix__) || defined(__APPLE__)
+     dlclose(lib.second.handle);
+ #else
+-    FreeLibrary(lib.second.handle);
++    FreeLibrary(static_cast<HMODULE>(lib.second.handle));
+ #endif
+   }
+   loaded_lib_handled.clear();
