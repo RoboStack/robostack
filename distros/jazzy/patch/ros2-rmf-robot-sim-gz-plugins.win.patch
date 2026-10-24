@@ -15,3 +15,63 @@ index 279d989..7deeab2 100644
  set (CMAKE_AUTOMOC ON)
  
  # Default to C99
+diff --git a/src/TeleportDispenser.cpp b/src/TeleportDispenser.cpp
+index 4dd81fa..f23f359 100644
+--- a/src/TeleportDispenser.cpp
++++ b/src/TeleportDispenser.cpp
+@@ -47,7 +47,9 @@ using namespace rmf_plugins_utils;
+ 
+ namespace rmf_robot_sim_gz_plugins {
+ 
+-class GZ_SIM_VISIBLE TeleportDispenserPlugin
++// (Windows) not GZ_SIM_VISIBLE: that is gz-sim's own export macro, dllimport here (LNK2019
++// on the vftable); GZ_ADD_PLUGIN exports the plugin
++class TeleportDispenserPlugin
+   : public System,
+   public ISystemConfigure,
+   public ISystemPreUpdate
+diff --git a/src/TeleportIngestor.cpp b/src/TeleportIngestor.cpp
+index ac1c297..3a7be63 100644
+--- a/src/TeleportIngestor.cpp
++++ b/src/TeleportIngestor.cpp
+@@ -46,7 +46,9 @@ using namespace rmf_plugins_utils;
+ 
+ namespace rmf_robot_sim_gz_plugins {
+ 
+-class GZ_SIM_VISIBLE TeleportIngestorPlugin
++// (Windows) not GZ_SIM_VISIBLE: that is gz-sim's own export macro, dllimport here (LNK2019
++// on the vftable); GZ_ADD_PLUGIN exports the plugin
++class TeleportIngestorPlugin
+   : public System,
+   public ISystemConfigure,
+   public ISystemPreUpdate
+diff --git a/src/readonly.cpp b/src/readonly.cpp
+index 75384c9..52e9438 100644
+--- a/src/readonly.cpp
++++ b/src/readonly.cpp
+@@ -40,7 +40,9 @@ using namespace gz::sim;
+ 
+ namespace rmf_robot_sim_gz_plugins {
+ 
+-class GZ_SIM_VISIBLE ReadonlyPlugin
++// (Windows) not GZ_SIM_VISIBLE: that is gz-sim's own export macro, dllimport here (LNK2019
++// on the vftable); GZ_ADD_PLUGIN exports the plugin
++class ReadonlyPlugin
+   : public System,
+   public ISystemConfigure,
+   public ISystemPreUpdate
+diff --git a/src/slotcar.cpp b/src/slotcar.cpp
+index d4fb269..0a8381c 100644
+--- a/src/slotcar.cpp
++++ b/src/slotcar.cpp
+@@ -29,7 +29,9 @@
+ 
+ using namespace gz::sim;
+ 
+-class GZ_SIM_VISIBLE SlotcarPlugin
++// (Windows) not GZ_SIM_VISIBLE: that is gz-sim's own export macro, dllimport here (LNK2019
++// on the vftable); GZ_ADD_PLUGIN exports the plugin
++class SlotcarPlugin
+   : public System,
+   public ISystemConfigure,
+   public ISystemPreUpdate
