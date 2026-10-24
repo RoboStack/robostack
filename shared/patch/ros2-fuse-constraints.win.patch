@@ -1,0 +1,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 8640fe0..55d6a47 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -67,7 +67,7 @@ include(suitesparse-extras.cmake)
+ #       |                                         ^~~
+ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 12.0)
+   add_compile_options(-Wall -Werror -Wno-array-bounds)
+-else()
++elseif(NOT MSVC)
+   add_compile_options(-Wall -Werror)
+ endif()
+ 
