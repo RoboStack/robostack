@@ -1,0 +1,711 @@
+diff --git a/include/ur_controllers/passthrough_trajectory_controller.hpp b/include/ur_controllers/passthrough_trajectory_controller.hpp
+index 568aab1..cc9ea3b 100644
+--- a/include/ur_controllers/passthrough_trajectory_controller.hpp
++++ b/include/ur_controllers/passthrough_trajectory_controller.hpp
+@@ -70,23 +70,22 @@ namespace ur_controllers
+ {
+ 
+ /*
+- * 0.0: No trajectory to forward, the controller is idling and ready to receive a new trajectory.
+- * 1.0: The controller has received and accepted a new trajectory. When the state is 1.0, the controller will write a
++ * 0: No trajectory to forward, the controller is idling and ready to receive a new trajectory.
++ * 1: The controller has received and accepted a new trajectory. When the state is 1, the controller will write a
+  * point to the hardware interface.
+- * 2.0: The hardware interface will read the point written from the controller. The state will switch between 1.0
+- * and 2.0 until all points have been read by the hardware interface.
+- * 3.0: The hardware interface has read all the points, and will now write all the points to the physical robot
++ * 2: The hardware interface will read the point written from the controller.
++ * 3: The hardware interface has read all the points, and will now write all the points to the physical robot
+  * controller.
+- * 4.0: The robot is moving through the trajectory.
+- * 5.0: The robot finished executing the trajectory.
++ * 4: The robot is moving through the trajectory.
++ * 5: The robot finished executing the trajectory.
+  */
+-const double TRANSFER_STATE_IDLE = 0.0;
+-const double TRANSFER_STATE_NEW_TRAJECTORY = 6.0;
+-const double TRANSFER_STATE_WAITING_FOR_POINT = 1.0;
+-const double TRANSFER_STATE_TRANSFERRING = 2.0;
+-const double TRANSFER_STATE_TRANSFER_DONE = 3.0;
+-const double TRANSFER_STATE_IN_MOTION = 4.0;
+-const double TRANSFER_STATE_DONE = 5.0;
++constexpr double TRANSFER_STATE_IDLE = 0.0;
++constexpr double TRANSFER_STATE_NEW_TRAJECTORY = 6.0;
++constexpr double TRANSFER_STATE_WAITING_FOR_POINT = 1.0;
++constexpr double TRANSFER_STATE_TRANSFERRING = 2.0;
++constexpr double TRANSFER_STATE_TRANSFER_DONE = 3.0;
++constexpr double TRANSFER_STATE_IN_MOTION = 4.0;
++constexpr double TRANSFER_STATE_DONE = 5.0;
+ 
+ using namespace std::chrono_literals;  // NOLINT
+ 
+@@ -125,9 +124,10 @@ private:
+   /* Start an action server with an action called: /passthrough_trajectory_controller/forward_joint_trajectory. */
+   void start_action_server(void);
+ 
+-  void end_goal();
++  void end_goal(bool reset_abort = true);
+ 
+   bool check_goal_tolerance();
++  bool write_transfer_request(double transfer_state);
+ 
+   // Get a mapping between the trajectory's joint order and the internal one
+   std::unordered_map<std::string, size_t> create_joint_mapping(const std::vector<std::string>& joint_names) const;
+@@ -169,6 +169,10 @@ private:
+ 
+   std::atomic<size_t> current_index_;
+   std::atomic<bool> trajectory_active_;
++  double next_transfer_sequence_ = 1.0;
++  double pending_transfer_sequence_ = 0.0;
++  bool transfer_pending_ = false;
++  rclcpp::Duration transfer_pending_duration_ = rclcpp::Duration::from_nanoseconds(0);
+   rclcpp::Duration active_trajectory_elapsed_time_ = rclcpp::Duration::from_nanoseconds(0);
+   rclcpp::Duration max_trajectory_time_ = rclcpp::Duration::from_nanoseconds(0);
+   double scaling_factor_;
+@@ -176,9 +180,14 @@ private:
+   static constexpr double NO_VAL = std::numeric_limits<double>::quiet_NaN();
+ 
+   std::optional<std::reference_wrapper<hardware_interface::LoanedStateInterface>> scaling_state_interface_;
++  std::optional<std::reference_wrapper<hardware_interface::LoanedStateInterface>> abort_state_interface_;
++  std::optional<std::reference_wrapper<hardware_interface::LoanedStateInterface>> transfer_state_interface_;
++  std::optional<std::reference_wrapper<hardware_interface::LoanedStateInterface>> transfer_sequence_state_interface_;
+   std::optional<std::reference_wrapper<hardware_interface::LoanedCommandInterface>> abort_command_interface_;
+   std::optional<std::reference_wrapper<hardware_interface::LoanedCommandInterface>> trajectory_size_command_interface_;
+   std::optional<std::reference_wrapper<hardware_interface::LoanedCommandInterface>> transfer_command_interface_;
++  std::optional<std::reference_wrapper<hardware_interface::LoanedCommandInterface>>
++      transfer_sequence_command_interface_;
+   std::optional<std::reference_wrapper<hardware_interface::LoanedCommandInterface>> time_from_start_command_interface_;
+ 
+   rclcpp::Clock::SharedPtr clock_;
+diff --git a/src/passthrough_trajectory_controller.cpp b/src/passthrough_trajectory_controller.cpp
+index 12df8bc..8330fec 100644
+--- a/src/passthrough_trajectory_controller.cpp
++++ b/src/passthrough_trajectory_controller.cpp
+@@ -188,6 +188,10 @@ controller_interface::InterfaceConfiguration PassthroughTrajectoryController::st
+   std::copy(joint_state_interface_names_.cbegin(), joint_state_interface_names_.cend(), std::back_inserter(conf.names));
+ 
+   conf.names.push_back(passthrough_params_.speed_scaling_interface_name);
++  const std::string passthrough_prefix = passthrough_params_.tf_prefix + "trajectory_passthrough/";
++  conf.names.push_back(passthrough_prefix + "abort");
++  conf.names.push_back(passthrough_prefix + "transfer_state");
++  conf.names.push_back(passthrough_prefix + "transfer_sequence");
+ 
+   return conf;
+ }
+@@ -207,6 +211,7 @@ controller_interface::InterfaceConfiguration PassthroughTrajectoryController::co
+ 
+   config.names.push_back(tf_prefix + "trajectory_passthrough/abort");
+   config.names.emplace_back(tf_prefix + "trajectory_passthrough/transfer_state");
++  config.names.emplace_back(tf_prefix + "trajectory_passthrough/transfer_sequence");
+   config.names.emplace_back(tf_prefix + "trajectory_passthrough/time_from_start");
+   config.names.emplace_back(tf_prefix + "trajectory_passthrough/trajectory_size");
+ 
+@@ -244,6 +249,32 @@ controller_interface::CallbackReturn PassthroughTrajectoryController::on_activat
+     return controller_interface::CallbackReturn::ERROR;
+   }
+ 
++  const std::string tf_prefix = passthrough_params_.tf_prefix;
++  const auto find_state_interface = [this, &tf_prefix](const std::string& interface_name) {
++    return std::find_if(state_interfaces_.begin(), state_interfaces_.end(), [&](auto& interface) {
++      return interface.get_name() == tf_prefix + "trajectory_passthrough/" + interface_name;
++    });
++  };
++  auto abort_state_it = find_state_interface("abort");
++  auto transfer_state_it = find_state_interface("transfer_state");
++  auto transfer_sequence_state_it = find_state_interface("transfer_sequence");
++  if (abort_state_it == state_interfaces_.end() || transfer_state_it == state_interfaces_.end() ||
++      transfer_sequence_state_it == state_interfaces_.end()) {
++    RCLCPP_ERROR(get_node()->get_logger(), "Did not find all trajectory passthrough state interfaces.");
++    return controller_interface::CallbackReturn::ERROR;
++  }
++  abort_state_interface_ = *abort_state_it;
++  transfer_state_interface_ = *transfer_state_it;
++  transfer_sequence_state_interface_ = *transfer_sequence_state_it;
++  const auto acknowledged_sequence = transfer_sequence_state_interface_->get().get_optional<double>();
++  if (!acknowledged_sequence) {
++    RCLCPP_ERROR(get_node()->get_logger(), "Could not read the trajectory passthrough transfer sequence.");
++    return controller_interface::CallbackReturn::ERROR;
++  }
++  next_transfer_sequence_ = *acknowledged_sequence + 1.0;
++  pending_transfer_sequence_ = *acknowledged_sequence;
++  transfer_pending_ = false;
++
+   {
+     const std::string interface_name = passthrough_params_.tf_prefix + "trajectory_passthrough/"
+                                                                        "abort";
+@@ -270,7 +301,6 @@ controller_interface::CallbackReturn PassthroughTrajectoryController::on_activat
+     }
+   }
+ 
+-  const std::string tf_prefix = passthrough_params_.tf_prefix;
+   {
+     const std::string interface_name = tf_prefix + "trajectory_passthrough/transfer_state";
+     auto it = std::find_if(command_interfaces_.begin(), command_interfaces_.end(),
+@@ -282,6 +312,17 @@ controller_interface::CallbackReturn PassthroughTrajectoryController::on_activat
+       return controller_interface::CallbackReturn::ERROR;
+     }
+   }
++  {
++    const std::string interface_name = tf_prefix + "trajectory_passthrough/transfer_sequence";
++    auto it = std::find_if(command_interfaces_.begin(), command_interfaces_.end(),
++                           [&](auto& interface) { return (interface.get_name() == interface_name); });
++    if (it != command_interfaces_.end()) {
++      transfer_sequence_command_interface_ = *it;
++    } else {
++      RCLCPP_ERROR(get_node()->get_logger(), "Did not find '%s' in command interfaces.", interface_name.c_str());
++      return controller_interface::CallbackReturn::ERROR;
++    }
++  }
+   {
+     const std::string interface_name = tf_prefix + "trajectory_passthrough/time_from_start";
+     auto it = std::find_if(command_interfaces_.begin(), command_interfaces_.end(),
+@@ -294,6 +335,11 @@ controller_interface::CallbackReturn PassthroughTrajectoryController::on_activat
+     }
+   }
+ 
++  if (!abort_command_interface_->get().set_value(0.0) || !write_transfer_request(TRANSFER_STATE_IDLE)) {
++    RCLCPP_ERROR(get_node()->get_logger(), "Could not initialize the trajectory passthrough transfer protocol.");
++    return controller_interface::CallbackReturn::ERROR;
++  }
++
+   return ControllerInterface::on_activate(state);
+ }
+ 
+@@ -320,7 +366,7 @@ controller_interface::CallbackReturn PassthroughTrajectoryController::on_deactiv
+       RCLCPP_ERROR(get_node()->get_logger(), "Failed to set active goal, deactivation of controller failed.");
+       return controller_interface::CallbackReturn::ERROR;
+     }
+-    end_goal();
++    end_goal(false);
+   }
+   return CallbackReturn::SUCCESS;
+ }
+@@ -336,15 +382,35 @@ controller_interface::return_type PassthroughTrajectoryController::update(const
+     return controller_interface::return_type::OK;
+   }
+ 
+-  const auto current_transfer_state = transfer_command_interface_->get().get_optional().value_or(TRANSFER_STATE_IDLE);
++  const auto acknowledged_sequence = transfer_sequence_state_interface_->get().get_optional<double>();
++  const auto current_transfer_state = transfer_state_interface_->get().get_optional<double>();
++  const auto abort_state = abort_state_interface_->get().get_optional<double>();
++  if (!current_transfer_state || !acknowledged_sequence || !abort_state) {
++    RCLCPP_WARN_THROTTLE(get_node()->get_logger(), *clock_, 1000,
++                         "Could not read trajectory passthrough state interfaces, skipping cycle.");
++    return controller_interface::return_type::OK;
++  }
++  if (transfer_pending_) {
++    if (*acknowledged_sequence != pending_transfer_sequence_) {
++      // Do not act on the transfer state here. Until the acknowledgement arrives it may still describe a previous
++      // session, e.g. in the first cycle after activation.
++      transfer_pending_duration_ = transfer_pending_duration_ + period;
++      if (transfer_pending_duration_.seconds() > 1.0) {
++        RCLCPP_WARN_THROTTLE(get_node()->get_logger(), *clock_, 1000,
++                             "Hardware interface has not acknowledged trajectory transfer request %.0f for %.1f s.",
++                             pending_transfer_sequence_, transfer_pending_duration_.seconds());
++      }
++      return controller_interface::return_type::OK;
++    }
++    transfer_pending_ = false;
++  }
+ 
+   bool write_success = true;
+   if (active_goal && trajectory_active_) {
+-    if (current_transfer_state != TRANSFER_STATE_IDLE) {
++    if (*current_transfer_state != TRANSFER_STATE_IDLE) {
+       // Check if the trajectory has been aborted from the hardware interface. E.g. the robot was stopped on the teach
+       // pendant.
+-      if (abort_command_interface_->get().get_optional().has_value() &&
+-          abort_command_interface_->get().get_optional().value() == 1.0 && current_index_ > 0) {
++      if (*abort_state == 1.0 && current_index_ > 0) {
+         RCLCPP_INFO(get_node()->get_logger(), "Trajectory aborted by hardware, aborting action.");
+         std::shared_ptr<control_msgs::action::FollowJointTrajectory::Result> result =
+             std::make_shared<control_msgs::action::FollowJointTrajectory::Result>();
+@@ -356,13 +422,15 @@ controller_interface::return_type PassthroughTrajectoryController::update(const
+ 
+     active_joint_traj_ = active_goal->gh_->get_goal()->trajectory;
+ 
+-    if (current_index_ == 0 && current_transfer_state == TRANSFER_STATE_IDLE) {
++    if (current_index_ == 0 && *current_transfer_state == TRANSFER_STATE_IDLE) {
+       active_trajectory_elapsed_time_ = rclcpp::Duration(0, 0);
+       max_trajectory_time_ =
+           rclcpp::Duration::from_seconds(duration_to_double(active_joint_traj_.points.back().time_from_start));
+-      write_success &= transfer_command_interface_->get().set_value(TRANSFER_STATE_NEW_TRAJECTORY);
+       write_success &=
+           trajectory_size_command_interface_->get().set_value(static_cast<double>(active_joint_traj_.points.size()));
++      if (write_success) {
++        write_success = write_transfer_request(TRANSFER_STATE_NEW_TRAJECTORY);
++      }
+     }
+ 
+     auto active_goal_time_tol = goal_time_tolerance_.try_get();
+@@ -378,7 +446,7 @@ controller_interface::return_type PassthroughTrajectoryController::update(const
+     }
+ 
+     // Write a new point to the command interface, if the previous point has been read by the hardware interface.
+-    if (current_transfer_state == TRANSFER_STATE_WAITING_FOR_POINT) {
++    if (*current_transfer_state == TRANSFER_STATE_WAITING_FOR_POINT) {
+       if (current_index_ < active_joint_traj_.points.size()) {
+         //  Write the time_from_start parameter.
+         write_success &= time_from_start_command_interface_->get().set_value(
+@@ -412,18 +480,22 @@ controller_interface::return_type PassthroughTrajectoryController::update(const
+             write_success &= command_interfaces_[i * 3 + 2].set_value(NO_VAL);
+           }
+         }
+-        // Tell hardware interface that this point is ready to be read.
+-        write_success &= transfer_command_interface_->get().set_value(TRANSFER_STATE_TRANSFERRING);
+-        current_index_++;
++        // Commit the point only after its complete payload has been written.
++        if (write_success) {
++          write_success = write_transfer_request(TRANSFER_STATE_TRANSFERRING);
++        }
++        if (write_success) {
++          current_index_++;
++        }
+         // Check if all points have been written to the hardware interface.
+       } else if (current_index_ == active_joint_traj_.points.size()) {
+-        write_success &= transfer_command_interface_->get().set_value(TRANSFER_STATE_TRANSFER_DONE);
++        write_success = write_transfer_request(TRANSFER_STATE_TRANSFER_DONE);
+       } else {
+         RCLCPP_ERROR(get_node()->get_logger(), "Hardware waiting for trajectory point while none is present!");
+       }
+ 
+       // When the trajectory is finished, report the goal as successful to the client.
+-    } else if (current_transfer_state == TRANSFER_STATE_DONE) {
++    } else if (*current_transfer_state == TRANSFER_STATE_DONE) {
+       auto result = active_goal->preallocated_result_;
+       // Check if the actual position complies with the tolerances given.
+       if (!check_goal_tolerance()) {
+@@ -451,7 +523,7 @@ controller_interface::return_type PassthroughTrajectoryController::update(const
+         end_goal();
+         RCLCPP_INFO(get_node()->get_logger(), "%s", result->error_string.c_str());
+       }
+-    } else if (current_transfer_state == TRANSFER_STATE_IN_MOTION) {
++    } else if (*current_transfer_state == TRANSFER_STATE_IN_MOTION) {
+       // Keep track of how long the trajectory has been executing, if it takes too long, send a warning.
+       if (scaling_state_interface_.has_value()) {
+         scaling_factor_ = scaling_state_interface_->get().get_optional().value_or(1.0);
+@@ -471,14 +543,16 @@ controller_interface::return_type PassthroughTrajectoryController::update(const
+                              "Trajectory should be finished by now. You may want to cancel this goal, if it is not.");
+       }
+     }
+-  } else if (current_transfer_state != TRANSFER_STATE_IDLE && current_transfer_state != TRANSFER_STATE_DONE) {
++  } else if (*current_transfer_state != TRANSFER_STATE_IDLE && *current_transfer_state != TRANSFER_STATE_DONE) {
+     // No goal is active, but we are not in IDLE, either. We have been canceled.
+     write_success &= abort_command_interface_->get().set_value(1.0);
+ 
+-  } else if (current_transfer_state == TRANSFER_STATE_DONE) {
++  } else if (*current_transfer_state == TRANSFER_STATE_DONE) {
+     // We have been informed about the finished trajectory. Let's reset things.
+-    write_success &= transfer_command_interface_->get().set_value(TRANSFER_STATE_IDLE);
+     write_success &= abort_command_interface_->get().set_value(0.0);
++    if (write_success) {
++      write_success = write_transfer_request(TRANSFER_STATE_IDLE);
++    }
+   }
+   if (!write_success) {
+     RCLCPP_ERROR(get_node()->get_logger(), "Could not write to a command interfaces.");
+@@ -830,14 +904,34 @@ bool PassthroughTrajectoryController::check_goal_tolerance()
+   return true;
+ }
+ 
+-void PassthroughTrajectoryController::end_goal()
++void PassthroughTrajectoryController::end_goal(const bool reset_abort)
+ {
+   trajectory_active_ = false;
+-  if (!transfer_command_interface_->get().set_value(TRANSFER_STATE_IDLE)) {
+-    RCLCPP_ERROR(get_node()->get_logger(), "Could not write to transfer command interface.");
++  const bool abort_reset = !reset_abort || abort_command_interface_->get().set_value(0.0);
++  // A request still in flight cannot be replaced. The hardware resets the transfer on abort in that case.
++  if (!abort_reset || (!transfer_pending_ && !write_transfer_request(TRANSFER_STATE_IDLE))) {
++    RCLCPP_ERROR(get_node()->get_logger(), "Could not write trajectory transfer reset request.");
+   }
+ }
+ 
++bool PassthroughTrajectoryController::write_transfer_request(const double transfer_state)
++{
++  if (transfer_pending_) {
++    return false;
++  }
++  if (!transfer_command_interface_->get().set_value(transfer_state)) {
++    return false;
++  }
++  if (!transfer_sequence_command_interface_->get().set_value(next_transfer_sequence_)) {
++    return false;
++  }
++  pending_transfer_sequence_ = next_transfer_sequence_;
++  next_transfer_sequence_ += 1.0;
++  transfer_pending_ = true;
++  transfer_pending_duration_ = rclcpp::Duration::from_nanoseconds(0);
++  return true;
++}
++
+ std::unordered_map<std::string, size_t>
+ PassthroughTrajectoryController::create_joint_mapping(const std::vector<std::string>& joint_names) const
+ {
+diff --git a/test/test_tool_contact_controller.cpp b/test/test_tool_contact_controller.cpp
+index 14b543e..eccf9f3 100644
+--- a/test/test_tool_contact_controller.cpp
++++ b/test/test_tool_contact_controller.cpp
+@@ -70,16 +70,13 @@ protected:
+     params.node_options = controller_.define_custom_node_options();
+     ASSERT_EQ(controller_.init(params), controller_interface::return_type::OK);
+ 
+-    set_state_value_ = TOOL_CONTACT_STANDBY;
+-    state_value_ = TOOL_CONTACT_STANDBY;
+-    result_value_ = 3.0;
+-
+-    command_interface_ = std::make_shared<hardware_interface::CommandInterface>(
+-        "tool_contact", "tool_contact_set_state", &set_state_value_);
+-    state_interface_ =
+-        std::make_shared<hardware_interface::StateInterface>("tool_contact", "tool_contact_state", &state_value_);
+-    result_interface_ =
+-        std::make_shared<hardware_interface::StateInterface>("tool_contact", "tool_contact_result", &result_value_);
++    command_interface_ = std::make_shared<hardware_interface::CommandInterface>("tool_contact", "tool_contact_set_"
++                                                                                                "state");
++    state_interface_ = std::make_shared<hardware_interface::StateInterface>("tool_contact", "tool_contact_state");
++    result_interface_ = std::make_shared<hardware_interface::StateInterface>("tool_contact", "tool_contact_result");
++    ASSERT_TRUE(command_interface_->set_value(TOOL_CONTACT_STANDBY));
++    ASSERT_TRUE(state_interface_->set_value(TOOL_CONTACT_STANDBY));
++    ASSERT_TRUE(result_interface_->set_value(3.0));
+ 
+     loaned_command_ = std::make_unique<hardware_interface::LoanedCommandInterface>(command_interface_);
+     loaned_state_ = std::make_unique<hardware_interface::LoanedStateInterface>(state_interface_);
+@@ -126,8 +123,18 @@ protected:
+ 
+   void set_hw_state(double state, double result = 3.0)
+   {
+-    state_value_ = state;
+-    result_value_ = result;
++    ASSERT_TRUE(state_interface_->set_value(state));
++    ASSERT_TRUE(result_interface_->set_value(result));
++  }
++
++  void set_command_state(double state)
++  {
++    ASSERT_TRUE(command_interface_->set_value(state));
++  }
++
++  double command_state() const
++  {
++    return command_interface_->get_optional().value();
+   }
+ 
+   void set_active(bool active)
+@@ -197,9 +204,6 @@ protected:
+   }
+ 
+   ur_controllers::ToolContactController controller_;
+-  double set_state_value_{};
+-  double state_value_{};
+-  double result_value_{};
+   std::shared_ptr<hardware_interface::CommandInterface> command_interface_;
+   std::shared_ptr<hardware_interface::StateInterface> state_interface_;
+   std::shared_ptr<hardware_interface::StateInterface> result_interface_;
+@@ -216,11 +220,11 @@ TEST_F(ToolContactControllerTest, AbortWhileExecutingKeepsWaitingEndCommand)
+ {
+   // Regression (#1939): abort must not be overwritten by the EXECUTING branch.
+   request_abort();
+-  set_state_value_ = TOOL_CONTACT_EXECUTING;
++  set_command_state(TOOL_CONTACT_EXECUTING);
+   set_hw_state(TOOL_CONTACT_EXECUTING, 3.0);
+ 
+   EXPECT_EQ(run_update(), controller_interface::return_type::OK);
+-  EXPECT_DOUBLE_EQ(set_state_value_, TOOL_CONTACT_WAITING_END);
++  EXPECT_DOUBLE_EQ(command_state(), TOOL_CONTACT_WAITING_END);
+   EXPECT_FALSE(abort_requested());
+   EXPECT_FALSE(enable_requested());
+ }
+@@ -228,22 +232,22 @@ TEST_F(ToolContactControllerTest, AbortWhileExecutingKeepsWaitingEndCommand)
+ TEST_F(ToolContactControllerTest, EnableWhileIdleSetsWaitingBeginAndReturns)
+ {
+   request_enable();
+-  set_state_value_ = TOOL_CONTACT_STANDBY;
++  set_command_state(TOOL_CONTACT_STANDBY);
+   set_hw_state(TOOL_CONTACT_STANDBY);
+ 
+   EXPECT_EQ(run_update(), controller_interface::return_type::OK);
+-  EXPECT_DOUBLE_EQ(set_state_value_, TOOL_CONTACT_WAITING_BEGIN);
++  EXPECT_DOUBLE_EQ(command_state(), TOOL_CONTACT_WAITING_BEGIN);
+   EXPECT_FALSE(enable_requested());
+ }
+ 
+ TEST_F(ToolContactControllerTest, AbortTakesPriorityOverEnable)
+ {
+   request_abort_and_enable();
+-  set_state_value_ = TOOL_CONTACT_EXECUTING;
++  set_command_state(TOOL_CONTACT_EXECUTING);
+   set_hw_state(TOOL_CONTACT_EXECUTING, 3.0);
+ 
+   EXPECT_EQ(run_update(), controller_interface::return_type::OK);
+-  EXPECT_DOUBLE_EQ(set_state_value_, TOOL_CONTACT_WAITING_END);
++  EXPECT_DOUBLE_EQ(command_state(), TOOL_CONTACT_WAITING_END);
+   EXPECT_FALSE(abort_requested());
+   EXPECT_FALSE(enable_requested());
+ }
+@@ -252,11 +256,11 @@ TEST_F(ToolContactControllerTest, AbortDoesNotFallThroughToStateMachine)
+ {
+   // Even when HW reports SUCCESS_END, abort must win and leave WAITING_END.
+   request_abort();
+-  set_state_value_ = TOOL_CONTACT_EXECUTING;
++  set_command_state(TOOL_CONTACT_EXECUTING);
+   set_hw_state(TOOL_CONTACT_SUCCESS_END);
+ 
+   EXPECT_EQ(run_update(), controller_interface::return_type::OK);
+-  EXPECT_DOUBLE_EQ(set_state_value_, TOOL_CONTACT_WAITING_END);
++  EXPECT_DOUBLE_EQ(command_state(), TOOL_CONTACT_WAITING_END);
+ }
+ 
+ // ---------------------------------------------------------------------------
+@@ -266,12 +270,12 @@ TEST_F(ToolContactControllerTest, AbortDoesNotFallThroughToStateMachine)
+ TEST_F(ToolContactControllerTest, ExecutingNonTerminalResultAcknowledgesExecuting)
+ {
+   clear_requests();
+-  set_state_value_ = TOOL_CONTACT_WAITING_BEGIN;
++  set_command_state(TOOL_CONTACT_WAITING_BEGIN);
+   set_hw_state(TOOL_CONTACT_EXECUTING, 3.0);
+   set_logged_once(false);
+ 
+   EXPECT_EQ(run_update(), controller_interface::return_type::OK);
+-  EXPECT_DOUBLE_EQ(set_state_value_, TOOL_CONTACT_EXECUTING);
++  EXPECT_DOUBLE_EQ(command_state(), TOOL_CONTACT_EXECUTING);
+   EXPECT_TRUE(is_active());
+   EXPECT_TRUE(logged_once());
+   EXPECT_FALSE(should_reset_goal());
+@@ -280,12 +284,12 @@ TEST_F(ToolContactControllerTest, ExecutingNonTerminalResultAcknowledgesExecutin
+ TEST_F(ToolContactControllerTest, ExecutingSuccessResultRequestsWaitingEnd)
+ {
+   clear_requests();
+-  set_state_value_ = TOOL_CONTACT_EXECUTING;
++  set_command_state(TOOL_CONTACT_EXECUTING);
+   set_hw_state(TOOL_CONTACT_EXECUTING, 0.0);
+   set_active(true);
+ 
+   EXPECT_EQ(run_update(), controller_interface::return_type::OK);
+-  EXPECT_DOUBLE_EQ(set_state_value_, TOOL_CONTACT_WAITING_END);
++  EXPECT_DOUBLE_EQ(command_state(), TOOL_CONTACT_WAITING_END);
+   EXPECT_FALSE(is_active());
+   // No active goal handle, so should_reset_goal stays false.
+   EXPECT_FALSE(should_reset_goal());
+@@ -294,12 +298,12 @@ TEST_F(ToolContactControllerTest, ExecutingSuccessResultRequestsWaitingEnd)
+ TEST_F(ToolContactControllerTest, ExecutingHardwareAbortResultSetsStandby)
+ {
+   clear_requests();
+-  set_state_value_ = TOOL_CONTACT_EXECUTING;
++  set_command_state(TOOL_CONTACT_EXECUTING);
+   set_hw_state(TOOL_CONTACT_EXECUTING, 1.0);
+   set_active(true);
+ 
+   EXPECT_EQ(run_update(), controller_interface::return_type::OK);
+-  EXPECT_DOUBLE_EQ(set_state_value_, TOOL_CONTACT_STANDBY);
++  EXPECT_DOUBLE_EQ(command_state(), TOOL_CONTACT_STANDBY);
+   EXPECT_FALSE(is_active());
+ }
+ 
+@@ -312,13 +316,13 @@ TEST_F(ToolContactControllerTest, ContendedGoalBoxExecutingNonTerminalAcknowledg
+   // Non-terminal EXECUTING must still be acknowledged so startToolContact is
+   // not retriggered, even when the goal handle cannot be read this cycle.
+   clear_requests();
+-  set_state_value_ = TOOL_CONTACT_WAITING_BEGIN;
++  set_command_state(TOOL_CONTACT_WAITING_BEGIN);
+   set_hw_state(TOOL_CONTACT_EXECUTING, 3.0);
+   set_logged_once(false);
+ 
+   with_goal_box_contended([this]() {
+     EXPECT_EQ(run_update(), controller_interface::return_type::OK);
+-    EXPECT_DOUBLE_EQ(set_state_value_, TOOL_CONTACT_EXECUTING);
++    EXPECT_DOUBLE_EQ(command_state(), TOOL_CONTACT_EXECUTING);
+     EXPECT_TRUE(is_active());
+     EXPECT_TRUE(logged_once());
+     EXPECT_FALSE(should_reset_goal());
+@@ -330,14 +334,14 @@ TEST_F(ToolContactControllerTest, ContendedGoalBoxExecutingSuccessDefersTerminal
+   // Terminal success must NOT write WAITING_END while the goal box is
+   // contended; goal/result handling is deferred to a later cycle.
+   clear_requests();
+-  set_state_value_ = TOOL_CONTACT_EXECUTING;
++  set_command_state(TOOL_CONTACT_EXECUTING);
+   set_hw_state(TOOL_CONTACT_EXECUTING, 0.0);
+   set_active(true);
+   set_logged_once(true);
+ 
+   with_goal_box_contended([this]() {
+     EXPECT_EQ(run_update(), controller_interface::return_type::OK);
+-    EXPECT_DOUBLE_EQ(set_state_value_, TOOL_CONTACT_EXECUTING);
++    EXPECT_DOUBLE_EQ(command_state(), TOOL_CONTACT_EXECUTING);
+     EXPECT_TRUE(is_active());
+     EXPECT_FALSE(should_reset_goal());
+   });
+@@ -348,14 +352,14 @@ TEST_F(ToolContactControllerTest, ContendedGoalBoxExecutingHardwareAbortDefersTe
+   // Terminal hardware abort must NOT write STANDBY while the goal box is
+   // contended; goal/result handling is deferred to a later cycle.
+   clear_requests();
+-  set_state_value_ = TOOL_CONTACT_EXECUTING;
++  set_command_state(TOOL_CONTACT_EXECUTING);
+   set_hw_state(TOOL_CONTACT_EXECUTING, 1.0);
+   set_active(true);
+   set_logged_once(true);
+ 
+   with_goal_box_contended([this]() {
+     EXPECT_EQ(run_update(), controller_interface::return_type::OK);
+-    EXPECT_DOUBLE_EQ(set_state_value_, TOOL_CONTACT_EXECUTING);
++    EXPECT_DOUBLE_EQ(command_state(), TOOL_CONTACT_EXECUTING);
+     EXPECT_TRUE(is_active());
+     EXPECT_FALSE(should_reset_goal());
+   });
+@@ -364,13 +368,13 @@ TEST_F(ToolContactControllerTest, ContendedGoalBoxExecutingHardwareAbortDefersTe
+ TEST_F(ToolContactControllerTest, ContendedGoalBoxNonExecutingLeavesCommandUnchanged)
+ {
+   clear_requests();
+-  set_state_value_ = TOOL_CONTACT_STANDBY;
++  set_command_state(TOOL_CONTACT_STANDBY);
+   set_hw_state(TOOL_CONTACT_STANDBY);
+   set_logged_once(true);
+ 
+   with_goal_box_contended([this]() {
+     EXPECT_EQ(run_update(), controller_interface::return_type::OK);
+-    EXPECT_DOUBLE_EQ(set_state_value_, TOOL_CONTACT_STANDBY);
++    EXPECT_DOUBLE_EQ(command_state(), TOOL_CONTACT_STANDBY);
+     // STANDBY logging clear only runs in the uncontended switch.
+     EXPECT_TRUE(logged_once());
+   });
+@@ -383,59 +387,59 @@ TEST_F(ToolContactControllerTest, ContendedGoalBoxNonExecutingLeavesCommandUncha
+ TEST_F(ToolContactControllerTest, FailureBeginSetsStandbyAndClearsActive)
+ {
+   clear_requests();
+-  set_state_value_ = TOOL_CONTACT_WAITING_BEGIN;
++  set_command_state(TOOL_CONTACT_WAITING_BEGIN);
+   set_hw_state(TOOL_CONTACT_FAILURE_BEGIN);
+   set_active(true);
+ 
+   EXPECT_EQ(run_update(), controller_interface::return_type::OK);
+-  EXPECT_DOUBLE_EQ(set_state_value_, TOOL_CONTACT_STANDBY);
++  EXPECT_DOUBLE_EQ(command_state(), TOOL_CONTACT_STANDBY);
+   EXPECT_FALSE(is_active());
+ }
+ 
+ TEST_F(ToolContactControllerTest, SuccessEndSetsStandbyAndClearsActive)
+ {
+   clear_requests();
+-  set_state_value_ = TOOL_CONTACT_WAITING_END;
++  set_command_state(TOOL_CONTACT_WAITING_END);
+   set_hw_state(TOOL_CONTACT_SUCCESS_END);
+   set_active(true);
+ 
+   EXPECT_EQ(run_update(), controller_interface::return_type::OK);
+-  EXPECT_DOUBLE_EQ(set_state_value_, TOOL_CONTACT_STANDBY);
++  EXPECT_DOUBLE_EQ(command_state(), TOOL_CONTACT_STANDBY);
+   EXPECT_FALSE(is_active());
+ }
+ 
+ TEST_F(ToolContactControllerTest, SuccessEndAlwaysWritesStandbyEvenIfAlreadyInactive)
+ {
+   clear_requests();
+-  set_state_value_ = TOOL_CONTACT_WAITING_END;
++  set_command_state(TOOL_CONTACT_WAITING_END);
+   set_hw_state(TOOL_CONTACT_SUCCESS_END);
+   set_active(false);
+ 
+   EXPECT_EQ(run_update(), controller_interface::return_type::OK);
+-  EXPECT_DOUBLE_EQ(set_state_value_, TOOL_CONTACT_STANDBY);
++  EXPECT_DOUBLE_EQ(command_state(), TOOL_CONTACT_STANDBY);
+   EXPECT_FALSE(is_active());
+ }
+ 
+ TEST_F(ToolContactControllerTest, FailureEndSetsStandby)
+ {
+   clear_requests();
+-  set_state_value_ = TOOL_CONTACT_WAITING_END;
++  set_command_state(TOOL_CONTACT_WAITING_END);
+   set_hw_state(TOOL_CONTACT_FAILURE_END);
+   set_active(true);
+ 
+   EXPECT_EQ(run_update(), controller_interface::return_type::OK);
+-  EXPECT_DOUBLE_EQ(set_state_value_, TOOL_CONTACT_STANDBY);
++  EXPECT_DOUBLE_EQ(command_state(), TOOL_CONTACT_STANDBY);
+ }
+ 
+ TEST_F(ToolContactControllerTest, StandbyClearsLoggedOnceWithoutChangingCommand)
+ {
+   clear_requests();
+-  set_state_value_ = TOOL_CONTACT_STANDBY;
++  set_command_state(TOOL_CONTACT_STANDBY);
+   set_hw_state(TOOL_CONTACT_STANDBY);
+   set_logged_once(true);
+ 
+   EXPECT_EQ(run_update(), controller_interface::return_type::OK);
+-  EXPECT_DOUBLE_EQ(set_state_value_, TOOL_CONTACT_STANDBY);
++  EXPECT_DOUBLE_EQ(command_state(), TOOL_CONTACT_STANDBY);
+   EXPECT_FALSE(logged_once());
+ }
+ 
+@@ -443,31 +447,31 @@ TEST_F(ToolContactControllerTest, WaitingBeginStateIsPassthroughDefault)
+ {
+   // Intermediate HW states fall through the default branch; command is unchanged.
+   clear_requests();
+-  set_state_value_ = TOOL_CONTACT_WAITING_BEGIN;
++  set_command_state(TOOL_CONTACT_WAITING_BEGIN);
+   set_hw_state(TOOL_CONTACT_WAITING_BEGIN);
+ 
+   EXPECT_EQ(run_update(), controller_interface::return_type::OK);
+-  EXPECT_DOUBLE_EQ(set_state_value_, TOOL_CONTACT_WAITING_BEGIN);
++  EXPECT_DOUBLE_EQ(command_state(), TOOL_CONTACT_WAITING_BEGIN);
+ }
+ 
+ TEST_F(ToolContactControllerTest, WaitingEndStateIsPassthroughDefault)
+ {
+   clear_requests();
+-  set_state_value_ = TOOL_CONTACT_WAITING_END;
++  set_command_state(TOOL_CONTACT_WAITING_END);
+   set_hw_state(TOOL_CONTACT_WAITING_END);
+ 
+   EXPECT_EQ(run_update(), controller_interface::return_type::OK);
+-  EXPECT_DOUBLE_EQ(set_state_value_, TOOL_CONTACT_WAITING_END);
++  EXPECT_DOUBLE_EQ(command_state(), TOOL_CONTACT_WAITING_END);
+ }
+ 
+ TEST_F(ToolContactControllerTest, UnknownStateLeavesCommandUnchanged)
+ {
+   clear_requests();
+-  set_state_value_ = TOOL_CONTACT_STANDBY;
++  set_command_state(TOOL_CONTACT_STANDBY);
+   set_hw_state(99.0);
+ 
+   EXPECT_EQ(run_update(), controller_interface::return_type::OK);
+-  EXPECT_DOUBLE_EQ(set_state_value_, TOOL_CONTACT_STANDBY);
++  EXPECT_DOUBLE_EQ(command_state(), TOOL_CONTACT_STANDBY);
+ }
+ 
+ // ---------------------------------------------------------------------------
+@@ -478,28 +482,28 @@ TEST_F(ToolContactControllerTest, EnableThenExecutingHandshakeSequence)
+ {
+   // 1) Enable request -> WAITING_BEGIN
+   request_enable();
+-  set_state_value_ = TOOL_CONTACT_STANDBY;
++  set_command_state(TOOL_CONTACT_STANDBY);
+   set_hw_state(TOOL_CONTACT_STANDBY);
+   ASSERT_EQ(run_update(), controller_interface::return_type::OK);
+-  ASSERT_DOUBLE_EQ(set_state_value_, TOOL_CONTACT_WAITING_BEGIN);
++  ASSERT_DOUBLE_EQ(command_state(), TOOL_CONTACT_WAITING_BEGIN);
+ 
+   // 2) HW reports EXECUTING with non-terminal result -> acknowledge EXECUTING
+   clear_requests();
+   set_hw_state(TOOL_CONTACT_EXECUTING, 3.0);
+   ASSERT_EQ(run_update(), controller_interface::return_type::OK);
+-  EXPECT_DOUBLE_EQ(set_state_value_, TOOL_CONTACT_EXECUTING);
++  EXPECT_DOUBLE_EQ(command_state(), TOOL_CONTACT_EXECUTING);
+   EXPECT_TRUE(is_active());
+ 
+   // 3) Abort while still executing -> WAITING_END (regression path)
+   request_abort();
+   ASSERT_EQ(run_update(), controller_interface::return_type::OK);
+-  EXPECT_DOUBLE_EQ(set_state_value_, TOOL_CONTACT_WAITING_END);
++  EXPECT_DOUBLE_EQ(command_state(), TOOL_CONTACT_WAITING_END);
+ 
+   // 4) HW reports SUCCESS_END -> STANDBY
+   clear_requests();
+   set_hw_state(TOOL_CONTACT_SUCCESS_END);
+   ASSERT_EQ(run_update(), controller_interface::return_type::OK);
+-  EXPECT_DOUBLE_EQ(set_state_value_, TOOL_CONTACT_STANDBY);
++  EXPECT_DOUBLE_EQ(command_state(), TOOL_CONTACT_STANDBY);
+   EXPECT_FALSE(is_active());
+ }
+ 
