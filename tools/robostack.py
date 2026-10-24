@@ -120,8 +120,9 @@ PARALLEL_BUILDS = "2" if sys.platform == "win32" else f"3:{os.cpu_count()}"
 def build_ci_parallel(distro: str, recipes: list[str], args: list[str], cwd: Path) -> int:
     """build-ci for all of a build job's recipes in one rattler-build run, building
     independent ones in parallel. Its JSON log tells which recipe each line belongs to:
-    printed as "HH:MM:SS [recipe] message", and each recipe's time (first to last line)
-    is recorded for packing the build jobs."""
+    printed as "HH:MM:SS [recipe] message", and each recipe's time (first to last line of
+    its build) is recorded for packing the build jobs, scaled so that the times add up to
+    the builds' wall time: overlapping builds share it."""
     span: dict[str, list[str]] = {}  # recipe -> [first, last] timestamp
 
     def show(line: bytes) -> None:
@@ -145,10 +146,12 @@ def build_ci_parallel(distro: str, recipes: list[str], args: list[str], cwd: Pat
         import build_timings  # for packing the build jobs by time
         from datetime import datetime
 
-        for recipe in recipes:
-            if recipe in span:
-                first, last = (datetime.fromisoformat(t.replace("Z", "+00:00")) for t in span[recipe])
-                build_timings.note(distro, recipe, (last - first).total_seconds())
+        times = {r: [datetime.fromisoformat(t.replace("Z", "+00:00")) for t in span[r]] for r in recipes if r in span}
+        measured = {r: (last - first).total_seconds() for r, (first, last) in times.items()}
+        if times and sum(measured.values()):
+            wall = (max(last for _, last in times.values()) - min(first for first, _ in times.values())).total_seconds()
+            for recipe, seconds in measured.items():
+                build_timings.note(distro, recipe, seconds * wall / sum(measured.values()))
     return rc
 
 
