@@ -330,11 +330,12 @@ jobs:
         done
 
   # The ABI checks of all distributions as one pull-request comment, updated on every
-  # push. Pull requests from forks get a read-only token: they only have the job summaries.
+  # push. Pull requests from forks get a read-only token, so the job is skipped for them:
+  # they only have the job summaries.
   abi-comment:
     name: ABI check comment
     needs: build
-    if: ${{ always() && github.event_name == 'pull_request' && needs.build.result != 'skipped' }}
+    if: ${{ always() && github.event_name == 'pull_request' && needs.build.result != 'skipped' && github.event.pull_request.head.repo.full_name == github.repository }}
     runs-on: ubuntu-latest
     continue-on-error: true
     permissions:
