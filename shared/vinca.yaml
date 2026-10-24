@@ -389,6 +389,7 @@ packages_select_by_deps:
       - avt_vimba_camera # ships some Linux .so in the repo, so it only supports linux
       - camera_ros # Depends on libcamera, only available on linux
       - can_dbc_parser
+      - canopen # Linux only: lely-core supports Linux and Windows but not macOS (clashes with the macOS SDK), and the drivers need SocketCAN (Linux-only); requested in https://github.com/RoboStack/ros-jazzy/pull/167
       - easynav
       - easynav_bonxai_maps_manager
       - easynav_common
