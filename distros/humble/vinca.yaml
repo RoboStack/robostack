@@ -3,13 +3,13 @@ ros_distro: humble
 patch_dir: patch
 rosdistro_snapshot: rosdistro_snapshot.yaml
 rosdistro_additional_recipes: rosdistro_additional_recipes.yaml
+# Qt5 for the Qt5 rosdep keys (see robostack.yaml); layered over shared/robostack.yaml
+conda_index: [robostack.yaml]
 
-build_number: 20
+build_number: 22
 
 mutex_package:
-  # new build without run_constraints (same version as the published ones)
-  build_number: 21
-  version: "0.10.0"
+  version: "0.11.0"
 
 packages_exclude:
 
@@ -29,7 +29,6 @@ packages_exclude:
       - ros_ign_gazebo  # Ignition Fortress (libignition-gazebo6) isn't installable on win-64
       - ros_ign_gazebo_demos  # Ignition Fortress (libignition-gazebo6) isn't installable on win-64
       - ros_ign_image  # Fortress-based gz integration isn't supported on humble Windows (old ros-humble#68)
-      - test_ros_gz_bridge  # Fortress-based gz integration isn't supported on humble Windows (old ros-humble#68)
       - velodyne_gazebo_plugins  # links Gazebo Classic's Ogre libraries; win-64 has no OgreBites.lib
 
 packages_skip:
