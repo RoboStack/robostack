@@ -14,7 +14,7 @@ distros/<distro>/ and leaves out what shared/ already provides:
                            ros-<distro>-<pkg> dependency names become ros2-<pkg>
 - patch/                   patches renamed to ros2-<pkg>[.<platform>].patch
 - rosdistro_snapshot.yaml, rosdistro_additional_recipes.yaml   as they are
-- distro.yaml              channel and upload target (from its pixi.toml), its
+- distro.yaml              channel and where builds read it from (from its pixi.toml), its
                            conda-forge pinning version, migrations and the pins that
                            differ from shared/pinning/overrides.yaml (vinca_pinning.yaml)
 - ci.yaml                  reset to the defaults
@@ -208,9 +208,9 @@ def import_distro(src: Source, distro: str | None) -> str:
     pixi = src.text("pixi.toml") or ""
     settings: dict = {}
     if m := re.search(r'upload\s*=\s*"rattler-build upload prefix -c (\S+)', pixi):
-        settings.update(channel_name=m.group(1), upload_target="prefix")
+        settings.update(channel_name=m.group(1), read_from="prefix")
     elif m := re.search(r'upload\s*=\s*"rattler-build upload anaconda -o (\S+)', pixi):
-        settings.update(channel_name=m.group(1), upload_target="anaconda")
+        settings.update(channel_name=m.group(1), read_from="anaconda")
     pinning = yaml.safe_load(src.text("vinca_pinning.yaml") or "") or {}
     if pinning.get("conda_forge_pinning_version"):
         settings["conda_forge_pinning_version"] = str(pinning["conda_forge_pinning_version"])
