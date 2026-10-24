@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 4e47a68..c8eb361 100644
+index 4e47a68..4658ddb 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -9,8 +9,7 @@ if(CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64")
@@ -12,3 +12,12 @@ index 4e47a68..c8eb361 100644
    )
  endif()
  
+@@ -96,7 +95,7 @@ ENDIF()
+ 
+ # Causes the visibility macros to use dllexport rather than dllimport,
+ # which is appropriate when building the dll but not consuming it.
+-target_compile_definitions(rtabmap_rviz_plugins PRIVATE "RTABMAP_ROS_BUILDING_LIBRARY")
++target_compile_definitions(rtabmap_rviz_plugins PRIVATE "RTABMAP_RVIZ_PLUGINS_BUILDING_DLL")
+ 
+ # prevent pluginlib from using boost
+ target_compile_definitions(rtabmap_rviz_plugins PUBLIC "PLUGINLIB__DISABLE_BOOST_FUNCTIONS")
