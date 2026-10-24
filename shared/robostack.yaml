@@ -496,49 +496,49 @@ libqhull:
   robostack: [qhull]
 libqt5-core:
   robostack:
-    linux: [qt-main, libopengl-devel, libgl-devel]
-    osx: [qt-main]
-    win64: [qt-main]
+    linux: [qt6-main, libopengl-devel, libgl-devel]
+    osx: [qt6-main]
+    win64: [qt6-main]
 libqt5-gui:
   robostack:
-    linux: [qt-main, libopengl-devel, libgl-devel]
-    osx: [qt-main]
-    win64: [qt-main]
+    linux: [qt6-main, libopengl-devel, libgl-devel]
+    osx: [qt6-main]
+    win64: [qt6-main]
 libqt5-opengl:
   robostack:
-    linux: [qt-main, libopengl-devel, libgl-devel]
-    osx: [qt-main]
-    win64: [qt-main]
+    linux: [qt6-main, libopengl-devel, libgl-devel]
+    osx: [qt6-main]
+    win64: [qt6-main]
 libqt5-opengl-dev:
   robostack:
-    linux: [qt-main, libopengl-devel, libgl-devel]
-    osx: [qt-main]
-    win64: [qt-main]
+    linux: [qt6-main, libopengl-devel, libgl-devel]
+    osx: [qt6-main]
+    win64: [qt6-main]
 libqt5-svg:
   robostack:
-    linux: [qt-main, libopengl-devel, libgl-devel]
-    osx: [qt-main]
-    win64: [qt-main]
+    linux: [qt6-main, libopengl-devel, libgl-devel]
+    osx: [qt6-main]
+    win64: [qt6-main]
 libqt5-svg-dev:
   robostack:
-    linux: [qt-main, libopengl-devel, libgl-devel]
-    osx: [qt-main]
-    win64: [qt-main]
+    linux: [qt6-main, libopengl-devel, libgl-devel]
+    osx: [qt6-main]
+    win64: [qt6-main]
 libqt5-websockets-dev:
   robostack:
-    linux: [qt-main, libopengl-devel, libgl-devel]
-    osx: [qt-main]
-    win64: [qt-main]
+    linux: [qt6-main, libopengl-devel, libgl-devel]
+    osx: [qt6-main]
+    win64: [qt6-main]
 libqt5-widgets:
   robostack:
-    linux: [qt-main, libopengl-devel, libgl-devel]
-    osx: [qt-main]
-    win64: [qt-main]
+    linux: [qt6-main, libopengl-devel, libgl-devel]
+    osx: [qt6-main]
+    win64: [qt6-main]
 libqt5x11extras5-dev:
   robostack:
-    linux: [qt-main, libopengl-devel, libgl-devel]
-    osx: [qt-main]
-    win64: [qt-main]
+    linux: [qt6-main, libopengl-devel, libgl-devel]
+    osx: [qt6-main]
+    win64: [qt6-main]
 libqt6-core:
   robostack:
     linux: [qt6-main, libopengl-devel, libgl-devel]
@@ -857,7 +857,7 @@ python-pygraphviz:
 python-pyusb-pip:
   robostack: [pyusb]
 python-qt5-bindings:
-  robostack: [pyqt, pyqt-builder]
+  robostack: [pyqt6, pyqt-builder]
 python-rosdep:
   robostack: [rosdep]
 python-rosdep-modules:
@@ -1070,9 +1070,9 @@ python3-pytest-mock:
 python3-pytest-timeout:
   robostack: [pytest-timeout]
 python3-qt5-bindings:
-  robostack: [pyqt, pyqt-builder]
+  robostack: [pyqt6, pyqt-builder]
 python3-qt5-bindings-gl:
-  robostack: [pyqt, pyqt-builder]
+  robostack: [pyqt6, pyqt-builder]
 python3-qt5-bindings-webkit:
   robostack: [pyqtwebengine]
 python3-requests:
@@ -1186,14 +1186,14 @@ qt-base-dev:
     win64: [qt6-main]
 qt5-image-formats-plugins:
   robostack:
-    linux: [qt-main, libopengl-devel, libgl-devel]
-    osx: [qt-main]
-    win64: [qt-main]
+    linux: [qt6-main, libopengl-devel, libgl-devel]
+    osx: [qt6-main]
+    win64: [qt6-main]
 qt5-qmake:
   robostack:
-    linux: [qt-main, libopengl-devel, libgl-devel]
-    osx: [qt-main]
-    win64: [qt-main]
+    linux: [qt6-main, libopengl-devel, libgl-devel]
+    osx: [qt6-main]
+    win64: [qt6-main]
 qt6-base-dev:
   robostack:
     linux: [qt6-main, libopengl-devel, libgl-devel]
@@ -1203,9 +1203,9 @@ qt6-scxml-dev:
   robostack: [qt6-scxml]
 qtbase5-dev:
   robostack:
-    linux: [qt-main, libopengl-devel, libgl-devel]
-    osx: [qt-main]
-    win64: [qt-main]
+    linux: [qt6-main, libopengl-devel, libgl-devel]
+    osx: [qt6-main]
+    win64: [qt6-main]
 range-v3:
   robostack: [range-v3]
 rapidjson-dev:
@@ -1248,6 +1248,7 @@ socat:
     linux: [socat]
     osx: [socat]
     win64: []
+# also a ROS package in humble and jazzy, see tl_expected
 sophus:
   robostack: [sophus]
 spacenavd:
@@ -1276,6 +1277,10 @@ tinyxml:
   robostack: [tinyxml]
 tinyxml2:
   robostack: [tinyxml2]
+# tl_expected and sophus are also ROS packages in humble and jazzy. Mapping their keys to
+# conda-forge makes every dependent use conda-forge's build (vinca prefers a mapped key over
+# the ROS package), which is the one with the CMake config other packages expect (e.g. rsl
+# needs tl-expected's); the ROS packages themselves are then never built.
 tl_expected:
   robostack: [cpp-expected]
 udev:

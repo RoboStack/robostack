@@ -1,5 +1,22 @@
+diff --git a/motion_planning_tasks/properties/CMakeLists.txt b/motion_planning_tasks/properties/CMakeLists.txt
+index 8296b9e..98c81c3 100644
+--- a/motion_planning_tasks/properties/CMakeLists.txt
++++ b/motion_planning_tasks/properties/CMakeLists.txt
+@@ -9,6 +9,12 @@ find_package(libyaml_vendor REQUIRED)
+ find_package(yaml REQUIRED)
+ 
+ add_library(${MOVEIT_LIB_NAME} SHARED ${SOURCES})
++if(WIN32)
++  # Linked directly by motion_planning_tasks_rviz_plugin, so it needs
++  # an import .lib on Windows -- same missing-dllexport-symbols issue
++  # already fixed for motion_planning_tasks_utils.
++  set_target_properties(${MOVEIT_LIB_NAME} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
++endif()
+ 
+ target_link_libraries(${MOVEIT_LIB_NAME}
+ 	${QT_LIBRARIES} yaml
 diff --git a/motion_planning_tasks/utils/CMakeLists.txt b/motion_planning_tasks/utils/CMakeLists.txt
-index 436145dc..82ad0bfd 100644
+index 436145d..82ad0bf 100644
 --- a/motion_planning_tasks/utils/CMakeLists.txt
 +++ b/motion_planning_tasks/utils/CMakeLists.txt
 @@ -6,6 +6,16 @@ set(SOURCES
@@ -19,9 +36,8 @@ index 436145dc..82ad0bfd 100644
  
  target_link_libraries(${MOVEIT_LIB_NAME}
  	${QT_LIBRARIES}
- 
 diff --git a/motion_planning_tasks/utils/flat_merge_proxy_model.h b/motion_planning_tasks/utils/flat_merge_proxy_model.h
-index feced7e4..ba7a0e19 100644
+index feced7e..ba7a0e1 100644
 --- a/motion_planning_tasks/utils/flat_merge_proxy_model.h
 +++ b/motion_planning_tasks/utils/flat_merge_proxy_model.h
 @@ -39,6 +39,21 @@
@@ -55,9 +71,8 @@ index feced7e4..ba7a0e19 100644
  {
  	Q_OBJECT
  	Q_DECLARE_PRIVATE(FlatMergeProxyModel)
- 
 diff --git a/motion_planning_tasks/utils/tree_merge_proxy_model.h b/motion_planning_tasks/utils/tree_merge_proxy_model.h
-index df43128b..72087ea0 100644
+index df43128..72087ea 100644
 --- a/motion_planning_tasks/utils/tree_merge_proxy_model.h
 +++ b/motion_planning_tasks/utils/tree_merge_proxy_model.h
 @@ -39,6 +39,21 @@
@@ -91,27 +106,8 @@ index df43128b..72087ea0 100644
  {
  	Q_OBJECT
  	Q_DECLARE_PRIVATE(TreeMergeProxyModel)
- 
-diff --git a/motion_planning_tasks/properties/CMakeLists.txt b/motion_planning_tasks/properties/CMakeLists.txt
-index 8296b9ea..98c81c39 100644
---- a/motion_planning_tasks/properties/CMakeLists.txt
-+++ b/motion_planning_tasks/properties/CMakeLists.txt
-@@ -9,6 +9,12 @@ find_package(libyaml_vendor REQUIRED)
- find_package(yaml REQUIRED)
- 
- add_library(${MOVEIT_LIB_NAME} SHARED ${SOURCES})
-+if(WIN32)
-+  # Linked directly by motion_planning_tasks_rviz_plugin, so it needs
-+  # an import .lib on Windows -- same missing-dllexport-symbols issue
-+  # already fixed for motion_planning_tasks_utils.
-+  set_target_properties(${MOVEIT_LIB_NAME} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
-+endif()
- 
- target_link_libraries(${MOVEIT_LIB_NAME}
- 	${QT_LIBRARIES} yaml
- 
 diff --git a/visualization_tools/CMakeLists.txt b/visualization_tools/CMakeLists.txt
-index bde4d614..a1971ed4 100644
+index bde4d61..a1971ed 100644
 --- a/visualization_tools/CMakeLists.txt
 +++ b/visualization_tools/CMakeLists.txt
 @@ -18,6 +18,16 @@ add_library(${MOVEIT_LIB_NAME} SHARED
@@ -131,9 +127,8 @@ index bde4d614..a1971ed4 100644
  target_link_libraries(${MOVEIT_LIB_NAME}
  	${QT_LIBRARIES}
  	rviz_ogre_vendor::OgreMain
- 
 diff --git a/visualization_tools/include/moveit/visualization_tools/marker_visualization.h b/visualization_tools/include/moveit/visualization_tools/marker_visualization.h
-index 1b3fcebe..e2da81f1 100644
+index 1b3fceb..e2da81f 100644
 --- a/visualization_tools/include/moveit/visualization_tools/marker_visualization.h
 +++ b/visualization_tools/include/moveit/visualization_tools/marker_visualization.h
 @@ -95,7 +95,22 @@ private:
@@ -160,9 +155,8 @@ index 1b3fcebe..e2da81f1 100644
  {
  	Q_OBJECT
  
- 
 diff --git a/visualization_tools/include/moveit/visualization_tools/task_solution_panel.h b/visualization_tools/include/moveit/visualization_tools/task_solution_panel.h
-index 4e6e31ee..db7b77a5 100644
+index 4e6e31e..db7b77a 100644
 --- a/visualization_tools/include/moveit/visualization_tools/task_solution_panel.h
 +++ b/visualization_tools/include/moveit/visualization_tools/task_solution_panel.h
 @@ -47,7 +47,22 @@
@@ -189,9 +183,8 @@ index 4e6e31ee..db7b77a5 100644
  {
  	Q_OBJECT
  
- 
 diff --git a/visualization_tools/include/moveit/visualization_tools/task_solution_visualization.h b/visualization_tools/include/moveit/visualization_tools/task_solution_visualization.h
-index c1a666b7..5265f27f 100644
+index c1a666b..5265f27 100644
 --- a/visualization_tools/include/moveit/visualization_tools/task_solution_visualization.h
 +++ b/visualization_tools/include/moveit/visualization_tools/task_solution_visualization.h
 @@ -90,7 +90,22 @@ MOVEIT_CLASS_FORWARD(DisplaySolution);
@@ -218,4 +211,15 @@ index c1a666b7..5265f27f 100644
  {
  	Q_OBJECT
  
+diff --git a/visualization_tools/src/task_solution_visualization.cpp b/visualization_tools/src/task_solution_visualization.cpp
+index c65dab9..61a5cc1 100644
+--- a/visualization_tools/src/task_solution_visualization.cpp
++++ b/visualization_tools/src/task_solution_visualization.cpp
+@@ -63,6 +63,7 @@
+ #include <rviz_common/window_manager_interface.hpp>
+ #include <rviz_common/panel_dock_widget.hpp>
  
++#include <OgreSceneManager.h>
+ #include <OgreSceneNode.h>
+ 
+ #include <boost/algorithm/string/replace.hpp>
