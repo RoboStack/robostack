@@ -112,19 +112,69 @@ NETWORK_RETRIES = 4
 NETWORK_WAIT = 60  # doubled on each retry: 1, 2, 4, 8 minutes
 
 
-def run_build(cmd: list[str], cwd: Path) -> int:
+# a build job's recipes side by side, with a shared jobserver keeping them at the runner's
+# cores in total; Windows has no jobserver, and was no faster with two (#154)
+PARALLEL_BUILDS = "1" if sys.platform == "win32" else f"3:{os.cpu_count()}"
+
+
+def build_ci_parallel(distro: str, recipes: list[str], args: list[str], cwd: Path) -> int:
+    """build-ci for all of a build job's recipes in one rattler-build run, building
+    independent ones in parallel. Its JSON log tells which recipe each line belongs to:
+    printed as "HH:MM:SS [recipe] message", and each recipe's time (first to last line of
+    its build) is recorded for packing the build jobs, scaled so that the times add up to
+    the builds' wall time: overlapping builds share it. The compatibility recipes
+    (ros-<distro>-<name>) only repackage, but wait for others while building alongside:
+    they are left out (build_timings gives them ALIAS_SECONDS)."""
+    span: dict[str, list[str]] = {}  # recipe -> [first, last] timestamp
+
+    def show(line: bytes) -> None:
+        try:
+            entry = json.loads(line)
+            spans = entry.get("spans", [])
+            recipe = next((s["recipe"] for s in spans if "recipe" in s), "")
+            name = recipe.rsplit("-", 2)[0]  # the output's name-version-build
+            # the build itself: rattler-build renders every recipe up front
+            if name and any(s.get("name") == "Running build for" for s in spans):
+                span.setdefault(name, [entry["timestamp"]] * 2)[1] = entry["timestamp"]
+            text = f"{entry['timestamp'][11:19]} [{name or '-'}] {entry['fields'].get('message', '')}\n"
+            sys.stdout.write(text)
+        except (ValueError, KeyError, AttributeError, TypeError):
+            sys.stdout.buffer.write(line)
+        sys.stdout.flush()
+
+    args = [*args, "--parallel-builds", PARALLEL_BUILDS, "--log-style", "json"]
+    rc = run_build(rattler_build(distro, args, skip_existing=False), cwd, show)
+    if rc == 0 and os.environ.get("GITHUB_ACTIONS"):
+        import build_timings  # for packing the build jobs by time
+        from datetime import datetime
+
+        times = {r: [datetime.fromisoformat(t.replace("Z", "+00:00")) for t in span[r]]
+                 for r in recipes if r in span and not r.startswith(f"ros-{distro}-")}
+        measured = {r: (last - first).total_seconds() for r, (first, last) in times.items()}
+        if times and sum(measured.values()):
+            wall = (max(last for _, last in times.values()) - min(first for first, _ in times.values())).total_seconds()
+            for recipe, seconds in measured.items():
+                build_timings.note(distro, recipe, seconds * wall / sum(measured.values()))
+    return rc
+
+
+def run_build(cmd: list[str], cwd: Path, show=None) -> int:
     """run() for builds: retry when the solver misses a package, waiting for the
     channel's index to catch up with the previous stage's uploads (at most
     INDEX_LAG_RETRIES times), or when the runner's network failed (at most
-    NETWORK_RETRIES times, waiting longer each time)."""
+    NETWORK_RETRIES times, waiting longer each time). show(line) prints a line instead of
+    writing it as is."""
     index_retries = network_retries = 0
     while True:
         print("+", " ".join(cmd), f"  (in {cwd.relative_to(ROOT)})", flush=True)
         missing = network = False
         with subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT) as proc:
             for line in proc.stdout:
-                sys.stdout.buffer.write(line)
-                sys.stdout.buffer.flush()
+                if show:
+                    show(line)
+                else:
+                    sys.stdout.buffer.write(line)
+                    sys.stdout.buffer.flush()
                 missing = missing or any(m in line.lower() for m in INDEX_LAG_MESSAGES)
                 network = network or any(m in line for m in NETWORK_MESSAGES)
         if proc.returncode == 0:
@@ -427,13 +477,15 @@ def task(distro: str, name: str, args: list[str]) -> int:
     if name == "build":
         return run_build(rattler_build(distro, ["--recipe-dir", "./recipes", *args]), w)
     if name == "build-ci":  # used by .scripts/build_unix.sh / build_win.bat
+        recipes = [Path(args[i + 1].rstrip("\\/")).name for i, a in enumerate(args[:-1]) if a == "--recipe"]
+        if len(recipes) > 1:
+            return build_ci_parallel(distro, recipes, args, w)
         started = time.monotonic()
         rc = run_build(rattler_build(distro, args, skip_existing=False), w)
-        if rc == 0 and "--recipe" in args[:-1] and os.environ.get("GITHUB_ACTIONS"):
+        if rc == 0 and recipes and os.environ.get("GITHUB_ACTIONS"):
             import build_timings  # for packing the build jobs by time
 
-            recipe = Path(args[args.index("--recipe") + 1].rstrip("\\/")).name
-            build_timings.note(distro, recipe, time.monotonic() - started)
+            build_timings.note(distro, recipes[0], time.monotonic() - started)
         return rc
     if name == "build-one":
         pkg = args[0] if args else "ros2-ros-workspace"
