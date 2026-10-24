@@ -18,7 +18,10 @@ packages_exclude:
       - mujoco_ros2_control  # runtime uses Linux-specific files (as everywhere)
       - mujoco_ros2_control_demos  # readlink and Linux-specific files at runtime (as everywhere)
       - rclc_examples  # MSVC C2055 on rcl_timer_t callbacks; macOS humble-only (no reason recorded)
-      - rmf_building_sim_gz_classic_plugins  # Gazebo Classic (EOL) plugins: macOS link errors against libgazebo/sdformat9; not tried on Windows
+
+  - if: osx
+    then:
+      - rmf_building_sim_gz_classic_plugins  # Gazebo Classic (EOL) plugins: macOS link errors against libgazebo/sdformat9
       - rmf_robot_sim_gz_classic_plugins  # Gazebo Classic (EOL) plugins, as rmf_building_sim_gz_classic_plugins
 
   - if: win
@@ -26,6 +29,8 @@ packages_exclude:
       - gz_ros2_control  # Ignition Fortress (libignition-gazebo6) isn't installable on win-64
       - gz_ros2_control_demos  # Ignition Fortress (libignition-gazebo6) isn't installable on win-64
       - hpp-fcl  # no ros2-hpp-fcl recipe for win-64; pinocchio wraps conda-forge's pinocchio (coal) anyway
+      - rmf_building_sim_gz_plugins  # Ignition Fortress (libignition-gazebo6) isn't installable on win-64
+      - rmf_robot_sim_gz_plugins  # Ignition Fortress (libignition-gazebo6) isn't installable on win-64
       - ros_gz_sim  # Ignition Fortress (libignition-gazebo6) isn't installable on win-64
       - ros_gz_sim_demos  # Ignition Fortress (libignition-gazebo6) isn't installable on win-64
       - ros_ign_gazebo  # Ignition Fortress (libignition-gazebo6) isn't installable on win-64
