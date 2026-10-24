@@ -5,7 +5,15 @@ setlocal EnableExtensions EnableDelayedExpansion
 :: files several times over; the runner is thrown away after the job
 powershell -NoProfile -Command "Set-MpPreference -DisableRealtimeMonitoring $true"
 
-set CONDA_BLD_PATH=C:\bld
+:: The builds, rattler's package cache (on the same drive, for hardlinks) and the
+:: temporary files on D:, about three times as fast as C: on GitHub's runners
+set CONDA_BLD_PATH=D:\bld
+set VINCA_CUSTOM_CMAKE_BUILD_DIR=D:\x\
+set RATTLER_CACHE_DIR=D:\rattler
+set TMP=D:\tmp
+set TEMP=D:\tmp
+mkdir D:\tmp
+powershell -NoProfile -Command "Get-PSDrive C, D | Format-Table Name, @{n='free GB'; e={[math]::Round($_.Free / 1GB)}}"
 echo "PATH is %PATH%"
 
 rmdir /Q/S C:\Strawberry\
