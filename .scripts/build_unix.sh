@@ -24,6 +24,9 @@ export "CONDA_BLD_PATH=$HOME/conda-bld/"
 
 if [[ "$target" == *"osx"* ]]; then
     echo "osx"
+    # Spotlight indexes every file the environments and builds write, using up to a
+    # core or two of the runner's three or four; the runner is thrown away after the job
+    sudo mdutil -a -i off || true
     export PATH=$(echo $PATH | tr ":" "\n" | grep -v 'homebrew' | xargs | tr ' ' ':')
 fi
 

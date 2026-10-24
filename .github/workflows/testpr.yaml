@@ -186,6 +186,12 @@ jobs:
         Remove-Item -Recurse -Force C:\Strawberry -ErrorAction SilentlyContinue
         Remove-Item -Recurse -Force "C:\Program Files (x86)\Windows Kits\10\Include\10.0.17763.0" -ErrorAction SilentlyContinue
 
+    # Spotlight indexes every file the environments and builds write, using up to a
+    # core or two of the runner's three or four; the runner is thrown away after the job
+    - name: Turn off Spotlight
+      if: runner.os == 'macOS'
+      run: sudo mdutil -a -i off || true
+
     - name: Clean up PATH
       if: runner.os == 'Windows'
       uses: egor-tensin/cleanup-path@v5
