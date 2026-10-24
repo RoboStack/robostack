@@ -18,10 +18,7 @@ packages_exclude:
       - mujoco_ros2_control  # runtime uses Linux-specific files (as everywhere)
       - mujoco_ros2_control_demos  # readlink and Linux-specific files at runtime (as everywhere)
       - rclc_examples  # MSVC C2055 on rcl_timer_t callbacks; macOS humble-only (no reason recorded)
-
-  - if: osx
-    then:
-      - rmf_building_sim_gz_classic_plugins  # Gazebo Classic (EOL) plugins: macOS link errors against libgazebo/sdformat9
+      - rmf_building_sim_gz_classic_plugins  # Gazebo Classic (EOL) plugins: macOS link errors against libgazebo/sdformat9; win-64 has no OgreBites.lib (as velodyne_gazebo_plugins)
       - rmf_robot_sim_gz_classic_plugins  # Gazebo Classic (EOL) plugins, as rmf_building_sim_gz_classic_plugins
 
   - if: win

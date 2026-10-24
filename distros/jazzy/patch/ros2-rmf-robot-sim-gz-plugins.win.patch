@@ -1,0 +1,17 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 279d989..7deeab2 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,6 +1,12 @@
+ cmake_minimum_required(VERSION 3.5)
+ project(rmf_robot_sim_gz_plugins)
+ 
++if(MSVC)
++  # windows.h without WIN32_LEAN_AND_MEAN pulls in winsock.h, which then clashes with
++  # winsock2.h (C2011 sockaddr redefinition); NOMINMAX for windows.h's min/max macros
++  add_compile_definitions(WIN32_LEAN_AND_MEAN NOMINMAX _USE_MATH_DEFINES)
++endif()
++
+ set (CMAKE_AUTOMOC ON)
+ 
+ # Default to C99
