@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 5d0ea5f..8523d95 100644
+index 5d0ea5f..cb42546 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -20,8 +20,9 @@ macro(build_nlohmann_json_schema_validator)
@@ -30,12 +30,16 @@ index 5d0ea5f..8523d95 100644
      # Suppress git update due to https://gitlab.kitware.com/cmake/cmake/-/issues/16419
      UPDATE_COMMAND ""
      TIMEOUT 6000
-@@ -71,6 +75,8 @@ macro(build_nlohmann_json_schema_validator)
+@@ -71,6 +75,12 @@ macro(build_nlohmann_json_schema_validator)
      CMAKE_ARGS
        -DCMAKE_INSTALL_PREFIX=${json_external_project_dir}/install/
        -DBUILD_SHARED_LIBS:BOOL=ON
 +      # no dllexport annotations: without this there's no import library (LNK1181)
 +      -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS:BOOL=ON
++      # options of this (older) validator; JSON_VALIDATOR_BUILD_* below are the newer names. Its test
++      # links the data symbol draft7_schema_builtin, which export-all does not export (LNK2019).
++      -DBUILD_TESTS:BOOL=OFF
++      -DBUILD_EXAMPLES:BOOL=OFF
        -DJSON_VALIDATOR_BUILD_TESTS:BOOL=OFF
        -DJSON_VALIDATOR_BUILD_EXAMPLES:BOOL=OFF
        ${cmake_configure_args}
