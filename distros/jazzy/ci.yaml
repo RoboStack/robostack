@@ -25,3 +25,4 @@ full_rebuild: false
 # they must pick up the change.
 evict_cache:
   - mola_kernel  # new Windows patch; reset before merging
+  - mola_yaml  # new Windows patch; reset before merging
