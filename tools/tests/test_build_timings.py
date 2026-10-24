@@ -97,3 +97,26 @@ def test_gha_keeps_the_journal_and_uses_the_times(tmp_path, monkeypatch):
     assert calls[-1][calls[-1].index("--timings") + 1] == "build_timings.json"
     assert json.loads((work / "build_timings.json").read_text()) == {
         "recipes": {"ros2-a": 3.0, "ros-jazzy-a": build_timings.ALIAS_SECONDS}, "default": 3.0}
+
+
+def test_ci_estimate_uses_the_measured_times(tmp_path, monkeypatch, capsys):
+    import ci_estimate
+
+    timings = tmp_path / "timings"
+    timings.mkdir()
+    (timings / "linux-64.json").write_text(build_timings.dumps(
+        {"ros2-a": {"jazzy": 100.0, "lyrical": 200.0}, "ros2-b": {"jazzy": 10.0}}))
+    monkeypatch.setattr(build_timings, "TIMINGS", timings)
+    recipes = tmp_path / "distros" / "jazzy" / "work" / "recipes"
+    for r in ("ros2-a", "ros-jazzy-a", "ros2-b", "ros2-new"):
+        (recipes / r).mkdir(parents=True)
+        (recipes / r / "recipe.yaml").write_text("")
+    cache = tmp_path / "cache"
+    cache.mkdir()
+    (cache / "ros2-b-1.0-h0_1.conda").write_text("")
+    monkeypatch.setenv("GITHUB_STEP_SUMMARY", "")
+    monkeypatch.setattr("sys.argv", ["ci_estimate.py", "--recipes", str(recipes), "--cache-dir", str(cache),
+                                     "--platform", "linux-64"])
+    assert ci_estimate.main() == 0
+    # ros2-a 150 s (average), its alias 0.3 s, ros2-new the median 80 s, ros2-b cached 2 s
+    assert capsys.readouterr().out.startswith("3 packages to build, 1 restored from the cache: roughly 4 min")

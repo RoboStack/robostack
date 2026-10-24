@@ -87,18 +87,26 @@ def dumps(recipes: dict) -> str:
     return "{\n" + ",\n".join(lines) + "\n}\n"
 
 
-def vinca_timings(distro: str, platform: str, path: Path) -> bool:
-    """Write vinca-gha's --timings file for the platform: each recipe's average over the
-    distributions, and ALIAS_SECONDS for the distribution's compatibility recipes
-    (ros-<distro>-<name>, built right after ros2-<name>). False when there are no times yet."""
+def timings(distro: str, platform: str) -> dict | None:
+    """{"recipes": {recipe: seconds}, "default": seconds} for the platform: each recipe's
+    average over the distributions, and ALIAS_SECONDS for the distribution's compatibility
+    recipes (ros-<distro>-<name>, built right after ros2-<name>). None without times yet."""
     source = TIMINGS / f"{platform}.json"
     if not source.is_file():
-        return False
+        return None
     recipes = {r: round(statistics.fmean(by.values()), 1) for r, by in json.loads(source.read_text()).items()}
     # unmeasured recipes: the median of the packages (ros2-*)
     default = statistics.median([s for r, s in recipes.items() if r.startswith("ros2-")] or list(recipes.values()))
     recipes.update({f"ros-{distro}-{r[len('ros2-'):]}": ALIAS_SECONDS for r in list(recipes) if r.startswith("ros2-")})
-    path.write_text(json.dumps({"recipes": recipes, "default": default}) + "\n")
+    return {"recipes": recipes, "default": default}
+
+
+def vinca_timings(distro: str, platform: str, path: Path) -> bool:
+    """Write vinca-gha's --timings file for the platform (timings()); False when there are
+    no times yet."""
+    if (data := timings(distro, platform)) is None:
+        return False
+    path.write_text(json.dumps(data) + "\n")
     return True
 
 
