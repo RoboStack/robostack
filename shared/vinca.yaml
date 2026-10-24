@@ -98,6 +98,8 @@ packages_select_by_deps:
   - battery_state_broadcaster
   - behaviortree_cpp
   - behaviortree_cpp_v3
+  - beluga_amcl  # requested in https://github.com/RoboStack/ros-jazzy/pull/298; macOS: ros2-beluga*.osx.patch (libc++)
+  - beluga_ros  # requested in https://github.com/RoboStack/ros-jazzy/pull/298
   - better_launch
   - bno055 # flynneva
   - bond_core
@@ -510,11 +512,6 @@ packages_select_by_deps:
       - usb_cam # Depends on v4l
       - v4l2_camera
       - yaets
-
-  - if: not osx
-    then:
-      - beluga_amcl # macOS: libc++ lacks std::execution::sequenced_policy; requested in https://github.com/RoboStack/ros-jazzy/pull/298
-      - beluga_ros # macOS: libc++ lacks std::execution::sequenced_policy; requested in https://github.com/RoboStack/ros-jazzy/pull/298
 
   - if: linux and not aarch64
     then:

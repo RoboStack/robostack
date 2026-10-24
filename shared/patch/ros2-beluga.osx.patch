@@ -1,0 +1,195 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index b94a7f1..cacf183 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -72,6 +72,9 @@ target_include_directories(
+             "$<INSTALL_INTERFACE:include/${PROJECT_NAME}>")
+ target_link_libraries(${PROJECT_NAME} INTERFACE ${_deps})
+ target_compile_features(${PROJECT_NAME} INTERFACE cxx_std_17)
++# libc++ only has the execution policies with -fexperimental-library
++target_compile_options(${PROJECT_NAME} INTERFACE $<$<CXX_COMPILER_ID:AppleClang,Clang>:-fexperimental-library>)
++target_link_options(${PROJECT_NAME} INTERFACE $<$<CXX_COMPILER_ID:AppleClang,Clang>:-fexperimental-library>)
+ target_compile_definitions(${PROJECT_NAME} INTERFACE EIGEN_NO_DEBUG
+                                                      SOPHUS_USE_BASIC_LOGGING)
+ 
+diff --git a/include/beluga/actions/normalize.hpp b/include/beluga/actions/normalize.hpp
+index 14c54a5..81f33ca 100644
+--- a/include/beluga/actions/normalize.hpp
++++ b/include/beluga/actions/normalize.hpp
+@@ -42,13 +42,13 @@ struct normalize_closure {
+  public:
+   static_assert(std::is_execution_policy_v<ExecutionPolicy>);
+ 
+-  constexpr normalize_closure() noexcept : policy_{std::execution::seq} {}
++  constexpr normalize_closure() noexcept : policy_{&std::execution::seq} {}
+ 
+-  constexpr explicit normalize_closure(ExecutionPolicy policy) : policy_{std::move(policy)} {}
++  constexpr explicit normalize_closure(const ExecutionPolicy& policy) : policy_{&policy} {}
+ 
+-  constexpr explicit normalize_closure(double factor) noexcept : policy_{std::execution::seq}, factor_{factor} {}
++  constexpr explicit normalize_closure(double factor) noexcept : policy_{&std::execution::seq}, factor_{factor} {}
+ 
+-  constexpr normalize_closure(ExecutionPolicy policy, double factor) : policy_{std::move(policy)}, factor_{factor} {}
++  constexpr normalize_closure(const ExecutionPolicy& policy, double factor) : policy_{&policy}, factor_{factor} {}
+ 
+   template <class Range>
+   constexpr auto operator()(Range& range) const -> Range& {
+@@ -75,7 +75,7 @@ struct normalize_closure {
+     }
+ 
+     std::transform(
+-        policy_,          //
++        *policy_,    //
+         weights.begin(),  //
+         weights.end(),    //
+         weights.begin(),  //
+@@ -85,7 +85,7 @@ struct normalize_closure {
+   }
+ 
+  private:
+-  ExecutionPolicy policy_{};
++  const ExecutionPolicy* policy_;
+   std::optional<double> factor_;
+ };
+ 
+diff --git a/include/beluga/actions/overlay.hpp b/include/beluga/actions/overlay.hpp
+index 5bc20c8..e9469d8 100644
+--- a/include/beluga/actions/overlay.hpp
++++ b/include/beluga/actions/overlay.hpp
+@@ -38,10 +38,10 @@ struct overlay_closure {
+   static_assert(ranges::range<MaskRange>);
+ 
+   constexpr overlay_closure(MaskRange mask_range, MaskValue mask_value)
+-      : policy_{std::execution::seq}, mask_range_{std::move(mask_range)}, mask_value_{std::move(mask_value)} {}
++      : policy_{&std::execution::seq}, mask_range_{std::move(mask_range)}, mask_value_{std::move(mask_value)} {}
+ 
+-  constexpr explicit overlay_closure(ExecutionPolicy policy, MaskRange mask_range, MaskValue mask_value)
+-      : policy_{std::move(policy)}, mask_range_{std::move(mask_range)}, mask_value_{std::move(mask_value)} {}
++  constexpr explicit overlay_closure(const ExecutionPolicy& policy, MaskRange mask_range, MaskValue mask_value)
++      : policy_{&policy}, mask_range_{std::move(mask_range)}, mask_value_{std::move(mask_value)} {}
+ 
+   template <class Range>
+   constexpr auto operator()(Range& range) const -> Range& {
+@@ -50,7 +50,7 @@ struct overlay_closure {
+     const auto converted_mask_value = static_cast<ranges::range_value_t<Range>>(mask_value_);
+ 
+     std::transform(
+-        policy_,                   //
++        *policy_,             //
+         std::begin(common_range),  //
+         std::end(common_range),    //
+         std::begin(mask_range_),   //
+@@ -63,7 +63,7 @@ struct overlay_closure {
+   }
+ 
+  private:
+-  ExecutionPolicy policy_{};
++  const ExecutionPolicy* policy_;
+   MaskRange mask_range_{};
+   MaskValue mask_value_{};
+ };
+diff --git a/include/beluga/actions/propagate.hpp b/include/beluga/actions/propagate.hpp
+index 7009447..fddf76a 100644
+--- a/include/beluga/actions/propagate.hpp
++++ b/include/beluga/actions/propagate.hpp
+@@ -85,8 +85,9 @@ struct propagate_base_fn {
+       class ExecutionPolicy,
+       std::enable_if_t<ranges::range<Range>, int> = 0,
+       std::enable_if_t<std::is_execution_policy_v<ExecutionPolicy>, int> = 0>
+-  constexpr auto operator()(Range&& range, StateSamplingFunction fn, ExecutionPolicy policy) const -> Range& {
+-    return (*this)(std::move(policy), std::forward<Range>(range), std::move(fn));
++  constexpr auto operator()(Range&& range, StateSamplingFunction fn, const ExecutionPolicy* policy)
++      const -> Range& {
++    return (*this)(*policy, std::forward<Range>(range), std::move(fn));
+   }
+ 
+   /// Overload that returns a view closure to compose with other views.
+@@ -94,8 +95,8 @@ struct propagate_base_fn {
+       class ExecutionPolicy,        //
+       class StateSamplingFunction,  //
+       std::enable_if_t<std::is_execution_policy_v<ExecutionPolicy>, int> = 0>
+-  constexpr auto operator()(ExecutionPolicy policy, StateSamplingFunction fn) const {
+-    return ranges::make_action_closure(ranges::bind_back(propagate_base_fn{}, std::move(fn), std::move(policy)));
++  constexpr auto operator()(const ExecutionPolicy& policy, StateSamplingFunction fn) const {
++    return ranges::make_action_closure(ranges::bind_back(propagate_base_fn{}, std::move(fn), &policy));
+   }
+ };
+ 
+diff --git a/include/beluga/actions/reweight.hpp b/include/beluga/actions/reweight.hpp
+index 6bda73b..3428d0a 100644
+--- a/include/beluga/actions/reweight.hpp
++++ b/include/beluga/actions/reweight.hpp
+@@ -136,8 +136,15 @@ struct reweight_fn {
+       class Input,
+       std::enable_if_t<std::is_execution_policy_v<std::decay_t<ExecutionPolicy>>, int> = 0,
+       std::enable_if_t<!ranges::range<std::decay_t<ExecutionPolicy>>, int> = 0>
+-  constexpr auto operator()(ExecutionPolicy policy, Input input) const {
+-    return ranges::make_action_closure(ranges::bind_back(reweight_fn{}, std::move(input), std::move(policy)));
++  constexpr auto operator()(const ExecutionPolicy& policy, Input input) const {
++    return ranges::make_action_closure(ranges::bind_back(reweight_fn{}, std::move(input), &policy));
++  }
++
++  /// Overload for the policy a view closure keeps by reference.
++  template <class Range, class Input, class ExecutionPolicy, std::enable_if_t<ranges::range<Range>, int> = 0>
++  constexpr auto operator()(Range&& range, Input&& input, const ExecutionPolicy* policy) const
++      -> auto& {
++    return (*this)(*policy, range, std::forward<Input>(input));
+   }
+ 
+   /// Overload that returns a view closure to compose with other views using the default execution policy.
+diff --git a/include/beluga/algorithm/amcl_core.hpp b/include/beluga/algorithm/amcl_core.hpp
+index 63f6ac1..6cba805 100644
+--- a/include/beluga/algorithm/amcl_core.hpp
++++ b/include/beluga/algorithm/amcl_core.hpp
+@@ -108,11 +108,11 @@ class Amcl {
+       RandomStateGenerator random_state_generator,
+       spatial_hasher_type spatial_hasher,
+       const AmclParams& params = AmclParams{},
+-      ExecutionPolicy execution_policy = std::execution::seq)
++      const ExecutionPolicy& execution_policy = std::execution::seq)
+       : params_{params},
+         motion_model_{std::move(motion_model)},
+         sensor_model_{std::move(sensor_model)},
+-        execution_policy_{std::move(execution_policy)},
++        execution_policy_{&execution_policy},
+         spatial_hasher_{std::move(spatial_hasher)},
+         random_probability_estimator_{params_.alpha_slow, params_.alpha_fast},
+         update_policy_{beluga::policies::on_motion<state_type>(params_.update_min_d, params_.update_min_a)},
+@@ -172,9 +172,9 @@ class Amcl {
+     }
+ 
+     particles_ |= beluga::actions::propagate(
+-                      execution_policy_, motion_model_(control_action_window_ << std::move(control_action))) |  //
+-                  beluga::actions::reweight(execution_policy_, sensor_model_(std::move(measurement))) |         //
+-                  beluga::actions::normalize(execution_policy_);
++                      *execution_policy_, motion_model_(control_action_window_ << std::move(control_action))) |  //
++                  beluga::actions::reweight(*execution_policy_, sensor_model_(std::move(measurement))) |         //
++                  beluga::actions::normalize(*execution_policy_);
+ 
+     const double random_state_probability = random_probability_estimator_(particles_);
+ 
+@@ -218,7 +218,7 @@ class Amcl {
+ 
+   MotionModel motion_model_;
+   SensorModel sensor_model_;
+-  ExecutionPolicy execution_policy_;
++  const ExecutionPolicy* execution_policy_;
+ 
+   spatial_hasher_type spatial_hasher_;
+   beluga::ThrunRecoveryProbabilityEstimator random_probability_estimator_;
+diff --git a/include/beluga/algorithm/spatial_hash.hpp b/include/beluga/algorithm/spatial_hash.hpp
+index 9c6c6ba..a3d0a8a 100644
+--- a/include/beluga/algorithm/spatial_hash.hpp
++++ b/include/beluga/algorithm/spatial_hash.hpp
+@@ -44,9 +44,9 @@ namespace detail {
+ template <std::size_t N, std::size_t I>
+ constexpr std::size_t floor_and_fibo_hash(double value) {
+   constexpr auto kFib = []() {
+-    if constexpr (std::is_same_v<std::size_t, std::uint64_t>) {
++    if constexpr (sizeof(std::size_t) == sizeof(std::uint64_t)) {
+       return 11400714819323198485LLU;  // golden ratio for 64 bits
+-    } else if constexpr (std::is_same_v<std::size_t, std::uint32_t>) {
++    } else if constexpr (sizeof(std::size_t) == sizeof(std::uint32_t)) {
+       return 2654435769U;  // golden ratio for 32 bits
+     } else {
+       // Write false in a sufficiently complex way so as to confuse the compiler.
