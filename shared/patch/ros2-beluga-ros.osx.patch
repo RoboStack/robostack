@@ -1,0 +1,39 @@
+diff --git a/include/beluga_ros/amcl.hpp b/include/beluga_ros/amcl.hpp
+index 46c612c..872b9fb 100644
+--- a/include/beluga_ros/amcl.hpp
++++ b/include/beluga_ros/amcl.hpp
+@@ -117,7 +117,7 @@ class Amcl {
+       beluga::BeamSensorModel<beluga_ros::OccupancyGrid>>;
+ 
+   /// Execution policy variant type for runtime selection support.
+-  using execution_policy_variant = std::variant<std::execution::sequenced_policy, std::execution::parallel_policy>;
++  using execution_policy_variant = std::variant<const std::execution::sequenced_policy*, const std::execution::parallel_policy*>;
+ 
+   /// Constructor.
+   /**
+diff --git a/src/amcl.cpp b/src/amcl.cpp
+index c38360e..b2eee7f 100644
+--- a/src/amcl.cpp
++++ b/src/amcl.cpp
+@@ -30,7 +30,7 @@ Amcl::Amcl(
+     motion_model_variant motion_model,
+     sensor_model_variant sensor_model,
+     const AmclParams& params = AmclParams(),
+-    execution_policy_variant execution_policy = std::execution::seq)
++    execution_policy_variant execution_policy = &std::execution::seq)
+     : params_{params},
+       map_distribution_{map},
+       motion_model_{std::move(motion_model)},
+@@ -95,9 +95,9 @@ auto Amcl::update(
+   std::visit(
+       [&, this](auto& policy, auto& motion_model, auto& sensor_model) {
+         particles_ |=
+-            beluga::actions::propagate(policy, motion_model(control_action_window_ << base_pose_in_odom)) |  //
+-            beluga::actions::reweight(policy, sensor_model(std::move(measurement))) |                        //
+-            beluga::actions::normalize(policy);
++            beluga::actions::propagate(*policy, motion_model(control_action_window_ << base_pose_in_odom)) |  //
++            beluga::actions::reweight(*policy, sensor_model(std::move(measurement))) |                        //
++            beluga::actions::normalize(*policy);
+       },
+       execution_policy_, motion_model_, sensor_model_);
+ 
