@@ -27,9 +27,10 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      pull-requests: read  # the build:<distro> labels
+      pull-requests: read  # the build:<distro> and build:<platform> labels
     outputs:
       distros: ${{ steps.plan.outputs.distros }}
+      targets: ${{ steps.plan.outputs.targets }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -50,6 +51,7 @@ jobs:
           SELECTED: ${{ inputs.distros }}
           GH_TOKEN: ${{ github.token }}
         run: |
+          labels="[]"
           if [ -n "$SELECTED" ]; then
             distros=$(pixi run python -c 'import json,os; print(json.dumps(os.environ["SELECTED"].split()))')
           elif [ -n "$BASE" ]; then
@@ -61,6 +63,8 @@ jobs:
             distros=$(pixi run python tools/robostack.py changed-distros --base HEAD --all)
           fi
           echo "distros=$distros" | tee -a "$GITHUB_OUTPUT"
+          # build:linux / build:osx / build:win labels limit the platforms (all without)
+          echo "targets=$(pixi run python tools/robostack.py build-targets --labels "$labels")" | tee -a "$GITHUB_OUTPUT"
 
   check:
     runs-on: ubuntu-latest
@@ -142,12 +146,7 @@ jobs:
       fail-fast: false
       matrix:
         distro: ${{ fromJSON(needs.plan.outputs.distros) }}
-        target:
-          - { os: ubuntu-latest, platform: linux-64 }
-          - { os: ubuntu-24.04-arm, platform: linux-aarch64 }
-          - { os: macos-15-intel, platform: osx-64 }
-          - { os: macos-15, platform: osx-arm64 }
-          - { os: windows-2022, platform: win-64 }
+        target: ${{ fromJSON(needs.plan.outputs.targets) }}  # tools/robostack.py BUILD_TARGETS
     name: ${{ matrix.distro }} ${{ matrix.target.platform }}
     runs-on: ${{ matrix.target.os }}
     env:
