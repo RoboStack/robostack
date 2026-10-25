@@ -450,6 +450,7 @@ packages_select_by_deps:
       - navmap_ros_interfaces
       - navmap_rviz_plugin
       - navmap_tools
+      - netft_driver  # ATI Net F/T driver: POSIX networking, Linux only; requested in https://github.com/RoboStack/robostack/issues/103
       - nobleo_socketcan_bridge # Depends on socketcan
       - orbbec_camera
       - plansys2_core
