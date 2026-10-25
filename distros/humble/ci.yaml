@@ -23,6 +23,4 @@ full_rebuild: false
 #
 # Remember that dependents are not rebuilt automatically: evict them as well if
 # they must pick up the change.
-evict_cache:
-  - rmf_traffic_ros2  # ros2-rmf-traffic-ros2.win.patch changed; reset before merging
-  - rmf_task_ros2  # ros2-rmf-task-ros2.win.patch changed; reset before merging
+evict_cache: []
