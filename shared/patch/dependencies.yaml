@@ -86,6 +86,10 @@ mrpt_gui:
   # links libwx_*; the wxwidgets/wx-common keys map to wxpython, so wxwidgets is only a
   # transitive host dep and its (weak) run_exports never reach the run requirements
   add_host: ["wxwidgets"]
+mrpt_imgui:
+  # Windows: links conda-forge's GLEW like mrpt_opengl (ros2-mrpt-imgui.win.patch)
+  add_host: ["${{ 'glew' if win }}"]
+  add_run: ["${{ 'glew' if win }}"]
 mrpt_math:
   # its exported CMake targets (and mrpt_poses') carry <prefix>/Library/include/eigen3 on
   # Windows, so dependents without their own eigen host dep failed to configure

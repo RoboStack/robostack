@@ -1,0 +1,14 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index d4b1e97..e44efd5 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -68,3 +68,9 @@ endif()
+ if(TARGET mrpt_glew)
+   target_link_libraries(${PROJECT_NAME} PUBLIC mrpt_glew)
+ endif()
++
++if(WIN32 AND NOT TARGET mrpt_glew)
++  # RoboStack: the release source has no bundled GLEW; conda-forge's GLEW, as in mrpt_opengl
++  find_package(GLEW REQUIRED)
++  target_link_libraries(${PROJECT_NAME} PRIVATE GLEW::GLEW)
++endif()
