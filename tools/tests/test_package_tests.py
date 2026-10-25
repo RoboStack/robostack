@@ -46,7 +46,7 @@ def test_ran_test_counts_the_tests_rattler_build_ran():
     assert sum(bool(package_tests.RAN_TEST.search(line)) for line in log) == 3
 
 
-def test_issue_body_lists_failures_and_untested_builds():
+def test_issue_body_has_a_section_per_distribution():
     results = [
         {"distro": "jazzy", "platform": "win-64", "packages": [
             {"name": "ros2-a", "version": "1", "build": "h_27", "ok": False, "status": "failed", "log": "boom"},
@@ -57,17 +57,24 @@ def test_issue_body_lists_failures_and_untested_builds():
             {"name": "ros2-a", "version": "1", "build": "h_27", "ok": True, "status": "passed"},
         ]},
     ]
-    body = package_tests.issue_body("jazzy", results, ["osx-64"], "https://run")
-    assert "**1 of 3 failed**" in body and "second try: `ros2-c` (win-64)" in body
-    assert "| win-64 | `ros2-a` 1 | `h_27` |" in body and "boom" in body
-    assert "`ros2-b` (`h_25`)" in body and "No results for osx-64" in body
-    assert body.endswith("[Workflow run](https://run)")
-    clean = package_tests.issue_body("jazzy", results[1:], [])
-    assert "All 1 passed" in clean and "|---|" not in clean
+    jazzy = package_tests.distro_section("jazzy", results, ["osx-64"])
+    assert jazzy.startswith("## ❌ jazzy: 1 of 3 failed") and "second try: `ros2-c` (win-64)" in jazzy
+    assert "| win-64 | `ros2-a` 1 | `h_27` |" in jazzy and "boom" in jazzy
+    assert "`ros2-b` (`h_25`)" in jazzy and "No results for osx-64" in jazzy
+    humble = package_tests.distro_section("humble", results[1:], [])
+    assert humble.startswith("## ✅ humble: all 1 passed") and "|---|" not in humble
+    body = package_tests.issue_body({"jazzy": jazzy, "humble": humble}, "https://run")
+    assert body.startswith(package_tests.REPORT_MARKER) and body.endswith("[Workflow run](https://run)")
+    assert body.index("## ✅ humble") < body.index("## ❌ jazzy")
 
 
-def test_report_includes_distributions_without_results(tmp_path, capsys, monkeypatch):
-    monkeypatch.delenv("GITHUB_ACTIONS", raising=False)
+def test_issue_body_shares_the_size_limit_between_distributions(monkeypatch):
+    monkeypatch.setattr(package_tests, "MAX_ISSUE_BODY", 3000)
+    body = package_tests.issue_body({"humble": "## humble\n" + "x" * 5000, "jazzy": "## jazzy\nshort"})
+    assert len(body) <= 3000 and "## jazzy\nshort" in body and "truncated" in body
+
+
+def test_report_includes_distributions_without_results(tmp_path, capsys):
     (tmp_path / "package-tests-jazzy-linux-64").mkdir()
     (tmp_path / "package-tests-jazzy-linux-64" / "jazzy-linux-64.json").write_text(json.dumps(
         {"distro": "jazzy", "platform": "linux-64",
@@ -75,4 +82,30 @@ def test_report_includes_distributions_without_results(tmp_path, capsys, monkeyp
     assert package_tests.report(tmp_path, ["linux-64"], ["jazzy"]) == 0
     # humble's jobs failed before writing results: reported, and the run fails
     assert package_tests.report(tmp_path, ["linux-64"], ["humble", "jazzy"]) == 1
-    assert "humble: 0 failed, no results for linux-64" in capsys.readouterr().out
+    out = capsys.readouterr().out
+    assert "humble: 0 failed, no results for linux-64" in out and "## ❌ humble" in out and "## ✅ jazzy" in out
+
+
+def test_report_publishes_one_issue_and_closes_the_old_ones(tmp_path, monkeypatch):
+    import maintenance
+
+    published, calls = [], []
+    monkeypatch.setattr(maintenance, "_repository", lambda: "o/r")
+    monkeypatch.setattr(maintenance, "publish_issue",
+                        lambda repo, title, label, body, open_: published.append((title, label, open_)) or "https://i/9")
+    old = [{"number": 149, "title": "jazzy: package tests", "html_url": "https://i/149"},
+           {"number": 9, "title": "Package tests", "html_url": "https://i/9"}]
+
+    def gh(args):
+        calls.append(args)
+        return "\n".join(json.dumps(i) for i in old) if args[1] == "--paginate" else ""
+    monkeypatch.setattr(maintenance, "_gh", gh)
+    assert package_tests.report(tmp_path, ["linux-64"], ["jazzy"], publish=True) == 1
+    assert published == [("Package tests", "package-tests", True)]
+    closed = [a for a in calls if "PATCH" in a]
+    assert closed == [["api", "-X", "PATCH", "repos/o/r/issues/149", "-f", "state=closed", "-f", "state_reason=not_planned"]]
+
+
+def test_requests_send_a_user_agent():
+    # packages.prefix.dev answers Python-urllib's default User-Agent with 403
+    assert package_tests.request("https://repo.prefix.dev/x").get_header("User-agent") == package_tests.USER_AGENT
