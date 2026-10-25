@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 2cef478..63aab06 100644
+index abc3bae..c4b763d 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -11,6 +11,12 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -15,7 +15,7 @@ index 2cef478..63aab06 100644
  include(GNUInstallDirs)
  
  find_package(ament_cmake REQUIRED)
-@@ -28,6 +34,14 @@ find_package(Threads)
+@@ -27,6 +33,14 @@ find_package(Threads)
  file(GLOB_RECURSE core_lib_srcs "src/rmf_websocket/*.cpp")
  add_library(rmf_websocket SHARED ${core_lib_srcs})
  
@@ -30,3 +30,12 @@ index 2cef478..63aab06 100644
  target_link_libraries(rmf_websocket
    PUBLIC
      ${rclcpp_LIBRARIES}
+@@ -60,7 +74,7 @@ install(
+ install(
+   TARGETS rmf_websocket
+   EXPORT rmf_websocket
+-  RUNTIME DESTINATION lib/rmf_websocket
++  RUNTIME DESTINATION bin  # RoboStack: the DLL next to the other DLLs (on PATH on Windows)
+   LIBRARY DESTINATION lib
+   ARCHIVE DESTINATION lib
+ )

@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index ef83cb6..706c523 100644
+index ef83cb6..4058d67 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -10,6 +10,13 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -242,7 +242,23 @@ index ef83cb6..706c523 100644
  
  target_include_directories(task_aggregator
    PRIVATE
-@@ -522,7 +624,7 @@ install(
+@@ -516,13 +618,22 @@ rmf_api_generate_schema_headers(
+ ament_export_targets(rmf_fleet_adapter HAS_LIBRARY_TARGET)
+ ament_export_dependencies(${dep_pkgs})
+ 
++# RoboStack: the library's DLL goes next to the other DLLs (on PATH on Windows), not
++# with the executables in lib/rmf_fleet_adapter, or rmf_adapter.pyd can't load it
++install(
++  TARGETS rmf_fleet_adapter
++  EXPORT rmf_fleet_adapter
++  RUNTIME DESTINATION bin
++  LIBRARY DESTINATION lib
++  ARCHIVE DESTINATION lib
++)
++
+ install(
+   TARGETS
+-    rmf_fleet_adapter
      read_only
      read_only_blockade
      mock_traffic_light
