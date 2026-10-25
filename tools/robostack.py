@@ -581,6 +581,16 @@ def generate_gha(distro: str, args: list[str]) -> int:
 
 
 NO_BUILD_LABEL = "build:none"  # only the checks (tooling, CI or docs changes)
+# the pull-request build's platforms and their runners; build:linux / build:osx / build:win
+# (or build:<platform>) labels limit a PR build to those
+BUILD_TARGETS = [
+    {"os": "ubuntu-latest", "platform": "linux-64"},
+    {"os": "ubuntu-24.04-arm", "platform": "linux-aarch64"},
+    {"os": "macos-15-intel", "platform": "osx-64"},
+    {"os": "macos-15", "platform": "osx-arm64"},
+    {"os": "windows-2022", "platform": "win-64"},
+]
+PLATFORM_LABELS = {"linux": ("linux-64", "linux-aarch64"), "osx": ("osx-64", "osx-arm64"), "win": ("win-64",)}
 
 
 def build_distros(changed: list[str], labels: list[str]) -> list[str]:
@@ -589,11 +599,22 @@ def build_distros(changed: list[str], labels: list[str]) -> list[str]:
     touches shared files), else the changed ones."""
     if NO_BUILD_LABEL in labels:
         return []
-    selected = sorted({label.split(":", 1)[1] for label in labels if label.startswith("build:")})
+    platforms = set(PLATFORM_LABELS) | {t["platform"] for t in BUILD_TARGETS}
+    selected = sorted({label.split(":", 1)[1] for label in labels if label.startswith("build:")} - platforms)
     unknown = sorted(set(selected) - set(distros()))
     if unknown:
         raise SystemExit(f"build:<distro> labels name unknown distributions: {', '.join(unknown)}")
     return selected or changed
+
+
+def build_targets(labels: list[str]) -> list[dict]:
+    """The platforms a pull request builds: those of its build:linux / build:osx / build:win
+    (or build:<platform>) labels when it has any, else all of them."""
+    wanted = set()
+    for label in labels:
+        name = label.split(":", 1)[1] if label.startswith("build:") else ""
+        wanted |= set(PLATFORM_LABELS.get(name, ())) | ({name} & {t["platform"] for t in BUILD_TARGETS})
+    return [t for t in BUILD_TARGETS if not wanted or t["platform"] in wanted]
 
 
 def changed_distros(base: str) -> list[str]:
@@ -626,6 +647,12 @@ def main() -> int:
         ns = parser.parse_args(sys.argv[2:])
         changed = distros() if ns.all else changed_distros(ns.base)
         print(json.dumps(build_distros(changed, json.loads(ns.labels))))
+        return 0
+    if len(sys.argv) >= 2 and sys.argv[1] == "build-targets":
+        parser = argparse.ArgumentParser(prog="rs build-targets")
+        parser.add_argument("--labels", default="[]", help="JSON list of the pull request's labels")
+        ns = parser.parse_args(sys.argv[2:])
+        print(json.dumps(build_targets(json.loads(ns.labels))))
         return 0
     if len(sys.argv) < 3:
         print(__doc__)
