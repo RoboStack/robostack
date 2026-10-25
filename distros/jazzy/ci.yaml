@@ -23,6 +23,4 @@ full_rebuild: false
 #
 # Remember that dependents are not rebuilt automatically: evict them as well if
 # they must pick up the change.
-evict_cache:
-  - beluga_ros
-  - beluga_amcl
+evict_cache: []
