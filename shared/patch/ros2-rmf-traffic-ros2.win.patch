@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 9e46c52..b98e982 100644
+index 9e46c52..d9ddf34 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -11,6 +11,13 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -97,6 +97,19 @@ index 9e46c52..b98e982 100644
  # TODO(MXG): Change these executables into shared libraries that can act as
  # ROS2 node components
  
+@@ -268,6 +318,12 @@ install(
+   ARCHIVE DESTINATION lib
+ )
+ 
++if(WIN32)
++  # RoboStack: the DLL also next to the other DLLs (on PATH): the RUNTIME destination above,
++  # lib/rmf_traffic_ros2, is for the executables, so its users couldn't load it
++  install(FILES $<TARGET_FILE:rmf_traffic_ros2> DESTINATION bin)
++endif()
++
+ ament_package(
+   CONFIG_EXTRAS
+     cmake/proj_dependency.cmake
 diff --git a/include/rmf_traffic_ros2/Profile.hpp b/include/rmf_traffic_ros2/Profile.hpp
 index d4c040a..c6d7a64 100644
 --- a/include/rmf_traffic_ros2/Profile.hpp

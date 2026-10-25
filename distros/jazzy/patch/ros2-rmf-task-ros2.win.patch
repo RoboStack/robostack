@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 4f9574c..dba940d 100644
+index 4f9574c..2091a65 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -29,14 +29,26 @@ find_package(nlohmann_json_schema_validator REQUIRED)
@@ -30,4 +30,18 @@ index 4f9574c..dba940d 100644
 +    rclcpp::rclcpp
      nlohmann_json::nlohmann_json
      nlohmann_json_schema_validator
+ )
+@@ -112,10 +124,12 @@ install(
+   DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+ )
+ 
++# RoboStack: the library's DLL next to the other DLLs (on PATH on Windows), not with the
++# executables in lib/rmf_task_ros2, where its users couldn't load it
+ install(
+   TARGETS rmf_task_ros2
+   EXPORT rmf_task_ros2
+-  RUNTIME DESTINATION lib/rmf_task_ros2
++  RUNTIME DESTINATION bin
+   LIBRARY DESTINATION lib
+   ARCHIVE DESTINATION lib
  )
