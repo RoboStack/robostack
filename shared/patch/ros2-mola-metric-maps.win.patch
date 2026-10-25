@@ -1,3 +1,17 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 775a066..073a5f8 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -187,7 +187,8 @@ add_subdirectory(apps)
+ # -----------------------
+ # define tests:
+ enable_testing()
+-add_subdirectory(tests)
++# RoboStack: not on Windows, the tests use POSIX setenv()/unsetenv()
++# add_subdirectory(tests)
+ 
+ # -----------------------------------------------------------------------------
+ #  ROS2
 diff --git a/src/KeyframePointCloudMap.cpp b/src/KeyframePointCloudMap.cpp
 index 74b2701..1a38249 100644
 --- a/src/KeyframePointCloudMap.cpp
