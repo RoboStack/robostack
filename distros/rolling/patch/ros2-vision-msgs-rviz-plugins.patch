@@ -79,6 +79,19 @@ index cd2b84c..5c5ffd0 100644
    BOUNDING_BOX_3D_ARRAY_DISPLAY_HPP_PUBLIC
    void reset() override;
  
+diff --git a/include/vision_msgs_rviz_plugins/bounding_box_3d_common.hpp b/include/vision_msgs_rviz_plugins/bounding_box_3d_common.hpp
+index d75aec0..e8c9ea5 100644
+--- a/include/vision_msgs_rviz_plugins/bounding_box_3d_common.hpp
++++ b/include/vision_msgs_rviz_plugins/bounding_box_3d_common.hpp
+@@ -25,6 +25,8 @@
+ #include <rviz_common/properties/bool_property.hpp>
+ #include <rviz_common/properties/float_property.hpp>
+ #include <rviz_default_plugins/displays/marker/marker_common.hpp>
++#include <rviz_common/logging.hpp>
++#include <rviz_common/frame_manager_iface.hpp>
+ #include <rviz_default_plugins/displays/marker_array/marker_array_display.hpp>
+ #include <rviz_rendering/objects/billboard_line.hpp>
+ 
 diff --git a/include/vision_msgs_rviz_plugins/detection_3d.hpp b/include/vision_msgs_rviz_plugins/detection_3d.hpp
 index bc6ad9b..0975e09 100644
 --- a/include/vision_msgs_rviz_plugins/detection_3d.hpp
@@ -121,6 +134,19 @@ index d2b2b50..9ba0e8e 100644
    DETECTION_3D_ARRAY_DISPLAY_HPP_PUBLIC
    void reset() override;
  
+diff --git a/include/vision_msgs_rviz_plugins/detection_3d_common.hpp b/include/vision_msgs_rviz_plugins/detection_3d_common.hpp
+index fe31b2d..f8f5618 100644
+--- a/include/vision_msgs_rviz_plugins/detection_3d_common.hpp
++++ b/include/vision_msgs_rviz_plugins/detection_3d_common.hpp
+@@ -27,6 +27,8 @@
+ #include <vector>
+ 
+ #include <rviz_common/display.hpp>
++#include <rviz_common/logging.hpp>
++#include <rviz_common/frame_manager_iface.hpp>
+ #include <rviz_common/properties/bool_property.hpp>
+ #include <rviz_common/properties/float_property.hpp>
+ #include <rviz_common/yaml_config_reader.hpp>
 diff --git a/src/bounding_box_3d.cpp b/src/bounding_box_3d.cpp
 index daf52a5..286bcec 100644
 --- a/src/bounding_box_3d.cpp

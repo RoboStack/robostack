@@ -1,0 +1,14 @@
+diff --git a/resource/Cargo.toml.em b/resource/Cargo.toml.em
+index 02298a3..139e11b 100644
+--- a/resource/Cargo.toml.em
++++ b/resource/Cargo.toml.em
+@@ -4,7 +4,8 @@ version = "@(package_version)"
+ edition = "2021"
+ 
+ [dependencies]
+-rosidl_runtime_rs = "0.6"
++# 0.7: matches the rosidl_buffer primitive sequence layout from Lyrical on (ros2-rust/ros2_rust#659)
++rosidl_runtime_rs = "0.7"
+ serde = { version = "1", optional = true, features = ["derive"] }
+ serde-big-array = { version = "0.5.1", optional = true }
+ 

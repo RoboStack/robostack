@@ -3,9 +3,10 @@
     python tools/ci_estimate.py --recipes distros/<d>/work/recipes --cache-dir <dir> --platform <p>
 
 Recipes whose package is in the restored cache are skipped by rattler-build; the rest
-are built. The seconds per package below are rough averages from the jazzy full
-rebuild in October 2026 (wall clock of the build step, including environment setup):
-building one package, and skipping one that is already in the cache.
+are built, each taking its measured time (shared/build_timings, see build_timings.py).
+The seconds per package below are rough averages from the jazzy full rebuild in October
+2026 (wall clock of the build step, including environment setup): building one package,
+for platforms without measured times, and skipping one that is already in the cache.
 """
 
 import argparse
@@ -13,6 +14,8 @@ import datetime
 import os
 import sys
 from pathlib import Path
+
+import build_timings
 
 SECONDS = {  # platform: (per built package, per skipped package)
     "linux-64": (19, 2),
@@ -45,7 +48,12 @@ def main() -> int:
     to_build = sorted(recipes - cached)
     skipped = len(recipes & cached)
     build, skip = SECONDS.get(args.platform, max(SECONDS.values()))
-    seconds = len(to_build) * build + skipped * skip
+    distro = args.recipes.resolve().parent.parent.name  # distros/<distro>/work/recipes
+    measured = build_timings.timings(distro, args.platform)
+    if measured:
+        seconds = sum(measured["recipes"].get(r, measured["default"]) for r in to_build) + skipped * skip
+    else:
+        seconds = len(to_build) * build + skipped * skip
     hours = seconds / 3600
     rounds = int(hours // JOB_LIMIT_HOURS) + 1
     done = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(seconds=seconds)

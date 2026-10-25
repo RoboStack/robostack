@@ -1,0 +1,23 @@
+diff --git a/launch_testing/pytest/hooks.py b/launch_testing/pytest/hooks.py
+index 174c4c4..d4eb2ff 100644
+--- a/launch_testing/pytest/hooks.py
++++ b/launch_testing/pytest/hooks.py
+@@ -189,7 +189,17 @@ def find_launch_test_entrypoint(path):
+         return None
+ 
+ 
+-def pytest_pycollect_makemodule(path, parent):
++# pytest 7 passes the path as `module_path`; pytest 9 dropped the legacy `path`
++# argument, and rejects a hookimpl that still asks for it
++if _pytest_version_ge(7):
++    def pytest_pycollect_makemodule(module_path, parent):
++        return _pytest_pycollect_makemodule(module_path, parent)
++else:
++    def pytest_pycollect_makemodule(path, parent):
++        return _pytest_pycollect_makemodule(path, parent)
++
++
++def _pytest_pycollect_makemodule(path, parent):
+     entrypoint = find_launch_test_entrypoint(path)
+     if entrypoint is not None:
+         ihook = parent.session.gethookproxy(path)
