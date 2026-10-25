@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 57ff60f..27864f2 100644
+index 57ff60f..cca337c 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -10,6 +10,13 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -44,13 +44,17 @@ index 57ff60f..27864f2 100644
      ${rmf_fleet_msgs_LIBRARIES}
      ${rclcpp_LIBRARIES}
      ${rmf_task_msgs_LIBRARIES}
-@@ -206,13 +225,30 @@ target_link_libraries(read_only_blockade
+@@ -206,13 +225,34 @@ target_link_libraries(read_only_blockade
  # -----------------------------------------------------------------------------
  
  add_executable(full_control src/full_control/main.cpp)
 +if(MSVC)
-+  # RoboStack: MSVC 14.44 crashes (C1001, type_traits) optimizing main.cpp
-+  target_compile_options(full_control PRIVATE /Od)
++  # RoboStack: MSVC 14.44 crashes compiling main.cpp (C1001 in its lambda handling,
++  # also unoptimized); full_control isn't built on Windows (newer releases build)
++  set_target_properties(full_control PROPERTIES EXCLUDE_FROM_ALL TRUE)
++  set(_full_control "")
++else()
++  set(_full_control full_control)
 +endif()
  
 -target_link_libraries(full_control
@@ -81,7 +85,7 @@ index 57ff60f..27864f2 100644
  
  target_include_directories(full_control
    PRIVATE
-@@ -224,12 +260,21 @@ target_include_directories(full_control
+@@ -224,12 +264,21 @@ target_include_directories(full_control
  
  add_executable(mock_traffic_light src/mock_traffic_light/main.cpp)
  
@@ -109,7 +113,7 @@ index 57ff60f..27864f2 100644
  
  target_include_directories(mock_traffic_light
    PRIVATE
-@@ -265,13 +310,29 @@ add_executable(experimental_lift_watchdog
+@@ -265,13 +314,29 @@ add_executable(experimental_lift_watchdog
    src/experimental_lift_watchdog/main.cpp
  )
  
@@ -146,7 +150,7 @@ index 57ff60f..27864f2 100644
  
  target_include_directories(experimental_lift_watchdog
    PRIVATE
-@@ -287,12 +348,21 @@ add_executable(door_supervisor
+@@ -287,12 +352,21 @@ add_executable(door_supervisor
    src/door_supervisor/Node.cpp
  )
  
@@ -174,7 +178,7 @@ index 57ff60f..27864f2 100644
  
  target_include_directories(door_supervisor
    PRIVATE
-@@ -306,6 +376,15 @@ add_library(robot_state_aggregator_main SHARED
+@@ -306,6 +380,15 @@ add_library(robot_state_aggregator_main SHARED
    src/robot_state_aggregator/RobotStateAggregator.cpp
  )
  
@@ -190,7 +194,7 @@ index 57ff60f..27864f2 100644
  target_include_directories(robot_state_aggregator_main
    PRIVATE
      include
-@@ -408,12 +487,21 @@ add_executable(dump_fleet_states
+@@ -408,12 +491,21 @@ add_executable(dump_fleet_states
    test/dump_fleet_states.cpp
  )
  
@@ -218,6 +222,15 @@ index 57ff60f..27864f2 100644
  
  target_include_directories(dump_fleet_states
    PRIVATE
+@@ -506,7 +598,7 @@ install(
+     read_only
+     read_only_blockade
+     mock_traffic_light
+-    full_control
++    ${_full_control}
+     lift_supervisor
+     experimental_lift_watchdog
+     door_supervisor
 diff --git a/include/rmf_fleet_adapter/agv/Adapter.hpp b/include/rmf_fleet_adapter/agv/Adapter.hpp
 index 7360e53..6ec9be4 100644
 --- a/include/rmf_fleet_adapter/agv/Adapter.hpp

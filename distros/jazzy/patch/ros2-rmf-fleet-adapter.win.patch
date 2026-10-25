@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index ef83cb6..64592a5 100644
+index ef83cb6..706c523 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -10,6 +10,13 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -35,9 +35,18 @@ index ef83cb6..64592a5 100644
  target_link_libraries(rmf_fleet_adapter
    PUBLIC
      rmf_task::rmf_task
-@@ -204,12 +223,25 @@ target_link_libraries(read_only_blockade
+@@ -203,13 +222,34 @@ target_link_libraries(read_only_blockade
+ # -----------------------------------------------------------------------------
  
  add_executable(full_control src/full_control/main.cpp)
++if(MSVC)
++  # RoboStack: MSVC 14.44 crashes compiling main.cpp (C1001 in its lambda handling,
++  # also unoptimized); full_control isn't built on Windows (newer releases build)
++  set_target_properties(full_control PROPERTIES EXCLUDE_FROM_ALL TRUE)
++  set(_full_control "")
++else()
++  set(_full_control full_control)
++endif()
  
 -target_link_libraries(full_control
 -  PRIVATE
@@ -67,7 +76,7 @@ index ef83cb6..64592a5 100644
  
  target_include_directories(full_control
    PRIVATE
-@@ -221,12 +253,21 @@ target_include_directories(full_control
+@@ -221,12 +261,21 @@ target_include_directories(full_control
  
  add_executable(mock_traffic_light src/mock_traffic_light/main.cpp)
  
@@ -95,7 +104,7 @@ index ef83cb6..64592a5 100644
  
  target_include_directories(mock_traffic_light
    PRIVATE
-@@ -281,13 +322,29 @@ add_executable(experimental_lift_watchdog
+@@ -281,13 +330,29 @@ add_executable(experimental_lift_watchdog
    src/experimental_lift_watchdog/main.cpp
  )
  
@@ -132,7 +141,7 @@ index ef83cb6..64592a5 100644
  
  target_include_directories(experimental_lift_watchdog
    PRIVATE
-@@ -303,12 +360,21 @@ add_executable(door_supervisor
+@@ -303,12 +368,21 @@ add_executable(door_supervisor
    src/door_supervisor/Node.cpp
  )
  
@@ -160,7 +169,7 @@ index ef83cb6..64592a5 100644
  
  target_include_directories(door_supervisor
    PRIVATE
-@@ -322,6 +388,15 @@ add_library(robot_state_aggregator_main SHARED
+@@ -322,6 +396,15 @@ add_library(robot_state_aggregator_main SHARED
    src/robot_state_aggregator/RobotStateAggregator.cpp
  )
  
@@ -176,7 +185,7 @@ index ef83cb6..64592a5 100644
  target_include_directories(robot_state_aggregator_main
    PRIVATE
      include
-@@ -424,12 +499,21 @@ add_executable(dump_fleet_states
+@@ -424,12 +507,21 @@ add_executable(dump_fleet_states
    test/dump_fleet_states.cpp
  )
  
@@ -204,6 +213,44 @@ index ef83cb6..64592a5 100644
  
  target_include_directories(dump_fleet_states
    PRIVATE
+@@ -443,12 +535,22 @@ add_executable(task_aggregator
+   src/task_aggregator/main.cpp
+ )
+ 
+-target_link_libraries(task_aggregator
+-  PRIVATE
+-    rmf_fleet_adapter
+-    ${rclcpp_LIBRARIES}
+-    ${rmf_task_msgs_LIBRARIES}
+-)
++if(WIN32)
++  # the raw _LIBRARIES overflow link.exe's response-file line limit (LNK1170), as for full_control
++  target_link_libraries(task_aggregator
++    PRIVATE
++      rmf_fleet_adapter
++      rclcpp::rclcpp
++      rmf_task_msgs::rmf_task_msgs
++  )
++else()
++  target_link_libraries(task_aggregator
++    PRIVATE
++      rmf_fleet_adapter
++      ${rclcpp_LIBRARIES}
++      ${rmf_task_msgs_LIBRARIES}
++  )
++endif()
+ 
+ target_include_directories(task_aggregator
+   PRIVATE
+@@ -522,7 +624,7 @@ install(
+     read_only
+     read_only_blockade
+     mock_traffic_light
+-    full_control
++    ${_full_control}
+     lift_supervisor
+     mutex_group_supervisor
+     experimental_lift_watchdog
 diff --git a/include/rmf_fleet_adapter/agv/Adapter.hpp b/include/rmf_fleet_adapter/agv/Adapter.hpp
 index c4d90ac..7aa2387 100644
 --- a/include/rmf_fleet_adapter/agv/Adapter.hpp
