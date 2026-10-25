@@ -1,4 +1,10 @@
 tests:
-  - python:
-      imports:
+  - package_contents:
+      lib:
       - rcutils
+  # rcutils 7 (lyrical, rolling) no longer installs its Python module
+  - if: ros_distro in ["humble", "jazzy"]
+    then:
+    - python:
+        imports:
+        - rcutils
