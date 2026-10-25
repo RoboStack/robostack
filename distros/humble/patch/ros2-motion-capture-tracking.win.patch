@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 6fb3e04..179d621 100644
+index 300f534..35e1093 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1,6 +1,9 @@
@@ -13,13 +13,13 @@ index 6fb3e04..179d621 100644
    add_compile_options(-Wall -Wextra -Wpedantic)
  endif()
 diff --git a/deps/libmotioncapture/CMakeLists.txt b/deps/libmotioncapture/CMakeLists.txt
-index 8ae21e2..371278f 100644
+index 61a4af9..6cf2a5d 100644
 --- a/deps/libmotioncapture/CMakeLists.txt
 +++ b/deps/libmotioncapture/CMakeLists.txt
-@@ -19,6 +19,11 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
- set(CMAKE_CXX_EXTENSIONS OFF)
+@@ -20,6 +20,11 @@ set(CMAKE_CXX_EXTENSIONS OFF)
  
- find_package(Boost 1.5 REQUIRED) # for optitrack (system component is header-only in Boost 1.70+)
+ find_package(Threads REQUIRED)
+ find_package(Boost) # for optitrack
 +if(WIN32)
 +  # Boost's auto-linking asks MSVC for an unqualified boost_filesystem.lib (LNK1104):
 +  # link Boost::filesystem's imported target, which knows the actual library path
@@ -28,7 +28,7 @@ index 8ae21e2..371278f 100644
  add_definitions(
    -DBOOST_DATE_TIME_NO_LIB
    -DBOOST_REGEX_NO_LIB
-@@ -233,6 +238,9 @@ add_library(libmotioncapture
+@@ -239,6 +244,9 @@ add_library(libmotioncapture
  target_link_directories(libmotioncapture PUBLIC
    ${my_link_directories}
  )
@@ -36,5 +36,5 @@ index 8ae21e2..371278f 100644
 +  target_link_libraries(libmotioncapture Boost::filesystem)
 +endif()
  target_link_libraries(libmotioncapture
+   Eigen3::Eigen
    ${my_libraries}
- )

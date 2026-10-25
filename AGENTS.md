@@ -72,6 +72,8 @@ should edit a shared file at a time.
 - A PR builds the distributions it changes (all of them if it touches anything
   outside `distros/<d>/`). To build only some, add `build:<distro>` labels (e.g.
   `build:humble`), then push or re-run the build (adding a label doesn't start one).
+  `build:linux` / `build:osx` / `build:win` (or `build:<platform>`) limit the platforms;
+  remove them for one full build before merging.
 - After a merge, `main.yaml` regenerates the staged build branches
   `buildbranch_<distro>_<platform>`; uploads go to the channel in `distro.yaml`, or to
   the repository variable `ROBOSTACK_UPLOAD_CHANNEL`.
