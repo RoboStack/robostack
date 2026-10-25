@@ -134,6 +134,10 @@ rmf_building_sim_common:  # shared libraries without dllexport annotations (Wind
   additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
 rmf_robot_sim_common:  # shared libraries without dllexport annotations (Windows: no import library)
   additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
+rmf_visualization_rviz2_plugins:  # Windows: uses the alternative operator tokens (`or`), which MSVC only has with <iso646.h>
+  additional_cmake_args:
+    if: win
+    then: '-DCMAKE_CXX_FLAGS_INIT=/FIiso646.h'
 robot_state_publisher:
   additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
 rosx_introspection:
