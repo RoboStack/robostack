@@ -1,15 +1,17 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 41a671a..6cf7ce6 100644
+index 41a671a..f362a6c 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -145,6 +145,12 @@ if(WIN32 AND NOT TARGET mrpt_glew)
+@@ -145,6 +145,14 @@ if(WIN32 AND NOT TARGET mrpt_glew)
    endif()
  endif()
  
 +if(WIN32 AND NOT TARGET mrpt_glew)
 +  # RoboStack: the release source has no 3rdparty/ (bundled GLEW): conda-forge's GLEW
++  # PRIVATE, like the bundled one: the exported targets would need GLEW::GLEW for their users;
++  # GL/glew.h (included by opengl_api.h) is in the same include directory (glew is a run dep)
 +  find_package(GLEW REQUIRED)
-+  target_link_libraries(${PROJECT_NAME} PUBLIC GLEW::GLEW)
++  target_link_libraries(${PROJECT_NAME} PRIVATE GLEW::GLEW)
 +endif()
 +
  if (TARGET mrpt_glew) # Basically, for Windows
