@@ -235,6 +235,19 @@ def test_build_distros_labels_override_the_changed_ones():
     assert rs.build_distros(rs.distros(), ["build:none", "build:humble"]) == []
     with pytest.raises(SystemExit):
         rs.build_distros([], ["build:kinetic"])
+    # platform labels don't select distributions
+    assert rs.build_distros(["humble", "jazzy"], ["build:win", "build:linux-64"]) == ["humble", "jazzy"]
+    assert rs.build_distros(rs.distros(), ["build:jazzy", "build:osx"]) == ["jazzy"]
+
+
+def test_build_targets_from_platform_labels():
+    platforms = lambda labels: [t["platform"] for t in rs.build_targets(labels)]
+    assert platforms([]) == ["linux-64", "linux-aarch64", "osx-64", "osx-arm64", "win-64"]
+    assert platforms(["build:jazzy", "automerge"]) == platforms([])
+    assert platforms(["build:win"]) == ["win-64"]
+    assert platforms(["build:linux", "build:win"]) == ["linux-64", "linux-aarch64", "win-64"]
+    assert platforms(["build:osx-arm64"]) == ["osx-arm64"]
+    assert rs.build_targets(["build:win"]) == [{"os": "windows-2022", "platform": "win-64"}]
 
 
 def test_run_build_retries_network_errors(tmp_path, monkeypatch):
