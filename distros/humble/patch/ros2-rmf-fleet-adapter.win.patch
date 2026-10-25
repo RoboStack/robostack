@@ -327,7 +327,7 @@ index 74891f7..fc1a445 100644
  public:
  
 diff --git a/include/rmf_fleet_adapter/agv/RobotUpdateHandle.hpp b/include/rmf_fleet_adapter/agv/RobotUpdateHandle.hpp
-index afd33bd..1e8245b 100644
+index afd33bd..70b0460 100644
 --- a/include/rmf_fleet_adapter/agv/RobotUpdateHandle.hpp
 +++ b/include/rmf_fleet_adapter/agv/RobotUpdateHandle.hpp
 @@ -32,6 +32,8 @@
@@ -384,6 +384,15 @@ index afd33bd..1e8245b 100644
    {
    public:
      /// True if this robot is allowed to accept new tasks. False if the robot
+@@ -375,7 +377,7 @@ public:
+     ///
+     /// When the object is destroyed, the stubbornness will automatically be
+     /// released.
+-    class Stubbornness
++    class RMF_FLEET_ADAPTER_EXPORT Stubbornness
+     {
+     public:
+       /// Stop being stubborn
 diff --git a/include/rmf_fleet_adapter/agv/Waypoint.hpp b/include/rmf_fleet_adapter/agv/Waypoint.hpp
 index ffa92de..34a7d5a 100644
 --- a/include/rmf_fleet_adapter/agv/Waypoint.hpp
