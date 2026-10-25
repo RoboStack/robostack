@@ -78,6 +78,29 @@ moveit_setup_framework:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
 moveit_setup_srdf_plugins:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
+mrpt_common:
+  # CMakeLists.txt calls find_package(ament_cmake) when ROS_VERSION=2 (set by ros_environment),
+  # but package.xml (build_type cmake) does not declare it
+  add_host: ["ros2-ament-cmake"]
+mrpt_gui:
+  # links libwx_*; the wxwidgets/wx-common keys map to wxpython, so wxwidgets is only a
+  # transitive host dep and its (weak) run_exports never reach the run requirements
+  # Windows: nanogui links conda-forge's glad instead of its bundled copy (ros2-mrpt-gui.win.patch)
+  add_host: ["wxwidgets", "${{ 'glad' if win }}"]
+mrpt_imgui:
+  # Windows: links conda-forge's GLEW like mrpt_opengl, also for its users (ros2-mrpt-imgui.win.patch)
+  add_host: ["${{ 'glew' if win }}"]
+  add_run: ["${{ 'glew' if win }}"]
+mrpt_math:
+  # its public headers include Eigen, and its exported CMake targets (and mrpt_poses') carry
+  # the eigen3 include directory: users need the headers (eigen-abi-devel's run_exports only
+  # add eigen-abi), or dependents without their own eigen dependency fail to configure
+  add_run: ["eigen"]
+mrpt_opengl:
+  # Windows: the release source has no bundled GLEW (ros2-mrpt-opengl.win.patch); users of
+  # opengl_api.h need GL/glew.h too
+  add_host: ["${{ 'glew' if win }}"]
+  add_run: ["${{ 'glew' if win }}"]
 mujoco_ros2_control_plugins:
   add_host:
   - if: linux

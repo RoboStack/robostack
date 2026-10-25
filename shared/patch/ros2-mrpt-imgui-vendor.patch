@@ -1,0 +1,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -141,6 +141,9 @@
+ # Always PIC: a static vendor library gets linked into MRPT shared libraries.
+ set_target_properties(${PROJECT_NAME} PROPERTIES POSITION_INDEPENDENT_CODE TRUE)
+ 
++# The GLFW/OpenGL3 backends call dlopen()/dlsym(), which live in libdl on glibc < 2.34.
++target_link_libraries(${PROJECT_NAME} PUBLIC ${CMAKE_DL_LIBS})
++
+ # Upstream headers are included unqualified (`#include "imgui.h"`), so the
+ # directory holding them must itself be on the interface include path. SYSTEM
+ # keeps third-party warnings out of consumers' builds.

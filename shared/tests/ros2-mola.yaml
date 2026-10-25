@@ -1,0 +1,5 @@
+tests:
+  # mola-cli must find the module libraries of a conda environment without any environment
+  # variable (shared/patch/ros2-mola-launcher.patch) and register their classes.
+  - script:
+      - python -c "import subprocess; out = subprocess.run(['mola-cli', '--rtti-list-all'], capture_output=True, text=True).stdout; missing = [c for c in ('mola::MolaViz', 'mola::BridgeROS2', 'mola::Rosbag2Dataset', 'mola::KeyframePointCloudMap') if c not in out]; assert not missing, missing"

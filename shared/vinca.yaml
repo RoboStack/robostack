@@ -190,6 +190,7 @@ packages_select_by_deps:
   - mocap4r2_msgs
   - mocap4r2_robot_gt
   - mocap4r2_robot_gt_msgs
+  - mola # requested in https://github.com/RoboStack/robostack/issues/106
   - motion_capture_tracking
   - mouse_teleop
   - moveit
