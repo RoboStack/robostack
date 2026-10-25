@@ -1,4 +1,12 @@
 tests:
+  # Temporary diagnostic: which DLL fails to initialise on Windows (lyrical)
+  - if: win
+    then:
+      script:
+        - python dllcheck.py
+      files:
+        recipe:
+          - dllcheck.py
   # Regression test: rmf_adapter must import and work. Built as a SHARED library instead of
   # a Python module, it links libpython, and on macOS `import rmf_adapter` then aborts
   # ("PyInterpreterState_Get: the function must be called with the GIL held"): it initialises
