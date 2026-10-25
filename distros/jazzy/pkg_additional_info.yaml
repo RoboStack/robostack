@@ -116,8 +116,6 @@ roboplan_toppra:
     max_pin: 'x.x'
 rtabmap:
   additional_cmake_args: -DBUILD_TESTING=OFF
-rviz_ogre_vendor:
-  additional_cmake_args: "-DRVIZ_OGRE_VENDOR_MANGLE_NAME_OF_LIBRARIES_USED_BY_RVIZ=ON"
 urdfdom:
   generate_dummy_package_with_run_deps:
     dep_name: urdfdom
@@ -133,3 +131,6 @@ zenoh_cpp_vendor:
   additional_cmake_args: "-DAMENT_VENDOR_POLICY=NEVER_VENDOR_IGNORE_SATISFIED_CHECK -DUSE_SYSTEM_ZENOH=ON"
 gz_ogre_next_vendor:
   build_number: 28
+rviz_ogre_vendor:
+  additional_cmake_args: "-DRVIZ_OGRE_VENDOR_MANGLE_NAME_OF_LIBRARIES_USED_BY_RVIZ=ON"
+  build_number: 28  # built without the EXR codec (ros2-rviz-ogre-vendor.patch)
