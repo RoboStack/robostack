@@ -49,8 +49,10 @@ fuse_graphs:
   additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
 fuse_loss:
   additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
-fuse_models:
-  additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
+fuse_models:  # Windows: imu_2d.cpp has more sections than an object file can hold without /bigobj (C1128)
+  additional_cmake_args:
+    if: win
+    then: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON -DCMAKE_CXX_FLAGS_INIT=/bigobj"
 fuse_optimizers:
   additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
 fuse_publishers:
