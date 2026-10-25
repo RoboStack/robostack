@@ -1,5 +1,9 @@
 # Per-package build settings shared by every distribution; distros/<d>/pkg_additional_info.yaml
 # adds its own and wins per key (e.g. build_number).
+aruco:
+  additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
+aruco_ros:
+  additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
 as2_behaviors_trajectory_generation:
   additional_cmake_args: '-DCMAKE_POLICY_VERSION_MINIMUM=3.5'
 as2_platform_multirotor_simulator:
