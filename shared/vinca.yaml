@@ -604,6 +604,14 @@ packages_select_by_deps:
 
 packages_exclude:
 
+  - if: win
+    then:
+      # velodyne_driver reads the sensor over POSIX sockets (and needs libpcap); also left
+      # out of the packages depending on them (rtabmap_examples)
+      - velodyne
+      - velodyne_driver
+      - velodyne_pointcloud
+
   - if: not linux
     then:
       - pendulum_control
