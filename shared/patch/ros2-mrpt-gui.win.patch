@@ -1,5 +1,20 @@
+diff --git a/3rdparty/nanogui/CMakeLists.txt b/3rdparty/nanogui/CMakeLists.txt
+index a556979..afa5b10 100644
+--- a/3rdparty/nanogui/CMakeLists.txt
++++ b/3rdparty/nanogui/CMakeLists.txt
+@@ -255,6 +255,10 @@ install(FILES
+     ext/nanovg/src/stb_truetype.h ext/nanovg/src/nanovg_gl.h
+     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/mrpt/nanogui/include/
+ )
++if (NANOGUI_USE_GLAD)
++    # RoboStack: nanogui/opengl.h includes glad/glad.h when NANOGUI_GLAD is set (Windows)
++    install(DIRECTORY ext/glad/include/glad ext/glad/include/KHR DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/mrpt/nanogui/include/)
++endif()
+ if (NOT GLFW_FOUND)
+     install(DIRECTORY ext/glfw/include/GLFW DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/mrpt/nanogui/include/)
+ endif()
 diff --git a/3rdparty/nanogui/src/common.cpp b/3rdparty/nanogui/src/common.cpp
-index 9a82e64..85a5ec0 100644
+index 9a82e64..9c5be19 100644
 --- a/3rdparty/nanogui/src/common.cpp
 +++ b/3rdparty/nanogui/src/common.cpp
 @@ -13,6 +13,7 @@
