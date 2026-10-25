@@ -322,6 +322,7 @@ packages_select_by_deps:
   - rqt_robot_steering
   - rqt_runtime_monitor
   - rtabmap
+  - rtabmap_ros # requested in https://github.com/RoboStack/ros-lyrical/pull/83
   - rtcm_msgs
   - rtest
   - rviz2
@@ -603,6 +604,14 @@ packages_select_by_deps:
       - zed_msgs
 
 packages_exclude:
+
+  - if: win
+    then:
+      # velodyne_driver reads the sensor over POSIX sockets (and needs libpcap); also left
+      # out of the packages depending on them (rtabmap_examples)
+      - velodyne
+      - velodyne_driver
+      - velodyne_pointcloud
 
   - if: not linux
     then:
