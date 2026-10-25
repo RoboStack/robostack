@@ -1,0 +1,12 @@
+diff --git a/3rdparty/nanogui/src/common.cpp b/3rdparty/nanogui/src/common.cpp
+index 9a82e64..9c5be19 100644
+--- a/3rdparty/nanogui/src/common.cpp
++++ b/3rdparty/nanogui/src/common.cpp
+@@ -13,6 +13,7 @@
+ 
+ #if defined(_WIN32)
+ #  include <windows.h>
++#  include <commdlg.h>  // RoboStack: GetOpenFileNameW (not in windows.h with WIN32_LEAN_AND_MEAN)
+ #endif
+ 
+ #include <nanogui/opengl.h>
