@@ -17,7 +17,6 @@ full_rebuild: false
 # name prefixes (ros2-<pkg>, and ros-<distro>-<pkg> of older builds) are matched, e.g.
 #
 # evict_cache:
-  - mrpt_opengl  # ros2-mrpt-opengl.win.patch changed
 #   - rosidl_generator_py     # one package: ros2-rosidl-generator-py-*.conda
 #   - std-msgs                # dashes work too
 #   - "roboplan*"             # a family of packages (quote globs)
@@ -25,5 +24,6 @@ full_rebuild: false
 # Remember that dependents are not rebuilt automatically: evict them as well if
 # they must pick up the change.
 evict_cache:
+  - mrpt_opengl  # ros2-mrpt-opengl.win.patch changed; reset before merging
   - mola_kernel  # new Windows patch; reset before merging
   - mola_yaml  # new Windows patch; reset before merging
