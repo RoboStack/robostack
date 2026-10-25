@@ -179,10 +179,10 @@ urdfdom_py:
   generate_dummy_package_with_run_deps:
     dep_name: urdfdom-py
     max_pin: 'x.x'
-velodyne_laserscan:  # M_PI on Windows (pulled in by rtabmap_examples)
+velodyne_laserscan:  # Windows (pulled in by rtabmap_examples): M_PI, and its library exports no symbols
   additional_cmake_args:
     if: win
-    then: '-DCMAKE_CXX_FLAGS_INIT=/D_USE_MATH_DEFINES'
+    then: '-DCMAKE_CXX_FLAGS_INIT=/D_USE_MATH_DEFINES -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON'
 visp:
   generate_dummy_package_with_run_deps:
     dep_name: visp
