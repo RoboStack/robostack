@@ -1,14 +1,15 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index cf1d5e3..5a9a845 100644
+index cf1d5e3..ed2a8e3 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -6,17 +6,25 @@ endif()
+@@ -6,17 +6,26 @@ endif()
  
  project(rmf_traffic_editor)
  
 +if(MSVC)
-+  # M_PI and friends: MSVC defines them only with _USE_MATH_DEFINES
-+  add_compile_definitions(_USE_MATH_DEFINES)
++  # M_PI and friends: MSVC defines them only with _USE_MATH_DEFINES; NOGDI keeps windows.h
++  # (pulled in by dependencies) from declaring GDI's Polygon(), which clashes with the editor's
++  add_compile_definitions(_USE_MATH_DEFINES NOGDI)
 +endif()
 +
  find_package(ament_cmake REQUIRED)
@@ -29,7 +30,7 @@ index cf1d5e3..5a9a845 100644
  
  set(CMAKE_AUTOMOC ON)
  set(CMAKE_AUTORCC ON)
-@@ -120,8 +128,9 @@ target_link_libraries(
+@@ -120,8 +129,9 @@ target_link_libraries(
    Qt5::Widgets
    Qt5::Concurrent
    Qt5::Network
