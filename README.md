@@ -112,6 +112,9 @@ that (e.g. a humble rebuild that also changes `shared/` or `tools/`), add the la
 `build:humble` (one per distribution to build), then push or re-run the build: adding a
 label doesn't start one by itself. Nothing has to be reset before merging. A PR that
 changes no packages (tooling, CI, docs) gets `build:none`: only the checks run.
+Platform labels limit the platforms the same way: `build:linux`, `build:osx`, `build:win`
+(or one platform, e.g. `build:linux-64`), e.g. to iterate on Windows fixes without
+waiting for the macOS runners; remove them for a full build before merging.
 
 ### CI
 
