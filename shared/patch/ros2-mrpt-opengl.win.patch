@@ -1,0 +1,42 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 41a671a..6cf7ce6 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -145,6 +145,12 @@ if(WIN32 AND NOT TARGET mrpt_glew)
+   endif()
+ endif()
+ 
++if(WIN32 AND NOT TARGET mrpt_glew)
++  # RoboStack: the release source has no 3rdparty/ (bundled GLEW): conda-forge's GLEW
++  find_package(GLEW REQUIRED)
++  target_link_libraries(${PROJECT_NAME} PUBLIC GLEW::GLEW)
++endif()
++
+ if (TARGET mrpt_glew) # Basically, for Windows
+   target_link_libraries(${PROJECT_NAME} PRIVATE mrpt_glew)
+   # Install GLEW and glext headers so downstream colcon packages (mrpt_imgui,
+diff --git a/include/mrpt/opengl/opengl_api.h b/include/mrpt/opengl/opengl_api.h
+index 26ee38e..e6031a5 100644
+--- a/include/mrpt/opengl/opengl_api.h
++++ b/include/mrpt/opengl/opengl_api.h
+@@ -15,9 +15,8 @@
+ #pragma once
+ 
+ #define GL_GLEXT_PROTOTYPES 1
+-#if !defined(GLEW_STATIC)
+-#define GLEW_STATIC
+-#endif
++// RoboStack: GLEW_STATIC only for MRPT's bundled static GLEW (not built here); conda-forge's
++// GLEW is a DLL, whose function-pointer variables need dllimport
+ 
+ #include <mrpt/opengl/config.h>
+ 
+@@ -44,7 +43,7 @@
+ #include <GL/gl.h>
+ // gl-ext
+ #ifdef _WIN32
+-#include "glext/glext.h"
++// RoboStack: GL/glew.h (above) declares the extensions; MRPT's bundled glext.h isn't installed
+ #else
+ #include <GL/glext.h>
+ #endif

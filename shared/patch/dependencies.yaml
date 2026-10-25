@@ -90,6 +90,11 @@ mrpt_math:
   # its exported CMake targets (and mrpt_poses') carry <prefix>/Library/include/eigen3 on
   # Windows, so dependents without their own eigen host dep failed to configure
   add_run: ["${{ 'eigen' if win }}"]
+mrpt_opengl:
+  # Windows: the release source has no bundled GLEW (ros2-mrpt-opengl.win.patch); users of
+  # opengl_api.h need GL/glew.h too
+  add_host: ["${{ 'glew' if win }}"]
+  add_run: ["${{ 'glew' if win }}"]
 mujoco_ros2_control_plugins:
   add_host:
   - if: linux
