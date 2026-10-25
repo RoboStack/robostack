@@ -115,3 +115,15 @@ urdfdom_headers:
 zenoh_cpp_vendor:
   additional_cmake_args: "-DAMENT_VENDOR_POLICY=NEVER_VENDOR_IGNORE_SATISFIED_CHECK -DUSE_SYSTEM_ZENOH=ON"
 # Remove build_number fields below on new full rebuild
+rmf_fleet_adapter:  # its DLL moved to bin (Windows)
+  build_number: 31
+rmf_fleet_adapter_python:  # rmf_adapter as a Python MODULE (shared patch)
+  build_number: 31
+rmf_task_ros2:  # its DLL moved to bin (Windows)
+  build_number: 31
+rmf_traffic_ros2:  # its DLL moved to bin (Windows)
+  build_number: 31
+rmf_utils:  # its DLL moved to bin (Windows)
+  build_number: 31
+rmf_websocket:  # its DLL moved to bin (Windows)
+  build_number: 31

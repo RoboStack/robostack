@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index a08c67a..f4b60c0 100644
+index a08c67a..ad6b4ac 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -18,6 +18,16 @@ if(WIN32)
@@ -19,3 +19,14 @@ index a08c67a..f4b60c0 100644
  target_include_directories(rmf_utils
    PUBLIC
      $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+@@ -47,7 +57,9 @@ write_basic_package_version_file(
+ install(
+   TARGETS rmf_utils
+   EXPORT rmf_utils-targets
+-  DESTINATION lib
++  RUNTIME DESTINATION bin  # RoboStack: the DLL on PATH on Windows (was lib)
++  LIBRARY DESTINATION lib
++  ARCHIVE DESTINATION lib
+ )
+ 
+ install(
