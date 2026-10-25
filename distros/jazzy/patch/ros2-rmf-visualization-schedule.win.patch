@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 2f9e406..ea2b578 100644
+index 2f9e406..feb1c71 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -2,6 +2,19 @@ cmake_minimum_required(VERSION 3.5)
@@ -34,6 +34,16 @@ index 2f9e406..ea2b578 100644
  ament_target_dependencies(rmf_visualization_schedule
    PUBLIC
      rmf_traffic
+@@ -124,6 +142,8 @@ install(
+   ARCHIVE DESTINATION lib
+ )
+ 
+-add_subdirectory(test)
++if(BUILD_TESTING)  # RoboStack: its link command is too long for the Windows linker (LNK1170)
++  add_subdirectory(test)
++endif()
+ 
+ ament_package()
 diff --git a/src/ScheduleVisualizer.cpp b/src/ScheduleVisualizer.cpp
 index 961c512..7a7bc2f 100644
 --- a/src/ScheduleVisualizer.cpp
