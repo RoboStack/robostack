@@ -1,0 +1,16 @@
+diff --git a/src/CoreWrapper.cpp b/src/CoreWrapper.cpp
+index 7321ccc..912832d 100644
+--- a/src/CoreWrapper.cpp
++++ b/src/CoreWrapper.cpp
+@@ -90,6 +90,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+ #include "rtabmap_conversions/MsgConversion.h"
+ 
++// windows.h (wingdi.h) defines ERROR, which breaks diagnostic_msgs' DiagnosticStatus::ERROR
++#ifdef ERROR
++#undef ERROR
++#endif
++
+ #ifdef PRE_ROS_JAZZY
+ namespace rclcpp {
+ 	rmw_qos_profile_t ServicesQoS() {return rmw_qos_profile_services_default;}

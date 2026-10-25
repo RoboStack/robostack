@@ -350,6 +350,208 @@ better_launch:
   tag: 1.3.0
   url: https://github.com/dfki-ric/better_launch.git
   version: 1.3.0
+easynav:
+  # EasyNav, NavMap and yaets aren't released for rolling: lyrical's releases, plus the
+  # nav2_common/nav2_msgs that easynav_nav2_bridge needs (RoboStack/ros-rolling#57)
+  tag: release/lyrical/easynav/0.5.0-1
+  url: https://github.com/EasyNavigation/EasyNavigation-release.git
+  version: 0.5.0
+easynav_bonxai_maps_manager:
+  tag: release/lyrical/easynav_bonxai_maps_manager/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_common:
+  tag: release/lyrical/easynav_common/0.5.0-1
+  url: https://github.com/EasyNavigation/EasyNavigation-release.git
+  version: 0.5.0
+easynav_controller:
+  tag: release/lyrical/easynav_controller/0.5.0-1
+  url: https://github.com/EasyNavigation/EasyNavigation-release.git
+  version: 0.5.0
+easynav_core:
+  tag: release/lyrical/easynav_core/0.5.0-1
+  url: https://github.com/EasyNavigation/EasyNavigation-release.git
+  version: 0.5.0
+easynav_costmap_common:
+  tag: release/lyrical/easynav_costmap_common/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_costmap_localizer:
+  tag: release/lyrical/easynav_costmap_localizer/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_costmap_maps_manager:
+  tag: release/lyrical/easynav_costmap_maps_manager/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_costmap_planner:
+  tag: release/lyrical/easynav_costmap_planner/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_diagnostic_recovery:
+  tag: release/lyrical/easynav_diagnostic_recovery/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_fusion_localizer:
+  tag: release/lyrical/easynav_fusion_localizer/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_interfaces:
+  tag: release/lyrical/easynav_interfaces/0.5.0-1
+  url: https://github.com/EasyNavigation/EasyNavigation-release.git
+  version: 0.5.0
+easynav_localizer:
+  tag: release/lyrical/easynav_localizer/0.5.0-1
+  url: https://github.com/EasyNavigation/EasyNavigation-release.git
+  version: 0.5.0
+easynav_maps_manager:
+  tag: release/lyrical/easynav_maps_manager/0.5.0-1
+  url: https://github.com/EasyNavigation/EasyNavigation-release.git
+  version: 0.5.0
+easynav_mhamcl_localizer:
+  tag: release/lyrical/easynav_mhamcl_localizer/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_mpc_controller:
+  tag: release/lyrical/easynav_mpc_controller/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_mppi_controller:
+  tag: release/lyrical/easynav_mppi_controller/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_nav2_bridge:
+  tag: release/lyrical/easynav_nav2_bridge/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_nav2_bridge-release.git
+  version: 0.5.0
+easynav_navmap_localizer:
+  tag: release/lyrical/easynav_navmap_localizer/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_navmap_maps_manager:
+  tag: release/lyrical/easynav_navmap_maps_manager/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_navmap_planner:
+  tag: release/lyrical/easynav_navmap_planner/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_octomap_maps_manager:
+  tag: release/lyrical/easynav_octomap_maps_manager/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_planner:
+  tag: release/lyrical/easynav_planner/0.5.0-1
+  url: https://github.com/EasyNavigation/EasyNavigation-release.git
+  version: 0.5.0
+easynav_playground_kobuki:
+  tag: release/lyrical/easynav_playground_kobuki/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_playgrounds-release.git
+  version: 0.5.0
+easynav_playground_kobuki_description:
+  tag: release/lyrical/easynav_playground_kobuki_description/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_playgrounds-release.git
+  version: 0.5.0
+easynav_playground_kobuki_worlds:
+  tag: release/lyrical/easynav_playground_kobuki_worlds/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_playgrounds-release.git
+  version: 0.5.0
+easynav_playground_omni:
+  tag: release/lyrical/easynav_playground_omni/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_playgrounds-release.git
+  version: 0.5.0
+easynav_playground_omni_description:
+  tag: release/lyrical/easynav_playground_omni_description/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_playgrounds-release.git
+  version: 0.5.0
+easynav_playground_omni_worlds:
+  tag: release/lyrical/easynav_playground_omni_worlds/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_playgrounds-release.git
+  version: 0.5.0
+easynav_playground_summit:
+  tag: release/lyrical/easynav_playground_summit/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_playgrounds-release.git
+  version: 0.5.0
+easynav_playground_summit_description:
+  tag: release/lyrical/easynav_playground_summit_description/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_playgrounds-release.git
+  version: 0.5.0
+easynav_playground_summit_worlds:
+  tag: release/lyrical/easynav_playground_summit_worlds/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_playgrounds-release.git
+  version: 0.5.0
+easynav_playground_tiago:
+  tag: release/lyrical/easynav_playground_tiago/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_playgrounds-release.git
+  version: 0.5.0
+easynav_playground_tiago_description:
+  tag: release/lyrical/easynav_playground_tiago_description/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_playgrounds-release.git
+  version: 0.5.0
+easynav_playground_tiago_worlds:
+  tag: release/lyrical/easynav_playground_tiago_worlds/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_playgrounds-release.git
+  version: 0.5.0
+easynav_recovery:
+  tag: release/lyrical/easynav_recovery/0.5.0-1
+  url: https://github.com/EasyNavigation/EasyNavigation-release.git
+  version: 0.5.0
+easynav_regulated_pp_controller:
+  tag: release/lyrical/easynav_regulated_pp_controller/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_routes_maps_manager:
+  tag: release/lyrical/easynav_routes_maps_manager/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_sensors:
+  tag: release/lyrical/easynav_sensors/0.5.0-1
+  url: https://github.com/EasyNavigation/EasyNavigation-release.git
+  version: 0.5.0
+easynav_serest_controller:
+  tag: release/lyrical/easynav_serest_controller/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_simple_common:
+  tag: release/lyrical/easynav_simple_common/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_simple_controller:
+  tag: release/lyrical/easynav_simple_controller/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_simple_localizer:
+  tag: release/lyrical/easynav_simple_localizer/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_simple_maps_manager:
+  tag: release/lyrical/easynav_simple_maps_manager/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_simple_planner:
+  tag: release/lyrical/easynav_simple_planner/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_simple_recovery:
+  tag: release/lyrical/easynav_simple_recovery/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
+easynav_support_py:
+  tag: release/lyrical/easynav_support_py/0.5.0-1
+  url: https://github.com/EasyNavigation/EasyNavigation-release.git
+  version: 0.5.0
+easynav_system:
+  tag: release/lyrical/easynav_system/0.5.0-1
+  url: https://github.com/EasyNavigation/EasyNavigation-release.git
+  version: 0.5.0
+easynav_tools:
+  tag: release/lyrical/easynav_tools/0.5.0-1
+  url: https://github.com/EasyNavigation/EasyNavigation-release.git
+  version: 0.5.0
+easynav_vff_controller:
+  tag: release/lyrical/easynav_vff_controller/0.5.0-1
+  url: https://github.com/EasyNavigation/easynav_plugins-release.git
+  version: 0.5.0
 libnabo:
   # released for humble/jazzy only; jazzy's release (dependency of libpointmatcher)
   tag: release/jazzy/libnabo/1.1.1-2
@@ -412,6 +614,42 @@ mocap4r2_robot_gt_msgs:
   url: https://github.com/MOCAP4ROS2-Project/mocap4r2.git
   version: 0.0.7
   additional_folder: mocap4r2_robot_gt/mocap4r2_robot_gt_msgs
+nav2_common:
+  tag: release/lyrical/nav2_common/1.5.2-2
+  url: https://github.com/ros2-gbp/navigation2-release.git
+  version: 1.5.2
+nav2_msgs:
+  tag: release/lyrical/nav2_msgs/1.5.2-2
+  url: https://github.com/ros2-gbp/navigation2-release.git
+  version: 1.5.2
+navmap_core:
+  tag: release/lyrical/navmap_core/0.6.0-1
+  url: https://github.com/EasyNavigation/NavMap-release.git
+  version: 0.6.0
+navmap_examples:
+  tag: release/lyrical/navmap_examples/0.6.0-1
+  url: https://github.com/EasyNavigation/NavMap-release.git
+  version: 0.6.0
+navmap_ros:
+  tag: release/lyrical/navmap_ros/0.6.0-1
+  url: https://github.com/EasyNavigation/NavMap-release.git
+  version: 0.6.0
+navmap_ros_interfaces:
+  tag: release/lyrical/navmap_ros_interfaces/0.6.0-1
+  url: https://github.com/EasyNavigation/NavMap-release.git
+  version: 0.6.0
+navmap_rviz_plugin:
+  tag: release/lyrical/navmap_rviz_plugin/0.6.0-1
+  url: https://github.com/EasyNavigation/NavMap-release.git
+  version: 0.6.0
+navmap_tools:
+  tag: release/lyrical/navmap_tools/0.6.0-1
+  url: https://github.com/EasyNavigation/NavMap-release.git
+  version: 0.6.0
+netft_driver:  # not in rosdistro yet (ros/rosdistro#52786); requested in https://github.com/RoboStack/robostack/issues/103
+  tag: 0.4.0
+  url: https://github.com/netft/ros-netft.git
+  version: 0.4.0
 rclcpp_async:
   rev: 7a54000737ef97e833589f4fe37a5784691ce9ca
   url: https://github.com/otamachan/rclcpp_async.git
@@ -436,7 +674,14 @@ rslidar_sdk:
   tag: v1.5.18
   url: https://github.com/RoboSense-LiDAR/rslidar_sdk.git
   version: 1.5.18
-rviz_visual_tools:  # temp addition
-  tag: release/rolling/rviz_visual_tools/4.1.4-4
-  url: https://github.com/ros2-gbp/rviz_visual_tools-release
-  version: 4.1.4
+rtabmap:
+  # rolling's own release is 0.22.1, which no longer links on Windows against gtsam (LNK2005
+  # on a std::vector<std::uint64_t, tbb_allocator> member); jazzy's 0.23.13 does. rolling has
+  # no rtabmap_ros to keep in step.
+  tag: release/jazzy/rtabmap/0.23.13-1
+  url: https://github.com/ros2-gbp/rtabmap-release.git
+  version: 0.23.13
+yaets:
+  tag: release/lyrical/yaets/1.2.0-1
+  url: https://github.com/fmrico/yaets-release.git
+  version: 1.2.0
