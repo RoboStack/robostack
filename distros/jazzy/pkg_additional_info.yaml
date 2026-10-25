@@ -131,9 +131,9 @@ urdfdom_headers:
 # Remove build_number fields below on new full rebuild
 zenoh_cpp_vendor:
   additional_cmake_args: "-DAMENT_VENDOR_POLICY=NEVER_VENDOR_IGNORE_SATISFIED_CHECK -DUSE_SYSTEM_ZENOH=ON"
-gz_ogre_next_vendor:
+ament_cmake_gmock:  # as ament_cmake_gtest
   build_number: 28
 ament_cmake_gtest:  # uses conda-forge's gtest instead of gtest_vendor's sources
   build_number: 28
-ament_cmake_gmock:  # as ament_cmake_gtest
+gz_ogre_next_vendor:
   build_number: 28
