@@ -87,7 +87,7 @@ mrpt_gui:
   # transitive host dep and its (weak) run_exports never reach the run requirements
   add_host: ["wxwidgets"]
 mrpt_imgui:
-  # Windows: links conda-forge's GLEW like mrpt_opengl (ros2-mrpt-imgui.win.patch)
+  # Windows: links conda-forge's GLEW like mrpt_opengl, also for its users (ros2-mrpt-imgui.win.patch)
   add_host: ["${{ 'glew' if win }}"]
   add_run: ["${{ 'glew' if win }}"]
 mrpt_math:
