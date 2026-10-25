@@ -4,9 +4,18 @@ tests:
     then:
       script:
         - python dllcheck.py
+        - cmake -S validator_check -B build -G Ninja -DCMAKE_PREFIX_PATH=%PREFIX%\Library -DCMAKE_BUILD_TYPE=Release
+        - cmake --build build
+        - build\validator_check.exe validator_check\schema.json
+      requirements:
+        build:
+          - cxx-compiler
+          - cmake
+          - ninja
       files:
         recipe:
           - dllcheck.py
+          - validator_check/
   # Regression test: rmf_adapter must import and work. Built as a SHARED library instead of
   # a Python module, it links libpython, and on macOS `import rmf_adapter` then aborts
   # ("PyInterpreterState_Get: the function must be called with the GIL held"): it initialises
