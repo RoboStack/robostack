@@ -121,6 +121,7 @@ packages_select_by_deps:
   - flex_sync
   - foxglove_bridge
   - foxglove_msgs
+  - fuse # requested in https://github.com/RoboStack/ros-lyrical/pull/85
   - gazebo_dev
   - gazebo_msgs
   - gazebo_plugins
