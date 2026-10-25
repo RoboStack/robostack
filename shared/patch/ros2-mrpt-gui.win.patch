@@ -1,18 +1,48 @@
 diff --git a/3rdparty/nanogui/CMakeLists.txt b/3rdparty/nanogui/CMakeLists.txt
-index a556979..afa5b10 100644
+index a556979..c338bf5 100644
 --- a/3rdparty/nanogui/CMakeLists.txt
 +++ b/3rdparty/nanogui/CMakeLists.txt
-@@ -255,6 +255,10 @@ install(FILES
-     ext/nanovg/src/stb_truetype.h ext/nanovg/src/nanovg_gl.h
-     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/mrpt/nanogui/include/
- )
-+if (NANOGUI_USE_GLAD)
-+    # RoboStack: nanogui/opengl.h includes glad/glad.h when NANOGUI_GLAD is set (Windows)
-+    install(DIRECTORY ext/glad/include/glad ext/glad/include/KHR DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/mrpt/nanogui/include/)
-+endif()
- if (NOT GLFW_FOUND)
-     install(DIRECTORY ext/glfw/include/GLFW DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/mrpt/nanogui/include/)
+@@ -126,10 +126,9 @@ elseif(APPLE OR CMAKE_SYSTEM MATCHES "Linux")
  endif()
+ 
+ if (NANOGUI_USE_GLAD)
+-  list(APPEND LIB_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/ext/glad/src/glad.c")
+-  list(APPEND LIB_PUBLIC_HEADERS 
+-    "${CMAKE_CURRENT_SOURCE_DIR}/ext/glad/include/glad/glad.h"
+-    "${CMAKE_CURRENT_SOURCE_DIR}/ext/glad/include/KHR/khrplatform.h")
++  # RoboStack: conda-forge's glad (a DLL, OpenGL 4.6 compatibility profile) instead of
++  # compiling the bundled ext/glad (glad 0.1, OpenGL 4.6 core)
++  find_package(glad CONFIG REQUIRED)
+ endif()
+ 
+ # -------------------------------------------------------------------------
+@@ -154,10 +153,13 @@ target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC
+ )
+ 
+ if (NANOGUI_USE_GLAD)
+-  target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/ext/glad/include>)
+-  if (MSVC)
+-    set_source_files_properties("${CMAKE_CURRENT_SOURCE_DIR}/ext/glad/src/glad.c" PROPERTIES COMPILE_FLAGS "/wd4055")
+-  endif()
++  # RoboStack: users call the GL functions (glad's function pointers) inline, so they link
++  # glad too; once installed by path, as glad::glad would need a find_dependency() in the
++  # config. glad/glad.h is in the prefix's include directory.
++  target_link_libraries(${PROJECT_NAME} PUBLIC
++    $<BUILD_INTERFACE:glad::glad>
++    $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/lib/glad.lib>)
++  target_include_directories(${PROJECT_NAME} SYSTEM PUBLIC $<INSTALL_INTERFACE:include>)
+ endif()
+ 
+ if (NOT GLFW_FOUND)
+@@ -231,7 +233,7 @@ if (BUILD_SHARED_LIBS)
+     endif()
+     if (NANOGUI_USE_GLAD)
+         string(APPEND NANOGUI_CONFIG_FILE_CONTENT "#ifndef GLAD_GLAPI_EXPORT\n# define GLAD_GLAPI_EXPORT\n#endif\n")
+-        target_compile_definitions(${PROJECT_NAME} PRIVATE GLAD_GLAPI_EXPORT_BUILD)
++        # RoboStack: no GLAD_GLAPI_EXPORT_BUILD: glad's symbols come from conda-forge's glad.dll
+     endif()
+ endif()
+ 
 diff --git a/3rdparty/nanogui/src/common.cpp b/3rdparty/nanogui/src/common.cpp
 index 9a82e64..9c5be19 100644
 --- a/3rdparty/nanogui/src/common.cpp

@@ -85,15 +85,17 @@ mrpt_common:
 mrpt_gui:
   # links libwx_*; the wxwidgets/wx-common keys map to wxpython, so wxwidgets is only a
   # transitive host dep and its (weak) run_exports never reach the run requirements
-  add_host: ["wxwidgets"]
+  # Windows: nanogui links conda-forge's glad instead of its bundled copy (ros2-mrpt-gui.win.patch)
+  add_host: ["wxwidgets", "${{ 'glad' if win }}"]
 mrpt_imgui:
   # Windows: links conda-forge's GLEW like mrpt_opengl, also for its users (ros2-mrpt-imgui.win.patch)
   add_host: ["${{ 'glew' if win }}"]
   add_run: ["${{ 'glew' if win }}"]
 mrpt_math:
-  # its exported CMake targets (and mrpt_poses') carry <prefix>/Library/include/eigen3 on
-  # Windows, so dependents without their own eigen host dep failed to configure
-  add_run: ["${{ 'eigen' if win }}"]
+  # its public headers include Eigen, and its exported CMake targets (and mrpt_poses') carry
+  # the eigen3 include directory: users need the headers (eigen-abi-devel's run_exports only
+  # add eigen-abi), or dependents without their own eigen dependency fail to configure
+  add_run: ["eigen"]
 mrpt_opengl:
   # Windows: the release source has no bundled GLEW (ros2-mrpt-opengl.win.patch); users of
   # opengl_api.h need GL/glew.h too

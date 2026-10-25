@@ -23,4 +23,8 @@ full_rebuild: false
 #
 # Remember that dependents are not rebuilt automatically: evict them as well if
 # they must pick up the change.
-evict_cache: []
+evict_cache:  # reset before merging
+  - mrpt_math  # run-depends on eigen everywhere
+  - mrpt_gui  # links conda-forge's glad on Windows
+  - mola_viz  # built against mrpt_gui's glad
+  - mp2p_icp_viz  # built against mrpt_gui's glad
