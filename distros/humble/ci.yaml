@@ -23,4 +23,5 @@ full_rebuild: false
 #
 # Remember that dependents are not rebuilt automatically: evict them as well if
 # they must pick up the change.
-evict_cache: []
+evict_cache:
+  - mrpt_common  # ros2-mrpt-common.patch added; reset before merging
