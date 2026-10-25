@@ -2,8 +2,9 @@
 # conda-forge dependencies (tools/package_tests.py), to catch breakages that come from
 # conda-forge rather than from RoboStack, e.g. ABI changes (RoboStack/ros-humble#274).
 # Every package with a test file (shared/tests/, distros/<d>/tests/) is tested in its
-# newest build, on each platform. The results are kept in one issue per distribution
-# ("<distro>: package tests", label package-tests), closed when every test passes.
+# newest build, on each platform. The results are kept in one issue for all distributions
+# ("Package tests", label package-tests, a section per distribution), closed when every
+# test passes. Only the scheduled run on main and a full manual run on main update it.
 name: package-tests
 
 on:
@@ -79,6 +80,10 @@ jobs:
         env:
           DISTRO: ${{ matrix.distro }}
           PLATFORM: ${{ matrix.target.platform }}
+          # rattler-build test unpacks each test's packages and environment there: several
+          # GB for e.g. ros2-desktop-full, more than ubuntu-26.04's RAM-backed /tmp allows
+          # a user ("Disk quota exceeded"); the runner's temp directory is on its disk
+          TMPDIR: ${{ runner.temp }}
         run: pixi run python tools/package_tests.py run --distro "$DISTRO" --platform "$PLATFORM" --results "results/$DISTRO-$PLATFORM.json"
       - uses: actions/upload-artifact@v6
         if: always()
@@ -94,7 +99,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
-      issues: write  # the "<distro>: package tests" issues
+      issues: write  # the "Package tests" issue
     steps:
       - uses: actions/checkout@v6
         with:
@@ -108,8 +113,10 @@ jobs:
         with:
           pattern: package-tests-*
           path: results/
-      - name: Update the issues
+      - name: Update the issue
         env:
           GH_TOKEN: ${{ github.token }}
           DISTROS: ${{ join(fromJSON(needs.plan.outputs.distros), ' ') }}
-        run: pixi run python tools/package_tests.py report results/ --distros "$DISTROS"
+          # a run of a branch, or of only some distributions, doesn't touch the issue
+          PUBLISH: ${{ github.ref == 'refs/heads/main' && !inputs.distros && '--publish' || '' }}
+        run: pixi run python tools/package_tests.py report results/ --distros "$DISTROS" $PUBLISH

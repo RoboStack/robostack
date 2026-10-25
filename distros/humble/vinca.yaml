@@ -12,6 +12,8 @@ mutex_package:
   version: "0.11.0"
 
 packages_exclude:
+  - rtabmap_rviz_plugins  # links PCL, whose VTK is Qt 6 on conda-forge, into a Qt 5 RViz plugin (humble's RViz is Qt 5)
+  - rtabmap_viz  # needs rtabmap's GUI, which follows VTK's Qt 6, while humble's RViz is Qt 5 (rtabmap is built without Qt here)
 
   - if: not linux
     then:

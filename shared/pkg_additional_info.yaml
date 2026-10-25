@@ -1,5 +1,9 @@
 # Per-package build settings shared by every distribution; distros/<d>/pkg_additional_info.yaml
 # adds its own and wins per key (e.g. build_number).
+aruco:
+  additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
+aruco_ros:
+  additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
 as2_behaviors_trajectory_generation:
   additional_cmake_args: '-DCMAKE_POLICY_VERSION_MINIMUM=3.5'
 as2_platform_multirotor_simulator:
@@ -146,6 +150,27 @@ robot_state_publisher:
   additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
 rosx_introspection:
   additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
+rtabmap_conversions:
+  additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
+# rtabmap_odom/slam/util/viz on Windows: rtabmap::core links some PCL libraries by bare
+# name (pcl_visualization, pcl_keypoints; RTABMapConfig.cmake creates no imported target
+# for them), so add the library directory to the link path; NOMINMAX for Eigen vs windows.h.
+rtabmap_odom:
+  additional_cmake_args:
+    if: win
+    then: '-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON -DCMAKE_CXX_FLAGS_INIT=/DNOMINMAX -DCMAKE_SHARED_LINKER_FLAGS_INIT=/LIBPATH:%LIBRARY_LIB% -DCMAKE_EXE_LINKER_FLAGS_INIT=/LIBPATH:%LIBRARY_LIB%'
+rtabmap_slam:
+  additional_cmake_args:
+    if: win
+    then: '-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON -DCMAKE_CXX_FLAGS_INIT=/DNOMINMAX -DCMAKE_SHARED_LINKER_FLAGS_INIT=/LIBPATH:%LIBRARY_LIB% -DCMAKE_EXE_LINKER_FLAGS_INIT=/LIBPATH:%LIBRARY_LIB%'
+rtabmap_util:
+  additional_cmake_args:
+    if: win
+    then: '-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON -DCMAKE_CXX_FLAGS_INIT=/DNOMINMAX -DCMAKE_SHARED_LINKER_FLAGS_INIT=/LIBPATH:%LIBRARY_LIB% -DCMAKE_EXE_LINKER_FLAGS_INIT=/LIBPATH:%LIBRARY_LIB%'
+rtabmap_viz:
+  additional_cmake_args:
+    if: win
+    then: '-DCMAKE_CXX_FLAGS_INIT=/DNOMINMAX -DCMAKE_SHARED_LINKER_FLAGS_INIT=/LIBPATH:%LIBRARY_LIB% -DCMAKE_EXE_LINKER_FLAGS_INIT=/LIBPATH:%LIBRARY_LIB%'
 sbg_driver:
   additional_cmake_args:
     if: win
@@ -170,6 +195,10 @@ urdfdom_py:
   generate_dummy_package_with_run_deps:
     dep_name: urdfdom-py
     max_pin: 'x.x'
+velodyne_laserscan:  # Windows (pulled in by rtabmap_examples): M_PI, and its library exports no symbols
+  additional_cmake_args:
+    if: win
+    then: '-DCMAKE_CXX_FLAGS_INIT=/D_USE_MATH_DEFINES -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON'
 visp:
   generate_dummy_package_with_run_deps:
     dep_name: visp

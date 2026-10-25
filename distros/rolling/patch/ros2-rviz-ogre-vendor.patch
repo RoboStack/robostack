@@ -2,7 +2,17 @@ diff --git a/CMakeLists.txt b/CMakeLists.txt
 index 8d23a299a..f58c62831 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -76,7 +76,11 @@ endif()
+@@ -34,6 +34,9 @@ else()
+ endif()
+ 
+ set(OGRE_CMAKE_ARGS)
++# RViz doesn't use the EXR codec, and Ogre's FindOpenEXR only knows OpenEXR 2's library names
++# (it never finds conda-forge's OpenEXR 3, but may mix in a system OpenEXR 2 from /usr)
++list(APPEND OGRE_CMAKE_ARGS -DOGRE_BUILD_PLUGIN_EXRCODEC:BOOL=OFF)
+ if(NOT WIN32)
+   list(APPEND OGRE_CMAKE_ARGS -DCMAKE_SKIP_INSTALL_RPATH:BOOL=ON)
+ endif()
+@@ -76,7 +79,11 @@ endif()
  
  if(APPLE)
    list(APPEND OGRE_CMAKE_ARGS -DOGRE_ENABLE_PRECOMPILED_HEADERS:BOOL=OFF)

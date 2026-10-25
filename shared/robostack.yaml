@@ -1217,6 +1217,8 @@ rapidjson-dev:
   robostack: [rapidjson]
 rmw_opensplice_cpp:
   robostack: []
+robin-map-dev:
+  robostack: [tsl_robin_map]
 roboticstoolbox-python:
   robostack: [roboticstoolbox-python]
 rsync:

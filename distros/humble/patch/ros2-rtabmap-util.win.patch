@@ -1,0 +1,13 @@
+diff --git a/src/nodelets/db_player.cpp b/src/nodelets/db_player.cpp
+index cacd679..e906d61 100644
+--- a/src/nodelets/db_player.cpp
++++ b/src/nodelets/db_player.cpp
+@@ -543,7 +543,7 @@ bool DbPlayer::publishNextFrame()
+         UASSERT(odomMsg.pose.covariance.size() == 36 &&
+                 odom.covariance().total() == 36 &&
+                 odom.covariance().type() == CV_64FC1);
+-        memcpy(odomMsg.pose.covariance.begin(), odom.covariance().data, 36*sizeof(double));
++        memcpy(odomMsg.pose.covariance.data(), odom.covariance().data, 36*sizeof(double));
+         odometryPub_->publish(odomMsg);
+     }
+ 

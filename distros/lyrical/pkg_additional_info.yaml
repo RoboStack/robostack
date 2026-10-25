@@ -94,8 +94,6 @@ roboplan_toppra:
 rtabmap:
   # its tests (corelib/test) don't build with MSVC (as in jazzy, same 0.23.13)
   additional_cmake_args: -DBUILD_TESTING=OFF
-rviz_ogre_vendor:
-  additional_cmake_args: "-DRVIZ_OGRE_VENDOR_MANGLE_NAME_OF_LIBRARIES_USED_BY_RVIZ=ON"
 toppra:
   generate_dummy_package_with_run_deps:
     dep_name: toppra-python
@@ -127,3 +125,6 @@ rmf_utils:  # its DLL moved to bin (Windows)
   build_number: 31
 rmf_websocket:  # its DLL moved to bin (Windows)
   build_number: 31
+rviz_ogre_vendor:
+  additional_cmake_args: "-DRVIZ_OGRE_VENDOR_MANGLE_NAME_OF_LIBRARIES_USED_BY_RVIZ=ON"
+  build_number: 31  # built without the EXR codec (ros2-rviz-ogre-vendor.patch)

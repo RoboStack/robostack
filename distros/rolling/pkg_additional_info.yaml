@@ -57,8 +57,6 @@ proxsuite:
     override_version: '0.7.3'
 rtabmap:
   additional_cmake_args: -DBUILD_TESTING=OFF
-rviz_ogre_vendor:
-  additional_cmake_args: "-DRVIZ_OGRE_VENDOR_MANGLE_NAME_OF_LIBRARIES_USED_BY_RVIZ=ON"
 urdfdom:
   generate_dummy_package_with_run_deps:
     dep_name: urdfdom
@@ -85,3 +83,6 @@ rmf_utils:  # its DLL moved to bin (Windows)
   build_number: 33
 rmf_websocket:  # its DLL moved to bin (Windows)
   build_number: 33
+rviz_ogre_vendor:
+  additional_cmake_args: "-DRVIZ_OGRE_VENDOR_MANGLE_NAME_OF_LIBRARIES_USED_BY_RVIZ=ON"
+  build_number: 33  # built without the EXR codec (ros2-rviz-ogre-vendor.patch)

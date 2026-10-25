@@ -43,6 +43,7 @@ packages_select_by_deps:
   - apriltag_detector_umich
   - apriltag_draw
   - apriltag_tools
+  - aruco_ros # requested in https://github.com/RoboStack/ros-lyrical/pull/87
   - asio_cmake_module
   - automatika_ros_sugar
   - autoware_adapi_v1_msgs
@@ -94,6 +95,8 @@ packages_select_by_deps:
   - battery_state_broadcaster
   - behaviortree_cpp
   - behaviortree_cpp_v3
+  - beluga_amcl  # requested in https://github.com/RoboStack/ros-jazzy/pull/298; macOS: ros2-beluga*.osx.patch (libc++)
+  - beluga_ros  # requested in https://github.com/RoboStack/ros-jazzy/pull/298
   - better_launch
   - bno055
   - bond_core
@@ -260,6 +263,7 @@ packages_select_by_deps:
   - realsense2_camera
   - realsense2_description
   - realtime_tools
+  - rko_lio # LiDAR-inertial odometry (PRBonn); requested in https://github.com/RoboStack/ros-kilted/pull/104
   - rmf_demos
   - rmf_dev # Open RMF; requested in https://github.com/RoboStack/ros-humble/pull/298
   - rmw
@@ -323,6 +327,7 @@ packages_select_by_deps:
   - rqt_robot_steering
   - rqt_runtime_monitor
   - rtabmap
+  - rtabmap_ros # requested in https://github.com/RoboStack/ros-lyrical/pull/83
   - rtcm_msgs
   - rtest
   - rviz2
@@ -451,6 +456,7 @@ packages_select_by_deps:
       - navmap_ros_interfaces
       - navmap_rviz_plugin
       - navmap_tools
+      - netft_driver  # ATI Net F/T driver: POSIX networking, Linux only; requested in https://github.com/RoboStack/robostack/issues/103
       - nobleo_socketcan_bridge # Depends on socketcan
       - orbbec_camera
       - plansys2_core
@@ -511,6 +517,10 @@ packages_select_by_deps:
       - franka_ros2  # Franka robots support; see PR #338 for macOS/Windows errors
       - libfranka # conda-forge's libfranka is only published for linux-64, not linux-aarch64
       - webots_ros2 # Cyberbotics
+
+  - if: osx
+    then:
+      - webots_ros2_driver # the driver only; requested in https://github.com/RoboStack/robostack/issues/102
 
   - if: not win
     then:
@@ -603,6 +613,14 @@ packages_select_by_deps:
       - zed_msgs
 
 packages_exclude:
+
+  - if: win
+    then:
+      # velodyne_driver reads the sensor over POSIX sockets (and needs libpcap); also left
+      # out of the packages depending on them (rtabmap_examples)
+      - velodyne
+      - velodyne_driver
+      - velodyne_pointcloud
 
   - if: not linux
     then:
