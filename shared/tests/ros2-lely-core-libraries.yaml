@@ -1,0 +1,7 @@
+tests:
+  # Our patch installs lely from a staging directory: its libraries and headers must end up
+  # in the prefix.
+  - if: unix
+    then:
+      script:
+        - python -c "import glob, os; p = os.environ['PREFIX']; assert glob.glob(os.path.join(p, 'lib', 'liblely-coapp.*')), 'liblely-coapp'; assert os.path.isfile(os.path.join(p, 'include', 'lely', 'coapp', 'master.hpp')), 'lely/coapp/master.hpp'"
