@@ -24,4 +24,4 @@ full_rebuild: false
 # Remember that dependents are not rebuilt automatically: evict them as well if
 # they must pick up the change.
 evict_cache:
-  - mrpt_gui  # ros2-mrpt-gui.win.patch changed; reset before merging
+  - mola_kernel  # ros2-mola-kernel.win.patch changed; reset before merging
