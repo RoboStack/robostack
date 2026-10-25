@@ -1,0 +1,8 @@
+tests:
+  # The bundled Webots controller libraries are built and installed (on macOS by our patch,
+  # which maps the Makefiles' app bundle layout onto the plain one).
+  - if: unix
+    then:
+      script:
+        - python -c "import glob, os; assert glob.glob(os.path.join(os.environ['PREFIX'], 'lib', 'controller', 'libController.*'))"
+        - python -c "import webots_ros2_driver.utils"

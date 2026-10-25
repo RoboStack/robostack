@@ -513,6 +513,10 @@ packages_select_by_deps:
       - libfranka # conda-forge's libfranka is only published for linux-64, not linux-aarch64
       - webots_ros2 # Cyberbotics
 
+  - if: osx
+    then:
+      - webots_ros2_driver # the driver only; requested in https://github.com/RoboStack/robostack/issues/102
+
   - if: not win
     then:
       - as2_cli

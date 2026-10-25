@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 693d9ed..54660a8 100644
+index 693d9ed..78ef33c 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1,4 +1,4 @@
@@ -8,7 +8,7 @@ index 693d9ed..54660a8 100644
  project(webots_ros2_driver)
  
  set(CMAKE_CXX_STANDARD 17)
-@@ -30,15 +30,7 @@ find_package(tinyxml2_vendor REQUIRED)
+@@ -30,14 +30,18 @@ find_package(tinyxml2_vendor REQUIRED)
  find_package(TinyXML2 REQUIRED)
  find_package(yaml-cpp REQUIRED)
  
@@ -20,8 +20,292 @@ index 693d9ed..54660a8 100644
 -  find_package(Python 3.12 EXACT REQUIRED COMPONENTS Development)
 -elseif($ENV{ROS_DISTRO} MATCHES "rolling")
 -  find_package(Python 3.12 EXACT REQUIRED COMPONENTS Development)
--endif()
 +find_package(Python 3 REQUIRED COMPONENTS Development)
++
++if(APPLE)
++  # The bundled Webots Makefiles write the macOS app bundle layout (Contents/lib/...,
++  # Contents/MacOS/webots-controller): map it onto the plain layout installed below.
++  file(CREATE_LINK . ${CMAKE_CURRENT_SOURCE_DIR}/webots/Contents SYMBOLIC)
++  file(MAKE_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/webots/MacOS)
++  set(WEBOTS_RPATH_ORIGIN "@loader_path")
++  set(WEBOTS_CONTROLLER_LAUNCHER webots/MacOS/webots-controller)
++else()
++  set(WEBOTS_RPATH_ORIGIN "$ORIGIN")
++  set(WEBOTS_CONTROLLER_LAUNCHER webots/webots-controller)
+ endif()
  
  add_custom_target(compile-lib-controller ALL
-   COMMAND ${CMAKE_COMMAND} -E env "WEBOTS_HOME=${CMAKE_CURRENT_SOURCE_DIR}/webots" make release -f Makefile > /dev/null 2>&1
+@@ -87,7 +91,7 @@ ament_python_install_package(${PROJECT_NAME}
+   PACKAGE_DIR ${PROJECT_NAME})
+ 
+ # Driver
+-set(CMAKE_INSTALL_RPATH "$ORIGIN/../controller") # Deprecated with new WebotsController node, remove with 2024.0.0
++set(CMAKE_INSTALL_RPATH "${WEBOTS_RPATH_ORIGIN}/../controller") # Deprecated with new WebotsController node, remove with 2024.0.0
+ add_executable(driver
+   src/Driver.cpp
+   src/WebotsNode.cpp
+@@ -138,7 +142,7 @@ install(TARGETS driver
+ )
+ 
+ # Dynamic IMU
+-set(CMAKE_INSTALL_RPATH "$ORIGIN/controller") # Deprecated with new WebotsController node, remove with 2024.0.0
++set(CMAKE_INSTALL_RPATH "${WEBOTS_RPATH_ORIGIN}/controller") # Deprecated with new WebotsController node, remove with 2024.0.0
+ add_library(
+   ${PROJECT_NAME}_imu
+   SHARED
+@@ -166,7 +170,7 @@ install(TARGETS ${PROJECT_NAME}_imu
+ )
+ 
+ # Dynamic RGBD
+-set(CMAKE_INSTALL_RPATH "$ORIGIN/controller") # Deprecated with new WebotsController node, remove with 2024.0.0
++set(CMAKE_INSTALL_RPATH "${WEBOTS_RPATH_ORIGIN}/controller") # Deprecated with new WebotsController node, remove with 2024.0.0
+ add_library(
+   ${PROJECT_NAME}_rgbd
+   SHARED
+@@ -235,7 +239,7 @@ install(
+ 
+ # Install webots-controller script
+ install(
+-  PROGRAMS webots/webots-controller
++  PROGRAMS ${WEBOTS_CONTROLLER_LAUNCHER}
+   DESTINATION share/${PROJECT_NAME}/scripts
+ )
+ 
+diff --git a/src/Driver.cpp b/src/Driver.cpp
+index cf79908..22069db 100644
+--- a/src/Driver.cpp
++++ b/src/Driver.cpp
+@@ -46,6 +46,7 @@ int main(int argc, char **argv) {
+     std::make_shared<webots_ros2_driver::WebotsNode>(robotName, nodeOptions);
+   node->init();
+ 
++#if defined(__linux__)  // /proc/<pid>/cmdline is Linux-only
+   // The parent process must be ros2 run. Declaring from launch file is deprecated. Remove with 2024.0.0.
+   const pid_t parentPid = getppid();
+   char buffer[4096];
+@@ -65,6 +66,7 @@ int main(int argc, char **argv) {
+   if (strstr(buffer, "ros2 launch"))
+     RCLCPP_WARN(node->get_logger(), "\033[33mThe direct declaration of the driver node in the launch file is deprecated. "
+                                     "Please use the new WebotsController node instead.\033[0m");
++#endif
+ 
+   RCLCPP_INFO(node->get_logger(), "Controller successfully connected to robot in Webots simulation.");
+   while (true) {
+diff --git a/src/plugins/static/Ros2LightSensor.cpp b/src/plugins/static/Ros2LightSensor.cpp
+index 63a5e4b..1288e06 100644
+--- a/src/plugins/static/Ros2LightSensor.cpp
++++ b/src/plugins/static/Ros2LightSensor.cpp
+@@ -74,8 +74,8 @@ namespace webots_ros2_driver {
+     // Find relative standard deviation in lookup table
+     double relativeStd = NAN;
+     for (int i = 0; i < mLookupTable.size() - 3; i += 3)
+-      if ((mLookupTable[i + 1] < rawValue < mLookupTable[i + 3 + 1]) ||
+-          (mLookupTable[i + 1] > rawValue > mLookupTable[i + 3 + 1])) {
++      if ((mLookupTable[i + 1] < rawValue && rawValue < mLookupTable[i + 3 + 1]) ||
++          (mLookupTable[i + 1] > rawValue && rawValue > mLookupTable[i + 3 + 1])) {
+         relativeStd = mLookupTable[i + 2];
+         break;
+       }
+diff --git a/webots/lib/controller/python/controller/wb.py b/webots/lib/controller/python/controller/wb.py
+index 48c9506..64f07de 100644
+--- a/webots/lib/controller/python/controller/wb.py
++++ b/webots/lib/controller/python/controller/wb.py
+@@ -21,7 +21,7 @@ if sys.platform == 'linux' or sys.platform == 'linux2':
+ elif sys.platform == 'win32':
+     path = os.path.join('lib', 'controller', 'Controller.dll')
+ elif sys.platform == 'darwin':
+-    path = os.path.join('Contents', 'lib', 'controller', 'libController.dylib')
++    path = os.path.join('lib', 'controller', 'libController.dylib')
+ 
+ wb = ctypes.cdll.LoadLibrary(os.path.join(os.environ['WEBOTS_HOME'], path))
+ 
+diff --git a/webots/lib/controller/python/vehicle/driver.py b/webots/lib/controller/python/vehicle/driver.py
+index 6d70788..5123beb 100644
+--- a/webots/lib/controller/python/vehicle/driver.py
++++ b/webots/lib/controller/python/vehicle/driver.py
+@@ -43,7 +43,7 @@ class Driver(Supervisor):
+             car = 'car.dll'
+             driver = 'driver.dll'
+         elif sys.platform == 'darwin':
+-            path = os.path.join('Contents', 'lib', 'controller')
++            path = os.path.join('lib', 'controller')
+             car = 'libcar.dylib'
+             driver = 'libdriver.dylib'
+         ctypes.cdll.LoadLibrary(os.path.join(os.environ['WEBOTS_HOME'], path, car))
+diff --git a/webots/resources/Makefile.include b/webots/resources/Makefile.include
+index 461793b..704adf6 100644
+--- a/webots/resources/Makefile.include
++++ b/webots/resources/Makefile.include
+@@ -210,15 +210,15 @@ endif
+ ifneq ($(C_SOURCES)$(CXX_SOURCES),)
+  ifdef BUILD_EXECUTABLE
+   MAIN_TARGET = $(NAME)$(EXE_EXTENSION)
+-  X86_64_LINKER = -target x86_64-apple-macos12
+-  ARM64_LINKER = -target arm64-apple-macos12
++  X86_64_LINKER = $(if $(target_platform),,-target x86_64-apple-macos12)
++  ARM64_LINKER = $(if $(target_platform),,-target arm64-apple-macos12)
+  else
+   ifdef BUILD_STATIC_LIBRARY
+    MAIN_TARGET ?= $(LIB_PREFIX)$(NAME)$(STATIC_LIB_EXTENSION)
+   else
+    MAIN_TARGET ?= $(LIB_PREFIX)$(NAME)$(SHARED_LIB_EXTENSION)
+-   X86_64_LINKER = -target x86_64-apple-macos12
+-   ARM64_LINKER = -target arm64-apple-macos12
++   X86_64_LINKER = $(if $(target_platform),,-target x86_64-apple-macos12)
++   ARM64_LINKER = $(if $(target_platform),,-target arm64-apple-macos12)
+   endif
+  endif
+ endif
+@@ -405,8 +405,8 @@ endif
+ 
+ ifeq ($(OSTYPE),darwin)
+  ifdef WEBOTS_LIBRARY
+-  INSTALL_NAME ?= @rpath/Contents/lib/controller/$(MAIN_TARGET)
+-  LFLAGS += -Xlinker -rpath -Xlinker @loader_path/.. -install_name $(INSTALL_NAME)
++  INSTALL_NAME ?= @rpath/$(MAIN_TARGET)
++  LFLAGS += -Xlinker -rpath -Xlinker @loader_path -install_name $(INSTALL_NAME)
+  else
+   CALLING_MAKEFILE_DIR := $(shell dirname "$(realpath $(firstword $(MAKEFILE_LIST)))")
+   WEBOTS_RELATIVE_PATH = $(call computeRelativePath,"$(WEBOTS_HOME_PATH)","$(CALLING_MAKEFILE_DIR)")
+@@ -549,16 +549,18 @@ endif
+ ###-----------------------------------------------------------------------------
+ 
+ ifdef FAT_BINARY
++# conda builds for one architecture (target_platform), not universal binaries
++WEBOTS_MAC_ARCH ?= $(if $(filter osx-64,$(target_platform)),x86_64,$(if $(filter osx-arm64,$(target_platform)),arm64,$(shell uname -m)))
+ X86_64_OBJECTS = $(addprefix $(BUILD_GOAL_DIR)/x86_64/, $(OBJECTS_LIST))
+ ARM64_OBJECTS = $(addprefix $(BUILD_GOAL_DIR)/arm64/, $(OBJECTS_LIST))
+ 
+-$(BUILD_GOAL_DIR)/$(MAIN_TARGET): $(BUILD_GOAL_DIR)/x86_64/$(MAIN_TARGET) $(BUILD_GOAL_DIR)/arm64/$(MAIN_TARGET)
++$(BUILD_GOAL_DIR)/$(MAIN_TARGET): $(BUILD_GOAL_DIR)/$(WEBOTS_MAC_ARCH)/$(MAIN_TARGET)
+ 	@echo "# creating fat" $(notdir $@)
+-	$(SILENT)lipo -create -output $@ $(BUILD_GOAL_DIR)/x86_64/$(MAIN_TARGET) $(BUILD_GOAL_DIR)/arm64/$(MAIN_TARGET)
++	$(SILENT)lipo -create -output $@ $(BUILD_GOAL_DIR)/$(WEBOTS_MAC_ARCH)/$(MAIN_TARGET)
+ 
+-$(TARGET_LIB_DIR)/$(MAIN_TARGET): $(BUILD_GOAL_DIR)/x86_64/$(MAIN_TARGET) $(BUILD_GOAL_DIR)/arm64/$(MAIN_TARGET)
++$(TARGET_LIB_DIR)/$(MAIN_TARGET): $(BUILD_GOAL_DIR)/$(WEBOTS_MAC_ARCH)/$(MAIN_TARGET)
+ 	@echo "# creating fat" $(notdir $@)
+-	$(SILENT)lipo -create -output $@ $(BUILD_GOAL_DIR)/x86_64/$(MAIN_TARGET) $(BUILD_GOAL_DIR)/arm64/$(MAIN_TARGET)
++	$(SILENT)lipo -create -output $@ $(BUILD_GOAL_DIR)/$(WEBOTS_MAC_ARCH)/$(MAIN_TARGET)
+ 
+ $(BUILD_GOAL_DIR)/x86_64/$(MAIN_TARGET): $(X86_64_OBJECTS) $(LINK_DEPENDENCIES)
+ 	@echo "# linking" $(notdir $@) "(x86_64)"
+diff --git a/webots/src/controller/c/Makefile b/webots/src/controller/c/Makefile
+index 14a32c7..bfceaf5 100644
+--- a/webots/src/controller/c/Makefile
++++ b/webots/src/controller/c/Makefile
+@@ -44,7 +44,7 @@ endif
+ ifeq ($(OSTYPE),darwin)
+ CFLAGS      = -mmacosx-version-min=$(MACOSX_MIN_SDK_VERSION) -fpascal-strings -Wno-deprecated-declarations -Wno-single-bit-bitfield-constant-conversion -I/Developer/Headers/FlatCarbon -Wall -fno-common -D LIBCONTROLLER_VERSION='$(LIBCONTROLLER_VERSION)'
+ INCLUDE     = -I$(WEBOTS_HOME_PATH)/include/controller/c -I$(WEBOTS_HOME_PATH)/include
+-LD_FLAGS    = -mmacosx-version-min=$(MACOSX_MIN_SDK_VERSION) -dynamiclib -install_name @rpath/Contents/lib/controller/libController.dylib -compatibility_version 1.0 -current_version 1.0.0
++LD_FLAGS    = -mmacosx-version-min=$(MACOSX_MIN_SDK_VERSION) -dynamiclib -install_name @rpath/libController.dylib -compatibility_version 1.0 -current_version 1.0.0
+ SHARED_LIBS = -lz
+ TARGET      = $(WEBOTS_CONTROLLER_LIB_PATH)/libController.dylib
+ CC          = gcc
+@@ -144,12 +144,14 @@ endif
+ endif
+ 
+ ifeq ($(OSTYPE),darwin)
++# conda builds for one architecture (target_platform), not universal binaries
++WEBOTS_MAC_ARCH ?= $(if $(filter osx-64,$(target_platform)),x86_64,$(if $(filter osx-arm64,$(target_platform)),arm64,$(shell uname -m)))
+ X86_64_OBJECTS = $(addprefix $(OBJDIR)/x86_64/, $(OBJECTS))
+ ARM64_OBJECTS = $(addprefix $(OBJDIR)/arm64/, $(OBJECTS))
+ 
+-$(TARGET): $(OBJDIR)/x86_64/libController.dylib $(OBJDIR)/arm64/libController.dylib
++$(TARGET): $(OBJDIR)/$(WEBOTS_MAC_ARCH)/libController.dylib
+ 	@echo "# creating fat binary: $$"\(WEBOTS_HOME\)/lib/controller/libController.dylib
+-	@lipo -create -output $(TARGET) $(OBJDIR)/x86_64/libController.dylib $(OBJDIR)/arm64/libController.dylib
++	@lipo -create -output $(TARGET) $(OBJDIR)/$(WEBOTS_MAC_ARCH)/libController.dylib
+ 	@chmod a-x $@
+ 	@codesign -s - $@
+ 
+diff --git a/webots/src/controller/cpp/Makefile b/webots/src/controller/cpp/Makefile
+index dde0a6e..910fb01 100644
+--- a/webots/src/controller/cpp/Makefile
++++ b/webots/src/controller/cpp/Makefile
+@@ -100,7 +100,7 @@ SHAREDLIBS    = -L$(WEBOTS_CONTROLLER_LIB_PATH) -lController
+ CPPFLAGS      = -c -fPIC -Wall -mmacosx-version-min=$(MACOSX_MIN_SDK_VERSION)
+ CPPINCLUDES   = -I$(WEBOTS_HOME_PATH)/include/controller/c -I$(WEBOTS_HOME_PATH)/include/controller/cpp
+ LIBCONTROLLER = $(WEBOTS_CONTROLLER_LIB_PATH)/libController.dylib
+-LDFLAGS      += -install_name @rpath/Contents/lib/controller/libCppController.dylib
++LDFLAGS      += -install_name @rpath/libCppController.dylib -Wl,-rpath,@loader_path
+ TARGET        = $(WEBOTS_CONTROLLER_LIB_PATH)/libCppController.dylib
+ endif
+ 
+@@ -121,21 +121,23 @@ all debug profile release: $(TARGET)
+ 
+ ifeq ($(OSTYPE),darwin)
+ 
++# conda builds for one architecture (target_platform), not universal binaries
++WEBOTS_MAC_ARCH ?= $(if $(filter osx-64,$(target_platform)),x86_64,$(if $(filter osx-arm64,$(target_platform)),arm64,$(shell uname -m)))
+ X86_64_OBJECTS = $(addprefix $(BUILD_GOAL_DIR)/x86_64/,$(OBJECTS))
+ ARM64_OBJECTS = $(addprefix $(BUILD_GOAL_DIR)/arm64/,$(OBJECTS))
+ 
+-$(TARGET): $(BUILD_GOAL_DIR)/x86_64/libCppController.dylib $(BUILD_GOAL_DIR)/arm64/libCppController.dylib
++$(TARGET): $(BUILD_GOAL_DIR)/$(WEBOTS_MAC_ARCH)/libCppController.dylib
+ 	@echo "# creating fat" $(notdir $@)
+-	@lipo -create -output $@ $(BUILD_GOAL_DIR)/x86_64/libCppController.dylib $(BUILD_GOAL_DIR)/arm64/libCppController.dylib
++	@lipo -create -output $@ $(BUILD_GOAL_DIR)/$(WEBOTS_MAC_ARCH)/libCppController.dylib
+ 	@codesign -s - $@
+ 
+ $(BUILD_GOAL_DIR)/x86_64/libCppController.dylib: $(X86_64_OBJECTS)
+ 	@echo "# linking" $@ "(x86_64)"
+-	@$(CXX) -target x86_64-apple-macos12 $(LDFLAGS) $(X86_64_OBJECTS) $(SHAREDLIBS) -o "$@"
++	@$(CXX) $(if $(target_platform),,-target x86_64-apple-macos12) $(LDFLAGS) $(X86_64_OBJECTS) $(SHAREDLIBS) -o "$@"
+ 
+ $(BUILD_GOAL_DIR)/arm64/libCppController.dylib: $(ARM64_OBJECTS)
+ 	@echo "# linking" $@ "(arm64)"
+-	@$(CXX) -target arm64-apple-macos12 $(LDFLAGS) $(ARM64_OBJECTS) $(SHAREDLIBS) -o "$@"
++	@$(CXX) $(if $(target_platform),,-target arm64-apple-macos12) $(LDFLAGS) $(ARM64_OBJECTS) $(SHAREDLIBS) -o "$@"
+ 
+ else
+ 
+diff --git a/webots/src/controller/launcher/Makefile b/webots/src/controller/launcher/Makefile
+index 6c9cf55..7cd02ff 100644
+--- a/webots/src/controller/launcher/Makefile
++++ b/webots/src/controller/launcher/Makefile
+@@ -33,6 +33,8 @@ ifeq ($(OSTYPE),windows)
+ CONTROLLER_LAUNCHER = $(WEBOTS_HOME_PATH)/msys64/mingw64/bin/webots-controller.exe
+ else ifeq ($(OSTYPE),darwin)
+ CONTROLLER_LAUNCHER = $(WEBOTS_HOME_PATH)/Contents/MacOS/webots-controller
++# the environment's compiler, and room for the install name tool to rewrite rpaths
++LAUNCHER_CC = $(CC) -Wl,-headerpad_max_install_names
+ else
+ CONTROLLER_LAUNCHER = $(WEBOTS_HOME_PATH)/webots-controller
+ endif
+@@ -43,6 +45,6 @@ release debug profile: $(CONTROLLER_LAUNCHER)
+ 
+ $(CONTROLLER_LAUNCHER): webots_controller.c
+ 	@echo "# compiling" $<
+-	@gcc $(CFLAGS) webots_controller.c -o $@
++	@$(or $(LAUNCHER_CC),gcc) $(CFLAGS) webots_controller.c -o $@
+ 
+ FILES_TO_REMOVE += $(CONTROLLER_LAUNCHER)
+diff --git a/webots_ros2_driver/utils.py b/webots_ros2_driver/utils.py
+index db7e2b6..a1cf870 100644
+--- a/webots_ros2_driver/utils.py
++++ b/webots_ros2_driver/utils.py
+@@ -46,6 +46,9 @@ class WebotsVersion:
+     @staticmethod
+     def from_path(path):
+         version_file = os.path.join(path, 'resources', 'version.txt')
++        if sys.platform == 'darwin' and not os.path.isfile(version_file):
++            # the macOS app bundle: /Applications/Webots.app/Contents/Resources
++            version_file = os.path.join(path, 'Contents', 'Resources', 'version.txt')
+         if not os.path.isfile(version_file):
+             return None
+         with open(version_file, 'r') as f:
+diff --git a/webots_ros2_driver/webots_launcher.py b/webots_ros2_driver/webots_launcher.py
+index 3952906..12c493c 100644
+--- a/webots_ros2_driver/webots_launcher.py
++++ b/webots_ros2_driver/webots_launcher.py
+@@ -72,6 +72,8 @@ class WebotsLauncher(ExecuteProcess):
+                 webots_path = get_webots_home()
+             if self.__is_wsl:
+                 webots_path = os.path.join(webots_path, 'msys64', 'mingw64', 'bin', 'webots.exe')
++            elif sys.platform == 'darwin':
++                webots_path = os.path.join(webots_path, 'Contents', 'MacOS', 'webots')
+             else:
+                 webots_path = os.path.join(webots_path, 'webots')
+         else:

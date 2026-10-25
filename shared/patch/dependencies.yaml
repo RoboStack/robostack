@@ -138,6 +138,9 @@ tvm_vendor:
   add_host: ["libblas", "openblas", "libcblas"]
 velodyne_pointcloud:
   add_host: ["libboost-devel"]
+webots_ros2_importer:
+  # urdf2webots imports PIL, but the package.xml doesn't declare python3-pil
+  add_run: ["pillow"]
 yaml_cpp_vendor:
   add_host: ["yaml-cpp"]
   add_run: ["yaml-cpp"]
