@@ -412,6 +412,10 @@ mocap4r2_robot_gt_msgs:
   url: https://github.com/MOCAP4ROS2-Project/mocap4r2.git
   version: 0.0.7
   additional_folder: mocap4r2_robot_gt/mocap4r2_robot_gt_msgs
+netft_driver:  # not in rosdistro yet (ros/rosdistro#52786); requested in https://github.com/RoboStack/robostack/issues/103
+  tag: 0.4.0
+  url: https://github.com/netft/ros-netft.git
+  version: 0.4.0
 ros_image_to_qimage:
   # not released for rolling; lyrical's release (needed by rqt_image_overlay)
   tag: release/lyrical/ros_image_to_qimage/0.4.1-5
