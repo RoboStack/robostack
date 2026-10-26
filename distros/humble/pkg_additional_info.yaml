@@ -109,3 +109,11 @@ ament_cmake_gmock:  # as ament_cmake_gtest
   build_number: 23
 ament_cmake_gtest:  # uses conda-forge's gtest instead of gtest_vendor's sources
   build_number: 23
+rosidl_generator_c:
+  build_number: 24
+rosidl_generator_py:
+  build_number: 24
+rosidl_typesupport_introspection_c:
+  build_number: 24
+rosidl_typesupport_introspection_cpp:
+  build_number: 24
