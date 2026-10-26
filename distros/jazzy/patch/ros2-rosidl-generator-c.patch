@@ -1,0 +1,13 @@
+diff --git a/cmake/rosidl_generator_c_generate_interfaces.cmake b/cmake/rosidl_generator_c_generate_interfaces.cmake
+index 8bab169..86a998d 100644
+--- a/cmake/rosidl_generator_c_generate_interfaces.cmake
++++ b/cmake/rosidl_generator_c_generate_interfaces.cmake
+@@ -185,7 +185,7 @@ if(NOT rosidl_generate_interfaces_SKIP_INSTALL)
+   install(
+     DIRECTORY ${_output_path}/
+     DESTINATION "include/${PROJECT_NAME}/${PROJECT_NAME}"
+-    PATTERN "*.h"
++    PATTERN "*.c" EXCLUDE
+   )
+ 
+   # Export old-style CMake variables
