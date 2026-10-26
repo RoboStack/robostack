@@ -1,0 +1,13 @@
+diff --git a/cmake/rosidl_typesupport_introspection_cpp_generate_interfaces.cmake b/cmake/rosidl_typesupport_introspection_cpp_generate_interfaces.cmake
+index daedc90..a44c8ee 100644
+--- a/cmake/rosidl_typesupport_introspection_cpp_generate_interfaces.cmake
++++ b/cmake/rosidl_typesupport_introspection_cpp_generate_interfaces.cmake
+@@ -157,7 +157,7 @@ if(NOT rosidl_generate_interfaces_SKIP_INSTALL)
+   install(
+     DIRECTORY ${_output_path}/
+     DESTINATION "include/${PROJECT_NAME}/${PROJECT_NAME}"
+-    PATTERN "*.hpp"
++    PATTERN "*.cpp" EXCLUDE
+   )
+ 
+   install(
