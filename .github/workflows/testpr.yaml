@@ -259,9 +259,12 @@ jobs:
         extra=()
         # shorter work dirs for MAX_PATH on Windows
         [ "$PLATFORM" == "win-64" ] && extra+=(--no-build-id)
-        # independent recipes side by side, with a shared jobserver keeping them at the
-        # runner's cores in total; Windows has no jobserver, and was no faster with two
-        [ "$PLATFORM" != "win-64" ] && extra+=(--parallel-builds "3:$(getconf _NPROCESSORS_ONLN)")
+        # Temporarily one at a time everywhere, as in tools/robostack.py (PARALLEL_BUILDS):
+        # rattler-build 0.77 gives two variants of a recipe started in the same second the
+        # same build directory (prefix-dev/rattler-build#2898, e.g. beluga's hdf5 variants).
+        # Back to --parallel-builds "3:$(getconf _NPROCESSORS_ONLN)" off Windows once
+        # prefix-dev/rattler-build#2899 is released.
+        extra+=(--parallel-builds 1)
         pixi run rs "$DISTRO" build --target-platform "$PLATFORM" "${extra[@]}" 2>&1 | tee rattler-build.log
         status=${PIPESTATUS[0]}
         echo "exit-code=${status}" >> "$GITHUB_OUTPUT"

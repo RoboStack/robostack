@@ -346,15 +346,15 @@ autoware_velocity_smoother:
   tag: release/humble/autoware_velocity_smoother/1.7.0-1
   url: https://github.com/ros2-gbp/autoware_core-release.git
   version: 1.7.0
-beluga:
+beluga:  # Until: https://github.com/Ekumen-OS/beluga/issues/587
   tag: release/jazzy/beluga/2.1.1-1
   url: https://github.com/ros2-gbp/beluga-release.git
   version: 2.1.1
-beluga_amcl:
+beluga_amcl:  # Until: https://github.com/Ekumen-OS/beluga/issues/587
   tag: release/jazzy/beluga_amcl/2.1.1-1
   url: https://github.com/ros2-gbp/beluga-release.git
   version: 2.1.1
-beluga_ros:
+beluga_ros:  # Until: https://github.com/Ekumen-OS/beluga/issues/587
   tag: release/jazzy/beluga_ros/2.1.1-1
   url: https://github.com/ros2-gbp/beluga-release.git
   version: 2.1.1
