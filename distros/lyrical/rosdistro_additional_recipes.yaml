@@ -346,6 +346,18 @@ autoware_velocity_smoother:
   tag: release/humble/autoware_velocity_smoother/1.7.0-1
   url: https://github.com/ros2-gbp/autoware_core-release.git
   version: 1.7.0
+beluga:
+  tag: release/jazzy/beluga/2.1.1-1
+  url: https://github.com/ros2-gbp/beluga-release.git
+  version: 2.1.1
+beluga_amcl:
+  tag: release/jazzy/beluga_amcl/2.1.1-1
+  url: https://github.com/ros2-gbp/beluga-release.git
+  version: 2.1.1
+beluga_ros:
+  tag: release/jazzy/beluga_ros/2.1.1-1
+  url: https://github.com/ros2-gbp/beluga-release.git
+  version: 2.1.1
 better_launch:
   tag: 1.3.0
   url: https://github.com/dfki-ric/better_launch.git
