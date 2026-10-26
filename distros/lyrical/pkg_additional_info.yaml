@@ -113,6 +113,18 @@ urdfdom_headers:
 zenoh_cpp_vendor:
   additional_cmake_args: "-DAMENT_VENDOR_POLICY=NEVER_VENDOR_IGNORE_SATISFIED_CHECK -DUSE_SYSTEM_ZENOH=ON"
 # Remove build_number fields below on new full rebuild
+rosidl_generator_c:
+  build_number: 32
+rosidl_generator_cpp:
+  build_number: 32
+rosidl_generator_py:
+  build_number: 32
+rosidl_generator_type_description:
+  build_number: 32
+rosidl_typesupport_introspection_c:
+  build_number: 32
+rosidl_typesupport_introspection_cpp:
+  build_number: 32
 rviz_ogre_vendor:
   additional_cmake_args: "-DRVIZ_OGRE_VENDOR_MANGLE_NAME_OF_LIBRARIES_USED_BY_RVIZ=ON"
   build_number: 31  # built without the EXR codec (ros2-rviz-ogre-vendor.patch)

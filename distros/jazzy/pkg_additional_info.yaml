@@ -135,6 +135,18 @@ ament_cmake_gtest:  # uses conda-forge's gtest instead of gtest_vendor's sources
   build_number: 28
 gz_ogre_next_vendor:
   build_number: 28
+rosidl_generator_c:
+  build_number: 29
+rosidl_generator_cpp:
+  build_number: 29
+rosidl_generator_py:
+  build_number: 29
+rosidl_generator_type_description:
+  build_number: 29
+rosidl_typesupport_introspection_c:
+  build_number: 29
+rosidl_typesupport_introspection_cpp:
+  build_number: 29
 rviz_ogre_vendor:
   additional_cmake_args: "-DRVIZ_OGRE_VENDOR_MANGLE_NAME_OF_LIBRARIES_USED_BY_RVIZ=ON"
   build_number: 28  # built without the EXR codec (ros2-rviz-ogre-vendor.patch)
