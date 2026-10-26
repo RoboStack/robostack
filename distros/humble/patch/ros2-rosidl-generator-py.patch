@@ -1,5 +1,5 @@
 diff --git a/rosidl_generator_py/cmake/rosidl_generator_py_generate_interfaces.cmake b/rosidl_generator_py/cmake/rosidl_generator_py_generate_interfaces.cmake
-index a6d8263..786d2a5 100644
+index a6d8263..0ef854e 100644
 --- a/rosidl_generator_py/cmake/rosidl_generator_py_generate_interfaces.cmake
 +++ b/rosidl_generator_py/cmake/rosidl_generator_py_generate_interfaces.cmake
 @@ -17,10 +17,22 @@ find_package(rosidl_runtime_c REQUIRED)
@@ -28,7 +28,29 @@ index a6d8263..786d2a5 100644
  
  # Get a list of typesupport implementations from valid rmw implementations.
  rosidl_generator_py_get_typesupports(_typesupport_impls)
-@@ -164,7 +176,7 @@ set(rosidl_generator_py_suffix "__rosidl_generator_py")
+@@ -142,6 +154,21 @@ set_property(
+   ${_generated_extension_files} ${_generated_py_files} ${_generated_c_files}
+   PROPERTY GENERATED 1)
+ 
++# ament_python_install_package() copies (or symlinks) the package directory
++# into the build directory and runs `setup.py egg_info` on it. Do that only
++# after the Python code has been generated, otherwise the egg-info (e.g.
++# SOURCES.txt) lists only __init__.py. Fixed upstream in rolling by
++# ament/ament_cmake#587 and ros2/rosidl_python#254.
++if(NOT rosidl_generate_interfaces_SKIP_INSTALL)
++  foreach(_copy_target
++      ament_cmake_python_copy_${PROJECT_NAME}
++      ament_cmake_python_symlink_${PROJECT_NAME})
++    if(TARGET ${_copy_target})
++      add_dependencies(${_copy_target} ${rosidl_generate_interfaces_TARGET}${_target_suffix})
++    endif()
++  endforeach()
++endif()
++
+ macro(set_properties _build_type)
+   set_target_properties(${_target_name} PROPERTIES
+     COMPILE_OPTIONS "${_extension_compile_flags}"
+@@ -164,7 +191,7 @@ set(rosidl_generator_py_suffix "__rosidl_generator_py")
  
  set(_target_name_lib "${rosidl_generate_interfaces_TARGET}${rosidl_generator_py_suffix}")
  add_library(${_target_name_lib} SHARED ${_generated_c_files})
@@ -37,7 +59,7 @@ index a6d8263..786d2a5 100644
    ${rosidl_generate_interfaces_TARGET}__rosidl_generator_c)
  add_dependencies(
    ${_target_name_lib}
-@@ -172,45 +184,24 @@ add_dependencies(
+@@ -172,45 +199,24 @@ add_dependencies(
    ${rosidl_generate_interfaces_TARGET}__rosidl_typesupport_c
  )
  
@@ -92,7 +114,7 @@ index a6d8263..786d2a5 100644
  
  foreach(_typesupport_impl ${_typesupport_impls})
    find_package(${_typesupport_impl} REQUIRED)
-@@ -223,7 +214,7 @@ foreach(_typesupport_impl ${_typesupport_impls})
+@@ -223,7 +229,7 @@ foreach(_typesupport_impl ${_typesupport_impls})
    set(_pyext_suffix "__pyext")
    set(_target_name "${PROJECT_NAME}__${_typesupport_impl}${_pyext_suffix}")
  
@@ -101,7 +123,7 @@ index a6d8263..786d2a5 100644
      ${_generated_extension_${_typesupport_impl}_files}
    )
    add_dependencies(
-@@ -244,39 +235,28 @@ foreach(_typesupport_impl ${_typesupport_impls})
+@@ -244,39 +250,28 @@ foreach(_typesupport_impl ${_typesupport_impls})
      set_properties("_RELWITHDEBINFO")
    endif()
    target_link_libraries(
@@ -148,7 +170,7 @@ index a6d8263..786d2a5 100644
  
    if(NOT rosidl_generate_interfaces_SKIP_INSTALL)
      install(TARGETS ${_target_name}
-@@ -288,7 +268,7 @@ set(PYTHON_EXECUTABLE ${_PYTHON_EXECUTABLE})
+@@ -288,7 +283,7 @@ set(PYTHON_EXECUTABLE ${_PYTHON_EXECUTABLE})
  
  # Depend on rosidl_generator_py generated targets from our dependencies
  foreach(_pkg_name ${rosidl_generate_interfaces_DEPENDENCY_PACKAGE_NAMES})
@@ -157,7 +179,7 @@ index a6d8263..786d2a5 100644
  endforeach()
  
  set_lib_properties("")
-@@ -305,9 +285,22 @@ if(NOT rosidl_generate_interfaces_SKIP_INSTALL)
+@@ -305,9 +300,22 @@ if(NOT rosidl_generate_interfaces_SKIP_INSTALL)
      LIBRARY DESTINATION lib
      RUNTIME DESTINATION bin)
  
