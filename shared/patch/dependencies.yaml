@@ -127,6 +127,10 @@ open3d_conversions:
   # (which provides TBBConfig.cmake) -- add it explicitly so find_package(Open3D)
   # can resolve its own TBB dependency.
   add_host: ["tbb-devel"]
+ortools_vendor:
+  # or-tools uses conda zlib (BUILD_ZLIB=OFF, see the patch); consumers find_dependency(ZLIB)
+  add_host: ["zlib"]
+  add_run: ["zlib"]
 pcl_ros:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "libboost-devel"]
 plotjuggler_ros:

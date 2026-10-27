@@ -118,7 +118,6 @@ packages_select_by_deps:
   - diagnostic_remote_logging
   - diagnostics
   - diff_drive_controller
-  - fields2cover
   - flex_sync
   - foxglove_bridge
   - foxglove_msgs
@@ -551,6 +550,7 @@ packages_select_by_deps:
       - event_camera_codecs # uses endian.h, unix-only; issue #228
       - event_camera_renderer # doesn't support Windows shared library
       - ffmpeg_image_transport # TODO on windows: fix iconv link issue
+      - fields2cover # or-tools (ortools_vendor) exceeds the MSVC static library limit (LNK1189)
       - foxglove_compressed_video_transport
       - grid_map # rviz linking problems on Windows, see https://github.com/RoboStack/ros-jazzy/pull/79#issuecomment-2993499990
       - grid_map_rviz_plugin # rviz linking problems on Windows, see https://github.com/RoboStack/ros-jazzy/pull/79#issuecomment-2993499990

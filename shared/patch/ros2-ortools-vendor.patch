@@ -1,11 +1,11 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index fd967c2..5e3bc80 100644
+index fd967c2..53182a6 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -4,6 +4,13 @@ project(ortools_vendor LANGUAGES CXX VERSION "9.9.1")
+@@ -4,13 +4,27 @@ project(ortools_vendor LANGUAGES CXX VERSION "9.9.1")
  find_package(ament_cmake REQUIRED)
  find_package(ament_cmake_vendor_package REQUIRED)
-
+ 
 +# Abseil exports its librt as $<$<BOOL:/abs/path/librt.so>:-lrt>; the conda sysroot
 +# relocation then mangles that path. Pass the bare name so no path is exported.
 +set(ORTOOLS_EXTRA_CMAKE_ARGS)
@@ -16,10 +16,26 @@ index fd967c2..5e3bc80 100644
  ament_vendor(
    ortools_vendor
    VCS_URL https://github.com/google/or-tools.git
-@@ -27,6 +34,7 @@ ament_vendor(
+   VCS_VERSION v9.9
+   CMAKE_ARGS
+     -DCMAKE_BUILD_TYPE=Release
+-    -DBUILD_DEPS:BOOL=ON
++    # BUILD_DEPS=ON forces the bundled zlib, which doesn't compile against recent
++    # macOS SDKs (fdopen macro); build the other dependencies, take zlib from conda.
++    -DBUILD_DEPS:BOOL=OFF
++    -DBUILD_ZLIB:BOOL=OFF
++    -DBUILD_absl:BOOL=ON
++    -DBUILD_Protobuf:BOOL=ON
++    -DBUILD_Eigen3:BOOL=ON
++    -DBUILD_re2:BOOL=ON
+     -DCMAKE_POLICY_VERSION_MINIMUM:STRING=3.5
+     -DBUILD_SAMPLES:BOOL=OFF
+     -DBUILD_EXAMPLES:BOOL=OFF
+@@ -27,6 +41,7 @@ ament_vendor(
      -DUSE_PDLP:BOOL=OFF
      -DUSE_SCIP:BOOL=OFF
      -DUSE_CPLEX:BOOL=OFF
 +    ${ORTOOLS_EXTRA_CMAKE_ARGS}
    PATCHES patches
  )
+ 
