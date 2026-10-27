@@ -109,3 +109,5 @@ ament_cmake_gmock:  # as ament_cmake_gtest
   build_number: 23
 ament_cmake_gtest:  # uses conda-forge's gtest instead of gtest_vendor's sources
   build_number: 23
+rmf_utils:  # its DLL moved from lib to bin (Windows)
+  build_number: 23

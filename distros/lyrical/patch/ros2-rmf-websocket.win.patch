@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index a23ef26..23c4822 100644
+index a23ef26..237fa6d 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -8,6 +8,15 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -33,3 +33,12 @@ index a23ef26..23c4822 100644
  target_link_libraries(rmf_websocket
    PUBLIC
      ${rclcpp_LIBRARIES}
+@@ -89,7 +106,7 @@ install(
+ install(
+   TARGETS rmf_websocket
+   EXPORT export_rmf_websocket
+-  RUNTIME DESTINATION lib/rmf_websocket
++  RUNTIME DESTINATION bin  # RoboStack: the DLL on PATH on Windows (was lib/rmf_websocket)
+   LIBRARY DESTINATION lib
+   ARCHIVE DESTINATION lib
+ )

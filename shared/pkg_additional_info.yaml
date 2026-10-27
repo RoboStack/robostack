@@ -162,6 +162,18 @@ pybind11_json_vendor:
   additional_cmake_args: "-DAMENT_VENDOR_POLICY=NEVER_VENDOR"
 pybind11_vendor:
   additional_cmake_args: "-DAMENT_VENDOR_POLICY=NEVER_VENDOR"
+rmf_building_sim_common:  # shared libraries without dllexport annotations (Windows: no import library)
+  additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
+rmf_robot_sim_common:  # shared libraries without dllexport annotations (Windows: no import library)
+  additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
+rmf_visualization_rviz2_plugins:  # Windows: uses the alternative operator tokens (`or`), which MSVC only has with <iso646.h>
+  additional_cmake_args:
+    if: win
+    then: '-DCMAKE_CXX_FLAGS_INIT=/FIiso646.h'
+rmf_visualization_schedule:  # Windows: its test's link command exceeds the linker's line limit (LNK1170)
+  additional_cmake_args:
+    if: win
+    then: '-DBUILD_TESTING=OFF'
 robot_state_publisher:
   additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
 rosx_introspection:

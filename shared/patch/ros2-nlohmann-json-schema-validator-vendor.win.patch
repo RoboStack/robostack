@@ -1,0 +1,45 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 5d0ea5f..cb42546 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -20,8 +20,9 @@ macro(build_nlohmann_json_schema_validator)
+ 
+   if(DEFINED CMAKE_BUILD_TYPE)
+     if(WIN32)
+-      build_command(_build_command CONFIGURATION ${CMAKE_BUILD_TYPE})
+-      list(APPEND cmake_commands "BUILD_COMMAND ${_build_command}")
++      # build_command() gives one pre-quoted string, which the VS generator quotes once
++      # more ("... is not recognized as an internal or external command"): tokens instead
++      list(APPEND cmake_commands BUILD_COMMAND ${CMAKE_COMMAND} --build . --config ${CMAKE_BUILD_TYPE})
+     else()
+       list(APPEND cmake_configure_args -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE})
+     endif()
+@@ -59,10 +60,13 @@ macro(build_nlohmann_json_schema_validator)
+   include(ExternalProject)
+   # HEAD of `main` branch on 2022-10-07
+   set(nlohmann_json_schema_validator_version "5ef4f903af055550e06955973a193e17efded896")
+-  externalproject_add(nlohmann_json_schema_validator-${nlohmann_json_schema_validator_version}
++  # short name and prefix: the default layout repeats the 40-character hash, which with
++  # rattler-build's work directory exceeds MAX_PATH ("'$GIT_DIR' too big")
++  externalproject_add(nlohmann_json_schema_validator_ext
++    PREFIX ${CMAKE_CURRENT_BINARY_DIR}/ext
+     GIT_REPOSITORY https://github.com/pboettch/json-schema-validator.git
+     GIT_TAG ${nlohmann_json_schema_validator_version}
+-    GIT_CONFIG advice.detachedHead=false
++    GIT_CONFIG advice.detachedHead=false core.longpaths=true
+     # Suppress git update due to https://gitlab.kitware.com/cmake/cmake/-/issues/16419
+     UPDATE_COMMAND ""
+     TIMEOUT 6000
+@@ -71,6 +75,12 @@ macro(build_nlohmann_json_schema_validator)
+     CMAKE_ARGS
+       -DCMAKE_INSTALL_PREFIX=${json_external_project_dir}/install/
+       -DBUILD_SHARED_LIBS:BOOL=ON
++      # no dllexport annotations: without this there's no import library (LNK1181)
++      -DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS:BOOL=ON
++      # options of this (older) validator; JSON_VALIDATOR_BUILD_* below are the newer names. Its test
++      # links the data symbol draft7_schema_builtin, which export-all does not export (LNK2019).
++      -DBUILD_TESTS:BOOL=OFF
++      -DBUILD_EXAMPLES:BOOL=OFF
+       -DJSON_VALIDATOR_BUILD_TESTS:BOOL=OFF
+       -DJSON_VALIDATOR_BUILD_EXAMPLES:BOOL=OFF
+       ${cmake_configure_args}

@@ -1,0 +1,59 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index cf1d5e3..ed2a8e3 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -6,17 +6,26 @@ endif()
+ 
+ project(rmf_traffic_editor)
+ 
++if(MSVC)
++  # M_PI and friends: MSVC defines them only with _USE_MATH_DEFINES; NOGDI keeps windows.h
++  # (pulled in by dependencies) from declaring GDI's Polygon(), which clashes with the editor's
++  add_compile_definitions(_USE_MATH_DEFINES NOGDI)
++endif()
++
+ find_package(ament_cmake REQUIRED)
+ find_package(ament_index_cpp REQUIRED)
+ find_package(Ceres REQUIRED)
+ find_package(Eigen3 REQUIRED)
+ find_package(Qt5 COMPONENTS Widgets Concurrent Test Network REQUIRED)
+ find_package(yaml-cpp REQUIRED)
++find_package(PROJ CONFIG REQUIRED)
+ 
+ set(CMAKE_BUILD_TYPE RelWithDebInfo)
+ # set(CMAKE_VERBOSE_MAKEFILE TRUE)
+ 
+-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wshadow -Wextra")
++if(NOT MSVC)  # GCC/Clang warning flags; MSVC rejects -Wshadow (D8021)
++  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wshadow -Wextra")
++endif()
+ 
+ set(CMAKE_AUTOMOC ON)
+ set(CMAKE_AUTORCC ON)
+@@ -120,8 +129,9 @@ target_link_libraries(
+   Qt5::Widgets
+   Qt5::Concurrent
+   Qt5::Network
+-  proj
+-  yaml-cpp
++  # MSVC needs the imported targets (bare names mean proj.lib / yaml-cpp.lib, LNK1181)
++  PROJ::proj
++  yaml-cpp::yaml-cpp
+   ${ament_index_cpp_LIBRARIES}
+ )
+ 
+diff --git a/gui/editor.cpp b/gui/editor.cpp
+index 5f6eee5..21e8049 100644
+--- a/gui/editor.cpp
++++ b/gui/editor.cpp
+@@ -18,9 +18,8 @@
+ #include <algorithm>
+ #include <cmath>
+ #include <string>
+-#include <unistd.h>
++// (Windows) no unistd.h or pwd.h; nothing from them is used
+ #include <sys/types.h>
+-#include <pwd.h>
+ 
+ #include <QtWidgets>
+ 

@@ -267,6 +267,7 @@ packages_select_by_deps:
   - realtime_tools
   - rko_lio # LiDAR-inertial odometry (PRBonn); requested in https://github.com/RoboStack/ros-kilted/pull/104
   - rmf_demos
+  - rmf_dev # Open RMF; requested in https://github.com/RoboStack/ros-humble/pull/298
   - rmw
   - rmw_stats_shim
   - rmw_zenoh_cpp
