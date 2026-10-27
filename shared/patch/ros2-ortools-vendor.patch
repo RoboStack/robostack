@@ -1,41 +1,131 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index fd967c2..53182a6 100644
+index fd967c2..0c45489 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -4,13 +4,27 @@ project(ortools_vendor LANGUAGES CXX VERSION "9.9.1")
- find_package(ament_cmake REQUIRED)
- find_package(ament_cmake_vendor_package REQUIRED)
- 
-+# Abseil exports its librt as $<$<BOOL:/abs/path/librt.so>:-lrt>; the conda sysroot
-+# relocation then mangles that path. Pass the bare name so no path is exported.
-+set(ORTOOLS_EXTRA_CMAKE_ARGS)
-+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-+  list(APPEND ORTOOLS_EXTRA_CMAKE_ARGS -DLIBRT:STRING=rt)
-+endif()
-+
- ament_vendor(
-   ortools_vendor
-   VCS_URL https://github.com/google/or-tools.git
+@@ -10,7 +10,15 @@ ament_vendor(
    VCS_VERSION v9.9
    CMAKE_ARGS
      -DCMAKE_BUILD_TYPE=Release
 -    -DBUILD_DEPS:BOOL=ON
-+    # BUILD_DEPS=ON forces the bundled zlib, which doesn't compile against recent
-+    # macOS SDKs (fdopen macro); build the other dependencies, take zlib from conda.
++    # Take all dependencies from conda-forge instead of building
 +    -DBUILD_DEPS:BOOL=OFF
 +    -DBUILD_ZLIB:BOOL=OFF
-+    -DBUILD_absl:BOOL=ON
-+    -DBUILD_Protobuf:BOOL=ON
-+    -DBUILD_Eigen3:BOOL=ON
-+    -DBUILD_re2:BOOL=ON
++    -DBUILD_absl:BOOL=OFF
++    -DBUILD_Protobuf:BOOL=OFF
++    -DBUILD_Eigen3:BOOL=OFF
++    -DBUILD_re2:BOOL=OFF
      -DCMAKE_POLICY_VERSION_MINIMUM:STRING=3.5
      -DBUILD_SAMPLES:BOOL=OFF
      -DBUILD_EXAMPLES:BOOL=OFF
-@@ -27,6 +41,7 @@ ament_vendor(
-     -DUSE_PDLP:BOOL=OFF
-     -DUSE_SCIP:BOOL=OFF
-     -DUSE_CPLEX:BOOL=OFF
-+    ${ORTOOLS_EXTRA_CMAKE_ARGS}
-   PATCHES patches
- )
- 
+diff --git a/patches/0002-newer-abseil-protobuf.patch b/patches/0002-newer-abseil-protobuf.patch
+new file mode 100644
+index 0000000..1ba42e6
+--- /dev/null
++++ b/patches/0002-newer-abseil-protobuf.patch
+@@ -0,0 +1,106 @@
++diff --git a/ortools/base/file.cc b/ortools/base/file.cc
++index 6588bb6..0642e0b 100644
++--- a/ortools/base/file.cc
+++++ b/ortools/base/file.cc
++@@ -240,7 +240,7 @@ namespace {
++ class NoOpErrorCollector : public google::protobuf::io::ErrorCollector {
++  public:
++   ~NoOpErrorCollector() override = default;
++-  void AddError(int line, int column, const std::string& message) override {}
+++  void RecordError(int line, int column, absl::string_view message) override {}
++ };
++ }  // namespace
++ 
++diff --git a/ortools/base/logging.h b/ortools/base/logging.h
++index 4fdc7f8..9770766 100644
++--- a/ortools/base/logging.h
+++++ b/ortools/base/logging.h
++@@ -20,6 +20,7 @@
++ #include "absl/log/check.h"
++ #include "absl/log/die_if_null.h"
++ #include "absl/log/log.h"
+++#include "absl/log/vlog_is_on.h"
++ #include "absl/memory/memory.h"
++ #include "absl/status/status.h"
++ #include "absl/strings/str_cat.h"
++diff --git a/ortools/base/source_location.h b/ortools/base/source_location.h
++index ec0e295..2b0c2e9 100644
++--- a/ortools/base/source_location.h
+++++ b/ortools/base/source_location.h
++@@ -32,6 +32,10 @@
++ 
++ #include "absl/base/config.h"
++ 
+++#if __has_include("absl/types/source_location.h")
+++// Abseil provides absl::SourceLocation itself since 2025.
+++#include "absl/types/source_location.h"
+++#else
++ namespace absl {
++ 
++ // Class representing a specific location in the source code of a program.
++@@ -116,6 +120,7 @@ class SourceLocation {
++ };
++ 
++ }  // namespace absl
+++#endif
++ 
++ // If a function takes an `absl::SourceLocation` parameter, pass this as the
++ // argument.
++diff --git a/ortools/base/strong_int.h b/ortools/base/strong_int.h
++index 3ec2e11..1b822bd 100644
++--- a/ortools/base/strong_int.h
+++++ b/ortools/base/strong_int.h
++@@ -149,6 +149,7 @@
++ 
++ #include <functional>
++ #include <iosfwd>
+++#include <limits>
++ #include <ostream>  // NOLINT
++ #include <type_traits>
++ 
++diff --git a/ortools/port/proto_utils.h b/ortools/port/proto_utils.h
++index 535d634..ba0464b 100644
++--- a/ortools/port/proto_utils.h
+++++ b/ortools/port/proto_utils.h
++@@ -58,7 +58,7 @@ std::string ProtoEnumToString(ProtoEnumType enum_value) {
++         "Invalid enum value of: ", enum_value, " for enum type: ",
++         google::protobuf::GetEnumDescriptor<ProtoEnumType>()->name());
++   }
++-  return enum_value_descriptor->name();
+++  return std::string(enum_value_descriptor->name());
++ #endif  // !defined(__PORTABLE_PLATFORM__)
++ }
++ 
++diff --git a/ortools/util/file_util.cc b/ortools/util/file_util.cc
++index 7cae476..d486e41 100644
++--- a/ortools/util/file_util.cc
+++++ b/ortools/util/file_util.cc
++@@ -163,7 +163,7 @@ absl::Status WriteProtoToFile(absl::string_view filename,
++     case ProtoWriteFormat::kJson: {
++       google::protobuf::util::JsonPrintOptions options;
++       options.add_whitespace = true;
++-      options.always_print_primitive_fields = true;
+++      options.always_print_fields_with_no_presence = true;
++       options.preserve_proto_field_names = true;
++       if (!google::protobuf::util::MessageToJsonString(proto, &output_string,
++                                                        options)
++diff --git a/ortools/util/parse_proto.cc b/ortools/util/parse_proto.cc
++index 0c3a53d..e507533 100644
++--- a/ortools/util/parse_proto.cc
+++++ b/ortools/util/parse_proto.cc
++@@ -36,11 +36,11 @@ class TextFormatErrorCollector : public google::protobuf::io::ErrorCollector {
++   TextFormatErrorCollector() = default;
++   ~TextFormatErrorCollector() override = default;
++ 
++-  void AddError(int line, int column, const std::string& message) override {
++-    collected_errors_.push_back({false, line, column, message});
+++  void RecordError(int line, int column, absl::string_view message) override {
+++    collected_errors_.push_back({false, line, column, std::string(message)});
++   }
++-  void AddWarning(int line, int column, const std::string& message) override {
++-    collected_errors_.push_back({true, line, column, message});
+++  void RecordWarning(int line, int column, absl::string_view message) override {
+++    collected_errors_.push_back({true, line, column, std::string(message)});
++   }
++ 
++   // Returns a string listing each collected error.  When an error is associated
