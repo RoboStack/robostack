@@ -1,0 +1,25 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index fd967c2..5e3bc80 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -4,6 +4,13 @@ project(ortools_vendor LANGUAGES CXX VERSION "9.9.1")
+ find_package(ament_cmake REQUIRED)
+ find_package(ament_cmake_vendor_package REQUIRED)
+
++# Abseil exports its librt as $<$<BOOL:/abs/path/librt.so>:-lrt>; the conda sysroot
++# relocation then mangles that path. Pass the bare name so no path is exported.
++set(ORTOOLS_EXTRA_CMAKE_ARGS)
++if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
++  list(APPEND ORTOOLS_EXTRA_CMAKE_ARGS -DLIBRT:STRING=rt)
++endif()
++
+ ament_vendor(
+   ortools_vendor
+   VCS_URL https://github.com/google/or-tools.git
+@@ -27,6 +34,7 @@ ament_vendor(
+     -DUSE_PDLP:BOOL=OFF
+     -DUSE_SCIP:BOOL=OFF
+     -DUSE_CPLEX:BOOL=OFF
++    ${ORTOOLS_EXTRA_CMAKE_ARGS}
+   PATCHES patches
+ )
