@@ -650,6 +650,18 @@ netft_driver:  # not in rosdistro yet (ros/rosdistro#52786); requested in https:
   tag: 0.4.0
   url: https://github.com/netft/ros-netft.git
   version: 0.4.0
+opennav_coverage:
+  # Not released in rosdistro; main branch (Fields2Cover v2)
+  url: https://github.com/open-navigation/opennav_coverage.git
+  rev: 04858cf8e3512f59d1ecc7dde5483ee5a6a0f201
+  version: 0.0.1
+  additional_folder: opennav_coverage
+opennav_coverage_msgs:
+  # Not released in rosdistro; main branch (Fields2Cover v2)
+  url: https://github.com/open-navigation/opennav_coverage.git
+  rev: 04858cf8e3512f59d1ecc7dde5483ee5a6a0f201
+  version: 0.0.1
+  additional_folder: opennav_coverage_msgs
 rclcpp_async:
   rev: 7a54000737ef97e833589f4fe37a5784691ce9ca
   url: https://github.com/otamachan/rclcpp_async.git
