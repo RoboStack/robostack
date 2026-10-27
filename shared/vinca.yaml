@@ -118,6 +118,7 @@ packages_select_by_deps:
   - diagnostic_remote_logging
   - diagnostics
   - diff_drive_controller
+  - fields2cover
   - flex_sync
   - foxglove_bridge
   - foxglove_msgs
