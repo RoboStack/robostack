@@ -2,7 +2,7 @@ diff --git a/CMakeLists.txt b/CMakeLists.txt
 index fd967c2..0c45489 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -10,7 +10,15 @@ ament_vendor(
+@@ -10,7 +10,13 @@ ament_vendor(
    VCS_VERSION v9.9
    CMAKE_ARGS
      -DCMAKE_BUILD_TYPE=Release
