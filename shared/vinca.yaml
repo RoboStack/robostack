@@ -449,6 +449,7 @@ packages_select_by_deps:
       - easynav_system
       - easynav_tools
       - easynav_vff_controller
+      - fields2cover
       - libcamera
       - mujoco_ros2_control # Isaac ROS deploy / Unitree G1 simulation; runtime uses Linux-specific files; mujoco_ros2_control_plugins needs EGL
       - mujoco_ros2_control_demos # Use readlink and access at runtime linux-specific file
