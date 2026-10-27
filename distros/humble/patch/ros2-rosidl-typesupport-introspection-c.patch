@@ -1,0 +1,15 @@
+Generated .c/.cpp files installed into include/: https://github.com/ros2/rosidl/pull/1019
+
+diff --git a/cmake/rosidl_typesupport_introspection_c_generate_interfaces.cmake b/cmake/rosidl_typesupport_introspection_c_generate_interfaces.cmake
+index 26e0974..f131e75 100644
+--- a/cmake/rosidl_typesupport_introspection_c_generate_interfaces.cmake
++++ b/cmake/rosidl_typesupport_introspection_c_generate_interfaces.cmake
+@@ -141,7 +141,7 @@ if(NOT rosidl_generate_interfaces_SKIP_INSTALL)
+   install(
+     DIRECTORY ${_output_path}/
+     DESTINATION "include/${PROJECT_NAME}/${PROJECT_NAME}"
+-    PATTERN "*.h"
++    PATTERN "*.c" EXCLUDE
+   )
+   install(
+     TARGETS ${rosidl_generate_interfaces_TARGET}${_target_suffix}

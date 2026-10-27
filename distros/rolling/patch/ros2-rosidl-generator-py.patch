@@ -1,5 +1,7 @@
+Duplicate extension modules in Release/ on Windows: https://github.com/ros2/rosidl_python/pull/272
+
 diff --git a/rosidl_generator_py/cmake/rosidl_generator_py_generate_interfaces.cmake b/rosidl_generator_py/cmake/rosidl_generator_py_generate_interfaces.cmake
-index 2fe245b..24eb493 100644
+index 2fe245b..3f1be8c 100644
 --- a/rosidl_generator_py/cmake/rosidl_generator_py_generate_interfaces.cmake
 +++ b/rosidl_generator_py/cmake/rosidl_generator_py_generate_interfaces.cmake
 @@ -35,6 +35,11 @@ set(Python3_FIND_UNVERSIONED_NAMES FIRST)
@@ -29,7 +31,22 @@ index 2fe245b..24eb493 100644
  )
  target_include_directories(${_target_name_lib}
    PRIVATE
-@@ -257,9 +265,22 @@ if(NOT rosidl_generate_interfaces_SKIP_INSTALL)
+@@ -207,9 +215,12 @@ foreach(_typesupport_impl ${_typesupport_impls})
+   # TODO(sloretz) use target_compile_options when python extension passes -Wpedantic
+   set_target_properties(${_target_name} PROPERTIES COMPILE_OPTIONS "${_extension_compile_flags}")
+ 
++  # Multi-config generators append a per-configuration subdirectory unless the
++  # output directory contains a generator expression. That subdirectory would
++  # end up in the Python package, which is installed as a whole.
+   set_target_properties(${_target_name} PROPERTIES
+-    LIBRARY_OUTPUT_DIRECTORY ${_output_path}
+-    RUNTIME_OUTPUT_DIRECTORY ${_output_path})
++    LIBRARY_OUTPUT_DIRECTORY "$<1:${_output_path}>"
++    RUNTIME_OUTPUT_DIRECTORY "$<1:${_output_path}>")
+ 
+   target_link_libraries(
+     ${_target_name} PRIVATE
+@@ -257,9 +268,22 @@ if(NOT rosidl_generate_interfaces_SKIP_INSTALL)
      LIBRARY DESTINATION lib
      RUNTIME DESTINATION bin)
  
