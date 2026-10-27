@@ -1,3 +1,6 @@
+Type descriptions out of date on incremental builds: https://github.com/ros2/rosidl/pull/1018
+Generated .c/.cpp files installed into include/: https://github.com/ros2/rosidl/pull/1019
+
 diff --git a/cmake/rosidl_generator_c_generate_interfaces.cmake b/cmake/rosidl_generator_c_generate_interfaces.cmake
 index 8bab169..7ac96d2 100644
 --- a/cmake/rosidl_generator_c_generate_interfaces.cmake
