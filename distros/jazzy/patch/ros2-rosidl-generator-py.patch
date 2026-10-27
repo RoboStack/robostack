@@ -1,3 +1,6 @@
+egg-info written before the code is generated, backport of https://github.com/ament/ament_cmake/pull/587 and https://github.com/ros2/rosidl_python/pull/254
+Duplicate extension modules in Release/ on Windows: https://github.com/ros2/rosidl_python/pull/272
+
 diff --git a/rosidl_generator_py/cmake/rosidl_generator_py_generate_interfaces.cmake b/rosidl_generator_py/cmake/rosidl_generator_py_generate_interfaces.cmake
 index cfc424a..11b78dc 100644
 --- a/rosidl_generator_py/cmake/rosidl_generator_py_generate_interfaces.cmake

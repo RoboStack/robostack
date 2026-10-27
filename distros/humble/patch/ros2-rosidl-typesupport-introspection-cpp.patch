@@ -1,3 +1,5 @@
+Generated .c/.cpp files installed into include/: https://github.com/ros2/rosidl/pull/1019
+
 diff --git a/cmake/rosidl_typesupport_introspection_cpp_generate_interfaces.cmake b/cmake/rosidl_typesupport_introspection_cpp_generate_interfaces.cmake
 index 88f6c6a..32fe845 100644
 --- a/cmake/rosidl_typesupport_introspection_cpp_generate_interfaces.cmake

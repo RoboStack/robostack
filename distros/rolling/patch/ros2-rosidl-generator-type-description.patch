@@ -1,3 +1,5 @@
+Type descriptions out of date on incremental builds: https://github.com/ros2/rosidl/pull/1018
+
 diff --git a/cmake/rosidl_generator_type_description_generate_interfaces.cmake b/cmake/rosidl_generator_type_description_generate_interfaces.cmake
 index 0e420f1..67d6b91 100644
 --- a/cmake/rosidl_generator_type_description_generate_interfaces.cmake
