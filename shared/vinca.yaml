@@ -224,6 +224,7 @@ packages_select_by_deps:
   - odom_to_tf_ros2
   - onnxruntime_vendor
   - open3d_conversions
+  - ortools_vendor
   - osrf_testing_tools_cpp
   - pal_statistics
   - perception
