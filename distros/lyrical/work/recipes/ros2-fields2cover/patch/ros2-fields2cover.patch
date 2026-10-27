@@ -1,0 +1,13 @@
+diff --git a/cmake/F2CCompilerOptions.cmake b/cmake/F2CCompilerOptions.cmake
+index 6eb7491..3f61f1d 100644
+--- a/cmake/F2CCompilerOptions.cmake
++++ b/cmake/F2CCompilerOptions.cmake
+@@ -4,7 +4,7 @@ function(f2c_set_compiler_options target)
+     target_compile_options(${target} PRIVATE /W4 /WX)
+   else()
+     target_compile_options(${target} PRIVATE
+-      -Wall -Wextra -Werror -pedantic
++      -Wall -Wextra -pedantic
+       -Wno-unused-parameter -Wno-sign-compare
+     )
+   endif()
