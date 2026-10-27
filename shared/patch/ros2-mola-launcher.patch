@@ -1,0 +1,70 @@
+diff --git a/src/MolaDLL_Loader.cpp b/src/MolaDLL_Loader.cpp
+--- a/src/MolaDLL_Loader.cpp
++++ b/src/MolaDLL_Loader.cpp
+@@ -24,7 +24,7 @@
+ 
+ #include <map>
+ 
+-#if defined(__unix__)
++#if defined(__unix__) || defined(__APPLE__)
+ #include <dlfcn.h>
+ #endif
+ 
+@@ -39,7 +39,9 @@
+ {
+   MRPT_TRY_START
+ 
+-#if defined(__unix__)
++#if defined(__APPLE__)
++#define DLL_EXT "dylib"
++#elif defined(__unix__)
+ #define DLL_EXT "so"
+ #else
+ #define DLL_EXT "dll"
+@@ -59,11 +61,14 @@
+     for (const auto& lib : lst)
+     {
+       if (lib.name.find("mola") == std::string::npos) continue;  // skip
++      // ROS interface libraries (e.g. mola_msgs) are never MOLA modules, and the
++      // Python ones cannot be dlopen()ed from a non-Python process:
++      if (lib.name.find("__rosidl_") != std::string::npos) continue;  // skip
+ 
+       // Already loaded?
+       if (loaded_lib_handled.count(lib.name) != 0) continue;  // skip
+ 
+-#if defined(__unix__)
++#if defined(__unix__) || defined(__APPLE__)
+       // Check if already loaded?
+       {
+         void* handle = dlopen(lib.wholePath.c_str(), RTLD_NOLOAD);
+@@ -109,7 +114,7 @@
+   {
+     // printf("[mola-launcher] Unloading: %s\n",
+     // lib.second.lib_path.c_str());
+-#if defined(__unix__)
++#if defined(__unix__) || defined(__APPLE__)
+     dlclose(lib.second.handle);
+ #else
+     FreeLibrary(lib.second.handle);
+diff --git a/src/MolaLauncherApp.cpp b/src/MolaLauncherApp.cpp
+--- a/src/MolaLauncherApp.cpp
++++ b/src/MolaLauncherApp.cpp
+@@ -119,6 +119,18 @@
+   // do not filter these ones by *directory* name, since *filenames* will be
+   // filtered later on:
+   from_env_var_to_list("LD_LIBRARY_PATH", lib_search_paths_);
++
++  // conda/RoboStack environments do not set LD_LIBRARY_PATH: also search
++  // <prefix>/lib (<prefix>/bin for Windows DLLs) for every prefix in AMENT_PREFIX_PATH.
++  {
++    std::vector<std::string> prefixes;
++    from_env_var_to_list("AMENT_PREFIX_PATH", prefixes);
++#if defined(_WIN32)
++    for (const auto& prefix : prefixes) safe_add_to_list(prefix + "/bin", lib_search_paths_);
++#else
++    for (const auto& prefix : prefixes) safe_add_to_list(prefix + "/lib", lib_search_paths_);
++#endif
++  }
+ }
+ 
+ MolaLauncherApp::~MolaLauncherApp()

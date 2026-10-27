@@ -1,0 +1,16 @@
+diff --git a/src/OdometryROS.cpp b/src/OdometryROS.cpp
+index 6a44b86..f0b5ba5 100644
+--- a/src/OdometryROS.cpp
++++ b/src/OdometryROS.cpp
+@@ -56,6 +56,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include "rtabmap/utilite/UFile.h"
+ #include "rtabmap/utilite/UMath.h"
+ 
++// windows.h (wingdi.h) defines ERROR, which breaks diagnostic_msgs' DiagnosticStatus::ERROR
++#ifdef ERROR
++#undef ERROR
++#endif
++
+ #define BAD_COVARIANCE 9999
+ 
+ using namespace rtabmap;

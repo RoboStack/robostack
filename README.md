@@ -112,6 +112,9 @@ that (e.g. a humble rebuild that also changes `shared/` or `tools/`), add the la
 `build:humble` (one per distribution to build), then push or re-run the build: adding a
 label doesn't start one by itself. Nothing has to be reset before merging. A PR that
 changes no packages (tooling, CI, docs) gets `build:none`: only the checks run.
+Platform labels limit the platforms the same way: `build:linux`, `build:osx`, `build:win`
+(or one platform, e.g. `build:linux-64`), e.g. to iterate on Windows fixes without
+waiting for the macOS runners; remove them for a full build before merging.
 
 ### CI
 
@@ -160,7 +163,7 @@ There are three ways to trigger a command:
 `.github/workflows/package-tests.yaml` runs `tools/package_tests.py` every night (or via *Actions › package-tests › Run workflow*, for some distributions):
 - **What:** every package with a test file (`shared/tests/<package>.yaml`, `distros/<distro>/tests/<package>.yaml`), in its newest build on the distribution's channel, with every variant of that build (e.g. each Python), on all five platforms.
 - **How:** `rattler-build test` runs the tests bundled in the published package, with the newest dependencies from the distribution's channel and conda-forge. This catches breakages that come from conda-forge rather than from RoboStack, e.g. an ABI change in a dependency a package was built against.
-- **Report:** one issue per distribution, *`<distro>`: package tests* (label `package-tests`), with the failed tests and their output; it is closed when every test passes. Builds from before their test file was added carry no tests and are listed as such.
+- **Report:** one issue for all distributions, *Package tests* (label `package-tests`), with a section per distribution listing the failed tests and their output; it is closed when every test passes. Only the scheduled run (and a manual run of all distributions) on `main` updates it; other runs print the report in the log. Builds from before their test file was added carry no tests and are listed as such.
 
 Locally:
 

@@ -1,0 +1,22 @@
+diff --git a/include/mola_yaml/macro_helpers.h b/include/mola_yaml/macro_helpers.h
+index 0f76953..cb7c4a4 100644
+--- a/include/mola_yaml/macro_helpers.h
++++ b/include/mola_yaml/macro_helpers.h
+@@ -48,7 +48,10 @@
+ // which corresponds to the actual argument count (up to 10 args supported).
+ // ---------------------------------------------------------------------------
+ #define MOLA_NARG(...) MOLA_NARG_I_(__VA_ARGS__, MOLA_RSEQ_N())
+-#define MOLA_NARG_I_(...) MOLA_ARG_N(__VA_ARGS__)
++// MSVC's traditional preprocessor passes __VA_ARGS__ on as one argument unless
++// it is rescanned through another macro:
++#define MOLA_EXPAND_(x) x
++#define MOLA_NARG_I_(...) MOLA_EXPAND_(MOLA_ARG_N(__VA_ARGS__))
+ 
+ /** Picks the 11th argument - used internally by MOLA_NARG. */
+ #define MOLA_ARG_N(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, N, ...) N
+@@ -80,4 +83,4 @@
+  * @param func  Base name of the macro family (without trailing digit).
+  * @param ...   Arguments forwarded verbatim to the selected overload.
+  */
+-#define VFUNC(func, ...) MOLA_VFUNC(func, MOLA_NARG(__VA_ARGS__))(__VA_ARGS__)
++#define VFUNC(func, ...) MOLA_EXPAND_(MOLA_VFUNC(func, MOLA_NARG(__VA_ARGS__))(__VA_ARGS__))

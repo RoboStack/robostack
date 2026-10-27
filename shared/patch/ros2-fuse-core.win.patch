@@ -1,0 +1,15 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 737542c..9a68b92 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -63,6 +63,10 @@ target_link_libraries(${PROJECT_NAME} PUBLIC
+ target_link_libraries(${PROJECT_NAME} PRIVATE
+   rclcpp_components::component
+ )
++# MSVC: M_PI (used in fuse_core/util.hpp) needs _USE_MATH_DEFINES, also in dependent packages
++if(MSVC)
++  target_compile_definitions(${PROJECT_NAME} PUBLIC _USE_MATH_DEFINES)
++endif()
+ 
+ ## fuse_echo executable
+ add_library(fuse_echo_component SHARED src/fuse_echo.cpp)

@@ -95,7 +95,9 @@ MAX_BATCH_SIZE = 100
 # prefix.dev's sharded repodata (what rattler reads) lists a new upload a few minutes
 # after repodata.json does, so a stage that starts right after the previous one
 # uploaded can find no candidates for a package that is on the channel.
-INDEX_LAG_MESSAGE = b"No candidates were found"
+# rattler words it "No candidates were found for X" or "…, for which no candidates were
+# found" (wrapped over two lines): match its lowercase start, and the summary line
+INDEX_LAG_MESSAGES = (b"no candidates were", b"there are no viable options")
 INDEX_LAG_RETRIES = 2
 INDEX_LAG_WAIT = 180
 # Network failures of the runners (GitHub or prefix.dev unreachable for a moment) end
@@ -103,27 +105,87 @@ INDEX_LAG_WAIT = 180
 # continues where it stopped.
 NETWORK_MESSAGES = (b"Git fetch failed", b"Failed to connect to github.com", b"error sending request for url",
                     b"stream closed because of a broken pipe", b"RPC failed; curl", b"Could not resolve host",
-                    b"connection error",
+                    b"connection error", b"error decoding response body", b"error reading a body from connection",
                     # prefix.dev's sharded repodata answers 409 / 5xx now and then while a channel updates
                     b"HTTP status client error (409 Conflict)", b"HTTP status server error")
 NETWORK_RETRIES = 4
 NETWORK_WAIT = 60  # doubled on each retry: 1, 2, 4, 8 minutes
 
 
-def run_build(cmd: list[str], cwd: Path) -> int:
+# a build job's recipes side by side, with a shared jobserver keeping them at the runner's
+# cores in total; Windows has no jobserver, and was no faster with two (#154)
+# Temporarily one at a time everywhere: rattler-build 0.77 gives two variants of a recipe
+# started in the same second the same build directory, and they fail ("Path ... already
+# exists", prefix-dev/rattler-build#2898, e.g. beluga's hdf5 variants). Back to
+# f"3:{os.cpu_count()}" off Windows once prefix-dev/rattler-build#2899 is released.
+PARALLEL_BUILDS = "1"
+
+
+def build_ci_parallel(distro: str, recipes: list[str], args: list[str], cwd: Path) -> int:
+    """build-ci for all of a build job's recipes in one rattler-build run, building
+    independent ones in parallel. Its JSON log tells which recipe each line belongs to:
+    printed as "HH:MM:SS [recipe] message", and each recipe's time (first to last line of
+    its build) is recorded for packing the build jobs, scaled so that the times add up to
+    the builds' wall time: overlapping builds share it. The compatibility recipes
+    (ros-<distro>-<name>) only repackage, but wait for others while building alongside:
+    they are left out (build_timings gives them ALIAS_SECONDS)."""
+    span: dict[str, list[str]] = {}  # recipe -> [first, last] timestamp
+    finished: set[str] = set()
+
+    def show(line: bytes) -> None:
+        try:
+            entry = json.loads(line)
+            spans = entry.get("spans", [])
+            recipe = next((s["recipe"] for s in spans if "recipe" in s), "")
+            name = recipe.rsplit("-", 2)[0]  # the output's name-version-build
+            # the build itself: rattler-build renders every recipe up front
+            if name and any(s.get("name") == "Running build for" for s in spans):
+                span.setdefault(name, [entry["timestamp"]] * 2)[1] = entry["timestamp"]
+                if str(entry["fields"].get("message", "")).startswith("Archive written to"):
+                    finished.add(name)
+            text = f"{entry['timestamp'][11:19]} [{name or '-'}] {entry['fields'].get('message', '')}\n"
+            sys.stdout.write(text)
+        except (ValueError, KeyError, AttributeError, TypeError):
+            sys.stdout.buffer.write(line)
+        sys.stdout.flush()
+
+    args = [*args, "--parallel-builds", PARALLEL_BUILDS, "--log-style", "json"]
+    rc = run_build(rattler_build(distro, args, skip_existing=False), cwd, show)
+    if rc != 0 and (unfinished := sorted(set(span) - finished)):
+        # rattler-build's final error doesn't say which of the parallel builds it is from
+        print(f"Started but not finished: {', '.join(unfinished)}", file=sys.stderr, flush=True)
+    if rc == 0 and os.environ.get("GITHUB_ACTIONS"):
+        import build_timings  # for packing the build jobs by time
+        from datetime import datetime
+
+        times = {r: [datetime.fromisoformat(t.replace("Z", "+00:00")) for t in span[r]]
+                 for r in recipes if r in span and not r.startswith(f"ros-{distro}-")}
+        measured = {r: (last - first).total_seconds() for r, (first, last) in times.items()}
+        if times and sum(measured.values()):
+            wall = (max(last for _, last in times.values()) - min(first for first, _ in times.values())).total_seconds()
+            for recipe, seconds in measured.items():
+                build_timings.note(distro, recipe, seconds * wall / sum(measured.values()))
+    return rc
+
+
+def run_build(cmd: list[str], cwd: Path, show=None) -> int:
     """run() for builds: retry when the solver misses a package, waiting for the
     channel's index to catch up with the previous stage's uploads (at most
     INDEX_LAG_RETRIES times), or when the runner's network failed (at most
-    NETWORK_RETRIES times, waiting longer each time)."""
+    NETWORK_RETRIES times, waiting longer each time). show(line) prints a line instead of
+    writing it as is."""
     index_retries = network_retries = 0
     while True:
         print("+", " ".join(cmd), f"  (in {cwd.relative_to(ROOT)})", flush=True)
         missing = network = False
         with subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT) as proc:
             for line in proc.stdout:
-                sys.stdout.buffer.write(line)
-                sys.stdout.buffer.flush()
-                missing = missing or INDEX_LAG_MESSAGE in line
+                if show:
+                    show(line)
+                else:
+                    sys.stdout.buffer.write(line)
+                    sys.stdout.buffer.flush()
+                missing = missing or any(m in line.lower() for m in INDEX_LAG_MESSAGES)
                 network = network or any(m in line for m in NETWORK_MESSAGES)
         if proc.returncode == 0:
             return 0
@@ -317,15 +379,20 @@ def upload(distro: str, files: list[str], cwd: Path) -> int:
     return rc
 
 
+UPLOAD_ATTEMPTS = 5
+UPLOAD_WAIT = 30  # doubled on each retry: 30 s, 1, 2, 4 minutes (anaconda.org's 503s can last minutes)
+
+
 def retry(cmd: list[str], cwd: Path, what: str) -> int:
     # the channels (and Sigstore, for attestations) fail now and then; uploads are
     # idempotent, so retry
-    for attempt in range(1, 4):
+    for attempt in range(1, UPLOAD_ATTEMPTS + 1):
         rc = run(cmd, cwd)
-        if rc == 0 or attempt == 3:
+        if rc == 0 or attempt == UPLOAD_ATTEMPTS:
             return rc
-        print(f"{what} upload attempt {attempt} failed, retrying in {30 * attempt} s", file=sys.stderr)
-        time.sleep(30 * attempt)
+        wait = UPLOAD_WAIT * 2 ** (attempt - 1)
+        print(f"{what} upload attempt {attempt} failed, retrying in {wait} s", file=sys.stderr)
+        time.sleep(wait)
     return rc
 
 
@@ -338,14 +405,23 @@ def on_anaconda(channel: str, package: Path) -> bool:
     stem = package.name.removesuffix(".conda").removesuffix(".tar.bz2")
     name, version, _build = stem.rsplit("-", 2)
     url = f"https://api.anaconda.org/dist/{channel}/{name}/{version}/{package.parent.name}/{package.name}"
-    try:
-        with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "robostack"}), timeout=60):
-            print(f"{package.name} is already on anaconda.org/{channel}")
-            return True
-    except urllib.error.HTTPError as e:
-        if e.code == 404:
-            return False
-        raise
+    # the runner's network fails now and then (e.g. a DNS lookup): retry, waiting longer each time
+    for attempt in range(1, 5):
+        try:
+            with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "robostack"}), timeout=60):
+                print(f"{package.name} is already on anaconda.org/{channel}")
+                return True
+        except urllib.error.HTTPError as e:
+            if e.code == 404:
+                return False
+            if attempt == 4 or e.code < 500:
+                raise
+        except OSError as e:  # URLError, timeouts, DNS failures
+            if attempt == 4:
+                raise
+            print(f"anaconda.org unreachable ({e}); retrying in {30 * attempt} s", file=sys.stderr, flush=True)
+        time.sleep(30 * attempt)
+    return False
 
 
 def task(distro: str, name: str, args: list[str]) -> int:
@@ -367,7 +443,14 @@ def task(distro: str, name: str, args: list[str]) -> int:
         rc = run(["vinca-sort-vinca-lists", *args, "vinca.yaml"], d)
         return rc or run(["vinca-sort-yaml-keys", *args, *files], d)
     if name == "upload":
-        return upload(distro, args, w if w.is_dir() else d)
+        started = time.monotonic()
+        rc = upload(distro, args, w if w.is_dir() else d)
+        if rc == 0 and len(args) == 1 and os.environ.get("GITHUB_ACTIONS"):
+            import build_timings  # uploads take long too (attestations, two channels)
+
+            recipe = Path(args[0]).name.removesuffix(".conda").removesuffix(".tar.bz2").rsplit("-", 2)[0]
+            build_timings.note(distro, recipe, time.monotonic() - started, upload=True)
+        return rc
     if name in ("update-snapshot", "find-stale", "update-pinning", "dependency-report"):
         import maintenance
 
@@ -404,13 +487,15 @@ def task(distro: str, name: str, args: list[str]) -> int:
     if name == "build":
         return run_build(rattler_build(distro, ["--recipe-dir", "./recipes", *args]), w)
     if name == "build-ci":  # used by .scripts/build_unix.sh / build_win.bat
+        recipes = [Path(args[i + 1].rstrip("\\/")).name for i, a in enumerate(args[:-1]) if a == "--recipe"]
+        if len(recipes) > 1:
+            return build_ci_parallel(distro, recipes, args, w)
         started = time.monotonic()
         rc = run_build(rattler_build(distro, args, skip_existing=False), w)
-        if rc == 0 and "--recipe" in args[:-1] and os.environ.get("GITHUB_ACTIONS"):
+        if rc == 0 and recipes and os.environ.get("GITHUB_ACTIONS"):
             import build_timings  # for packing the build jobs by time
 
-            recipe = Path(args[args.index("--recipe") + 1].rstrip("\\/")).name
-            build_timings.note(distro, recipe, time.monotonic() - started)
+            build_timings.note(distro, recipes[0], time.monotonic() - started)
         return rc
     if name == "build-one":
         pkg = args[0] if args else "ros2-ros-workspace"
@@ -441,7 +526,7 @@ def generate_gha(distro: str, args: list[str]) -> int:
     import build_timings
 
     extra = ["--keep-file", f"distros/{distro}/work/{build_timings.JOURNAL}"]
-    if build_timings.vinca_timings(ns.platform, d / "build_timings.json"):
+    if build_timings.vinca_timings(distro, ns.platform, d / "build_timings.json"):
         extra += ["--timings", "build_timings.json"]
     # vinca-gha keeps the workflow under GitHub's size limit itself (a job budget); only
     # when even the fewest jobs the batch size allows are too many, retry with larger batches
@@ -500,6 +585,16 @@ def generate_gha(distro: str, args: list[str]) -> int:
 
 
 NO_BUILD_LABEL = "build:none"  # only the checks (tooling, CI or docs changes)
+# the pull-request build's platforms and their runners; build:linux / build:osx / build:win
+# (or build:<platform>) labels limit a PR build to those
+BUILD_TARGETS = [
+    {"os": "ubuntu-latest", "platform": "linux-64"},
+    {"os": "ubuntu-24.04-arm", "platform": "linux-aarch64"},
+    {"os": "macos-15-intel", "platform": "osx-64"},
+    {"os": "macos-15", "platform": "osx-arm64"},
+    {"os": "windows-2022", "platform": "win-64"},
+]
+PLATFORM_LABELS = {"linux": ("linux-64", "linux-aarch64"), "osx": ("osx-64", "osx-arm64"), "win": ("win-64",)}
 
 
 def build_distros(changed: list[str], labels: list[str]) -> list[str]:
@@ -508,11 +603,22 @@ def build_distros(changed: list[str], labels: list[str]) -> list[str]:
     touches shared files), else the changed ones."""
     if NO_BUILD_LABEL in labels:
         return []
-    selected = sorted({label.split(":", 1)[1] for label in labels if label.startswith("build:")})
+    platforms = set(PLATFORM_LABELS) | {t["platform"] for t in BUILD_TARGETS}
+    selected = sorted({label.split(":", 1)[1] for label in labels if label.startswith("build:")} - platforms)
     unknown = sorted(set(selected) - set(distros()))
     if unknown:
         raise SystemExit(f"build:<distro> labels name unknown distributions: {', '.join(unknown)}")
     return selected or changed
+
+
+def build_targets(labels: list[str]) -> list[dict]:
+    """The platforms a pull request builds: those of its build:linux / build:osx / build:win
+    (or build:<platform>) labels when it has any, else all of them."""
+    wanted = set()
+    for label in labels:
+        name = label.split(":", 1)[1] if label.startswith("build:") else ""
+        wanted |= set(PLATFORM_LABELS.get(name, ())) | ({name} & {t["platform"] for t in BUILD_TARGETS})
+    return [t for t in BUILD_TARGETS if not wanted or t["platform"] in wanted]
 
 
 def changed_distros(base: str) -> list[str]:
@@ -545,6 +651,12 @@ def main() -> int:
         ns = parser.parse_args(sys.argv[2:])
         changed = distros() if ns.all else changed_distros(ns.base)
         print(json.dumps(build_distros(changed, json.loads(ns.labels))))
+        return 0
+    if len(sys.argv) >= 2 and sys.argv[1] == "build-targets":
+        parser = argparse.ArgumentParser(prog="rs build-targets")
+        parser.add_argument("--labels", default="[]", help="JSON list of the pull request's labels")
+        ns = parser.parse_args(sys.argv[2:])
+        print(json.dumps(build_targets(json.loads(ns.labels))))
         return 0
     if len(sys.argv) < 3:
         print(__doc__)

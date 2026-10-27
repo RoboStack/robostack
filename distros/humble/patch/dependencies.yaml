@@ -62,6 +62,11 @@ mimick_vendor:
   add_build: ["vcstool"]
 moveit_visual_tools:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
+mrpt_gui:
+  # Overrides shared/: this distribution maps Qt to qt-main 5.15, whose builds need
+  # gstreamer <1.27, while the pinned wxwidgets (3.3.3) needs gstreamer 1.28. A version
+  # spec bypasses that pin, so the solver picks a wxwidgets that coexists with qt-main.
+  add_host: ["wxwidgets >=3.2", "${{ 'glad' if win }}"]  # glad: as in shared/
 nav2_constrained_smoother:
   add_host: ["${{ 'openblas' if win }}"]
 nav2_util:
@@ -81,9 +86,9 @@ polygon_rviz_plugins:
   add_host: ["libgl-devel"]
   add_run: ["libgl-devel"]
 py_trees:
-  add_host: ["poetry-core"]
+  add_host: ["hatchling"]  # 2.6 builds with hatchling (as in jazzy/lyrical)
 py_trees_js:
-  add_host: ["poetry-core"]
+  add_host: ["hatchling"]
 py_trees_ros_tutorials:
   # the mock GUI is ported to PyQt6 (patch/ros2-py-trees-ros-tutorials.patch): PyQt5 and
   # PyQt6 (the rqt stack) can't be installed together

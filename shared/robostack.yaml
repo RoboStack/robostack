@@ -56,6 +56,8 @@ clang-format:
   robostack: [clang-format]
 clang-tidy:
   robostack: [clang-tools]
+cli11:
+  robostack: [cli11]
 cmake:
   robostack: [cmake]
 coinor-libcbc-dev:
@@ -1212,6 +1214,8 @@ rapidjson-dev:
   robostack: [rapidjson]
 rmw_opensplice_cpp:
   robostack: []
+robin-map-dev:
+  robostack: [tsl_robin_map]
 roboticstoolbox-python:
   robostack: [roboticstoolbox-python]
 rsync:
