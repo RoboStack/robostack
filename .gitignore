@@ -4,3 +4,5 @@ __pycache__
 .DS_Store
 # assembled per distribution by tools/robostack.py (prepare)
 distros/*/work/
+# local smoke-test project for urdf_world/types.h deprecation patch
+tmp-urdf-warning-smoke/
