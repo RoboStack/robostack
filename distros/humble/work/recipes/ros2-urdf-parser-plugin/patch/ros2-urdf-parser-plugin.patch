@@ -1,0 +1,24 @@
+From: RoboStack <robostack@users.noreply.github.com>
+Subject: [PATCH] Use urdf_model/types.h instead of deprecated urdf_world/types.h
+
+RoboStack overrides humble's urdfdom_headers to conda-forge 3.0.x, where
+urdf_world/types.h emits a deprecation #warning. Mirror ros2/urdf#54
+(rolling).
+
+---
+ include/urdf_parser_plugin/parser.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/include/urdf_parser_plugin/parser.h b/include/urdf_parser_plugin/parser.h
+index 1111111..2222222 100644
+--- a/include/urdf_parser_plugin/parser.h
++++ b/include/urdf_parser_plugin/parser.h
+@@ -33,7 +33,7 @@
+ 
+ #include <string>
+ 
+-#include "urdf_world/types.h"
++#include "urdf_model/types.h"
+ 
+ namespace urdf
+ {
