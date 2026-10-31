@@ -1,0 +1,30 @@
+Type descriptions out of date on incremental builds: https://github.com/ros2/rosidl/pull/1018
+Generated .c/.cpp files installed into include/: https://github.com/ros2/rosidl/pull/1019
+
+diff --git a/cmake/rosidl_generator_c_generate_interfaces.cmake b/cmake/rosidl_generator_c_generate_interfaces.cmake
+index 8bab169..7ac96d2 100644
+--- a/cmake/rosidl_generator_c_generate_interfaces.cmake
++++ b/cmake/rosidl_generator_c_generate_interfaces.cmake
+@@ -78,6 +78,13 @@ foreach(dep ${target_dependencies})
+   endif()
+ endforeach()
+ 
++# The generated code embeds the type descriptions of this package, which are
++# only generated at build time, so add them after the existence check
++foreach(_tuple ${${rosidl_generate_interfaces_TARGET}__DESCRIPTION_TUPLES})
++  string(REGEX REPLACE "^[^:]*:(.*)$" "\\1" _type_description_file "${_tuple}")
++  list(APPEND target_dependencies "${_type_description_file}")
++endforeach()
++
+ get_target_property(_target_sources ${rosidl_generate_interfaces_TARGET} SOURCES)
+ set(generator_arguments_file "${CMAKE_CURRENT_BINARY_DIR}/rosidl_generator_c__arguments.json")
+ rosidl_write_generator_arguments(
+@@ -185,7 +192,7 @@ if(NOT rosidl_generate_interfaces_SKIP_INSTALL)
+   install(
+     DIRECTORY ${_output_path}/
+     DESTINATION "include/${PROJECT_NAME}/${PROJECT_NAME}"
+-    PATTERN "*.h"
++    PATTERN "*.c" EXCLUDE
+   )
+ 
+   # Export old-style CMake variables

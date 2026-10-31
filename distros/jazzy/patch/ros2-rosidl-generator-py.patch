@@ -1,5 +1,8 @@
+egg-info written before the code is generated, backport of https://github.com/ament/ament_cmake/pull/587 and https://github.com/ros2/rosidl_python/pull/254
+Duplicate extension modules in Release/ on Windows: https://github.com/ros2/rosidl_python/pull/272
+
 diff --git a/rosidl_generator_py/cmake/rosidl_generator_py_generate_interfaces.cmake b/rosidl_generator_py/cmake/rosidl_generator_py_generate_interfaces.cmake
-index cfc424a..1808ad5 100644
+index cfc424a..11b78dc 100644
 --- a/rosidl_generator_py/cmake/rosidl_generator_py_generate_interfaces.cmake
 +++ b/rosidl_generator_py/cmake/rosidl_generator_py_generate_interfaces.cmake
 @@ -21,6 +21,11 @@ find_package(rosidl_typesupport_interface REQUIRED)
@@ -14,7 +17,29 @@ index cfc424a..1808ad5 100644
  # Get a list of typesupport implementations from valid rmw implementations.
  rosidl_generator_py_get_typesupports(_typesupport_impls)
  
-@@ -146,10 +151,13 @@ add_dependencies(
+@@ -136,6 +141,21 @@ set_property(
+   ${_generated_extension_files} ${_generated_py_files} ${_generated_c_files}
+   PROPERTY GENERATED 1)
+ 
++# ament_python_install_package() copies (or symlinks) the package directory
++# into the build directory and runs `setup.py egg_info` on it. Do that only
++# after the Python code has been generated, otherwise the egg-info (e.g.
++# SOURCES.txt) lists only __init__.py. Fixed upstream in rolling by
++# ament/ament_cmake#587 and ros2/rosidl_python#254.
++if(NOT rosidl_generate_interfaces_SKIP_INSTALL)
++  foreach(_copy_target
++      ament_cmake_python_copy_${PROJECT_NAME}
++      ament_cmake_python_symlink_${PROJECT_NAME})
++    if(TARGET ${_copy_target})
++      add_dependencies(${_copy_target} ${rosidl_generate_interfaces_TARGET}${_target_suffix})
++    endif()
++  endforeach()
++endif()
++
+ set(_target_name_lib "${rosidl_generate_interfaces_TARGET}__rosidl_generator_py")
+ add_library(${_target_name_lib} SHARED ${_generated_c_files})
+ target_link_libraries(${_target_name_lib} PRIVATE
+@@ -146,10 +166,13 @@ add_dependencies(
    ${rosidl_generate_interfaces_TARGET}__rosidl_typesupport_c
  )
  
@@ -29,7 +54,22 @@ index cfc424a..1808ad5 100644
  )
  target_include_directories(${_target_name_lib}
    PRIVATE
-@@ -243,9 +251,22 @@ if(NOT rosidl_generate_interfaces_SKIP_INSTALL)
+@@ -189,9 +212,12 @@ foreach(_typesupport_impl ${_typesupport_impls})
+   # TODO(sloretz) use target_compile_options when python extension passes -Wpedantic
+   set_target_properties(${_target_name} PROPERTIES COMPILE_OPTIONS "${_extension_compile_flags}")
+ 
++  # Multi-config generators append a per-configuration subdirectory unless the
++  # output directory contains a generator expression. That subdirectory would
++  # end up in the Python package, which is installed as a whole.
+   set_target_properties(${_target_name} PROPERTIES
+-    LIBRARY_OUTPUT_DIRECTORY ${_output_path}
+-    RUNTIME_OUTPUT_DIRECTORY ${_output_path})
++    LIBRARY_OUTPUT_DIRECTORY "$<1:${_output_path}>"
++    RUNTIME_OUTPUT_DIRECTORY "$<1:${_output_path}>")
+ 
+   target_link_libraries(
+     ${_target_name} PRIVATE
+@@ -243,9 +269,22 @@ if(NOT rosidl_generate_interfaces_SKIP_INSTALL)
      LIBRARY DESTINATION lib
      RUNTIME DESTINATION bin)
  
