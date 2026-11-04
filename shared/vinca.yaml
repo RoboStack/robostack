@@ -296,6 +296,7 @@ packages_select_by_deps:
   - ros2_controllers
   - ros2_easy_test
   - ros2_fmt_logger
+  - ros2_pulse
   - ros2_socketcan_msgs
   - ros_base
   - ros_core
