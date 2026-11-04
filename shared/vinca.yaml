@@ -118,9 +118,11 @@ packages_select_by_deps:
   - diagnostic_remote_logging
   - diagnostics
   - diff_drive_controller
+  - dynamixel_sdk
   - flex_sync
   - foxglove_bridge
   - foxglove_msgs
+  - fuse # requested in https://github.com/RoboStack/ros-lyrical/pull/85
   - gazebo_dev
   - gazebo_msgs
   - gazebo_plugins
@@ -189,6 +191,7 @@ packages_select_by_deps:
   - mocap4r2_msgs
   - mocap4r2_robot_gt
   - mocap4r2_robot_gt_msgs
+  - mola # requested in https://github.com/RoboStack/robostack/issues/106
   - motion_capture_tracking
   - mouse_teleop
   - moveit
@@ -222,6 +225,7 @@ packages_select_by_deps:
   - odom_to_tf_ros2
   - onnxruntime_vendor
   - open3d_conversions
+  - opennav_coverage_msgs
   - osrf_testing_tools_cpp
   - pal_statistics
   - perception
@@ -447,6 +451,7 @@ packages_select_by_deps:
       - easynav_system
       - easynav_tools
       - easynav_vff_controller
+      - fields2cover
       - libcamera
       - mujoco_ros2_control # Isaac ROS deploy / Unitree G1 simulation; runtime uses Linux-specific files; mujoco_ros2_control_plugins needs EGL
       - mujoco_ros2_control_demos # Use readlink and access at runtime linux-specific file
@@ -458,7 +463,11 @@ packages_select_by_deps:
       - navmap_tools
       - netft_driver  # ATI Net F/T driver: POSIX networking, Linux only; requested in https://github.com/RoboStack/robostack/issues/103
       - nobleo_socketcan_bridge # Depends on socketcan
+      - opennav_coverage
       - orbbec_camera
+      - orbbec_camera
+      - orbbec_camera_msgs
+      - orbbec_description
       - plansys2_core
       - plansys2_domain_expert
       - plansys2_executor
@@ -515,6 +524,10 @@ packages_select_by_deps:
   - if: linux and not aarch64
     then:
       - franka_ros2  # Franka robots support; see PR #338 for macOS/Windows errors
+      - kinova_gen3_6dof_robotiq_2f_85_moveit_config # kortex_api ships a linux-x86_64 binary; requested in https://github.com/RoboStack/ros-jazzy/pull/221
+      - kinova_gen3_7dof_robotiq_2f_85_moveit_config
+      - kinova_gen3_lite_moveit_config
+      - kortex_bringup
       - libfranka # conda-forge's libfranka is only published for linux-64, not linux-aarch64
       - webots_ros2 # Cyberbotics
 

@@ -179,6 +179,7 @@ jobs:
         run: |
           printf '\nCloses #%s\n' "$NUMBER" >> "$RUNNER_TEMP/summary.md"
       - name: Open or update the pull request
+        id: pr
         if: steps.bot.outputs.changed == 'true' && !matrix.preview && matrix.command != 'rebuild-dependents'
         uses: peter-evans/create-pull-request@v8
         with:
@@ -199,11 +200,19 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           NUMBER: ${{ github.event.issue.number }}
           TITLE: ${{ steps.bot.outputs.title || 'failed' }}
+          PR_URL: ${{ steps.pr.outputs.pull-request-url }}
+          PR_OPERATION: ${{ steps.pr.outputs.pull-request-operation }}
         run: |
           {
             echo "**robostack-bot ${{ matrix.command }} ${{ matrix.distro }}**: $TITLE"
             echo
-            [ -f "$RUNNER_TEMP/summary.md" ] && cat "$RUNNER_TEMP/summary.md"
+            # the pull request it opened (or updated): the reply is otherwise only a copy of its body
+            if [ -n "$PR_URL" ]; then
+              case "$PR_OPERATION" in updated) echo "Updated pull request: $PR_URL" ;; *) echo "Pull request: $PR_URL" ;; esac
+              echo
+            fi
+            # "Closes #<this issue>" is for the pull request's body, not for the reply
+            [ -f "$RUNNER_TEMP/summary.md" ] && grep -v '^Closes #[0-9]*$' "$RUNNER_TEMP/summary.md" || true
             echo
             echo "[Workflow run]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID)"
           } > "$RUNNER_TEMP/comment.md"

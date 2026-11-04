@@ -1,0 +1,49 @@
+diff --git a/include/mola_kernel/interfaces/DiagnosticsProvider.h b/include/mola_kernel/interfaces/DiagnosticsProvider.h
+index 9ee9be8..fb7423d 100644
+--- a/include/mola_kernel/interfaces/DiagnosticsProvider.h
++++ b/include/mola_kernel/interfaces/DiagnosticsProvider.h
+@@ -22,6 +22,12 @@
+ #include <string>
+ #include <vector>
+ 
++// windows.h (wingdi.h) defines ERROR, which breaks DiagnosticLevel::ERROR below
++// (the generated diagnostic_msgs headers do the same)
++#if defined(_WIN32) && defined(ERROR)
++#undef ERROR
++#endif
++
+ namespace mola
+ {
+ /** \addtogroup mola_kernel_interfaces_grp
+diff --git a/include/mola_kernel/interfaces/VizInterface.h b/include/mola_kernel/interfaces/VizInterface.h
+index e86f489..1d67359 100644
+--- a/include/mola_kernel/interfaces/VizInterface.h
++++ b/include/mola_kernel/interfaces/VizInterface.h
+@@ -147,10 +147,12 @@ class VizInterface
+   [[nodiscard]] virtual const std::string& gui_backend() const noexcept = 0;
+ 
+   /// Canonical backend name returned by MolaViz (nanogui).
+-  static const std::string BACKEND_NANOGUI;  // defined in VizInterface.cpp as "nanogui"
++  // RoboStack: inline, so Windows DLLs using it need no exported data symbol
++  static inline const std::string BACKEND_NANOGUI = "nanogui";
+ 
+   /// Canonical backend name returned by MolaVizImGui (Dear ImGui).
+-  static const std::string BACKEND_IMGUI;  // defined in VizInterface.cpp as "imgui"
++  // RoboStack: inline, so Windows DLLs using it need no exported data symbol
++  static inline const std::string BACKEND_IMGUI = "imgui";
+ 
+   /**
+    * \brief Installs or replaces the menu bar of a parent window.
+diff --git a/src/interfaces/VizInterface.cpp b/src/interfaces/VizInterface.cpp
+index 8b207c8..1caa66f 100644
+--- a/src/interfaces/VizInterface.cpp
++++ b/src/interfaces/VizInterface.cpp
+@@ -24,7 +24,5 @@ namespace mola
+ 
+ VizInterface::~VizInterface() = default;
+ 
+-const std::string VizInterface::BACKEND_NANOGUI = "nanogui";
+-const std::string VizInterface::BACKEND_IMGUI   = "imgui";
+ 
+ }  // namespace mola
+\ No newline at end of file

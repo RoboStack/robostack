@@ -113,12 +113,10 @@ NETWORK_WAIT = 60  # doubled on each retry: 1, 2, 4, 8 minutes
 
 
 # a build job's recipes side by side, with a shared jobserver keeping them at the runner's
-# cores in total; Windows has no jobserver, and was no faster with two (#154)
-# Temporarily one at a time everywhere: rattler-build 0.77 gives two variants of a recipe
-# started in the same second the same build directory, and they fail ("Path ... already
-# exists", prefix-dev/rattler-build#2898, e.g. beluga's hdf5 variants). Back to
-# f"3:{os.cpu_count()}" off Windows once prefix-dev/rattler-build#2899 is released.
-PARALLEL_BUILDS = "1"
+# cores in total; Windows has no jobserver, and was no faster with two (#154).
+# Needs rattler-build >= 0.79: older versions give two variants of a recipe started in the
+# same second the same build directory (prefix-dev/rattler-build#2898).
+PARALLEL_BUILDS = "1" if sys.platform == "win32" else f"3:{os.cpu_count()}"
 
 
 def build_ci_parallel(distro: str, recipes: list[str], args: list[str], cwd: Path) -> int:

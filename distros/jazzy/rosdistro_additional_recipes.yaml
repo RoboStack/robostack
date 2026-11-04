@@ -115,6 +115,23 @@ negotiated_interfaces:
   version: 0.1.0
   additional_folder: negotiated_interfaces
 
+opennav_coverage:
+  # Not released in rosdistro; jazzy-v2 branch (Fields2Cover v2)
+  url: https://github.com/open-navigation/opennav_coverage.git
+  rev: c02a41e739ab51c558d1c4c81d6c9ff154ee80f3
+  version: 0.0.1
+  additional_folder: opennav_coverage
+opennav_coverage_msgs:
+  # Not released in rosdistro; jazzy-v2 branch (Fields2Cover v2)
+  url: https://github.com/open-navigation/opennav_coverage.git
+  rev: c02a41e739ab51c558d1c4c81d6c9ff154ee80f3
+  version: 0.0.1
+  additional_folder: opennav_coverage_msgs
+rclcpp_async:
+  rev: 7a54000737ef97e833589f4fe37a5784691ce9ca
+  url: https://github.com/otamachan/rclcpp_async.git
+  version: 0.1.0
+  additional_folder: rclcpp_async
 ros2_easy_test:
   rev: 59ce58ef05f39826eaaa50c986eb039729a8c61e
   url: https://github.com/felixdivo/ros2-easy-test.git
@@ -129,4 +146,3 @@ topic_based_ros2_control:
   url: https://github.com/PickNikRobotics/topic_based_ros2_control.git
   rev: 6bd8d55e1c4ad3188770fe5c8b93b942bcede4a2
   version: 0.3.0
-

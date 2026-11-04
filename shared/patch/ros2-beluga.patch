@@ -11,6 +11,19 @@ index 5c08a64..b94a7f1 100644
  if(BUILD_TESTING)
    message(STATUS "Build testing enabled.")
    enable_testing()
+diff --git a/include/beluga/algorithm/unscented_transform.hpp b/include/beluga/algorithm/unscented_transform.hpp
+index c7ebd13..170738c 100644
+--- a/include/beluga/algorithm/unscented_transform.hpp
++++ b/include/beluga/algorithm/unscented_transform.hpp
+@@ -80,7 +80,7 @@ template <
+     typename MeanDerived,
+     typename CovarianceDerived,
+     typename TransferFn,
+-    typename TransformedT = std::result_of_t<TransferFn(MeanDerived)>,
++    typename TransformedT = std::invoke_result_t<TransferFn, MeanDerived>,
+     typename MeanFn = detail::default_weighted_mean_fn,
+     typename ResidualFn = std::minus<TransformedT>>
+ auto unscented_transform(
 diff --git a/include/beluga/policies/on_motion.hpp b/include/beluga/policies/on_motion.hpp
 index 9d7ad43..5cb6d95 100644
 --- a/include/beluga/policies/on_motion.hpp
