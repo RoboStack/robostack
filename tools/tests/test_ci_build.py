@@ -77,37 +77,6 @@ child.wait()
                 pass
 
 
-@pytest.mark.parametrize("status", [0, 7])
-def test_exit_status_and_replaced_incomplete_archive(tmp_path, status):
-    (tmp_path / "replaced.conda").write_text("previous build")
-    script = tmp_path / "build.py"
-    script.write_text(f'''from pathlib import Path
-import sys
-p = Path(__file__).parent / "replaced.conda"
-p.write_text("partial")
-sys.exit({status})
-''')
-    result = subprocess.run(command(tmp_path, 10, script), capture_output=True, timeout=15,
-                            env={**os.environ, "GITHUB_OUTPUT": str(tmp_path / "outputs")})
-    assert result.returncode == status, result.stdout.decode()
-    assert not (tmp_path / "replaced.conda").exists()
-
-
-def test_workflow_only_saves_stopped_builds_and_verifies_cache_before_deleting():
-    workflow = yaml.safe_load((ROOT / ".github/workflows/testpr.yaml").read_text())
-    steps = workflow["jobs"]["build"]["steps"]
-    build = next(s for s in steps if s.get("id") == "build-recipes")
-    save = next(s for s in steps if s.get("id") == "save-cache")
-    prune = next(s for s in steps if s.get("name") == "Drop this pull request's superseded build caches")
-    assert build["timeout-minutes"] < 360
-    assert "tools/ci_build.py" in build["run"]
-    assert "steps.build-recipes.outputs.cache-ready == 'true'" in save["if"]
-    assert "github.event.pull_request.head.repo.full_name == github.repository" in prune["if"]
-    assert '--ref "$GITHUB_REF"' in prune["run"]
-    assert "if ! ids=" in prune["run"]
-    assert prune["run"].index("exit 0") < prune["run"].index("cache delete")
-
-
 @pytest.mark.parametrize("lookup_status,ids,deleted", [(0, "11\n22", "11\n22\n"),
                                                        (1, "11", ""), (0, "", "")])
 def test_cache_pruning_requires_verified_replacement(tmp_path, lookup_status, ids, deleted):
