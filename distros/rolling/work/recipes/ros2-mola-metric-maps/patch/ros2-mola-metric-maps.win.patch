@@ -1,0 +1,28 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 775a066..073a5f8 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -187,7 +187,8 @@ add_subdirectory(apps)
+ # -----------------------
+ # define tests:
+ enable_testing()
+-add_subdirectory(tests)
++# RoboStack: not on Windows, the tests use POSIX setenv()/unsetenv()
++# add_subdirectory(tests)
+ 
+ # -----------------------------------------------------------------------------
+ #  ROS2
+diff --git a/src/KeyframePointCloudMap.cpp b/src/KeyframePointCloudMap.cpp
+index 74b2701..1a38249 100644
+--- a/src/KeyframePointCloudMap.cpp
++++ b/src/KeyframePointCloudMap.cpp
+@@ -1864,7 +1864,8 @@ namespace
+ /// axis with a large centering offset, covering ~ +/-1e6 voxels per axis.
+ inline int64_t voxelKey(float x, float y, float z, double inv_voxel)
+ {
+-  constexpr int64_t kOffset = 1 << 20;  // center the range around 0
++  // RoboStack: static, so the lambda below needn't capture it (MSVC requires that, C3493)
++  static constexpr int64_t kOffset = 1 << 20;  // center the range around 0
+   const auto        q       = [inv_voxel](float c)
+   { return static_cast<int64_t>(std::floor(static_cast<double>(c) * inv_voxel)) + kOffset; };
+   const int64_t ix = q(x);

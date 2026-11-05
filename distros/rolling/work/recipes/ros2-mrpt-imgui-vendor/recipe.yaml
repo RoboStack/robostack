@@ -1,0 +1,91 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/prefix-dev/recipe-format/main/schema.json
+
+package:
+  name: ros2-mrpt-imgui-vendor
+  version: 3.5.2
+source:
+  git: https://github.com/ros2-gbp/mrpt3-release.git
+  tag: release/rolling/mrpt_imgui_vendor/3.5.2-1
+  target_directory: ros2-mrpt-imgui-vendor/src/work
+  patches:
+    - patch/ros2-mrpt-imgui-vendor.patch
+
+build:
+  script: ${{ '$RECIPE_DIR/build_catkin.sh' if unix or wasm32 else '%RECIPE_DIR%\\bld_catkin.bat' }}
+  number: 32
+  post_process:
+    - files:
+        - '*.pc'
+      regex: (?:-L|-I)?"?([^;\s]+/sysroot/)
+      replacement: $$(CONDA_BUILD_SYSROOT_S)
+    - files:
+        - '*.cmake'
+      regex: ([^;\s"]+/sysroot)
+      replacement: $$ENV{CONDA_BUILD_SYSROOT}
+    - files:
+        - '*.cmake'
+      regex: ([^;\s"]+/MacOSX\d*\.?\d*\.sdk)
+      replacement: $$ENV{CONDA_BUILD_SYSROOT}
+about:
+  homepage: https://github.com/MRPT/
+  repository: https://github.com/MRPT/mrpt
+  license: BSD-3-Clause OR MIT OR WTFPL OR Zlib OR Apache-2.0
+  summary: Vendored Dear ImGui (docking branch), ImPlot, portable-file-dialogs and an embedded icon font, built as one library for use by MRPT packages
+extra:
+  recipe-maintainers:
+    - ros-forge
+
+requirements:
+  build:
+    - ${{ compiler('cxx') }}
+    - ${{ compiler('c') }}
+    - if: target_platform!='emscripten-wasm32'
+      then:
+        - ${{ stdlib('c') }}
+    - ninja
+    - python
+    - setuptools
+    - git
+    - git-lfs
+    - if: unix
+      then:
+        - patch
+        - make
+        - coreutils
+    - if: win
+      then:
+        - m2-patch
+    - if: osx
+      then:
+        - tapi
+    - if: build_platform != target_platform
+      then:
+        - pkg-config
+    - cmake
+    - cython
+    - if: build_platform != target_platform
+      then:
+        - python
+        - cross-python_${{ target_platform }}
+        - numpy
+    - if: osx
+      then:
+        - clang-tools ${{ (cxx_compiler_version ~ '.*') if cxx_compiler_version is defined else '*' }}
+  host:
+    - if: build_platform == target_platform
+      then:
+        - pkg-config
+    - glfw 3.*
+    - numpy
+    - pip
+    - python
+    - ros2-distro-mutex 0.23.* rolling_*
+    - ros2-mrpt-common
+    - ros2-ros-environment
+    - ros2-ros-workspace
+  run:
+    - glfw
+    - python
+    - ros2-distro-mutex 0.23.* rolling_*
+    - ros2-mrpt-common
+    - ros2-ros-workspace
