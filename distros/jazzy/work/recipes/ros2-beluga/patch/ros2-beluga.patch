@@ -1,0 +1,79 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 5c08a64..b94a7f1 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -94,7 +94,7 @@ target_sources(clang_tidy_findable PRIVATE src/clang_tidy_findable.cpp)
+ target_link_libraries(clang_tidy_findable PRIVATE ${PROJECT_NAME}
+                                                   beluga_compile_options)
+ 
+-option(BUILD_TESTING "Build the testing tree." ON)
++option(BUILD_TESTING "Build the testing tree." OFF)
+ if(BUILD_TESTING)
+   message(STATUS "Build testing enabled.")
+   enable_testing()
+diff --git a/include/beluga/algorithm/unscented_transform.hpp b/include/beluga/algorithm/unscented_transform.hpp
+index c7ebd13..170738c 100644
+--- a/include/beluga/algorithm/unscented_transform.hpp
++++ b/include/beluga/algorithm/unscented_transform.hpp
+@@ -80,7 +80,7 @@ template <
+     typename MeanDerived,
+     typename CovarianceDerived,
+     typename TransferFn,
+-    typename TransformedT = std::result_of_t<TransferFn(MeanDerived)>,
++    typename TransformedT = std::invoke_result_t<TransferFn, MeanDerived>,
+     typename MeanFn = detail::default_weighted_mean_fn,
+     typename ResidualFn = std::minus<TransformedT>>
+ auto unscented_transform(
+diff --git a/include/beluga/policies/on_motion.hpp b/include/beluga/policies/on_motion.hpp
+index 9d7ad43..5cb6d95 100644
+--- a/include/beluga/policies/on_motion.hpp
++++ b/include/beluga/policies/on_motion.hpp
+@@ -15,7 +15,7 @@
+ #ifndef BELUGA_POLICIES_ON_MOTION_HPP
+ #define BELUGA_POLICIES_ON_MOTION_HPP
+ 
+-#include <Eigen/src/Geometry/AngleAxis.h>
++#include <Eigen/Geometry>
+ #include <beluga/policies/policy.hpp>
+ #include <sophus/se2.hpp>
+ #include <sophus/se3.hpp>
+@@ -119,12 +119,13 @@ struct on_motion_policy : public on_motion_policy_base<Pose> {
+ 
+   /// Return true if motion has been detected.
+   constexpr bool operator()(const Pose& pose) {
+-    if (!latest_pose_) {
++    if (!has_latest_pose_) {
+       latest_pose_ = pose;
++      has_latest_pose_ = true;
+       return true;
+     }
+ 
+-    const bool moved = (*this)(*latest_pose_, pose);
++    const bool moved = (*this)(latest_pose_, pose);
+     if (moved) {
+       latest_pose_ = pose;
+     }
+@@ -133,7 +134,9 @@ struct on_motion_policy : public on_motion_policy_base<Pose> {
+   }
+ 
+  private:
+-  std::optional<Pose> latest_pose_;  ///< The latest pose for motion comparison.
++  // a flag instead of std::optional<Pose>: GCC 15 fails to instantiate std::optional<Sophus::SE3>
++  bool has_latest_pose_{false};  ///< Whether latest_pose_ holds a pose.
++  Pose latest_pose_{};           ///< The latest pose for motion comparison.
+ };
+ 
+ /// Implementation detail for the on_motion_fn object.
+diff --git a/include/beluga/sensor/ndt_sensor_model.hpp b/include/beluga/sensor/ndt_sensor_model.hpp
+index 21d4d6f..35aff49 100644
+--- a/include/beluga/sensor/ndt_sensor_model.hpp
++++ b/include/beluga/sensor/ndt_sensor_model.hpp
+@@ -271,7 +271,7 @@ NDTMapRepresentationT load_from_hdf5(const std::filesystem::path& path_to_hdf5_f
+     throw std::invalid_argument(ss.str());
+   }
+ 
+-  const H5::H5File file(path_to_hdf5_file, H5F_ACC_RDONLY);
++  const H5::H5File file(path_to_hdf5_file.string(), H5F_ACC_RDONLY);
+   const H5::DataSet means_dataset = file.openDataSet("means");
+   const H5::DataSet covariances_dataset = file.openDataSet("covariances");
+   const H5::DataSet resolution_dataset = file.openDataSet("resolution");

@@ -1,0 +1,35 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 5ee2731..439cdb3 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,6 +1,11 @@
+ cmake_minimum_required(VERSION 3.22)
+ project(moveit2_tutorials)
+ 
++# the tutorials use designated initializers, which MSVC only accepts as C++20 (C7555)
++if(MSVC)
++  set(CMAKE_CXX_STANDARD 20)
++endif()
++
+ # Common cmake code applied to all moveit packages
+ find_package(moveit_common REQUIRED)
+ moveit_package()
+diff --git a/doc/how_to_guides/pilz_industrial_motion_planner/src/pilz_sequence.cpp b/doc/how_to_guides/pilz_industrial_motion_planner/src/pilz_sequence.cpp
+index 45f210b..b7d8950 100644
+--- a/doc/how_to_guides/pilz_industrial_motion_planner/src/pilz_sequence.cpp
++++ b/doc/how_to_guides/pilz_industrial_motion_planner/src/pilz_sequence.cpp
+@@ -1,3 +1,5 @@
++#include <chrono>
++#include <thread>
+ #include <rclcpp/rclcpp.hpp>
+ #include <rclcpp_action/rclcpp_action.hpp>
+ 
+@@ -315,7 +317,7 @@ int main(int argc, char** argv)
+ 
+   // Repeats the motion but after 2 seconds cancels the action
+   auto cancel_goal_handle_future = action_client->async_send_goal(goal_msg, send_goal_options);
+-  sleep(2);
++  std::this_thread::sleep_for(std::chrono::seconds(2));  // POSIX sleep() isn't on Windows
+   auto cancel_action_result_future = action_client->async_cancel_goal(cancel_goal_handle_future.get());
+ 
+   // Wait for the result

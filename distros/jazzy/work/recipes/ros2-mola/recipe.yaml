@@ -1,0 +1,113 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/prefix-dev/recipe-format/main/schema.json
+
+package:
+  name: ros2-mola
+  version: 3.3.1
+source:
+  git: https://github.com/ros2-gbp/mola-release.git
+  tag: release/jazzy/mola/3.3.1-1
+  target_directory: ros2-mola/src/work
+
+build:
+  script: ${{ '$RECIPE_DIR/build_catkin.sh' if unix or wasm32 else '%RECIPE_DIR%\\bld_catkin.bat' }}
+  number: 27
+  post_process:
+    - files:
+        - '*.pc'
+      regex: (?:-L|-I)?"?([^;\s]+/sysroot/)
+      replacement: $$(CONDA_BUILD_SYSROOT_S)
+    - files:
+        - '*.cmake'
+      regex: ([^;\s"]+/sysroot)
+      replacement: $$ENV{CONDA_BUILD_SYSROOT}
+    - files:
+        - '*.cmake'
+      regex: ([^;\s"]+/MacOSX\d*\.?\d*\.sdk)
+      replacement: $$ENV{CONDA_BUILD_SYSROOT}
+about:
+  repository: https://github.com/MOLAorg/mola
+  license: BSD-3-Clause
+  summary: Metapackage with all core open-sourced MOLA packages.
+extra:
+  recipe-maintainers:
+    - ros-forge
+
+requirements:
+  build:
+    - ${{ compiler('cxx') }}
+    - ${{ compiler('c') }}
+    - if: target_platform!='emscripten-wasm32'
+      then:
+        - ${{ stdlib('c') }}
+    - ninja
+    - python
+    - setuptools
+    - git
+    - git-lfs
+    - if: unix
+      then:
+        - patch
+        - make
+        - coreutils
+    - if: win
+      then:
+        - m2-patch
+    - if: osx
+      then:
+        - tapi
+    - if: build_platform != target_platform
+      then:
+        - pkg-config
+    - cmake
+    - cython
+    - if: build_platform != target_platform
+      then:
+        - python
+        - cross-python_${{ target_platform }}
+        - numpy
+    - if: osx
+      then:
+        - clang-tools ${{ (cxx_compiler_version ~ '.*') if cxx_compiler_version is defined else '*' }}
+  host:
+    - if: build_platform == target_platform
+      then:
+        - pkg-config
+    - numpy
+    - pip
+    - python
+    - ros2-distro-mutex 0.20.* jazzy_*
+    - ros2-mola-bridge-ros2
+    - ros2-mola-demos
+    - ros2-mola-input-rawlog
+    - ros2-mola-input-rosbag2
+    - ros2-mola-input-video
+    - ros2-mola-kernel
+    - ros2-mola-launcher
+    - ros2-mola-metric-maps
+    - ros2-mola-pose-list
+    - ros2-mola-relocalization
+    - ros2-mola-traj-tools
+    - ros2-mola-viz
+    - ros2-mola-yaml
+    - ros2-ros-environment
+    - ros2-ros-workspace
+  run:
+    - python
+    - ros2-distro-mutex 0.20.* jazzy_*
+    - ros2-mola-bridge-ros2
+    - ros2-mola-demos
+    - ros2-mola-input-rawlog
+    - ros2-mola-input-rosbag2
+    - ros2-mola-input-video
+    - ros2-mola-kernel
+    - ros2-mola-launcher
+    - ros2-mola-metric-maps
+    - ros2-mola-pose-list
+    - ros2-mola-relocalization
+    - ros2-mola-traj-tools
+    - ros2-mola-viz
+    - ros2-mola-yaml
+    - ros2-ros-workspace
+tests:
+  - script:
+      - python -c "import subprocess; out = subprocess.run(['mola-cli', '--rtti-list-all'], capture_output=True, text=True).stdout; missing = [c for c in ('mola::MolaViz', 'mola::BridgeROS2', 'mola::Rosbag2Dataset', 'mola::KeyframePointCloudMap') if c not in out]; assert not missing, missing"
