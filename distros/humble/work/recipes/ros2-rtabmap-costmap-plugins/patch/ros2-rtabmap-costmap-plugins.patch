@@ -1,0 +1,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index eab748d..233a90d 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -55,7 +55,7 @@ ENDIF()
+ 
+ # Causes the visibility macros to use dllexport rather than dllimport,
+ # which is appropriate when building the dll but not consuming it.
+-target_compile_definitions(rtabmap_costmap_plugins PRIVATE "RTABMAP_ROS_BUILDING_LIBRARY")
++target_compile_definitions(rtabmap_costmap_plugins PRIVATE "RTABMAP_COSTMAP_PLUGINS_BUILDING_DLL")
+ 
+ # prevent pluginlib from using boost
+ target_compile_definitions(rtabmap_costmap_plugins PUBLIC "PLUGINLIB__DISABLE_BOOST_FUNCTIONS")
