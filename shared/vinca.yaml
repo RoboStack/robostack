@@ -140,6 +140,7 @@ packages_select_by_deps:
   - grid_map_msgs
   - grid_map_ros
   - gripper_controllers
+  - gscam
   - gtsam
   - gz_ros2_control
   - gz_ros2_control_demos
