@@ -81,7 +81,7 @@ combines the two, and the files next to each:
 - **`patch/*.patch` and `tests/`:** per package, the distribution's file replaces the shared one. In tests, `- if: ros_distro in ["humble", "jazzy"]` blocks select distribution-specific parts.
 - **`vinca_pinning.yaml`:** the shared pinning, adjusted by `distro.yaml`:
   - `conda_forge_pinning_version` and `conda_forge_migrations` keep a distribution on its own conda-forge pinning, for example until its next full rebuild;
-  - `pinning_overrides` replace shared pins by name, for example jazzy's Python 3.12.
+  - `pinning_overrides` replace shared pins by name, for example jazzy's Python 3.12. Items written as a block list keep their conda-build selectors (`- 3.12.*  # [not riscv64]`).
   - `pixi run rs <distro> render-pinning` turns this into the committed `conda_build_config.yaml`.
 
 A fix that applies to every distribution goes into `shared/`, a version-specific one into `distros/<distro>/`.
@@ -105,6 +105,16 @@ pixi run rs check                             # sanity checks (also run in CI)
 `distros/<distro>/ci.yaml` for the PR, and reset the file after merging. A full rebuild
 of a distribution uses `full_rebuild: true` there. A new build number goes into its
 `pkg_additional_info.yaml` (one package) or `vinca.yaml` (everything).
+
+**Python versions:** a distribution's `pinning_overrides` can list several Pythons, as
+lyrical does for 3.12-3.14. With `conditional_python_dependency: true` in its
+`vinca.yaml`, only packages with Python content (Python modules, rosidl Python bindings,
+extensions) get python in host/run and are built once per Python; the others are built
+once, without a `python_abi` dependency, and fail their build if they ship
+`site-packages` content or a CPython extension anyway. When vinca's guess from
+`package.xml` is wrong, add `python` to the package's `add_host` (or `remove_host`) in
+`patch/dependencies.yaml`. `pixi run rs <distro> python-audit [--elf]` compares the
+guess with the published packages and lists the misses.
 
 **Building only some distributions in a PR:** a PR builds the distributions it changes,
 and all of them as soon as it touches anything outside `distros/<distro>/`. To limit
