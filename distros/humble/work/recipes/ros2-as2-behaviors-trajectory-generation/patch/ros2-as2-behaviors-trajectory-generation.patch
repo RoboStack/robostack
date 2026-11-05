@@ -1,0 +1,25 @@
+diff --git a/generate_polynomial_trajectory_behavior/CMakeLists.txt b/generate_polynomial_trajectory_behavior/CMakeLists.txt
+index 67bb76d..4aece6b 100644
+--- a/generate_polynomial_trajectory_behavior/CMakeLists.txt
++++ b/generate_polynomial_trajectory_behavior/CMakeLists.txt
+@@ -7,6 +7,20 @@ if(${dynamic_trajectory_generator_FOUND})
+   message(STATUS "dynamic_trajectory_generator found")
+ else()
+   message(STATUS "dynamic_trajectory_generator not found")
++  # The fetched dynamic_trajectory_generator runs find_package(nlopt) but checks NLopt_FOUND,
++  # so it never sees conda-forge's NLopt and FetchContents NLopt 2.7.1 (which fails with
++  # CMake 4). Finding NLopt here sets NLopt_FOUND for it; it also expects the "nlopt"
++  # target that bundled build would have defined, and Eigen on the include path.
++  find_package(NLopt CONFIG REQUIRED)
++  add_library(nlopt INTERFACE IMPORTED GLOBAL)
++  target_link_libraries(nlopt INTERFACE NLopt::nlopt)
++  find_package(Eigen3 REQUIRED NO_MODULE)
++  get_target_property(_as2_eigen_include Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORIES)
++  include_directories(${_as2_eigen_include})
++  # ... whose mav_msgs headers use assert() without including <cassert>
++  if(NOT MSVC)
++    add_compile_options(-include cassert)
++  endif()
+   include(FetchContent)
+   fetchcontent_declare(
+     dynamic_trajectory_generator

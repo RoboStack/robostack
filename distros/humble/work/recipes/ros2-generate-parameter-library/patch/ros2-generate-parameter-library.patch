@@ -1,0 +1,68 @@
+From b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c Mon Sep 17 00:00:00 2001
+From: Esteve Fernandez <esteve.fernandez@bonsairobotics.ai>
+Date: Mon, 11 May 2026 11:49:35 +0100
+Subject: [PATCH] fix(generate_parameter_library): migrate tl_expected to libexpected-dev
+
+Signed-off-by: Esteve Fernandez <esteve.fernandez@bonsairobotics.ai>
+---
+ cmake/generate_parameter_library.cmake  | 8 --------
+ generate_parameter_library-extras.cmake | 5 -----
+ package.xml                             | 5 -----
+ 3 files changed, 18 deletions(-)
+
+diff --git a/cmake/generate_parameter_library.cmake b/cmake/generate_parameter_library.cmake
+index 0e7ca5a..99262df 100644
+--- a/cmake/generate_parameter_library.cmake
++++ b/cmake/generate_parameter_library.cmake
+@@ -97,19 +97,11 @@ macro(generate_parameter_library LIB_NAME YAML_FILE)
+     rsl::rsl
+     tcb_span::tcb_span
+     tl::expected
+-    # for backward compatibility
+-    # remove once this redirection is removed
+-    # https://github.com/PickNikRobotics/cpp_polyfills/pull/12
+-    tl_expected::tl_expected
+   )
+   install(DIRECTORY ${LIB_INCLUDE_DIR} DESTINATION include)
+   ament_export_dependencies(
+     fmt parameter_traits rclcpp rclcpp_lifecycle rsl tcb_span
+     tl-expected
+-    # for backward compatibility
+-    # remove once this redirection is removed
+-    # https://github.com/PickNikRobotics/cpp_polyfills/pull/12
+-    tl_expected
+   )
+ endmacro()
+ 
+diff --git a/generate_parameter_library-extras.cmake b/generate_parameter_library-extras.cmake
+index 00f0ab8..95efa6c 100644
+--- a/generate_parameter_library-extras.cmake
++++ b/generate_parameter_library-extras.cmake
+@@ -32,11 +32,6 @@ find_package(rsl REQUIRED)
+ find_package(rclcpp_lifecycle REQUIRED)
+ find_package(tcb_span REQUIRED)
+ find_package(tl-expected REQUIRED)
+-# for backward compatibility
+-# remove once this redirection is removed
+-# https://github.com/PickNikRobotics/cpp_polyfills/pull/12
+-set(tl_expected_DEPRECATED_QUIET TRUE)
+ find_package(parameter_traits REQUIRED)
+-find_package(tl_expected REQUIRED)
+ 
+ include("${generate_parameter_library_DIR}/generate_parameter_library.cmake")
+diff --git a/package.xml b/package.xml
+index aaf29e8..2bb154f 100644
+--- a/package.xml
++++ b/package.xml
+@@ -26,11 +26,6 @@
+   <depend>tcb_span</depend>
+   <depend>libexpected-dev</depend>
+ 
+-  <!-- for backward compatibility -->
+-  <!-- remove once this redirection is removed -->
+-  <!-- https://github.com/PickNikRobotics/cpp_polyfills/pull/12 -->
+-  <depend>tl_expected</depend>
+-
+   <export>
+     <build_type>ament_cmake</build_type>
+     <rosdoc2>rosdoc2.yaml</rosdoc2>

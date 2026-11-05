@@ -1,0 +1,14 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index cfef6f3..f227839 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -29,7 +29,8 @@ option(RKO_LIO_FETCH_CONTENT_DEPS "Fetch dependencies via FetchContent instead o
+ include(cmake/dependencies.cmake)
+ include(cmake/compat_target_sources.cmake)
+ 
+-find_package(Eigen3 3.4 REQUIRED CONFIG)
++# no minimum version: Eigen 5 (conda-forge) rejects a 3.x request (SameMajorVersion)
++find_package(Eigen3 REQUIRED CONFIG)
+ find_package(Sophus REQUIRED CONFIG)
+ find_package(TBB REQUIRED CONFIG)
+ find_package(tsl-robin-map REQUIRED CONFIG)

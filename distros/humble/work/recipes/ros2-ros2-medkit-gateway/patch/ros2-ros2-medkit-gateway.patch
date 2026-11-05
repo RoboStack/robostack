@@ -1,0 +1,15 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 64216ed..432c4ef 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -114,6 +114,10 @@ target_link_libraries(gateway_core
+     jwt-cpp::jwt-cpp
+     SQLite::SQLite3
+     ${CMAKE_DL_LIBS}
++    # cpp-httplib's async client name resolution (getaddrinfo_a/gai_suspend/
++    # gai_error/gai_cancel) is glibc-only and, on this toolchain, still needs
++    # explicit -lanl even though the symbols live in glibc itself.
++    $<$<PLATFORM_ID:Linux>:anl>
+ )
+ 
+ set_target_properties(gateway_core PROPERTIES
