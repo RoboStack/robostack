@@ -140,3 +140,5 @@ rviz_rendering:
   build_number: 31
 rviz_satellite:
   build_number: 31
+spatio_temporal_voxel_layer:
+  build_number: 31

@@ -162,6 +162,8 @@ rviz_rendering:
   build_number: 28
 rviz_satellite:
   build_number: 28
+spatio_temporal_voxel_layer:
+  build_number: 28
 urdf:  # drop deprecated urdf_world/types.h include (ros2/urdf#54) for headers 3.x
   build_number: 28
 urdf_parser_plugin:  # use urdf_model/types.h (ros2/urdf#54) for headers 3.x
