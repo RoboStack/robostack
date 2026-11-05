@@ -1,0 +1,23 @@
+From: RoboStack <robostack@users.noreply.github.com>
+Subject: [PATCH] Avoid deprecated urdf_world/types.h with urdfdom_headers 3.x
+
+RoboStack overrides humble's urdfdom_headers to conda-forge 3.0.x, where
+urdf_world/types.h emits a deprecation #warning. Mirror ros2/urdf#54
+(rolling) so consumers of <urdf/model.h> stay quiet.
+
+---
+ urdfdom_compatibility.h.in | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/urdfdom_compatibility.h.in b/urdfdom_compatibility.h.in
+index 1111111..2222222 100644
+--- a/urdfdom_compatibility.h.in
++++ b/urdfdom_compatibility.h.in
+@@ -90,7 +90,6 @@ URDF_TYPEDEF_CLASS_POINTER(Model);
+ #include <memory>
+ 
+ #include "urdf_model/types.h"
+-#include "urdf_world/types.h"
+ 
+ namespace urdf
+ {

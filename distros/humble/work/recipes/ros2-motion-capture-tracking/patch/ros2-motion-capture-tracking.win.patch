@@ -1,0 +1,40 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 300f534..35e1093 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,6 +1,9 @@
+ cmake_minimum_required(VERSION 3.8)
+ project(motion_capture_tracking)
+ 
++# no dllexport annotations: export everything so MSVC writes the import libraries (LNK1181)
++set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
++
+ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+   add_compile_options(-Wall -Wextra -Wpedantic)
+ endif()
+diff --git a/deps/libmotioncapture/CMakeLists.txt b/deps/libmotioncapture/CMakeLists.txt
+index 61a4af9..6cf2a5d 100644
+--- a/deps/libmotioncapture/CMakeLists.txt
++++ b/deps/libmotioncapture/CMakeLists.txt
+@@ -20,6 +20,11 @@ set(CMAKE_CXX_EXTENSIONS OFF)
+ 
+ find_package(Threads REQUIRED)
+ find_package(Boost) # for optitrack
++if(WIN32)
++  # Boost's auto-linking asks MSVC for an unqualified boost_filesystem.lib (LNK1104):
++  # link Boost::filesystem's imported target, which knows the actual library path
++  find_package(Boost REQUIRED COMPONENTS filesystem)
++endif()
+ add_definitions(
+   -DBOOST_DATE_TIME_NO_LIB
+   -DBOOST_REGEX_NO_LIB
+@@ -239,6 +244,9 @@ add_library(libmotioncapture
+ target_link_directories(libmotioncapture PUBLIC
+   ${my_link_directories}
+ )
++if(WIN32)
++  target_link_libraries(libmotioncapture Boost::filesystem)
++endif()
+ target_link_libraries(libmotioncapture
+   Eigen3::Eigen
+   ${my_libraries}

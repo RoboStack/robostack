@@ -1,0 +1,59 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a5250e8..8c5d11a 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,6 +1,8 @@
+ cmake_minimum_required(VERSION 3.5)
+ project(libmavconn)
+ 
++set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
++
+ # Default to C11
+ if(NOT CMAKE_C_STANDARD)
+   set(CMAKE_C_STANDARD 11)
+@@ -16,7 +18,9 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+   # because the Python C extensions dont comply with it
+   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
+ endif()
+-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wcomment")
++if(NOT MSVC)
++  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wcomment")
++endif()
+ 
+ # Allow GNU extensions (-std=gnu++20)
+ set(CMAKE_C_EXTENSIONS ON)
+diff --git a/include/mavconn/thread_utils.hpp b/include/mavconn/thread_utils.hpp
+index 584a15d..36f6fa3 100644
+--- a/include/mavconn/thread_utils.hpp
++++ b/include/mavconn/thread_utils.hpp
+@@ -20,7 +20,9 @@
+ #ifndef MAVCONN__THREAD_UTILS_HPP_
+ #define MAVCONN__THREAD_UTILS_HPP_
+ 
++#ifndef _WIN32
+ #include <pthread.h>
++#endif
+ 
+ #include <cstdio>
+ #include <sstream>
+@@ -61,6 +63,12 @@ std::string format(const std::string & fmt, Args... args)
+ template<typename ... Args>
+ bool set_this_thread_name(const std::string & name, Args && ... args)
+ {
++#ifdef _WIN32
++  // No pthreads on Windows; naming the thread is a debugging convenience
++  // only, so silently no-op instead of failing to build.
++  (void)format(name, std::forward<Args>(args)...);
++  return false;
++#else
+   auto new_name = format(name, std::forward<Args>(args)...);
+ 
+ #ifdef __APPLE__
+@@ -69,6 +77,7 @@ bool set_this_thread_name(const std::string & name, Args && ... args)
+   pthread_t pth = pthread_self();
+   return pthread_setname_np(pth, new_name.c_str()) == 0;
+ #endif
++#endif
+ }
+ 
+ /**

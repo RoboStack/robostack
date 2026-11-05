@@ -1,0 +1,18 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index d4b1e97..9b977d4 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -68,3 +68,13 @@ endif()
+ if(TARGET mrpt_glew)
+   target_link_libraries(${PROJECT_NAME} PUBLIC mrpt_glew)
+ endif()
++
++if(WIN32 AND NOT TARGET mrpt_glew)
++  # RoboStack: the release source has no bundled GLEW; conda-forge's GLEW, as in mrpt_opengl.
++  # PUBLIC: CImGuiSceneView.h calls GL extension functions inline. Installed users get the
++  # import library by path, as GLEW::GLEW would need a find_dependency() in the config.
++  find_package(GLEW REQUIRED)
++  target_link_libraries(${PROJECT_NAME} PUBLIC
++    $<BUILD_INTERFACE:GLEW::GLEW>
++    $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/lib/glew32.lib>)
++endif()
