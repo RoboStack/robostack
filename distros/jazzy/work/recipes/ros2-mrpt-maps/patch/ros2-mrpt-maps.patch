@@ -1,0 +1,15 @@
+diff --git a/include/mrpt/maps/bonxai/bonxai.hpp b/include/mrpt/maps/bonxai/bonxai.hpp
+--- a/include/mrpt/maps/bonxai/bonxai.hpp
++++ b/include/mrpt/maps/bonxai/bonxai.hpp
+@@ -538,7 +538,10 @@
+ {
+   dim_ = other.dim_;
+   size_ = other.size_;
+-  mask_ = std::move(other.mask_);
++  // Mask has const members, so it is not assignable (clang rejects this even if
++  // the operator is never instantiated): re-construct it in place instead.
++  mask_.~Mask();
++  new (&mask_) Bonxai::Mask(std::move(other.mask_));
+   std::swap(data_, other.data_);
+   return *this;
+ }
