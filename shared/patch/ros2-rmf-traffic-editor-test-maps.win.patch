@@ -1,0 +1,17 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a0546f2..089ef9b 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -11,6 +11,12 @@ install(DIRECTORY
+ 
+ ament_package()
+ 
++if(WIN32)
++  # building_map_model_downloader logs "error: ..." for the missing crowd_sim models, which
++  # MSBuild takes for a failed custom command (MSB8066); it also needs Gazebo Fuel at build time
++  set(NO_DOWNLOAD_MODELS ON)
++endif()
++
+ file(GLOB_RECURSE traffic_editor_paths "maps/*.building.yaml")
+ 
+ foreach(path ${traffic_editor_paths})
