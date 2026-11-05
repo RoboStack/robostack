@@ -1,0 +1,45 @@
+diff --git a/include/rosidlcpp_generator_core/generator_utils.hpp b/include/rosidlcpp_generator_core/generator_utils.hpp
+index 5df2be6..801d1f4 100644
+--- a/include/rosidlcpp_generator_core/generator_utils.hpp
++++ b/include/rosidlcpp_generator_core/generator_utils.hpp
+@@ -20,7 +20,18 @@
+ #include <string_view>
+ #include <vector>
+ 
+-#include <nlohmann/json_fwd.hpp>
++#include <nlohmann/json.hpp>
++
++#include <fmt/format.h>
++
++// fmt 12 can't format nlohmann::json values on clang (GCC gets there through the implicit
++// conversion to std::string): format strings as their value, everything else as JSON
++template <>
++struct fmt::formatter<nlohmann::json> : fmt::formatter<std::string> {
++  auto format(const nlohmann::json& j, fmt::format_context& ctx) const {
++    return fmt::formatter<std::string>::format(j.is_string() ? j.get<std::string>() : j.dump(), ctx);
++  }
++};
+ 
+ namespace rosidlcpp_core {
+ 
+diff --git a/src/rosidlcpp_generator_core/generator_utils.cpp b/src/rosidlcpp_generator_core/generator_utils.cpp
+index f639efc..153c601 100644
+--- a/src/rosidlcpp_generator_core/generator_utils.cpp
++++ b/src/rosidlcpp_generator_core/generator_utils.cpp
+@@ -30,6 +30,7 @@
+ 
+ #include <fmt/core.h>
+ #include <fmt/format.h>
++#include <fmt/ranges.h>  // fmt::join on ranges (fmt 12)
+ #include <fmt/ranges.h>
+ 
+ namespace rosidlcpp_core {
+@@ -275,7 +276,7 @@ auto is_service_type(const nlohmann::json& type) -> bool {
+  */
+ 
+ auto type_to_c_typename(const nlohmann::json& type) -> std::string {
+-  return fmt::format("{}__{}", fmt::join(type["namespaces"], "__"), type["name"].get<std::string>());
++  return fmt::format("{}__{}", fmt::join(type["namespaces"].get<std::vector<std::string>>(), "__")  /* a range of json values isn't formattable with clang + fmt 12 */, type["name"].get<std::string>());
+ }
+ 
+ auto basetype_to_c(const nlohmann::json& type) -> std::string {

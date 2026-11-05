@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<package format="3"><name>gt_demo</name><version>0.0.0</version><description>d</description>
+<maintainer email="demo@example.com">a</maintainer><license>MIT</license>
+<buildtool_depend>ament_cmake</buildtool_depend><test_depend>ament_cmake_gtest</test_depend><test_depend>ament_cmake_gmock</test_depend>
+<export><build_type>ament_cmake</build_type></export></package>

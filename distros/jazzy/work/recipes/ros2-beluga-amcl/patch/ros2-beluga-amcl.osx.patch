@@ -1,0 +1,69 @@
+diff --git a/include/beluga_amcl/ndt_amcl_node.hpp b/include/beluga_amcl/ndt_amcl_node.hpp
+index d309a2c..744e75b 100644
+--- a/include/beluga_amcl/ndt_amcl_node.hpp
++++ b/include/beluga_amcl/ndt_amcl_node.hpp
+@@ -98,7 +98,7 @@ using MotionModelVariant =
+     std::variant<beluga::DifferentialDriveModel2d, beluga::StationaryModel, beluga::OmnidirectionalDriveModel>;
+ 
+ /// Supported execution policies.
+-using ExecutionPolicyVariant = std::variant<std::execution::sequenced_policy, std::execution::parallel_policy>;
++using ExecutionPolicyVariant = std::variant<const std::execution::sequenced_policy*, const std::execution::parallel_policy*>;
+ 
+ /// 2D NDT AMCL as a ROS 2 composable lifecycle node.
+ class NdtAmclNode : public BaseAMCLNode {
+diff --git a/include/beluga_amcl/ros2_common.hpp b/include/beluga_amcl/ros2_common.hpp
+index d749d83..01f2186 100644
+--- a/include/beluga_amcl/ros2_common.hpp
++++ b/include/beluga_amcl/ros2_common.hpp
+@@ -52,7 +52,7 @@ constexpr std::string_view kNav2DifferentialModelName = "nav2_amcl::Differential
+ /// String identifier for a omnidirectional model name.
+ constexpr std::string_view kNav2OmnidirectionalModelName = "nav2_amcl::OmniMotionModel";
+ /// Supported execution policies.
+-using ExecutionPolicyVariant = std::variant<std::execution::sequenced_policy, std::execution::parallel_policy>;
++using ExecutionPolicyVariant = std::variant<const std::execution::sequenced_policy*, const std::execution::parallel_policy*>;
+ 
+ /// Base AMCL lifecycle node, with some basic common functionalities, such as transform tree utilities, common
+ /// publishers, subscribers, lifecycle related callbacks and configuration points, enabling extension by inheritance.
+diff --git a/src/ndt_amcl_node.cpp b/src/ndt_amcl_node.cpp
+index bead7e7..f577d10 100644
+--- a/src/ndt_amcl_node.cpp
++++ b/src/ndt_amcl_node.cpp
+@@ -259,7 +259,7 @@ auto NdtAmclNode::make_particle_filter() const -> std::unique_ptr<NdtAmclVariant
+             std::move(random_state_maker),  //
+             std::move(hasher),              //
+             params,                         //
+-            execution_policy);
++            *execution_policy);
+       },
+       get_motion_model(), get_execution_policy());
+   return std::make_unique<NdtAmclVariant>(std::move(amcl));
+diff --git a/src/ndt_amcl_node_3d.cpp b/src/ndt_amcl_node_3d.cpp
+index c14efec..a2ef77c 100644
+--- a/src/ndt_amcl_node_3d.cpp
++++ b/src/ndt_amcl_node_3d.cpp
+@@ -314,7 +314,7 @@ auto NdtAmclNode3D::make_particle_filter() const -> std::unique_ptr<NdtAmclVaria
+             std::move(random_state_maker),  //
+             std::move(hasher),              //
+             params,                         //
+-            execution_policy);
++            *execution_policy);
+       },
+       get_motion_model(), get_execution_policy());
+   return std::make_unique<NdtAmclVariant>(std::move(amcl));
+diff --git a/src/ros2_common.cpp b/src/ros2_common.cpp
+index 0a0cd20..fa4d181 100644
+--- a/src/ros2_common.cpp
++++ b/src/ros2_common.cpp
+@@ -559,10 +559,10 @@ void BaseAMCLNode::autostart_callback() {
+ auto BaseAMCLNode::get_execution_policy() const -> ExecutionPolicyVariant {
+   const auto name = get_parameter("execution_policy").as_string();
+   if (name == "seq") {
+-    return std::execution::seq;
++    return &std::execution::seq;
+   }
+   if (name == "par") {
+-    return std::execution::par;
++    return &std::execution::par;
+   }
+   throw std::invalid_argument("Execution policy must be seq or par.");
+ }
