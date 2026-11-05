@@ -1,0 +1,42 @@
+diff --git a/src/GuiNode.cpp b/src/GuiNode.cpp
+index e62af21..2ee0cea 100644
+--- a/src/GuiNode.cpp
++++ b/src/GuiNode.cpp
+@@ -78,11 +78,16 @@ int main(int argc, char** argv)
+ 
+ 		// Catch ctrl-c to close the gui
+ 		// (Place this after QApplication's constructor)
++#ifdef _WIN32
++		// no sigaction on Windows
++		signal(SIGINT, my_handler);
++#else
+ 		struct sigaction sigIntHandler;
+ 		sigIntHandler.sa_handler = my_handler;
+ 		sigemptyset(&sigIntHandler.sa_mask);
+ 		sigIntHandler.sa_flags = 0;
+ 		sigaction(SIGINT, &sigIntHandler, NULL);
++#endif
+ 
+ 		// Here start the ROS events loop
+ 		rclcpp::executors::SingleThreadedExecutor executor; //Use 1 thread
+diff --git a/src/RGBDImageViewerNode.cpp b/src/RGBDImageViewerNode.cpp
+index f277ac8..7a0326d 100644
+--- a/src/RGBDImageViewerNode.cpp
++++ b/src/RGBDImageViewerNode.cpp
+@@ -55,11 +55,16 @@ int main(int argc, char** argv)
+ 
+ 		// Catch ctrl-c to close the gui
+ 		// (Place this after QApplication's constructor)
++#ifdef _WIN32
++		// no sigaction on Windows
++		signal(SIGINT, my_handler);
++#else
+ 		struct sigaction sigIntHandler;
+ 		sigIntHandler.sa_handler = my_handler;
+ 		sigemptyset(&sigIntHandler.sa_mask);
+ 		sigIntHandler.sa_flags = 0;
+ 		sigaction(SIGINT, &sigIntHandler, NULL);
++#endif
+ 
+ 		// Here start the ROS events loop
+ 		rclcpp::executors::SingleThreadedExecutor executor; //Use 1 thread
