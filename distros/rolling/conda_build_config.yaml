@@ -130,6 +130,18 @@ target_gobin:
 rust_compiler:
   - rust
 
+# OCaml Compiler Options
+ocaml_compiler:
+  - ocaml
+ocaml_compiler_version:
+  - 5.5.1
+
+# Zig Compiler Options
+zig_compiler:
+  - zig
+zig_compiler_version:
+  - 0.17.0
+
 # the numbers here are the Darwin Kernel version for macOS 10.9 & 11.0;
 # this is used to form our target triple on osx, and nothing else. After
 # we bumped the minimum macOS version to 10.13, this was left unchanged,
@@ -250,23 +262,23 @@ aws_c_sdkutils:
 aws_checksums:
   - '1.0'
 aws_crt_cpp:
-  - 0.42.3
+  - 0.43.8
 aws_sdk_cpp:
-  - 1.11.833
+  - 1.11.905
 azure_core_cpp:
-  - 1.16.3
+  - 1.16.4
 azure_identity_cpp:
   - 1.13.3
 azure_storage_blobs_cpp:
-  - 12.18.0
+  - 12.19.0
 azure_storage_common_cpp:
-  - 12.14.0
+  - 12.15.0
 azure_storage_files_datalake_cpp:
-  - 12.16.0
+  - 12.17.0
 azure_storage_files_shares_cpp:
-  - 12.18.0
+  - 12.19.0
 azure_storage_queues_cpp:
-  - 12.7.0
+  - 12.8.0
 brotli:
   - '1.2'
 bullet_cpp:
@@ -322,6 +334,8 @@ cutensor:
   - 2
 curl:
   - 8
+cyclus:
+  - '1.6'
 dagmc:
   - '3.2'
 dartsim_cpp:
@@ -332,6 +346,8 @@ dartsim_cpp:
 #   - '1.5.4'
 davix:
   - '0.8'
+dawn:
+  - '20261030'
 dbus:
   - 1
 dcap:
@@ -415,7 +431,7 @@ gfal2:
 gflags:
   - '2.3'
 giflib:
-  - '6'
+  - 6
 givaro:
   - 4.2.2
 glew:
@@ -431,7 +447,7 @@ gm2calc:
 gmp:
   - 6
 google_cloud_cpp:
-  - '3.8'
+  - '3.12'
 google_cloud_cpp_common:
   - 0.25.0
 googleapis_cpp:
@@ -507,15 +523,15 @@ libamd:
 libarchive:
   - '3.8'
 libarrow:
+  - '26.0'
   - '25.0'
   - '24.0'
   - '23.0'
-  - '22.0'
 libarrow_all:
+  - '26.0'
   - '25.0'
   - '24.0'
   - '23.0'
-  - '22.0'
 libattr:
   - 2.6
 libavif:
@@ -576,7 +592,7 @@ libevent:
 libexactreal:
   - '4'
 libffi:
-  - '3.5'
+  - '3.7'
 libflac:
   - '1.5'
 libflatsurf:
@@ -596,43 +612,43 @@ libfuse3:
 libgit2:
   - '1.9'
 libgoogle_cloud:
-  - '3.8'
+  - '3.12'
 libgoogle_cloud_devel:
-  - '3.8'
+  - '3.12'
 libgoogle_cloud_all_devel:
-  - '3.8'
+  - '3.12'
 libgoogle_cloud_aiplatform_devel:
-  - '3.8'
+  - '3.12'
 libgoogle_cloud_automl_devel:
-  - '3.8'
+  - '3.12'
 libgoogle_cloud_bigquery_devel:
-  - '3.8'
+  - '3.12'
 libgoogle_cloud_bigtable_devel:
-  - '3.8'
+  - '3.12'
 libgoogle_cloud_compute_devel:
-  - '3.8'
+  - '3.12'
 libgoogle_cloud_dialogflow_cx_devel:
-  - '3.8'
+  - '3.12'
 libgoogle_cloud_dialogflow_es_devel:
-  - '3.8'
+  - '3.12'
 libgoogle_cloud_discoveryengine_devel:
-  - '3.8'
+  - '3.12'
 libgoogle_cloud_dlp_devel:
-  - '3.8'
+  - '3.12'
 libgoogle_cloud_iam_devel:
-  - '3.8'
+  - '3.12'
 libgoogle_cloud_oauth2_devel:
-  - '3.8'
+  - '3.12'
 libgoogle_cloud_policytroubleshooter_devel:
-  - '3.8'
+  - '3.12'
 libgoogle_cloud_pubsub_devel:
-  - '3.8'
+  - '3.12'
 libgoogle_cloud_spanner_devel:
-  - '3.8'
+  - '3.12'
 libgoogle_cloud_speech_devel:
-  - '3.8'
+  - '3.12'
 libgoogle_cloud_storage_devel:
-  - '3.8'
+  - '3.12'
 libgrpc:
   - '1.82'
 libgsasl:
@@ -696,13 +712,13 @@ libopenimageio:
 libopencv:
   - 5.0.0
 libopentelemetry_cpp:
-  - '1.27'
+  - '1.30'
 libosqp:
   - 1.0.0
 libopenvino:
-  - 2026.4.0
+  - 2026.4.1
 libopenvino_dev:
-  - 2026.4.0
+  - 2026.4.1
 libparu:
   - '1'
 libpcap:
@@ -778,11 +794,13 @@ libtensorflow_cc:
 libtheora:
   - '1.2'
 libthrift:
-  - 0.22.0
+  - 0.25.0
 libtiff:
   - '4.7'
 libtorch:
   - '2.12'
+libtrintrin:
+  - '0.3'
 libudev:
   - '257'
 libultrahdr:
@@ -828,7 +846,7 @@ liburing:
 libuuid:
   - 2
 libyarp:
-  - 3.12.2
+  - 3.12.3
 libzip:
   - 1
 lmdb:
@@ -1095,9 +1113,11 @@ sdl2_net:
 sdl2_ttf:
   - '2'
 shaderc:
-  - '2026.3'
+  - '2026.4'
 sherpa:
   - '3.0'
+simdjson:
+  - '5.1'
 singular:
   - 4.4.1
 siscone:
@@ -1112,6 +1132,8 @@ sox:
   - 14.4.2
 spdlog:
   - '1.17'
+spheno:
+  - '4.0'
 spirv_tools:
   - '2026'
 sqlite:
@@ -1139,7 +1161,7 @@ tensorflow:
 thepeg:
   - '2.2'
 thrift_cpp:
-  - 0.22.0
+  - 0.25.0
 tinyxml2:
   - '11.0'
 tk:
