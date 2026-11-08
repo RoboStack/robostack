@@ -243,6 +243,7 @@ packages_select_by_deps:
   - polygon_msgs
   - polygon_utils
   - proxsuite
+  - psdk_interfaces
   - ptz_action_server_msgs
   - py_binding_tools
   - py_trees
@@ -257,6 +258,7 @@ packages_select_by_deps:
   - rclc_lifecycle
   - rclc_parameter
   - rclcpp
+  - rclcpp_async
   - rclcpp_cascade_lifecycle
   - rclpy
   - rclpy_cascade_lifecycle
