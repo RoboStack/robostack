@@ -590,7 +590,7 @@ packages_select_by_deps:
       - plansys2_bt_actions
       - popf
       - rclc_examples # MSVC C2055 on rcl_timer_t in callback signatures; root cause unresolved
-      - ros2_pulse
+      - ros2_pulse # its probe hooks rclcpp's tracetools calls by LD_PRELOAD interposition (dlsym RTLD_NEXT), no Windows equivalent
       - rosgraph_monitor
       - rqt_action
       - rqt_bag
@@ -641,3 +641,4 @@ packages_exclude:
       - rttest
       - tlsf
       - tlsf_cpp
+
