@@ -298,7 +298,6 @@ packages_select_by_deps:
   - ros2_controllers
   - ros2_easy_test
   - ros2_fmt_logger
-  - ros2_pulse
   - ros2_socketcan_msgs
   - ros_base
   - ros_core
@@ -591,6 +590,7 @@ packages_select_by_deps:
       - plansys2_bt_actions
       - popf
       - rclc_examples # MSVC C2055 on rcl_timer_t in callback signatures; root cause unresolved
+      - ros2_pulse
       - rosgraph_monitor
       - rqt_action
       - rqt_bag
@@ -631,13 +631,8 @@ packages_exclude:
 
   - if: win
     then:
-      # velodyne_driver reads the sensor over POSIX sockets (and needs libpcap); also left
-      # out of the packages depending on them (rtabmap_examples)
-      - ros2_pulse
-      - velodyne
+      - velodyne # velodyne_driver reads the sensor over POSIX sockets (and needs libpcap); also left out of the packages depending on them (rtabmap_examples)
       - velodyne_driver
-      # ros2_pulse's probe hooks rclcpp's tracetools calls by LD_PRELOAD interposition
-      # (dlsym(RTLD_NEXT)); there's no Windows equivalent, and its core uses POSIX I/O
       - velodyne_pointcloud
 
   - if: not linux
@@ -646,4 +641,3 @@ packages_exclude:
       - rttest
       - tlsf
       - tlsf_cpp
-
