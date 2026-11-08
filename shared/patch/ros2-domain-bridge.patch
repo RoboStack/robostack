@@ -1,0 +1,17 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 1686882..2ace995 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -74,7 +74,11 @@ add_executable(${PROJECT_NAME}_exec
+ ament_target_dependencies(${PROJECT_NAME}_exec
+   "rclcpp_components")
+ 
+-set_target_properties(${PROJECT_NAME}_exec PROPERTIES OUTPUT_NAME ${PROJECT_NAME} PREFIX "")
++# RoboStack: build the executable in bin/: rosidl_generate_interfaces(${PROJECT_NAME}) adds a
++# target named ${PROJECT_NAME}, which with Ninja clashes with the executable ${PROJECT_NAME} in the
++# build directory ("multiple rules generate domain_bridge"); installed as before
++set_target_properties(${PROJECT_NAME}_exec PROPERTIES OUTPUT_NAME ${PROJECT_NAME} PREFIX ""
++  RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bin)
+ 
+ target_link_libraries(${PROJECT_NAME}_exec
+   ${PROJECT_NAME}_lib
