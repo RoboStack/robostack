@@ -633,8 +633,11 @@ packages_exclude:
     then:
       # velodyne_driver reads the sensor over POSIX sockets (and needs libpcap); also left
       # out of the packages depending on them (rtabmap_examples)
+      - ros2_pulse
       - velodyne
       - velodyne_driver
+      # ros2_pulse's probe hooks rclcpp's tracetools calls by LD_PRELOAD interposition
+      # (dlsym(RTLD_NEXT)); there's no Windows equivalent, and its core uses POSIX I/O
       - velodyne_pointcloud
 
   - if: not linux
