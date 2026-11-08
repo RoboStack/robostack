@@ -1,0 +1,15 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 2b9c638..64842b6 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -10,6 +10,10 @@ if(NOT CMAKE_CXX_STANDARD)
+ endif()
+ set(CMAKE_CXX_STANDARD_REQUIRED ON)
+ 
++# RoboStack: floating-point std::from_chars, which libc++ marks unavailable on macOS (the
++# system libc++ lacks it); conda-forge ships its own libc++, which has it
++add_compile_definitions(_LIBCPP_DISABLE_AVAILABILITY)
++
+ # Standalone (no-ROS) build path: builds the pure-C++ core + the gtest unit suite via
+ # find_package(GTest)/find_package(Threads), with NO ament/colcon. Lets the fast core lane and
+ # the sanitizer lanes run on a plain ubuntu image without a ROS container. The ament build below
