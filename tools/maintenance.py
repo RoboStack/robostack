@@ -10,6 +10,8 @@
     pixi run rs rebuild PKG... [DISTRO...] [--with-dependents]  # per-package build-number bumps
     pixi run rs rebuild-dependents PR                 # commit the ABI check's suggested rebuilds to the PR
     pixi run rs update-vinca [REF]                    # move the vinca pin to the newest commit of its branch
+    pixi upgrade --json $(pixi run -q rs upgrade-pixi --exclude-args) > up.json
+    pixi run rs upgrade-pixi --changes up.json        # summarise a `pixi upgrade` of the tooling
     pixi run rs <distro> dependency-report            # dependency check, kept in a dependency-report issue
     pixi run rs parse-command --body TEXT --association ROLE   # for @robostack-bot comments
 
@@ -44,6 +46,7 @@ BOT_COMMANDS = {
     "update-vinca": "move the vinca pin to the newest commit of its branch (opens a PR)",
     "dependency-report": "check the dependencies against the pins, in the distribution's dependency-report issue",
     "update-build-timings": "record the build times of the last week's build-branch runs, for batching by time (opens a PR)",
+    "upgrade-pixi": "upgrade the tooling's dependencies in pixi.toml / pixi.lock (opens a PR)",
 }
 PER_DISTRO_COMMANDS = ("update-rosdistro-snapshot", "find-stale-packages", "update-conda-forge-pinning",
                        "dependency-report")
@@ -1175,6 +1178,37 @@ def update_build_timings() -> Result:
                   + ". `rs <distro> gha` packs each stage's recipes into jobs by them.", changed=True)
 
 
+# `pixi upgrade` widens every version spec in pixi.toml to the newest release; these keep
+# their spec (and lock) and are moved by hand, or by update-vinca
+PIXI_UPGRADE_KEEP = {
+    "rattler-build": "the builds depend on its behaviour (variants, build ids, --skip-existing); moved deliberately",
+    "cmake": "capped below 4: CMake 4 rejects the cmake_minimum_required below 3.5 of older packages",
+    "setuptools": "capped below 82, which removed pkg_resources",
+    "vinca": "a git commit, moved by `@robostack-bot update-vinca`",
+}
+
+
+def upgrade_pixi(changes: Path) -> Result:
+    """Summarise a `pixi upgrade --json` of pixi.toml / pixi.lock (run beforehand, outside
+    `pixi run`: the upgrade reinstalls the environment), then run the repository checks
+    in the upgraded environment."""
+    diff = subprocess.run(["git", "status", "--porcelain", "--", "pixi.toml", "pixi.lock"], cwd=rs.ROOT,
+                          capture_output=True, text=True, check=True).stdout.strip()
+    if not diff:
+        return Result("pixi dependencies are up to date", "`pixi upgrade` found nothing newer.")
+    md = subprocess.run(["pixi", "exec", "pixi-diff-to-markdown"], input=changes.read_text(), cwd=rs.ROOT,
+                        capture_output=True, text=True)
+    lines = [md.stdout.strip() if md.returncode == 0 else
+             f"❌ `pixi-diff-to-markdown` failed:\n\n```\n{tail(md.stdout + md.stderr, 20)}\n```", "",
+             "Kept as they are (`PIXI_UPGRADE_KEEP` in `tools/maintenance.py`):", ""]
+    lines += [f"- `{name}`: {why}" for name, why in PIXI_UPGRADE_KEEP.items()]
+    print("pixi run rs check", flush=True)
+    checked = subprocess.run(["pixi", "run", "rs", "check"], cwd=rs.ROOT, capture_output=True, text=True)
+    lines += ["", "`pixi run rs check`: " + ("✅ ok" if checked.returncode == 0 else
+                                            f"❌ problems:\n\n```\n{tail(checked.stdout + checked.stderr, 40)}\n```")]
+    return Result("Upgrade pixi dependencies", "\n".join(lines), changed=True)
+
+
 def _default_ci_yaml() -> str:
     return (rs.TOOLS / "ci_default.yaml").read_text()
 
@@ -1373,6 +1407,10 @@ def main(command: str, argv: list[str], distro: str | None = None) -> int:
         parser.add_argument("pull_request")
     if command == "update-vinca":
         parser.add_argument("ref", nargs="?", help="vinca branch, tag or commit (default: the pinned branch)")
+    if command == "upgrade-pixi":
+        group = parser.add_mutually_exclusive_group(required=True)
+        group.add_argument("--changes", type=Path, help="the output of `pixi upgrade --json`")
+        group.add_argument("--exclude-args", action="store_true", help="print the --exclude arguments for pixi upgrade")
     args = parser.parse_args(argv)
     if command == "parse-command":
         print(json.dumps(parse_command(args.body, args.association, args.pull_request)))
@@ -1390,6 +1428,11 @@ def main(command: str, argv: list[str], distro: str | None = None) -> int:
         return report(dependency_report(distro), args.summary)
     if command == "update-build-timings":
         return report(update_build_timings(), args.summary)
+    if command == "upgrade-pixi":
+        if args.exclude_args:
+            print(" ".join(f"--exclude {name}" for name in PIXI_UPGRADE_KEEP))
+            return 0
+        return report(upgrade_pixi(args.changes), args.summary)
     if command == "add-package":
         known = set(rs.distros())
         distros = [n for n in args.names if n in known]

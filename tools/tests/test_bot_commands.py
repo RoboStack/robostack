@@ -1,5 +1,5 @@
 """robostack-bot: command parsing and the pure helpers of rebuild, rebuild-dependents,
-update-vinca and dependency-report (no network)."""
+update-vinca, upgrade-pixi and dependency-report (no network)."""
 
 import json
 
@@ -317,3 +317,15 @@ def test_uploads_retry_five_times_waiting_longer(monkeypatch):
     monkeypatch.setattr(rs.time, "sleep", waits.append)
     assert rs.retry(["upload"], rs.ROOT, "anaconda.org") == 0
     assert waits == [30, 60, 120, 240]
+
+
+def test_upgrade_pixi_parsing_and_kept_caps(capsys):
+    assert jobs("@robostack-bot upgrade-pixi") == [{"command": "upgrade-pixi", "distro": "", "args": "", "preview": False}]
+    assert jobs("@robostack-bot upgrade-pixi", association="NONE") == []  # maintainers only
+    # the caps pixi upgrade must leave alone are all in pixi.toml
+    pixi = (rs.ROOT / "pixi.toml").read_text()
+    for name in maintenance.PIXI_UPGRADE_KEEP:
+        assert f"\n{name} = " in pixi
+    assert maintenance.main("upgrade-pixi", ["--exclude-args"]) == 0
+    assert capsys.readouterr().out.split() == [
+        arg for name in maintenance.PIXI_UPGRADE_KEEP for arg in ("--exclude", name)]
