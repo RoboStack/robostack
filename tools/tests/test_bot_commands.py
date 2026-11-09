@@ -344,3 +344,16 @@ def test_update_pixi_without_changes_opens_no_pr(monkeypatch):
     result = maintenance.update_pixi()
     assert result.ok and not result.changed
     assert calls[0] == ["pixi", "upgrade", "--json", "--exclude", "cmake", "--exclude", "python", "--exclude", "setuptools"]
+
+
+def test_update_pixi_takes_an_earlier_upgrade(monkeypatch, tmp_path):
+    calls = []
+
+    def run(cmd, **kwargs):
+        calls.append(cmd)
+        return subprocess.CompletedProcess(cmd, 0, stdout="", stderr="")
+
+    monkeypatch.setattr(maintenance.subprocess, "run", run)
+    (tmp_path / "upgrade.json").write_text("{}")
+    assert not maintenance.update_pixi(tmp_path / "upgrade.json").changed
+    assert all(cmd[:2] != ["pixi", "upgrade"] for cmd in calls)  # the bot upgraded before `pixi run`

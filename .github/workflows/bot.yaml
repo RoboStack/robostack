@@ -172,8 +172,12 @@ jobs:
             update-vinca) pixi run rs update-vinca $ARGS --summary "$RUNNER_TEMP/summary.md" ;;
             # the build-branch runs' build-times artifacts (actions: read)
             update-build-timings) pixi run rs update-build-timings --summary "$RUNNER_TEMP/summary.md" ;;
-            # pixi upgrade (pixi.toml, pixi.lock)
-            update-pixi) pixi run rs update-pixi --summary "$RUNNER_TEMP/summary.md" ;;
+            # pixi upgrade (pixi.toml, pixi.lock) first, outside pixi run: it reinstalls the
+            # environment the command would run in
+            update-pixi)
+              # shellcheck disable=SC2046  # the --exclude arguments, one word each
+              pixi upgrade --json $(pixi run -q rs update-pixi --excludes) > "$RUNNER_TEMP/pixi-upgrade.json" &&
+                pixi run rs update-pixi --changes "$RUNNER_TEMP/pixi-upgrade.json" --summary "$RUNNER_TEMP/summary.md" ;;
             # creates / updates the distribution's dependency-report issue
             dependency-report) pixi run rs "$DISTRO" dependency-report --summary "$RUNNER_TEMP/summary.md" ;;
           esac

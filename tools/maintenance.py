@@ -1075,16 +1075,30 @@ def held_back(manifest: dict) -> list[str]:
     return sorted(held)
 
 
-def update_pixi() -> Result:
-    """`pixi upgrade`: the newest versions of the tooling's dependencies in pixi.toml and
-    pixi.lock (except held_back()), with pixi-diff-to-markdown's table of the changes,
-    then the repository checks. vinca's pin is update-vinca's."""
+def pixi_upgrade_args() -> list[str]:
+    """`pixi upgrade` of everything except held_back()."""
     import tomllib
 
     held = held_back(tomllib.loads((rs.ROOT / "pixi.toml").read_text()))
-    print("pixi upgrade", flush=True)
-    upgrade = subprocess.run(["pixi", "upgrade", "--json", *(a for name in held for a in ("--exclude", name))],
-                             cwd=rs.ROOT, capture_output=True, text=True)
+    return ["pixi", "upgrade", "--json", *(a for name in held for a in ("--exclude", name))]
+
+
+def update_pixi(changes: Path | None = None) -> Result:
+    """`pixi upgrade`: the newest versions of the tooling's dependencies in pixi.toml and
+    pixi.lock (except held_back()), with pixi-diff-to-markdown's table of the changes,
+    then the repository checks. vinca's pin is update-vinca's.
+
+    changes: the output of an earlier `pixi upgrade --json` (`rs update-pixi --excludes`
+    gives its arguments). The bot upgrades before `pixi run`, so that the environment
+    isn't reinstalled under the running command; without it, this runs `pixi upgrade`."""
+    import tomllib
+
+    held = held_back(tomllib.loads((rs.ROOT / "pixi.toml").read_text()))
+    if changes is not None:
+        upgrade = subprocess.CompletedProcess([], 0, stdout=changes.read_text(), stderr="")
+    else:
+        print("pixi upgrade", flush=True)
+        upgrade = subprocess.run(pixi_upgrade_args(), cwd=rs.ROOT, capture_output=True, text=True)
     if upgrade.returncode:
         return Result("update-pixi: pixi upgrade failed", f"```\n{tail(upgrade.stdout + upgrade.stderr, 40)}\n```", ok=False)
     kept = ", ".join(f"`{name}`" for name in held)
@@ -1429,6 +1443,9 @@ def main(command: str, argv: list[str], distro: str | None = None) -> int:
         parser.add_argument("--with-dependents", action="store_true", help="also every package depending on them")
     if command == "rebuild-dependents":
         parser.add_argument("pull_request")
+    if command == "update-pixi":
+        parser.add_argument("--changes", type=Path, help="output of an earlier `pixi upgrade --json`")
+        parser.add_argument("--excludes", action="store_true", help="print the --exclude arguments for pixi upgrade")
     if command == "update-vinca":
         parser.add_argument("ref", nargs="?", help="vinca branch, tag or commit (default: the pinned branch)")
     args = parser.parse_args(argv)
@@ -1449,7 +1466,10 @@ def main(command: str, argv: list[str], distro: str | None = None) -> int:
     if command == "update-build-timings":
         return report(update_build_timings(), args.summary)
     if command == "update-pixi":
-        return report(update_pixi(), args.summary)
+        if args.excludes:
+            print(" ".join(pixi_upgrade_args()[3:]))
+            return 0
+        return report(update_pixi(args.changes), args.summary)
     if command == "add-package":
         known = set(rs.distros())
         distros = [n for n in args.names if n in known]
