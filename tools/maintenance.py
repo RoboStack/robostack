@@ -10,6 +10,7 @@
     pixi run rs rebuild PKG... [DISTRO...] [--with-dependents]  # per-package build-number bumps
     pixi run rs rebuild-dependents PR                 # commit the ABI check's suggested rebuilds to the PR
     pixi run rs update-vinca [REF]                    # move the vinca pin to the newest commit of its branch
+    pixi run rs update-pixi                           # `pixi upgrade` the tooling's dependencies
     pixi run rs <distro> dependency-report            # dependency check, kept in a dependency-report issue
     pixi run rs parse-command --body TEXT --association ROLE   # for @robostack-bot comments
 
@@ -42,6 +43,7 @@ BOT_COMMANDS = {
     "rebuild": "new builds of ROS packages, optionally with everything depending on them (opens a PR)",
     "rebuild-dependents": "on a pull request: add the rebuilds its ABI check suggests (pushes to its branch)",
     "update-vinca": "move the vinca pin to the newest commit of its branch (opens a PR)",
+    "update-pixi": "upgrade the tooling's dependencies in pixi.toml / pixi.lock to their newest versions (opens a PR)",
     "dependency-report": "check the dependencies against the pins, in the distribution's dependency-report issue",
     "update-build-timings": "record the build times of the last week's build-branch runs, for batching by time (opens a PR)",
 }
@@ -1049,6 +1051,50 @@ def update_vinca(ref: str | None = None) -> Result:
     return Result(f"Update vinca to {new[:10]}", "\n".join(lines), changed=True)
 
 
+def held_back(manifest: dict) -> list[str]:
+    """The dependencies update-pixi leaves alone: Python (a new minor version comes
+    before builds of everything the tooling needs, so it is moved by hand), and every
+    requirement that is only an upper bound, like `cmake = "<4.0"` (a deliberate cap)."""
+    tables = [manifest.get("dependencies", {})]
+    tables += [target.get("dependencies", {}) for target in manifest.get("target", {}).values()]
+    held = {"python"}
+    for table in tables:
+        for name, spec in table.items():
+            version = spec if isinstance(spec, str) else spec.get("version", "")
+            if version.strip().startswith("<"):
+                held.add(name)
+    return sorted(held)
+
+
+def update_pixi() -> Result:
+    """`pixi upgrade`: the newest versions of the tooling's dependencies in pixi.toml and
+    pixi.lock (except held_back()), with pixi-diff-to-markdown's table of the changes,
+    then the repository checks. vinca's pin is update-vinca's."""
+    import tomllib
+
+    held = held_back(tomllib.loads((rs.ROOT / "pixi.toml").read_text()))
+    print("pixi upgrade", flush=True)
+    upgrade = subprocess.run(["pixi", "upgrade", "--json", *(a for name in held for a in ("--exclude", name))],
+                             cwd=rs.ROOT, capture_output=True, text=True)
+    if upgrade.returncode:
+        return Result("update-pixi: pixi upgrade failed", f"```\n{tail(upgrade.stdout + upgrade.stderr, 40)}\n```", ok=False)
+    kept = ", ".join(f"`{name}`" for name in held)
+    if subprocess.run(["git", "diff", "--quiet", "--", "pixi.toml", "pixi.lock"], cwd=rs.ROOT).returncode == 0:
+        return Result("pixi dependencies are up to date", f"`pixi upgrade` found nothing newer (held back: {kept}).")
+    table = subprocess.run(["pixi", "exec", "pixi-diff-to-markdown"], input=upgrade.stdout,
+                           cwd=rs.ROOT, capture_output=True, text=True)
+    changes = table.stdout.strip() if table.returncode == 0 and table.stdout.strip() else (
+        f"```json\n{tail(upgrade.stdout, 80)}\n```")
+    lines = [f"`pixi upgrade`: the newest versions of the tooling's dependencies in `pixi.toml` and `pixi.lock`. "
+             f"Held back: {kept} (Python is moved by hand, the others are capped on purpose); "
+             "the vinca pin is `update-vinca`'s.", "", changes, ""]
+    print("pixi run rs check", flush=True)
+    checked = subprocess.run(["pixi", "run", "rs", "check"], cwd=rs.ROOT, capture_output=True, text=True)
+    lines.append("`pixi run rs check`: " + ("✅ ok" if checked.returncode == 0 else
+                                            f"❌ problems:\n\n```\n{tail(checked.stdout + checked.stderr, 40)}\n```"))
+    return Result("Upgrade pixi dependencies", "\n".join(lines), changed=True)
+
+
 REPORT_LABEL = "dependency-report"
 REPORT_MARKER = "<!-- robostack-dependency-report -->"
 MAX_ISSUE_BODY = 60000  # GitHub's limit is 65536 characters
@@ -1390,6 +1436,8 @@ def main(command: str, argv: list[str], distro: str | None = None) -> int:
         return report(dependency_report(distro), args.summary)
     if command == "update-build-timings":
         return report(update_build_timings(), args.summary)
+    if command == "update-pixi":
+        return report(update_pixi(), args.summary)
     if command == "add-package":
         known = set(rs.distros())
         distros = [n for n in args.names if n in known]
