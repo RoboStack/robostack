@@ -1,0 +1,34 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 01331b9..279d989 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -23,7 +23,7 @@ find_package(ament_cmake REQUIRED)
+ find_package(rclcpp REQUIRED)
+ 
+ find_package(gz_sim_vendor REQUIRED)
+-find_package(gz-sim REQUIRED)
++find_package(gz-sim REQUIRED COMPONENTS gui)
+ find_package(gz_plugin_vendor REQUIRED)
+ find_package(gz-plugin REQUIRED)
+ find_package(gz_gui_vendor REQUIRED)
+@@ -174,6 +174,8 @@ add_library(LightTuning SHARED ${headers_MOC}
+ target_link_libraries(LightTuning
+   gz-gui::core
+   gz-sim::core
++  # GuiSystem lives in the gui library (macOS doesn't allow it to stay undefined)
++  gz-sim::gui
+   gz-msgs::core
+   gz-transport::core
+   gz-rendering::core
+diff --git a/src/LightTuning/LightTuning.cpp b/src/LightTuning/LightTuning.cpp
+index 1a78e66..2a9d1c5 100644
+--- a/src/LightTuning/LightTuning.cpp
++++ b/src/LightTuning/LightTuning.cpp
+@@ -450,7 +450,6 @@ signals:
+   void markerSelected(QString nm);
+ 
+ public slots:
+-  void OnLightTypeSelect(sdf::Light& light, const QString& type);
+   void OnCreateLightBtnPress(
+     int idx, bool cast_shadow, const QString& type,
+     const QString& name, const QString& pose_str,

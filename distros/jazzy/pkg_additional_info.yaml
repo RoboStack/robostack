@@ -149,6 +149,8 @@ nav2_rviz_plugins:
   build_number: 28
 octomap_rviz_plugins:
   build_number: 28
+rmf_utils:  # its DLL moved from lib to bin (Windows)
+  build_number: 28
 rtabmap_slam:  # its recipe test stops the node for sure (package tests hung on macOS)
   build_number: 28
 rviz_2d_overlay_plugins:

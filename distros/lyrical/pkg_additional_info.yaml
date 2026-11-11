@@ -133,6 +133,18 @@ moveit_task_constructor_visualization:
   build_number: 31
 nav2_rviz_plugins:
   build_number: 31
+rmf_fleet_adapter:  # its DLL moved to bin (Windows)
+  build_number: 31
+rmf_fleet_adapter_python:  # rmf_adapter as a Python MODULE (shared patch)
+  build_number: 31
+rmf_task_ros2:  # its DLL moved to bin (Windows)
+  build_number: 31
+rmf_traffic_ros2:  # its DLL moved to bin (Windows)
+  build_number: 31
+rmf_utils:  # its DLL moved to bin (Windows)
+  build_number: 31
+rmf_websocket:  # its DLL moved to bin (Windows)
+  build_number: 31
 rtabmap_rviz_plugins:
   build_number: 31
 rtabmap_slam:  # its recipe test stops the node for sure (package tests hung on macOS)
