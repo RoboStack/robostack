@@ -219,6 +219,7 @@ packages_select_by_deps:
   - nav2_minimal_tb3_sim
   - nav2_minimal_tb4_sim
   - navigation2
+  - nebula
   - negotiated
   - nmea_msgs
   - nmea_navsat_driver
