@@ -1,6 +1,6 @@
 # Pull-request build: only the distributions a PR touches are built
 # (a change outside distros/ affects all of them), on all five platforms.
-name: Build
+name: Pull request
 
 on:
   pull_request:
@@ -24,6 +24,7 @@ env:
 
 jobs:
   plan:
+    name: "plan: distros and platforms to build"
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -67,6 +68,7 @@ jobs:
           echo "targets=$(pixi run python tools/robostack.py build-targets --labels "$labels")" | tee -a "$GITHUB_OUTPUT"
 
   check:
+    name: "checks: tooling tests, generated files"
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
@@ -97,7 +99,7 @@ jobs:
       fail-fast: false
       matrix:
         distro: ${{ fromJSON(needs.plan.outputs.distros) }}
-    name: ${{ matrix.distro }} patches
+    name: "${{ matrix.distro }}: patches apply"
     runs-on: ubuntu-latest
     env:
       DISTRO: ${{ matrix.distro }}
@@ -147,7 +149,7 @@ jobs:
       matrix:
         distro: ${{ fromJSON(needs.plan.outputs.distros) }}
         target: ${{ fromJSON(needs.plan.outputs.targets) }}  # tools/robostack.py BUILD_TARGETS
-    name: ${{ matrix.distro }} ${{ matrix.target.platform }}
+    name: "${{ matrix.distro }} ${{ matrix.target.platform }}: build"
     runs-on: ${{ matrix.target.os }}
     env:
       DISTRO: ${{ matrix.distro }}

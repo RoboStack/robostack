@@ -4,7 +4,7 @@
 # @recipes@ with its recipes; @distro@, @platform@, @branch@, @secret@ and
 # @keep_file@ come from tools/robostack.py. Selectors (if/then/else) are resolved
 # for the platform. The steps are .github/actions/build-recipes.
-name: build
+name: Build branch
 run-name: "@distro@ @platform@"
 on:
   push:
