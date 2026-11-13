@@ -78,16 +78,6 @@ def run(cmd: list[str], cwd: Path) -> int:
     return subprocess.run(cmd, cwd=cwd).returncode
 
 
-def run_tee(cmd: list[str], cwd: Path) -> tuple[int, bytes]:
-    """run(), also returning the combined output."""
-    print("+", " ".join(cmd), f"  (in {cwd.relative_to(ROOT)})", flush=True)
-    output = bytearray()
-    with subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT) as proc:
-        for line in proc.stdout:
-            sys.stdout.buffer.write(line)
-            sys.stdout.buffer.flush()
-            output += line
-    return proc.returncode, bytes(output)
 
 
 # the recipe and workflow generator (https://github.com/Tobias-Fischer/vinca-rs)

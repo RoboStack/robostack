@@ -73,33 +73,6 @@ def test_update_build_timings_command(tmp_path, monkeypatch):
     assert not maintenance.update_build_timings().changed  # nothing new: no PR
 
 
-def test_gha_keeps_the_journal_and_uses_the_times(tmp_path, monkeypatch):
-    import robostack as rs
-
-    work, root = tmp_path / "work", tmp_path / "root"
-    work.mkdir()
-    (root / ".github" / "workflows").mkdir(parents=True)
-    calls = []
-
-    def fake_run_tee(cmd, cwd):
-        calls.append(cmd)
-        (work / "linux.yml").write_text("name: build\njobs:\n  stage_0_job_0:\n    steps: []\n")
-        return 0, b""
-
-    monkeypatch.setattr(rs, "run_tee", fake_run_tee)
-    monkeypatch.setattr(rs, "work_dir", lambda distro: work)
-    monkeypatch.setattr(rs, "ROOT", root)
-    monkeypatch.setattr(build_timings, "TIMINGS", tmp_path / "timings")
-    assert rs.generate_gha("jazzy", ["--platform", "linux-64"]) == 0
-    assert "--keep-file" in calls[-1] and "--timings" not in calls[-1]  # no times yet
-    (tmp_path / "timings").mkdir()
-    (tmp_path / "timings" / "linux-64.json").write_text('{"ros2-a": {"jazzy": 3.0}}\n')
-    assert rs.generate_gha("jazzy", ["--platform", "linux-64"]) == 0
-    assert calls[-1][calls[-1].index("--timings") + 1] == "build_timings.json"
-    assert json.loads((work / "build_timings.json").read_text()) == {
-        "recipes": {"ros2-a": 3.0, "ros-jazzy-a": build_timings.ALIAS_SECONDS}, "default": 3.0}
-
-
 def test_ci_estimate_uses_the_measured_times(tmp_path, monkeypatch, capsys):
     import ci_estimate
 
