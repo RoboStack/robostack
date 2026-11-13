@@ -28,7 +28,7 @@ pytest = ">=9.1.1,<10"
 # gh for the workflows: one version everywhere (the runner's is not on PATH on Windows)
 gh = ">=2.102.0,<3"
 # built and published by vinca-rs's release workflow
-vinca-rs = { version = "==0.1.6", channel = "https://prefix.dev/tobias-fischer/robostack-tools" }
+vinca-rs = { version = "==0.1.7", channel = "https://prefix.dev/tobias-fischer/robostack-tools" }
 
 [target.win-64.dependencies]
 # patch is required by rattler-build

@@ -117,6 +117,8 @@ rtabmap_slam:  # its recipe test stops the node for sure (package tests hung on 
   build_number: 23
 spatio_temporal_voxel_layer:
   build_number: 23
+tracetools:
+  build_number: 24
 urdf:  # drop deprecated urdf_world/types.h include (ros2/urdf#54) for headers 3.x
   build_number: 23
 urdf_parser_plugin:  # use urdf_model/types.h (ros2/urdf#54) for headers 3.x
