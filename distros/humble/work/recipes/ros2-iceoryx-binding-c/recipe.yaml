@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/prefix-dev/recipe-format/main/schema.json
+
+package:
+  name: ros2-iceoryx-binding-c
+  version: 2.95.8
+build:
+  number: 22
+  script: ''
+requirements:
+  run:
+  - libiceoryx-binding-c >=2.95.8, <2.96.0a0
+  - ros2-distro-mutex 0.11.* humble_*
+about:
+  homepage: https://iceoryx.io
+  repository: https://github.com/eclipse-iceoryx/iceoryx
+  license: Apache-2.0
+  summary: Eclipse iceoryx inter-process-communication (IPC) middleware C-Language Binding
+extra:
+  recipe-maintainers:
+  - ros-forge

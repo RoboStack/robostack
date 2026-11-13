@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/prefix-dev/recipe-format/main/schema.json
+
+package:
+  name: ros2-eigenpy
+  version: 3.13.0
+build:
+  number: 22
+  script: ''
+requirements:
+  run:
+  - eigenpy >=3.13.0, <3.13.1a0
+  - ros2-distro-mutex 0.11.* humble_*
+about:
+  homepage: https://github.com/stack-of-tasks/eigenpy
+  repository: https://github.com/stack-of-tasks/eigenpy
+  license: BSD-2-Clause
+  summary: Bindings between Numpy and Eigen using Boost.Python
+extra:
+  recipe-maintainers:
+  - ros-forge

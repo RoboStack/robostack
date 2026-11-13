@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/prefix-dev/recipe-format/main/schema.json
+
+package:
+  name: ros2-py-trees
+  version: 2.6.0
+build:
+  number: 22
+  script: ''
+requirements:
+  run:
+  - py-trees >=2.6.0, <2.6.1a0
+  - ros2-distro-mutex 0.11.* humble_*
+about:
+  homepage: https://py-trees.readthedocs.io/en/devel/
+  repository: https://github.com/splintered-reality/py_trees
+  license: BSD-3-Clause
+  summary: Pythonic implementation of behaviour trees.
+extra:
+  recipe-maintainers:
+  - ros-forge
