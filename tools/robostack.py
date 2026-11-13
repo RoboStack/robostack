@@ -90,8 +90,8 @@ def run_tee(cmd: list[str], cwd: Path) -> tuple[int, bytes]:
     return proc.returncode, bytes(output)
 
 
-WORKFLOW_SIZE_MESSAGE = b"exceeding the 500 KiB limit"
-MAX_BATCH_SIZE = 100
+# the recipe and workflow generator (https://github.com/Tobias-Fischer/vinca-rs)
+VINCA_RS = os.environ.get("VINCA_RS", "vinca-rs")
 
 
 # prefix.dev's sharded repodata (what rattler reads) lists a new upload a few minutes
@@ -537,7 +537,8 @@ def task(distro: str, name: str, args: list[str]) -> int:
         shutil.rmtree(w / "recipes", ignore_errors=True)
         shutil.rmtree(w / "recipes_only_patch", ignore_errors=True)
         (w / "recipes").mkdir()
-        return run(["vinca", "-m", *args], w)
+        # vinca-rs: the recipes, without those already on the skip_existing channels
+        return run([VINCA_RS, "generate", "--out", "recipes", *args], w)
     if not (w / "vinca.yaml").is_file():
         prepare(distro)
     if name == "check-orphaned-patches":
@@ -585,80 +586,38 @@ def task(distro: str, name: str, args: list[str]) -> int:
 
 
 def generate_gha(distro: str, args: list[str]) -> int:
-    """vinca-gha for one distribution; the workflow gets a distro-specific name and
-    trigger branch, the file name .github/workflows/build.yaml, and tells the build
-    scripts which distro to build."""
+    """The staged build workflow of one distribution and platform, from
+    .github/build-template.yaml (vinca-rs workflow), as .github/workflows/build.yaml."""
     parser = argparse.ArgumentParser(prog="rs <distro> gha")
     parser.add_argument("--platform", required=True)
     parser.add_argument("--batch-size", default="25")
     ns = parser.parse_args(args)
     d = work_dir(distro)
     branch = f"buildbranch_{distro}_{ns.platform.replace('-', '_')}"
-    before = set(d.glob("*.yml"))
-    # GitHub refuses workflow files over 500 KiB, which a full rebuild's many batches can
-    # reach (jazzy's win-64 at 25): then retry with larger, hence fewer, batches.
-    batch_size = int(ns.batch_size)
-    # each job keeps the build times it records (build-ci); vinca-gha packs each stage's
-    # recipes into jobs by those times (every recipe the same without them)
+    # each job keeps the build times it records (build-ci); vinca-rs packs the recipes
+    # into jobs by those times (every recipe the same without them)
     import build_timings
 
-    extra = ["--keep-file", f"distros/{distro}/work/{build_timings.JOURNAL}"]
+    extra = []
     if build_timings.vinca_timings(distro, ns.platform, d / "build_timings.json"):
         extra += ["--timings", "build_timings.json"]
-    # vinca-gha keeps the workflow under GitHub's size limit itself (a job budget); only
-    # when even the fewest jobs the batch size allows are too many, retry with larger batches
-    while True:
-        rc, output = run_tee(["vinca-gha", "--platform", ns.platform, "--trigger-branch", branch, "-d",
-                              "./recipes", "--batch_size", str(batch_size), *extra], d)
-        if not rc or WORKFLOW_SIZE_MESSAGE not in output:
-            break
-        if batch_size >= MAX_BATCH_SIZE:
-            break
-        batch_size = min(batch_size * 3 // 2, MAX_BATCH_SIZE)
-        print(f"The workflow is too large; retrying with --batch_size {batch_size}", flush=True)
-    if rc:
-        return rc
-    # Edit the text: a YAML round trip would turn the `on:` key into `true:` (YAML 1.1).
-    for wf in sorted(set(d.glob("*.yml")) - before):
-        lines = wf.read_text().splitlines()
-        # all build branches share .github/workflows/build.yaml, which GitHub lists as one
-        # workflow: run-name tells the runs apart
-        # one run per distribution and platform at a time: a newer run (the latest main's
-        # recipes and workflow) cancels the older one, and skips what that one uploaded
-        # already. Re-run failed jobs only in the newest run: re-running an older one
-        # would cancel the newer run.
-        lines = [f"name: build\nrun-name: {distro} {ns.platform}\n"
-                 f"concurrency:\n  group: build-{distro}-{ns.platform}\n  cancel-in-progress: true"
-                 if l.startswith("name: ") else l for l in lines]
-        # vinca-gha passes secrets.ANACONDA_API_TOKEN to the build jobs, for the anaconda.org
-        # upload (prefix.dev uses trusted publishing, id-token: write): each distribution
-        # has its own token (its organization's), the secret ANACONDA_API_TOKEN_<DISTRO>
-        secret = anaconda_token_secret(distro)
-        lines = [l.replace("secrets.ANACONDA_API_TOKEN }}", f"secrets.{secret} }}}}") for l in lines]
-        # jobs that declare permissions get none they don't list: checking out the
-        # repository needs contents: read (only works without it while it is public)
-        lines = [f"{l}\n{l[:len(l) - len(l.lstrip())]}contents: read" if l.strip() == "id-token: write" else l
-                 for l in lines]
-        if sum("permissions:" in l for l in lines) != sum("contents: read" in l for l in lines):
-            raise SystemExit(f"{wf}: a job with permissions but without contents: read")
-        if ns.platform == "win-64" and not any("build_win.bat" in l for l in lines):
-            raise SystemExit(f"{wf}: the Windows workflow doesn't use .scripts/build_win.bat")
-        if any(l.startswith("env:") for l in lines):
-            raise SystemExit(f"{wf}: unexpected top-level env in the vinca-gha output")
-        lines += [
-            "env:",
-            f"  ROBOSTACK_DISTRO: {distro}",
-            "  # optional repository variable: upload to this prefix.dev channel instead",
-            "  # (e.g. a test channel), or 'none' to only build",
-            "  ROBOSTACK_UPLOAD_CHANNEL: ${{ vars.ROBOSTACK_UPLOAD_CHANNEL }}",
-        ]
-        # one file name on every build branch (each branch carries only its own
-        # workflow), so a single prefix.dev Repository Access source matches them all
-        dest = ROOT / ".github" / "workflows" / "build.yaml"
-        dest.write_text("\n".join(lines) + "\n")
-        wf.unlink()
+    # one file name on every build branch (each branch carries only its own workflow),
+    # so a single prefix.dev Repository Access source matches them all
+    dest = ROOT / ".github" / "workflows" / "build.yaml"
+    variables = {
+        "distro": distro,
+        "branch": branch,
+        # each distribution has its own anaconda.org token (its organization's)
+        "secret": anaconda_token_secret(distro),
+        "keep_file": f"distros/{distro}/work/{build_timings.JOURNAL}",
+    }
+    rc = run([VINCA_RS, "workflow", "--recipes", "recipes", "--platform", ns.platform,
+              "--template", str(ROOT / ".github" / "build-template.yaml"), "--out", str(dest),
+              "--max-batch", ns.batch_size, *extra,
+              *[a for k, v in variables.items() for a in ("--var", f"{k}={v}")]], d)
+    if not rc and dest.is_file():
         print(f"wrote {dest.relative_to(ROOT)} (trigger branch {branch})")
-    return 0
+    return rc
 
 
 NO_BUILD_LABEL = "build:none"  # only the checks (tooling, CI or docs changes)
