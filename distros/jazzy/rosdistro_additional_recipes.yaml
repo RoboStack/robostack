@@ -145,6 +145,7 @@ ros2_easy_test:
   version: 0.3.0
   additional_folder: ros2_easy_test
 rplidar_ros:
+  override: "2.1.4 (as humble) for its win32 SDK arch; the released 2.1.0 is POSIX only"
   # 2.1.4 (as humble) for its win32 SDK arch; the released 2.1.0 is POSIX only
   tag: 2.1.4
   url: https://github.com/Slamtec/rplidar_ros.git

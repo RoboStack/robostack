@@ -1,0 +1,14 @@
+diff --git a/lazy_free_space_updater/include/moveit/lazy_free_space_updater/lazy_free_space_updater.h b/lazy_free_space_updater/include/moveit/lazy_free_space_updater/lazy_free_space_updater.h
+index c2686a8..873d2fb 100644
+--- a/lazy_free_space_updater/include/moveit/lazy_free_space_updater/lazy_free_space_updater.h
++++ b/lazy_free_space_updater/include/moveit/lazy_free_space_updater/lazy_free_space_updater.h
+@@ -54,7 +54,8 @@ public:
+                       const octomap::point3d& sensor_origin);
+ 
+ private:
+-#ifdef __APPLE__
++// MSVC reports __cplusplus 199711L (without /Zc:__cplusplus): take the C++11 branch there too
++#if defined(__APPLE__) || defined(_MSC_VER)
+   typedef std::unordered_map<octomap::OcTreeKey, unsigned int, octomap::OcTreeKey::KeyHash> OcTreeKeyCountMap;
+ #elif __cplusplus >= 201103L
+   typedef std::unordered_map<octomap::OcTreeKey, unsigned int, octomap::OcTreeKey::KeyHash> OcTreeKeyCountMap;
