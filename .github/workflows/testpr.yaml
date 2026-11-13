@@ -10,8 +10,9 @@ on:
         description: Space-separated distributions to build (default all)
         required: false
 
+# a fixed key, not github.workflow: renaming the workflow mustn't let two runs overlap
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: pr-build-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 permissions:
