@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/prefix-dev/recipe-format/main/schema.json
+
+package:
+  name: ros2-ompl
+  version: 2.0.1
+build:
+  number: 22
+  script: ''
+requirements:
+  run:
+  - ompl >=2.0.1, <2.1.0a0
+  - ros2-distro-mutex 0.11.* humble_*
+about:
+  homepage: https://ompl.kavrakilab.org
+  repository: https://github.com/ompl/ompl
+  license: BSD-3-Clause
+  summary: OMPL is a free sampling-based motion planning library.
+extra:
+  recipe-maintainers:
+  - ros-forge

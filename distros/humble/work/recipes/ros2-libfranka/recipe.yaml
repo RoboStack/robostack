@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/prefix-dev/recipe-format/main/schema.json
+
+package:
+  name: ros2-libfranka
+  version: 0.21.3
+build:
+  number: 22
+  script: ''
+requirements:
+  run:
+  - libfranka >=0.21.3, <0.21.4a0
+  - ros2-distro-mutex 0.11.* humble_*
+about:
+  homepage: http://wiki.ros.org/libfranka
+  repository: https://github.com/frankaemika/libfranka
+  license: Apache-2.0
+  summary: libfranka is a C++ library for Franka Robotics research robots
+extra:
+  recipe-maintainers:
+  - ros-forge

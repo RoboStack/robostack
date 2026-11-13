@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/prefix-dev/recipe-format/main/schema.json
+
+package:
+  name: ros2-librealsense2
+  version: 2.58.3
+build:
+  number: 22
+  script: ''
+requirements:
+  run:
+  - librealsense >=2.58.3, <2.59.0a0
+  - ros2-distro-mutex 0.11.* humble_*
+about:
+  homepage: https://github.com/realsenseai/librealsense/
+  repository: https://github.com/IntelRealSense/librealsense
+  license: Apache-2.0
+  summary: Library for controlling and capturing data from the RealSense depth streaming devices.
+extra:
+  recipe-maintainers:
+  - ros-forge

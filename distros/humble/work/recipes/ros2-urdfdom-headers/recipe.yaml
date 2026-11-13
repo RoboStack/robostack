@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/prefix-dev/recipe-format/main/schema.json
+
+package:
+  name: ros2-urdfdom-headers
+  version: 3.0.0
+build:
+  number: 22
+  script: ''
+requirements:
+  run:
+  - urdfdom_headers >=3.0.0, <3.1.0a0
+  - ros2-distro-mutex 0.11.* humble_*
+about:
+  homepage: http://ros.org/wiki/urdf
+  repository: https://github.com/ros/urdfdom_headers
+  license: BSD-3-Clause
+  summary: C++ headers for URDF.
+extra:
+  recipe-maintainers:
+  - ros-forge

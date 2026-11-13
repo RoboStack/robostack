@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/prefix-dev/recipe-format/main/schema.json
+
+package:
+  name: ros2-visp
+  version: 3.7.0
+build:
+  number: 22
+  script: ''
+requirements:
+  run:
+  - visp >=3.7.0, <3.8.0a0
+  - ros2-distro-mutex 0.11.* humble_*
+about:
+  homepage: https://visp.inria.fr
+  repository: https://github.com/lagadic/visp
+  license: GPL-2.0-or-later
+  summary: ViSP standing for Visual Servoing Platform is a modular cross platform library that allows prototyping and developing applications using visual tracking and visual servoing technics at the heart of the researches done by Inria Lagadic team. ViSP is able to compute control laws that can be applied to robotic systems. It provides a set of visual features that can be tracked using real time image processing or computer vision algorithms. ViSP provides also simulation capabilities. ViSP can be useful in robotics, computer vision, augmented reality and computer animation.
+extra:
+  recipe-maintainers:
+  - ros-forge

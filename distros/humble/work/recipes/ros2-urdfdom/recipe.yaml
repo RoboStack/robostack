@@ -1,0 +1,19 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/prefix-dev/recipe-format/main/schema.json
+
+package:
+  name: ros2-urdfdom
+  version: 6.0.0
+build:
+  number: 22
+  script: ''
+requirements:
+  run:
+  - urdfdom >=6.0.0, <6.1.0a0
+  - ros2-distro-mutex 0.11.* humble_*
+about:
+  repository: https://github.com/ros/urdfdom
+  license: BSD-3-Clause
+  summary: A library to access URDFs using the DOM model.
+extra:
+  recipe-maintainers:
+  - ros-forge

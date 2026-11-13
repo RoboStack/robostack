@@ -1,0 +1,28 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/prefix-dev/recipe-format/main/schema.json
+
+package:
+  name: ros2-pinocchio
+  version: 4.1.0
+build:
+  number: 22
+  script: ''
+requirements:
+  run:
+  - pinocchio >=4.1.0, <4.1.1a0
+  - ros2-distro-mutex 0.11.* humble_*
+tests:
+- script:
+  - cmake-package-check pinocchio --targets pinocchio::pinocchio
+  requirements:
+    run:
+    - cmake-package-check
+    - ${{ compiler('c') }}
+    - ${{ compiler('cxx') }}
+about:
+  homepage: https://github.com/stack-of-tasks/pinocchio
+  repository: https://github.com/stack-of-tasks/pinocchio
+  license: BSD-2-Clause
+  summary: A fast and flexible implementation of Rigid Body Dynamics algorithms and their analytical derivatives.
+extra:
+  recipe-maintainers:
+  - ros-forge
