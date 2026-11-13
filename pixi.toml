@@ -30,7 +30,7 @@ pytest = ">=9.1.1,<10"
 # gh for the workflows: one version everywhere (the runner's is not on PATH on Windows)
 gh = ">=2.102.0,<3"
 # the recipe and workflow generator
-vinca-rs = { git = "https://github.com/Tobias-Fischer/vinca-rs.git", rev = "beb4c2b" }
+vinca-rs = { git = "https://github.com/Tobias-Fischer/vinca-rs.git", rev = "839d695" }
 
 [target.win-64.dependencies]
 # patch is required by rattler-build

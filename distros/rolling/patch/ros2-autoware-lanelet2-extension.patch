@@ -17,3 +17,16 @@ index 6c1f16c..2126cdb 100644
  # Suppress boost geometry uninitialized variable warnings
  # This is a known issue in boost geometry library where internal template code
  # may trigger maybe-uninitialized warnings that are false positives.
+diff --git a/lib/deprecated.cpp b/lib/deprecated.cpp
+index 7a78e45..1220fc2 100644
+--- a/lib/deprecated.cpp
++++ b/lib/deprecated.cpp
+@@ -20,6 +20,8 @@
+ 
+ #include "deprecated.hpp"
+ 
++#include <rclcpp/clock.hpp>
++#include <rclcpp/logging.hpp>
+ #include <tf2/utils.hpp>
+ 
+ #include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
