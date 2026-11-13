@@ -117,6 +117,12 @@ nao_lola:
 nav2_smac_planner:
   add_build: ["${{ 'llvm-openmp' if osx }}"]
   add_host: ["${{ 'llvm-openmp' if osx }}", "ompl", "libode"]
+nebula_core_decoders:
+  # FindPNG needs zlib's development files (headers, libz.so/zlib.lib), which libpng does not pull in.
+  # Dependents find PNG again through ament_export_dependencies, hence add_run.
+  # Fixed upstream in https://github.com/tier4/nebula/pull/538 (after 1.2.0).
+  add_host: ["zlib"]
+  add_run: ["zlib"]
 octomap_ros:
   add_host: ["octomap"]
 octomap_rviz_plugins:
