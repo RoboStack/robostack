@@ -1,0 +1,13 @@
+diff --git a/src/velodyne_hw_interface.cpp b/src/velodyne_hw_interface.cpp
+index 13bc35d..04d9a37 100644
+--- a/src/velodyne_hw_interface.cpp
++++ b/src/velodyne_hw_interface.cpp
+@@ -4,6 +4,8 @@
+ 
+ #include "nebula_core_common/util/string_conversions.hpp"
+ 
++#include <boost/format.hpp>
++
+ #include <iostream>
+ #include <memory>
+ #include <string>
