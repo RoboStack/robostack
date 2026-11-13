@@ -11,8 +11,6 @@ platforms = [
   { platform = "linux-aarch64", glibc = "2.17" },
   "win-64",
 ]
-# vinca-rs is a source dependency, built with pixi-build-rust
-preview = ["pixi-build"]
 
 [target.win.activation.env]
 PYTHONIOENCODING = "utf-8"
@@ -29,10 +27,9 @@ git-lfs = "*"
 pytest = ">=9.1.1,<10"
 # gh for the workflows: one version everywhere (the runner's is not on PATH on Windows)
 gh = ">=2.102.0,<3"
-# the recipe and workflow generator
-vinca-rs = { git = "https://github.com/Tobias-Fischer/vinca-rs.git", rev = "839d695" }
 
 [target.win-64.dependencies]
+vinca-rs = { url = "https://github.com/Tobias-Fischer/vinca-rs/releases/download/v0.1.3/vinca-rs-0.1.3-he01afda_0.conda", sha256 = "e4faa0e18b7a24e3b6d8286b5a1fee8c937357657d3ff49d93fc2fae7b57585f" }  # vinca-rs: tools/pin_vinca_rs.py
 # patch is required by rattler-build
 m2-patch = "*"
 # git is required by rattler-build
@@ -50,3 +47,15 @@ sort = { cmd = "sh -lc 'vinca-sort-vinca-lists $@ shared/vinca.yaml && vinca-sor
 test = { cmd = "python -m pytest tools/tests", description = "Unit tests of the repository tooling (tools/tests)." }
 abi-check = { cmd = "pixi exec -s python=3.14 -s zstandard -s pyyaml -s pyelftools python tools/abi_check.py", description = "Compare the ABI of package builds with libabigail (Linux only): `pixi run abi-check --distro jazzy --latest-pairs 30`, `--old a.conda --new b.conda`, or `--pr-builds <dir>` (a pull request's builds against the released ones)." }
 render-pinning = { cmd = "sh -lc 'for d in distros/*/; do python tools/robostack.py $(basename $d) render-pinning || exit 1; done'", description = "Regenerate every distribution's conda_build_config.yaml from shared/pinning and its distro.yaml." }
+
+[target.linux-64.dependencies]  # vinca-rs: tools/pin_vinca_rs.py
+vinca-rs = { url = "https://github.com/Tobias-Fischer/vinca-rs/releases/download/v0.1.3/vinca-rs-0.1.3-h41f06ac_0.conda", sha256 = "6dc3e6df7405693d0289c4f0ece1799cb6b28d15c7abb6e4a33e3fc323ef420f" }  # vinca-rs: tools/pin_vinca_rs.py
+
+[target.linux-aarch64.dependencies]  # vinca-rs: tools/pin_vinca_rs.py
+vinca-rs = { url = "https://github.com/Tobias-Fischer/vinca-rs/releases/download/v0.1.3/vinca-rs-0.1.3-h11eb1b2_0.conda", sha256 = "1c641960ae5bde5d175f43290c97b046092f73dd1663feb2ce272f0a2611b00c" }  # vinca-rs: tools/pin_vinca_rs.py
+
+[target.osx-64.dependencies]  # vinca-rs: tools/pin_vinca_rs.py
+vinca-rs = { url = "https://github.com/Tobias-Fischer/vinca-rs/releases/download/v0.1.3/vinca-rs-0.1.3-h4778241_0.conda", sha256 = "768dd2095fcea4680cd95a5304b201eb89468bc595a4f1a8bde8d882d939ab08" }  # vinca-rs: tools/pin_vinca_rs.py
+
+[target.osx-arm64.dependencies]  # vinca-rs: tools/pin_vinca_rs.py
+vinca-rs = { url = "https://github.com/Tobias-Fischer/vinca-rs/releases/download/v0.1.3/vinca-rs-0.1.3-hea27dcd_0.conda", sha256 = "663a0102be34388675efac416bcba0d5c9ea67561c241348447b5c70eff8fef8" }  # vinca-rs: tools/pin_vinca_rs.py
