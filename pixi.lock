@@ -32,11 +32,11 @@ environments:
   default:
     channels:
     - url: https://prefix.dev/conda-forge/
+    - url: https://prefix.dev/tobias-fischer/robostack-tools/
     indexes:
     - https://pypi.org/simple
     packages:
       linux-64-glibc-2-17:
-      - conda: https://github.com/Tobias-Fischer/vinca-rs/releases/download/v0.1.3/vinca-rs-0.1.3-h41f06ac_0.conda
       - conda: https://prefix.dev/conda-forge/linux-64/_openmp_mutex-4.5-20_gnu.conda
       - conda: https://prefix.dev/conda-forge/linux-64/bzip2-1.0.8-hda65f42_10.conda
       - conda: https://prefix.dev/conda-forge/linux-64/c-ares-1.34.8-hebe6cf0_2.conda
@@ -91,6 +91,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/tomli-2.5.0-pyh5ded981_0.conda
       - conda: https://prefix.dev/conda-forge/noarch/typing_extensions-4.16.0-pyhcf101f3_0.conda
       - conda: https://prefix.dev/conda-forge/noarch/tzdata-2026c-h151e31d_0.conda
+      - conda: https://prefix.dev/tobias-fischer/robostack-tools/linux-64/vinca-rs-0.1.6-h41f06ac_0.conda
       - pypi: git+https://github.com/RoboStack/vinca.git?rev=74d1e856d5b00c0cb5ee0c1be41dac4afcae7bf5#74d1e856d5b00c0cb5ee0c1be41dac4afcae7bf5
       - pypi: https://files.pythonhosted.org/packages/0b/a7/71ac2cff56fec219ed242bb11b8efb69fcc4bec75db06fb7bfe35de520e6/certifi-2026.7.22-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/12/74/ef303ec980ef962ffe548fa36cb138bb399d1d1315731ba7bb81da85f7e0/rosdistro-1.1.0-py3-none-any.whl
@@ -117,7 +118,6 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/e5/ca/78d423b324b8d77900030fa59c4aa9054261ef0925631cd2501dd015b7b7/boolean_py-5.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ec/57/56b9bcc3c9c6a792fcbaf139543cee77261f3651ca9da0c93f5c1221264b/python_dateutil-2.9.0.post0-py2.py3-none-any.whl
       linux-aarch64-glibc-2-17:
-      - conda: https://github.com/Tobias-Fischer/vinca-rs/releases/download/v0.1.3/vinca-rs-0.1.3-h11eb1b2_0.conda
       - conda: https://prefix.dev/conda-forge/linux-aarch64/_openmp_mutex-4.5-20_gnu.conda
       - conda: https://prefix.dev/conda-forge/linux-aarch64/bzip2-1.0.8-h4777abc_10.conda
       - conda: https://prefix.dev/conda-forge/linux-aarch64/c-ares-1.34.8-h29ee22c_2.conda
@@ -172,6 +172,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/noarch/tomli-2.5.0-pyh5ded981_0.conda
       - conda: https://prefix.dev/conda-forge/noarch/typing_extensions-4.16.0-pyhcf101f3_0.conda
       - conda: https://prefix.dev/conda-forge/noarch/tzdata-2026c-h151e31d_0.conda
+      - conda: https://prefix.dev/tobias-fischer/robostack-tools/linux-aarch64/vinca-rs-0.1.6-h11eb1b2_0.conda
       - pypi: git+https://github.com/RoboStack/vinca.git?rev=74d1e856d5b00c0cb5ee0c1be41dac4afcae7bf5#74d1e856d5b00c0cb5ee0c1be41dac4afcae7bf5
       - pypi: https://files.pythonhosted.org/packages/0b/a7/71ac2cff56fec219ed242bb11b8efb69fcc4bec75db06fb7bfe35de520e6/certifi-2026.7.22-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/12/74/ef303ec980ef962ffe548fa36cb138bb399d1d1315731ba7bb81da85f7e0/rosdistro-1.1.0-py3-none-any.whl
@@ -198,7 +199,6 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/e5/ca/78d423b324b8d77900030fa59c4aa9054261ef0925631cd2501dd015b7b7/boolean_py-5.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ec/57/56b9bcc3c9c6a792fcbaf139543cee77261f3651ca9da0c93f5c1221264b/python_dateutil-2.9.0.post0-py2.py3-none-any.whl
       osx-64:
-      - conda: https://github.com/Tobias-Fischer/vinca-rs/releases/download/v0.1.3/vinca-rs-0.1.3-h4778241_0.conda
       - conda: https://prefix.dev/conda-forge/noarch/ca-certificates-2026.7.22-hbd8a1cb_0.conda
       - conda: https://prefix.dev/conda-forge/noarch/colorama-0.4.6-pyhd8ed1ab_1.conda
       - conda: https://prefix.dev/conda-forge/noarch/exceptiongroup-1.3.1-pyhd8ed1ab_0.conda
@@ -246,6 +246,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/osx-64/tk-8.6.13-ha6c374e_4.conda
       - conda: https://prefix.dev/conda-forge/osx-64/yaml-0.2.5-had63097_3.conda
       - conda: https://prefix.dev/conda-forge/osx-64/zstd-1.5.7-hbc1a06c_7.conda
+      - conda: https://prefix.dev/tobias-fischer/robostack-tools/osx-64/vinca-rs-0.1.6-h4778241_0.conda
       - pypi: git+https://github.com/RoboStack/vinca.git?rev=74d1e856d5b00c0cb5ee0c1be41dac4afcae7bf5#74d1e856d5b00c0cb5ee0c1be41dac4afcae7bf5
       - pypi: https://files.pythonhosted.org/packages/0b/a7/71ac2cff56fec219ed242bb11b8efb69fcc4bec75db06fb7bfe35de520e6/certifi-2026.7.22-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/12/74/ef303ec980ef962ffe548fa36cb138bb399d1d1315731ba7bb81da85f7e0/rosdistro-1.1.0-py3-none-any.whl
@@ -272,7 +273,6 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/e5/ca/78d423b324b8d77900030fa59c4aa9054261ef0925631cd2501dd015b7b7/boolean_py-5.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ec/57/56b9bcc3c9c6a792fcbaf139543cee77261f3651ca9da0c93f5c1221264b/python_dateutil-2.9.0.post0-py2.py3-none-any.whl
       osx-arm64:
-      - conda: https://github.com/Tobias-Fischer/vinca-rs/releases/download/v0.1.3/vinca-rs-0.1.3-hea27dcd_0.conda
       - conda: https://prefix.dev/conda-forge/noarch/ca-certificates-2026.7.22-hbd8a1cb_0.conda
       - conda: https://prefix.dev/conda-forge/noarch/colorama-0.4.6-pyhd8ed1ab_1.conda
       - conda: https://prefix.dev/conda-forge/noarch/exceptiongroup-1.3.1-pyhd8ed1ab_0.conda
@@ -320,6 +320,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/osx-arm64/tk-8.6.13-hbeba79b_4.conda
       - conda: https://prefix.dev/conda-forge/osx-arm64/yaml-0.2.5-h74c22ad_3.conda
       - conda: https://prefix.dev/conda-forge/osx-arm64/zstd-1.5.7-hf451053_7.conda
+      - conda: https://prefix.dev/tobias-fischer/robostack-tools/osx-arm64/vinca-rs-0.1.6-hea27dcd_0.conda
       - pypi: git+https://github.com/RoboStack/vinca.git?rev=74d1e856d5b00c0cb5ee0c1be41dac4afcae7bf5#74d1e856d5b00c0cb5ee0c1be41dac4afcae7bf5
       - pypi: https://files.pythonhosted.org/packages/0b/a7/71ac2cff56fec219ed242bb11b8efb69fcc4bec75db06fb7bfe35de520e6/certifi-2026.7.22-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/12/74/ef303ec980ef962ffe548fa36cb138bb399d1d1315731ba7bb81da85f7e0/rosdistro-1.1.0-py3-none-any.whl
@@ -346,7 +347,6 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/e5/ca/78d423b324b8d77900030fa59c4aa9054261ef0925631cd2501dd015b7b7/boolean_py-5.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ec/57/56b9bcc3c9c6a792fcbaf139543cee77261f3651ca9da0c93f5c1221264b/python_dateutil-2.9.0.post0-py2.py3-none-any.whl
       win-64:
-      - conda: https://github.com/Tobias-Fischer/vinca-rs/releases/download/v0.1.3/vinca-rs-0.1.3-he01afda_0.conda
       - conda: https://prefix.dev/conda-forge/noarch/ca-certificates-2026.7.22-h4c7d964_0.conda
       - conda: https://prefix.dev/conda-forge/noarch/colorama-0.4.6-pyhd8ed1ab_1.conda
       - conda: https://prefix.dev/conda-forge/noarch/exceptiongroup-1.3.1-pyhd8ed1ab_0.conda
@@ -394,6 +394,7 @@ environments:
       - conda: https://prefix.dev/conda-forge/win-64/vcomp14-14.51.36247-habf1de7_41.conda
       - conda: https://prefix.dev/conda-forge/win-64/yaml-0.2.5-h6a83c73_3.conda
       - conda: https://prefix.dev/conda-forge/win-64/zstd-1.5.7-h534d264_7.conda
+      - conda: https://prefix.dev/tobias-fischer/robostack-tools/win-64/vinca-rs-0.1.6-he01afda_0.conda
       - pypi: git+https://github.com/RoboStack/vinca.git?rev=74d1e856d5b00c0cb5ee0c1be41dac4afcae7bf5#74d1e856d5b00c0cb5ee0c1be41dac4afcae7bf5
       - pypi: https://files.pythonhosted.org/packages/0b/a7/71ac2cff56fec219ed242bb11b8efb69fcc4bec75db06fb7bfe35de520e6/certifi-2026.7.22-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/12/74/ef303ec980ef962ffe548fa36cb138bb399d1d1315731ba7bb81da85f7e0/rosdistro-1.1.0-py3-none-any.whl
@@ -420,57 +421,6 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/e5/ca/78d423b324b8d77900030fa59c4aa9054261ef0925631cd2501dd015b7b7/boolean_py-5.0-py3-none-any.whl
       - pypi: https://files.pythonhosted.org/packages/ec/57/56b9bcc3c9c6a792fcbaf139543cee77261f3651ca9da0c93f5c1221264b/python_dateutil-2.9.0.post0-py2.py3-none-any.whl
 packages:
-- conda: https://github.com/Tobias-Fischer/vinca-rs/releases/download/v0.1.3/vinca-rs-0.1.3-h11eb1b2_0.conda
-  subdir: linux-aarch64
-  sha256: 1c641960ae5bde5d175f43290c97b046092f73dd1663feb2ce272f0a2611b00c
-  depends:
-  - libgcc >=16
-  constrains:
-  - __glibc >=2.17
-  channel: null
-  license: MIT
-  timestamp: 1794545905515
-- conda: https://github.com/Tobias-Fischer/vinca-rs/releases/download/v0.1.3/vinca-rs-0.1.3-h41f06ac_0.conda
-  subdir: linux-64
-  sha256: 6dc3e6df7405693d0289c4f0ece1799cb6b28d15c7abb6e4a33e3fc323ef420f
-  depends:
-  - libgcc >=16
-  - __glibc >=2.17,<3.0.a0
-  constrains:
-  - __glibc >=2.17
-  channel: null
-  license: MIT
-  timestamp: 1794545902883
-- conda: https://github.com/Tobias-Fischer/vinca-rs/releases/download/v0.1.3/vinca-rs-0.1.3-h4778241_0.conda
-  subdir: osx-64
-  sha256: 768dd2095fcea4680cd95a5304b201eb89468bc595a4f1a8bde8d882d939ab08
-  depends:
-  - __osx >=13.0
-  constrains:
-  - __osx >=11.0
-  channel: null
-  license: MIT
-  timestamp: 1794545913612
-- conda: https://github.com/Tobias-Fischer/vinca-rs/releases/download/v0.1.3/vinca-rs-0.1.3-he01afda_0.conda
-  subdir: win-64
-  sha256: e4faa0e18b7a24e3b6d8286b5a1fee8c937357657d3ff49d93fc2fae7b57585f
-  depends:
-  - vc >=14.3,<15
-  - vc14_runtime >=14.44.35208
-  - ucrt >=10.0.20348.0
-  channel: null
-  license: MIT
-  timestamp: 1794545923129
-- conda: https://github.com/Tobias-Fischer/vinca-rs/releases/download/v0.1.3/vinca-rs-0.1.3-hea27dcd_0.conda
-  subdir: osx-arm64
-  sha256: 663a0102be34388675efac416bcba0d5c9ea67561c241348447b5c70eff8fef8
-  depends:
-  - __osx >=13.0
-  constrains:
-  - __osx >=11.0
-  channel: null
-  license: MIT
-  timestamp: 1794545912733
 - conda: https://prefix.dev/conda-forge/linux-64/_openmp_mutex-4.5-20_gnu.conda
   build_number: 20
   sha256: 1dd3fffd892081df9726d7eb7e0dea6198962ba775bd88842135a4ddb4deb3c9
@@ -3345,6 +3295,62 @@ packages:
     - zstd >=1.5.7,<1.6.0a0
   size: 387535
   timestamp: 1786599623274
+- conda: https://prefix.dev/tobias-fischer/robostack-tools/linux-64/vinca-rs-0.1.6-h41f06ac_0.conda
+  sha256: f6396dde109d53ee31726c2832d2b6e39fad3d4ee660f68ec873a25c64b8d382
+  md5: 8fe21f9ae35ffe3793a5dc3686347a89
+  depends:
+  - libgcc >=16
+  - __glibc >=2.17,<3.0.a0
+  constrains:
+  - __glibc >=2.17
+  license: MIT
+  run_exports: {}
+  size: 9407007
+  timestamp: 1794553638765
+- conda: https://prefix.dev/tobias-fischer/robostack-tools/linux-aarch64/vinca-rs-0.1.6-h11eb1b2_0.conda
+  sha256: a449bec3f2735cff056641f88588dd1d286bf09ef2568cc1a777ebfb27baaad2
+  md5: aedf25cb2e9ec7ef3e3dda2a7e783b1d
+  depends:
+  - libgcc >=16
+  constrains:
+  - __glibc >=2.17
+  license: MIT
+  run_exports: {}
+  size: 9441851
+  timestamp: 1794553643087
+- conda: https://prefix.dev/tobias-fischer/robostack-tools/osx-64/vinca-rs-0.1.6-h4778241_0.conda
+  sha256: bdd29a6dc2a6d20981901226f2842db2f9a8cfec3d460e93d5a5ef9615e16c52
+  md5: ccb23819369545f4f8b8e96d966cbdb7
+  depends:
+  - __osx >=13.0
+  constrains:
+  - __osx >=11.0
+  license: MIT
+  run_exports: {}
+  size: 9187754
+  timestamp: 1794553646929
+- conda: https://prefix.dev/tobias-fischer/robostack-tools/osx-arm64/vinca-rs-0.1.6-hea27dcd_0.conda
+  sha256: 7bc2b27f7897786e77b488563ae1bcdfa8c84cac7db59e5de8929fe9c97d71bc
+  md5: 6bdefaecf80eb8c27b9ceb1afcc2953e
+  depends:
+  - __osx >=13.0
+  constrains:
+  - __osx >=11.0
+  license: MIT
+  run_exports: {}
+  size: 8613539
+  timestamp: 1794553642106
+- conda: https://prefix.dev/tobias-fischer/robostack-tools/win-64/vinca-rs-0.1.6-he01afda_0.conda
+  sha256: fbb17a69372aa301bb61df07f81a158ac12901c780fea5fe6620fba2ca53229a
+  md5: 29eb4645154b188f0363a83192b91f16
+  depends:
+  - vc >=14.3,<15
+  - vc14_runtime >=14.44.35208
+  - ucrt >=10.0.20348.0
+  license: MIT
+  run_exports: {}
+  size: 8805187
+  timestamp: 1794553645229
 - pypi: git+https://github.com/RoboStack/vinca.git?rev=74d1e856d5b00c0cb5ee0c1be41dac4afcae7bf5#74d1e856d5b00c0cb5ee0c1be41dac4afcae7bf5
   name: vinca
   version: 0.2.0
