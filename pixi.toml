@@ -11,6 +11,8 @@ platforms = [
   { platform = "linux-aarch64", glibc = "2.17" },
   "win-64",
 ]
+# vinca-rs is a source dependency, built with pixi-build-rust
+preview = ["pixi-build"]
 
 [target.win.activation.env]
 PYTHONIOENCODING = "utf-8"
@@ -27,6 +29,8 @@ git-lfs = "*"
 pytest = ">=9.1.1,<10"
 # gh for the workflows: one version everywhere (the runner's is not on PATH on Windows)
 gh = ">=2.102.0,<3"
+# the recipe and workflow generator
+vinca-rs = { git = "https://github.com/Tobias-Fischer/vinca-rs.git", rev = "b0f1b2a" }
 
 [target.win-64.dependencies]
 # patch is required by rattler-build

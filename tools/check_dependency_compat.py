@@ -227,10 +227,11 @@ def collect_requirements_from_vinca(
 ) -> dict[tuple[Optional[str], str], set[str]]:
     """Like collect_requirements, for every selected package of the configuration
     (not only the recipes that happen to be generated, e.g. with skip_existing)."""
-    from vinca.rebuild import requirements_from_vinca
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import robostack as rs
 
     requirements: dict[tuple[Optional[str], str], set[str]] = defaultdict(set)
-    packages, _ = requirements_from_vinca(vinca_path.resolve().parent, [platform])
+    packages, _ = rs.vinca_requirements(vinca_path.resolve().parent, [platform])
     for name, reqs in packages.items():
         for section in sections:
             for condition, spec in walk_requirements(reqs.get(section)):

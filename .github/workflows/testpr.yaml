@@ -101,7 +101,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       DISTRO: ${{ matrix.distro }}
-      # generate-recipes -n leaves out what is on the channel, like the builds do
+      # generate-recipes leaves out what is on the channel (same build string), like the builds do
       ROBOSTACK_UPLOAD_CHANNEL: ${{ vars.ROBOSTACK_UPLOAD_CHANNEL }}
     steps:
       - uses: actions/checkout@v6
@@ -123,7 +123,7 @@ jobs:
           all=$(mktemp -d)
           for platform in linux-64 linux-aarch64 osx-64 osx-arm64 win-64; do
             for attempt in 1 2 3; do
-              if pixi run rs "$DISTRO" generate-recipes --platform "$platform" -n; then break; fi
+              if pixi run rs "$DISTRO" generate-recipes --platform "$platform"; then break; fi
               if [[ "$attempt" == 3 ]]; then echo "Recipe generation failed for $platform" >&2; exit 1; fi
               sleep 15
             done
@@ -217,7 +217,7 @@ jobs:
       run: |
         set -e
         for attempt in 1 2 3; do
-          if pixi run -v rs "$DISTRO" generate-recipes --platform "$PLATFORM" -n; then break; fi
+          if pixi run -v rs "$DISTRO" generate-recipes --platform "$PLATFORM"; then break; fi
           if [[ "${attempt}" == "3" ]]; then echo "Recipe generation failed after 3 attempts" >&2; exit 1; fi
           echo "Recipe generation attempt ${attempt} failed; retrying..." >&2
           sleep 15

@@ -361,6 +361,50 @@ def prepare(distro: str) -> Path:
     return w
 
 
+# the platforms RoboStack builds
+PLATFORMS = ("linux-64", "linux-aarch64", "osx-64", "osx-arm64", "win-64")
+
+
+def vinca_rs_requirements(work: Path, platform: str) -> dict:
+    """`vinca-rs requirements`: {"prefix", "packages": {ros name: {build, host, run}},
+    "run_constraints"} for every package the configuration in `work` selects."""
+    out = subprocess.run([VINCA_RS, "requirements", "--platform", platform], cwd=work,
+                         capture_output=True, text=True)
+    if out.returncode:
+        raise SystemExit(f"vinca-rs requirements --platform {platform} failed:\n{out.stderr}")
+    return json.loads(out.stdout)
+
+
+def vinca_requirements(work: Path, platforms=PLATFORMS) -> tuple[dict, str]:
+    """The requirements of every selected package, combined over the platforms
+    ({name: {"build"|"host"|"run": [each platform's list]}}), and the conda name prefix
+    of the ROS packages."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    with ThreadPoolExecutor() as pool:
+        results = list(pool.map(lambda p: vinca_rs_requirements(work, p), platforms))
+    combined: dict = {}
+    for result in results:
+        for name, reqs in result["packages"].items():
+            target = combined.setdefault(name, {"build": [], "host": [], "run": []})
+            for group in target:
+                target[group].append(reqs.get(group) or [])
+    return combined, (results[0]["prefix"] if results else "")
+
+
+def vinca_dependencies(work: Path, platforms=PLATFORMS) -> set[str]:
+    """The non-ROS dependencies of every selected package (and the mutex's
+    run_constraints), on any of the platforms."""
+    from vinca.pinning import _dependency_name, _walk_requirements
+
+    names = set()
+    for platform in platforms:
+        result = vinca_rs_requirements(work, platform)
+        groups = [*result["packages"].values(), {"run_constraints": result["run_constraints"]}]
+        names |= {n for g in groups for r in _walk_requirements(g) if (n := _dependency_name(r))}
+    return names
+
+
 def read_vinca(distro: str, platform: str | None = None) -> dict:
     """The distribution's vinca configuration as vinca reads it (shared/ + distro,
     selectors resolved for the platform, default: this machine's)."""
@@ -512,7 +556,7 @@ def task(distro: str, name: str, args: list[str]) -> int:
             shutil.copy2(w / "conda_build_config.yaml", d / "conda_build_config.yaml")
         return rc
     if name == "create-snapshot":
-        return run(["vinca-snapshot", "-d", distro, "-o", "rosdistro_snapshot.yaml", *args], d)
+        return run([VINCA_RS, "snapshot", "--distro", distro, "--out", "rosdistro_snapshot.yaml", *args], d)
     if name == "sort":
         files = [f for f in ("pkg_additional_info.yaml", "rosdistro_additional_recipes.yaml") if (d / f).is_file()]
         rc = run(["vinca-sort-vinca-lists", *args, "vinca.yaml"], d)
