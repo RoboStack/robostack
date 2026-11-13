@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 6c1f16c..2126cdb 100644
+index 6c1f16c..36ea672 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -29,6 +29,14 @@ ament_auto_add_library(${PROJECT_NAME}_lib SHARED
@@ -17,6 +17,17 @@ index 6c1f16c..2126cdb 100644
  # Suppress boost geometry uninitialized variable warnings
  # This is a known issue in boost geometry library where internal template code
  # may trigger maybe-uninitialized warnings that are false positives.
+@@ -36,7 +44,9 @@ ament_auto_add_library(${PROJECT_NAME}_lib SHARED
+ # and do not affect the actual functionality of the code.
+ # Related: https://www.boost.org/doc/libs/latest/libs/utility/doc/html/utility/utilities/value_init.html
+ # and https://www.boost.org/doc/libs/1_89_0/libs/optional/doc/html/boost_optional/design/gotchas/false_positive_with__wmaybe_uninitialized.html
+-target_compile_options(${PROJECT_NAME}_lib PRIVATE -Wno-error=maybe-uninitialized)
++if(NOT MSVC)
++  target_compile_options(${PROJECT_NAME}_lib PRIVATE -Wno-error=maybe-uninitialized)
++endif()
+ 
+ if(BUILD_TESTING)
+   ament_add_ros_isolated_gtest(projector-test test/src/test_projector.cpp)
 diff --git a/lib/deprecated.cpp b/lib/deprecated.cpp
 index 7a78e45..1220fc2 100644
 --- a/lib/deprecated.cpp
