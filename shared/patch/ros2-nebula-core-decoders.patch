@@ -1,5 +1,19 @@
+diff --git a/include/nebula_core_decoders/angles.hpp b/include/nebula_core_decoders/angles.hpp
+index d1a8376..93e8da8 100644
+--- a/include/nebula_core_decoders/angles.hpp
++++ b/include/nebula_core_decoders/angles.hpp
+@@ -20,6 +20,9 @@
+ namespace nebula::drivers
+ {
+ 
++/// Pi as a `float`. Portable replacement for `M_PIf`, which is a glibc extension.
++constexpr float pi_f = static_cast<float>(M_PI);
++
+ struct Radians
+ {
+   static constexpr double circle_modulus = 2 * M_PI;
 diff --git a/include/nebula_core_decoders/point_filters/downsample_mask.hpp b/include/nebula_core_decoders/point_filters/downsample_mask.hpp
-index ff93c04ab..5df49159d 100644
+index ff93c04..5df4915 100644
 --- a/include/nebula_core_decoders/point_filters/downsample_mask.hpp
 +++ b/include/nebula_core_decoders/point_filters/downsample_mask.hpp
 @@ -21,10 +21,8 @@
@@ -150,7 +164,7 @@ index ff93c04ab..5df49159d 100644
      }
    }
 diff --git a/package.xml b/package.xml
-index f51df4bba..ee314f905 100644
+index dd0c3f4..1630705 100644
 --- a/package.xml
 +++ b/package.xml
 @@ -12,10 +12,10 @@
@@ -167,7 +181,7 @@ index f51df4bba..ee314f905 100644
    <depend>boost</depend>
    <depend>eigen</depend>
 diff --git a/tests/point_filters/test_downsample_mask.cpp b/tests/point_filters/test_downsample_mask.cpp
-index 62e92ffaa..742017b7f 100644
+index 62e92ff..742017b 100644
 --- a/tests/point_filters/test_downsample_mask.cpp
 +++ b/tests/point_filters/test_downsample_mask.cpp
 @@ -18,17 +18,19 @@
@@ -315,3 +329,16 @@ index 62e92ffaa..742017b7f 100644
  int main(int argc, char ** argv)
  {
    ::testing::InitGoogleTest(&argc, argv);
+diff --git a/tests/test_angles.cpp b/tests/test_angles.cpp
+index d9c5039..a62cc0f 100644
+--- a/tests/test_angles.cpp
++++ b/tests/test_angles.cpp
+@@ -19,7 +19,7 @@
+ namespace nebula::drivers
+ {
+ 
+-constexpr float two_pi = 2.0F * M_PIf;
++constexpr float two_pi = 2.0F * pi_f;
+ 
+ TEST(AngleIsBetweenTest, BasicTest)
+ {
