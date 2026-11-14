@@ -88,10 +88,11 @@ mrpt_common:
   # but package.xml (build_type cmake) does not declare it
   add_host: ["ros2-ament-cmake"]
 mrpt_gui:
-  # links libwx_*; the wxwidgets/wx-common keys map to wxpython, so wxwidgets is only a
-  # transitive host dep and its (weak) run_exports never reach the run requirements
+  # links libwx_* (C++), but the wxwidgets/wx-common keys map to wxpython: wxwidgets
+  # directly, and no wxpython (whose builds for wxwidgets 3.3.4 need a newer sip than pyqt's)
   # Windows: nanogui links conda-forge's glad instead of its bundled copy (ros2-mrpt-gui.win.patch)
   add_host: ["wxwidgets", "${{ 'glad' if win }}"]
+  remove_host: ["wxpython"]
 mrpt_imgui:
   # Windows: links conda-forge's GLEW like mrpt_opengl, also for its users (ros2-mrpt-imgui.win.patch)
   add_host: ["${{ 'glew' if win }}"]
