@@ -55,6 +55,7 @@ shared/                    the same for every distribution
   pkg_additional_info.yaml per-package settings that are the same everywhere
   patch/dependencies.yaml  dependency fixes that are the same everywhere
   robostack.yaml           rosdep key -> conda package mapping (`robostack: []` drops a key)
+                           (also copied to pixi-build-ros: robostack-bot sync-pixi-mappings)
   pinning/                 conda-forge pinning version, migrations and overrides
   tests/                   package tests (ros2-<pkg>.yaml; `if: ros_distro ...` for distro-specific bits)
 tools/robostack.py         `pixi run rs ...`: every task, for one distribution or the repository
@@ -152,6 +153,7 @@ waiting for the macOS runners; remove them for a full build before merging.
 | `dependency-report [<distro>... \| all]` | maintainers | Runs the dependency check (`check-deps`, linux-64) and keeps one issue per distribution, *`<distro>`: dependency report* (label `dependency-report`), up to date with the conflicts, notes and conda-forge migration status; the issue is closed when nothing conflicts. Runs weekly (Mondays). |
 | `update-build-timings` | maintainers | Merges the build times the last week's build-branch runs recorded (`rs <distro> build-ci`, kept as each job's artifact) into `shared/build_timings/<platform>.json` and opens a PR. The build workflows pack each stage's recipes into jobs by these times. Runs weekly (Mondays). Labelled `build:none` (see below). |
 | `update-pixi` | maintainers | Runs `pixi upgrade`: the newest versions of the tooling's dependencies in `pixi.toml` and `pixi.lock` (rattler-build, rattler-index, gh, pytest, ...), except Python (moved by hand) and requirements that are only an upper bound (`cmake = "<4.0"`: capped on purpose); the vinca pin is `update-vinca`'s. Runs `rs check`; the PR lists the changes as a table (pixi-diff-to-markdown). Runs monthly (on the 1st). Labelled `build:none` (see below). |
+| `sync-pixi-mappings` | maintainers | Copies the rosdep mappings (`shared/robostack.yaml`, and each `distros/<distro>/robostack.yaml` over it) to pixi-build-ros (`crates/pixi_build_ros/robostack.yaml` and `robostack_distros.yaml` in prefix-dev/pixi) and opens or updates a PR there, listing the added, removed and changed keys: `pixi build` of ROS packages then maps rosdep keys as RoboStack does. Mappings are only changed here. Runs daily once `vars.PIXI_FORK` (the fork the PR is pushed to) and `secrets.PIXI_SYNC_TOKEN` (a token of that fork's owner) are set. |
 
 The PRs of `update-vinca`, `update-build-timings` and `update-pixi` don't change packages directly, but touch files outside `distros/`, which would build every distribution: they are labelled `build:none`, so only the checks run (and nothing is built while a build is under way). To build one, remove the label, or replace it with `build:<distro>` labels.
 
