@@ -296,13 +296,25 @@ ament_cmake_gmock:  # as ament_cmake_gtest
   build_number: 23
 ament_cmake_gtest:  # uses conda-forge's gtest instead of gtest_vendor's sources
   build_number: 23
+ament_cmake_test:
+  build_number: 31
 aruco_ros:  # its recipe test stops the node for sure (package tests hung on macOS)
   build_number: 23
+builtin_interfaces:
+  build_number: 31
+fastcdr:
+  build_number: 31
 plotjuggler:
   build_number: 24
   add_host: ["libxcb", "${{ 'elfutils' if linux }}", "ros2-ros-workspace", "git-lfs"]
+rcutils:
+  build_number: 31
+ros_workspace:
+  build_number: 31
 rtabmap_slam:  # its recipe test stops the node for sure (package tests hung on macOS)
   build_number: 23
+ruckig:
+  build_number: 31
 spatio_temporal_voxel_layer:
   build_number: 23
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "openvdb"]

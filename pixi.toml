@@ -1,4 +1,5 @@
 [workspace]
+preview = ["pixi-build"]  # TEMPORARY, for the vinca-rs git source
 name = "robostack"
 description = "RoboStack: conda packages for all ROS 2 distributions, from one repository"
 authors = ["Tobias Fischer <tobias.fischer@qut.edu.au>", "Wolf Vollprecht <w.vollprecht@gmail.com>", "Silvio Traversaro <silvio@traversaro.it>", "Daisuke Nishimatsu <daisuke.nishimatsu1021@gmail.com>"]
@@ -27,8 +28,8 @@ git-lfs = "*"
 pytest = ">=9.1.1,<10"
 # gh for the workflows: one version everywhere (the runner's is not on PATH on Windows)
 gh = ">=2.102.0,<3"
-# built and published by vinca-rs's release workflow
-vinca-rs = { version = "==0.1.9", channel = "https://prefix.dev/tobias-fischer/robostack-tools" }
+# TEMPORARY: vinca-rs built from the branch with the unified cmake templates (prefix-dev/pixi#7540)
+vinca-rs = { git = "https://github.com/Tobias-Fischer/vinca-rs.git", rev = "7532d43e2147c7b9279d25b28f8b571f62e84172" }
 
 [target.win-64.dependencies]
 # patch is required by rattler-build
