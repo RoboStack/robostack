@@ -1,0 +1,48 @@
+# Template of the build workflows (`pixi run rs <distro> gha`, vinca-rs workflow).
+# Not a workflow itself: vinca-rs copies jobs.build once per job, sets each copy's
+# name and needs (exactly the jobs building its recipes' dependencies) and replaces
+# @recipes@ with its recipes; @distro@, @platform@, @branch@, @secret@ and
+# @keep_file@ come from tools/robostack.py. Selectors (if/then/else) are resolved
+# for the platform. The steps are .github/actions/build-recipes.
+name: Build branch
+run-name: "@distro@ @platform@"
+on:
+  push:
+    branches: ["@branch@"]
+# one run per distribution and platform at a time: a newer run (the latest main's
+# recipes and workflow) cancels the older one, and skips what that one uploaded
+# already. Re-run failed jobs only in the newest run.
+concurrency:
+  group: build-@distro@-@platform@
+  cancel-in-progress: true
+env:
+  ROBOSTACK_DISTRO: "@distro@"
+  # optional repository variable: upload to this prefix.dev channel instead
+  # (e.g. a test channel), or 'none' to only build
+  ROBOSTACK_UPLOAD_CHANNEL: ${{ vars.ROBOSTACK_UPLOAD_CHANNEL }}
+jobs:
+  build:
+    runs-on:
+      if: linux and x86_64
+      then: ubuntu-latest
+      else:
+        if: linux
+        then: ubuntu-24.04-arm
+        else:
+          if: osx and x86_64
+          then: macos-15-intel
+          else:
+            if: osx
+            then: macos-15
+            else: windows-2022
+    # jobs that declare permissions get none they don't list; prefix.dev uploads use
+    # trusted publishing (id-token), attestations are published too
+    permissions: {contents: read, id-token: write, attestations: write}
+    steps:
+      - uses: actions/checkout@v6
+      - uses: ./.github/actions/build-recipes
+        with:
+          recipes: "@recipes@"
+          platform: "@platform@"
+          token: ${{ secrets.@secret@ }}
+          keep-file: "@keep_file@"

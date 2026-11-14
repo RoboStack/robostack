@@ -227,10 +227,11 @@ def collect_requirements_from_vinca(
 ) -> dict[tuple[Optional[str], str], set[str]]:
     """Like collect_requirements, for every selected package of the configuration
     (not only the recipes that happen to be generated, e.g. with skip_existing)."""
-    from vinca.rebuild import requirements_from_vinca
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import robostack as rs
 
     requirements: dict[tuple[Optional[str], str], set[str]] = defaultdict(set)
-    packages, _ = requirements_from_vinca(vinca_path.resolve().parent, [platform])
+    packages, _ = rs.vinca_requirements(vinca_path.resolve().parent, [platform])
     for name, reqs in packages.items():
         for section in sections:
             for condition, spec in walk_requirements(reqs.get(section)):
@@ -419,13 +420,35 @@ def _by_name(requirements: Iterable[tuple[Optional[str], str]]) -> dict[str, lis
 
 
 class Solver:
-    """Thin wrapper that writes a fake recipe and solves it with rattler-build."""
+    """Writes a fake recipe and solves it: with one `vinca-rs solve` process for the
+    whole run (the repodata loaded once), else rattler-build per solve."""
 
     def __init__(self, args: argparse.Namespace, channels: list[str], workdir: Path) -> None:
         self.args = args
         self.channels = channels
         self.workdir = workdir
         self.calls = 0
+        self._server: Optional[subprocess.Popen] = None
+
+    def _vinca_rs(self) -> Optional[subprocess.Popen]:
+        if self._server is None:
+            sys.path.insert(0, str(Path(__file__).resolve().parent))
+            import robostack as rs
+
+            if not shutil.which(rs.VINCA_RS):
+                return None
+            env = dict(os.environ)
+            # the virtual packages run_solve() gives rattler-build
+            if self.args.platform.startswith("linux"):
+                env.setdefault("CONDA_OVERRIDE_GLIBC", glibc_floor(Path(self.args.variant_config), self.args.platform))
+            elif self.args.platform.startswith("osx") and sys.platform != "darwin":
+                env.setdefault("CONDA_OVERRIDE_OSX", DEFAULT_OSX)
+            cmd = [rs.VINCA_RS, "solve", "--platform", self.args.platform,
+                   "--variant-config", str(Path(self.args.variant_config).resolve())]
+            for channel in self.channels:
+                cmd += ["-c", channel]
+            self._server = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True, env=env)
+        return self._server
 
     def solve(
         self,
@@ -437,6 +460,11 @@ class Solver:
         recipe = self.workdir / label / "recipe.yaml"
         write_fake_recipe(recipe, pins, requirements)
         self.calls += 1
+        if server := self._vinca_rs():
+            server.stdin.write(json.dumps({"recipe": str(recipe.resolve()), "glibc": glibc}) + "\n")
+            server.stdin.flush()
+            response = json.loads(server.stdout.readline())
+            return response["ok"], response["text"]
         return run_solve(
             recipe,
             Path(self.args.variant_config),

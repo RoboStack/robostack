@@ -1,5 +1,5 @@
 diff --git a/src/check_right_of_way.cpp b/src/check_right_of_way.cpp
-index d59ec14..e62be74 100644
+index ff48015..23af2e8 100644
 --- a/src/check_right_of_way.cpp
 +++ b/src/check_right_of_way.cpp
 @@ -15,13 +15,6 @@
@@ -16,7 +16,7 @@ index d59ec14..e62be74 100644
  
  #include <lanelet2_core/LaneletMap.h>
  #include <lanelet2_io/Io.h>
-@@ -57,16 +50,17 @@ int main(int argc, char ** argv)
+@@ -75,16 +68,17 @@ int main(int argc, char ** argv)
    lanelet::routing::RoutingGraphPtr routing_graph_ptr =
      lanelet::routing::RoutingGraph::build(*map, *traffic_rules);
  

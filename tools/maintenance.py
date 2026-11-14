@@ -208,7 +208,7 @@ def plan_rebuild(distro: str, old_cbc: str) -> tuple[dict[str, str], int, dict[s
     changed = {k: v for k, v in changed.items() if _pin_values(v[0]) != _pin_values(v[1])}
     if not changed:
         return {}, 0, {}
-    requirements, prefix = rebuild.requirements_from_vinca(rs.prepare(distro))
+    requirements, prefix = rs.vinca_requirements(rs.prepare(distro))
     return rebuild.plan(requirements, changed, prefix), len(requirements), changed
 
 
@@ -412,7 +412,7 @@ def update_snapshot(distro: str) -> Result:
     old_text = snapshot.read_text() if snapshot.is_file() else ""
     old = _versions(snapshot)
     if rs.task(distro, "create-snapshot", ["--rosdistro-ref", ref] if ref else []):
-        return Result(f"{distro}: snapshot update failed", "`vinca-snapshot` failed, see the log.", ok=False)
+        return Result(f"{distro}: snapshot update failed", "`vinca-rs snapshot` failed, see the log.", ok=False)
     text = snapshot.read_text()
     data, ahead = keep_newer(yaml.safe_load(old_text) or {}, yaml.safe_load(text) or {},
                              (released_on_master(distro) or set()) if ref else set())
@@ -502,7 +502,7 @@ def update_pinning(distro: str) -> Result:
     before = (settings.get("conda_forge_pinning_version"), list(settings.get("conda_forge_migrations") or []))
     print(f"Collecting dependencies of {distro}", flush=True)
     work = rs.prepare(distro)
-    dependencies = pinning.dependencies_from_vinca(work, pinning.DEFAULT_PLATFORMS)
+    dependencies = rs.vinca_dependencies(work)
     version, migrations, reports = pinning.update_pinning(work / "vinca_pinning.yaml", dependencies=dependencies)
     if str(before[0]) == str(version) and before[1] == list(migrations):
         return Result(f"{distro}: pinning is up to date", f"{distro} is on conda-forge-pinning {version}.")
@@ -523,7 +523,7 @@ def update_shared_pinning() -> Result:
     for distro in distros:
         print(f"Collecting dependencies of {distro}", flush=True)
         works[distro] = rs.prepare(distro)
-        dependencies |= pinning.dependencies_from_vinca(works[distro], pinning.DEFAULT_PLATFORMS)
+        dependencies |= rs.vinca_dependencies(works[distro])
     version, migrations, reports = pinning.update_pinning(works[distros[0]] / "vinca_pinning.yaml",
                                                           dependencies=dependencies)
     if str(before[0]) == str(version) and before[1] == list(migrations):
@@ -824,7 +824,7 @@ def rebuild_packages(packages: list[str], distros: list[str], with_dependents: b
     lines: list[str] = []
     changed = False
     for distro in distros or rs.distros():
-        requirements, prefix = rebuild.requirements_from_vinca(rs.prepare(distro))
+        requirements, prefix = rs.vinca_requirements(rs.prepare(distro))
         if missing := [p for p in wanted if p not in requirements]:
             lines.append(f"- **{distro}** doesn't build {', '.join(f'`{p}`' for p in missing)}")
         plan = rebuild_plan(requirements, prefix, wanted, with_dependents)
