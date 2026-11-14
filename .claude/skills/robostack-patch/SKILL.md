@@ -13,8 +13,9 @@ description: Create, refresh, place, port and validate source patches for RoboSt
   of adding variants.
 - vinca picks them up by name when generating recipes; nothing else needs wiring.
   `pixi run rs check` rejects other names.
-- `distros/<d>/patch/dependencies.yaml` is for dependency fixes, not source patches
-  (`shared/patch/dependencies.yaml` for all distributions).
+- Dependency fixes are not source patches: they are `add_*`/`remove_*` keys in
+  `distros/<d>/pkg_additional_info.yaml` (`shared/pkg_additional_info.yaml` for all
+  distributions).
 
 ## Create a patch from work-directory edits
 
