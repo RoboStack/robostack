@@ -1,4 +1,4 @@
-# kilted: its own rosdep mappings, over shared/robostack.yaml (from RoboStack/ros-kilted):
+# kilted: its own rosdep mappings, over shared/robostack.yaml:
 # Qt 5 (kilted's rviz and rqt need Qt5 / PyQt5), and the xtensor its packages were built
 # with. kilted (EOL) isn't built here (no vinca.yaml); this is for pixi-build-ros
 # (robostack-bot sync-pixi-mappings).

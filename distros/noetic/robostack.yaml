@@ -1,4 +1,4 @@
-# noetic: its own rosdep mappings, over shared/robostack.yaml (from RoboStack/ros-noetic):
+# noetic: its own rosdep mappings, over shared/robostack.yaml:
 # Qt 5, and the xtensor its packages were built with. noetic isn't built here (no
 # vinca.yaml); this is for pixi-build-ros (robostack-bot sync-pixi-mappings).
 libqt5-core:
