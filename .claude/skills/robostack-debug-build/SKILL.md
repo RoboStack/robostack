@@ -63,11 +63,11 @@ bash -x conda_build.sh 2>&1 | less
   endif()
   ```
 - **Windows `min`/`max` macro clashes**: `target_compile_definitions(<target> PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)` under `if(WIN32)`.
-- **gtest / test failures**: add the missing dependency in `dependencies.yaml`, or
+- **gtest / test failures**: add the missing dependency in `pkg_additional_info.yaml`, or
   disable the tests when safe; no custom shims.
 - **Qt plugins (rviz, rtabmap)**: make sure CMake finds the intended Qt major version.
-- **Missing dependency**: `shared/patch/dependencies.yaml` (all distributions) or
-  `distros/<d>/patch/dependencies.yaml` (one), keyed by ROS package name:
+- **Missing dependency**: `shared/pkg_additional_info.yaml` (all distributions) or
+  `distros/<d>/pkg_additional_info.yaml` (one), keyed by ROS package name:
   ```yaml
   <ros_pkg>:
     add_host: [<conda-pkg>]

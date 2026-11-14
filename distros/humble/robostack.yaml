@@ -1,6 +1,6 @@
 # Qt5 for the Qt5 rosdep keys: this distribution's rviz and GUI packages still build
 # against Qt5 (the shared mapping, for lyrical and newer, is Qt6). Packages already
-# ported to Qt6/PyQt6 swap qt-main in patch/dependencies.yaml.
+# ported to Qt6/PyQt6 swap qt-main in pkg_additional_info.yaml.
 libqt5-core:
   robostack:
     linux: [qt-main, libopengl-devel, libgl-devel]

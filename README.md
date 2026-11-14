@@ -44,20 +44,21 @@ If you use RoboStack in your academic work, please cite:
 distros/<distro>/          only what is specific to one distribution
   distro.yaml              channel, where it's uploaded and read from, conda-forge pinning version/migrations, own pins, rosdistro sync
   vinca.yaml               extends shared/vinca.yaml: ros_distro, build number, mutex version, its exceptions
-  pkg_additional_info.yaml its own per-package settings (build numbers, version-specific cmake args)
-  patch/                   its patches; patch/dependencies.yaml its own dependency fixes
+  pkg_additional_info.yaml its own per-package settings (build numbers, version-specific cmake args, dependency fixes)
+  patch/                   its patches
   rosdistro_snapshot.yaml, rosdistro_additional_recipes.yaml
   ci.yaml                  temporary PR-build controls (full rebuild, cache evictions)
   conda_build_config.yaml  generated: `pixi run rs <distro> render-pinning`
   work/                    generated, git-ignored: where vinca and rattler-build run
 shared/                    the same for every distribution
   vinca.yaml               settings and the package selection of every distribution
-  pkg_additional_info.yaml per-package settings that are the same everywhere
-  patch/dependencies.yaml  dependency fixes that are the same everywhere
+  pkg_additional_info.yaml per-package settings and dependency fixes (add_host, remove_run, ...) that are the same everywhere
   robostack.yaml           rosdep key -> conda package mapping (`robostack: []` drops a key)
                            (also copied to pixi-build-ros: robostack-bot sync-pixi-mappings)
   pinning/                 conda-forge pinning version, migrations and overrides
   tests/                   package tests (ros2-<pkg>.yaml; `if: ros_distro ...` for distro-specific bits)
+  patch/                   patches that apply to every distribution
+  files/<pkg>/             copied into that package's recipe (ros_workspace's activation scripts)
 tools/robostack.py         `pixi run rs ...`: every task, for one distribution or the repository
 tools/maintenance.py       checks and robostack-bot commands
 tools/import_distro.py     (re)import a distribution from its own repository
@@ -79,7 +80,7 @@ combines the two, and the files next to each:
   - `mutex_package`: name and `upper_bound` are shared; each distribution sets its own `version`. The mutex only keeps one distribution per environment and has no `run_constraints` (`rs check` enforces it): library versions come from the packages' own dependencies, and wrong ones are fixed in the package's metadata.
   - Other keys come from the distribution if it sets them, else from `shared/`. A distribution that differs from a shared setting just sets it.
   - Paths are relative to the file that sets them. `distros/<distro>/work/vinca.yaml` (generated) extends the distribution's file and adds `skip_existing` (its channel).
-- **`pkg_additional_info.yaml` and `patch/dependencies.yaml`:** merged per package. The distribution's keys win, for example its own `build_number` on top of a shared `additional_cmake_args`.
+- **`pkg_additional_info.yaml`:** merged per package. The distribution's keys win, for example its own `build_number` on top of a shared `additional_cmake_args`.
 - **`patch/*.patch` and `tests/`:** per package, the distribution's file replaces the shared one. In tests, `- if: ros_distro in ["humble", "jazzy"]` blocks select distribution-specific parts.
 - **`vinca_pinning.yaml`:** the shared pinning, adjusted by `distro.yaml`:
   - `conda_forge_pinning_version` and `conda_forge_migrations` keep a distribution on its own conda-forge pinning, for example until its next full rebuild;

@@ -1423,7 +1423,7 @@ def unknown_package_entries(layer: Path, packages: set[str]) -> list[tuple[str, 
     entries = []
     vinca = yaml.safe_load((layer / "vinca.yaml").read_text()) or {}
     entries += [("vinca.yaml packages_select_by_deps", n) for n in _selector_items(vinca.get("packages_select_by_deps"))]
-    for name in ("patch/dependencies.yaml", "pkg_additional_info.yaml"):
+    for name in ("pkg_additional_info.yaml",):
         path = layer / name
         data = yaml.safe_load(path.read_text()) if path.is_file() else None
         for mapping in _selector_items(data):
