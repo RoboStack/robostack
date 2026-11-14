@@ -9,7 +9,7 @@ distros/<distro>/ and leaves out what shared/ already provides:
 - vinca.yaml               extending shared/vinca.yaml, without its package selections,
                            with this repository's paths (patch_dir, snapshot paths;
                            skip_existing is derived); comments are kept
-- pkg_additional_info.yaml, patch/dependencies.yaml
+- pkg_additional_info.yaml with the old patch/dependencies.yaml merged in per package,
                            without entries identical to shared/ (build numbers stay);
                            ros-<distro>-<pkg> dependency names become ros2-<pkg>
 - patch/                   patches renamed to ros2-<pkg>[.<platform>].patch
@@ -156,9 +156,10 @@ def import_distro(src: Source, distro: str | None) -> str:
     with (dest / "vinca.yaml").open("w") as fh:
         ry.dump(vinca, fh)
 
-    # as they are (patch/dependencies.yaml is filtered below)
+    # as they are (patch/dependencies.yaml goes into pkg_additional_info.yaml below)
     shutil.rmtree(dest / "patch", ignore_errors=True)
     src.copy_dir("patch", dest)
+    (dest / "patch" / "dependencies.yaml").unlink(missing_ok=True)
     for patch in (dest / "patch").glob(f"ros-{source}-*.patch"):
         patch.rename(patch.with_name("ros2-" + patch.name.removeprefix(f"ros-{source}-")))
     # a file the old repository no longer has goes too (re-imports mirror it)
@@ -168,18 +169,26 @@ def import_distro(src: Source, distro: str | None) -> str:
         else:
             (dest / name).unlink(missing_ok=True)
 
-    # per-package files: drop entries identical to shared/ (keeping build numbers)
-    for name, shared_file, target in (
-        ("pkg_additional_info.yaml", "pkg_additional_info.yaml", dest / "pkg_additional_info.yaml"),
-        ("patch/dependencies.yaml", "patch/dependencies.yaml", dest / "patch" / "dependencies.yaml"),
-    ):
-        text = src.text(name)
-        if text is None:
-            target.unlink(missing_ok=True)
-            continue
-        text = re.sub(rf"\bros-{source}-(?=[a-z0-9])", "ros2-", text)
-        data = ry.load(text) or {}
-        common = yaml.safe_load((rs.SHARED / shared_file).read_text()) or {}
+    # pkg_additional_info.yaml, with the old repository's patch/dependencies.yaml merged
+    # in per package (its add_*/remove_* keys); drop entries identical to shared/
+    # (keeping build numbers)
+    target = dest / "pkg_additional_info.yaml"
+    texts = [t for t in (src.text("pkg_additional_info.yaml"), src.text("patch/dependencies.yaml")) if t is not None]
+    if not texts:
+        target.unlink(missing_ok=True)
+    else:
+        data = None
+        for text in texts:
+            part = ry.load(re.sub(rf"\bros-{source}-(?=[a-z0-9])", "ros2-", text)) or {}
+            if data is None:
+                data = part
+                continue
+            for key, value in part.items():
+                if isinstance(data.get(key), dict):
+                    data[key].update(value)
+                else:
+                    data[key] = value
+        common = yaml.safe_load((rs.SHARED / "pkg_additional_info.yaml").read_text()) or {}
         for key in list(data):
             if key not in common:
                 continue

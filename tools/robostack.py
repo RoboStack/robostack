@@ -10,7 +10,7 @@
 Every distribution lives in distros/<distro>/ and only holds what is specific to
 it; everything else is in shared/. distros/<d>/vinca.yaml extends shared/vinca.yaml,
 and vinca combines both and the files next to each (pkg_additional_info.yaml,
-patch/ with dependencies.yaml, tests/, robostack.yaml). Tasks run in
+patch/, tests/, robostack.yaml). Tasks run in
 distros/<distro>/work/ (generated, git-ignored): its vinca.yaml extends the
 distribution's and adds the channel to skip published packages, and it holds
 vinca_pinning.yaml, conda_build_config.yaml (rendered back into distros/<d>/ by
