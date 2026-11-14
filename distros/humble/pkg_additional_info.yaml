@@ -131,3 +131,5 @@ rtabmap:
     then: "-DBUILD_TOOLS=OFF -DBUILD_EXAMPLES=OFF -DWITH_GTSAM=OFF"
     else: "-DBUILD_TOOLS=OFF -DBUILD_EXAMPLES=OFF"
   build_number: 26  # built with Qt (its GUI library, for rtabmap_viz)
+tracetools:  # vinca-rs: remove_host pkg-config also removes the native-only host pkg-config
+  build_number: 26
