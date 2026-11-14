@@ -298,19 +298,9 @@ ament_cmake_gtest:  # uses conda-forge's gtest instead of gtest_vendor's sources
   build_number: 23
 aruco_ros:  # its recipe test stops the node for sure (package tests hung on macOS)
   build_number: 23
-builtin_interfaces:
-  build_number: 30
-control_msgs:
-  build_number: 30
-nav2_msgs:
-  build_number: 30
 plotjuggler:
   build_number: 24
   add_host: ["libxcb", "${{ 'elfutils' if linux }}", "ros2-ros-workspace", "git-lfs"]
-rcl_interfaces:
-  build_number: 30
-rosbag2_interfaces:
-  build_number: 30
 rtabmap_slam:  # its recipe test stops the node for sure (package tests hung on macOS)
   build_number: 23
 spatio_temporal_voxel_layer:
