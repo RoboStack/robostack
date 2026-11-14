@@ -14,7 +14,7 @@ to read without Claude):
 ## Layout and rules
 
 - Every distribution lives in `distros/<distro>/` (only distro-specific data); shared
-  data is in `shared/` (vinca.yaml, pkg_additional_info.yaml, dependencies.yaml,
+  data is in `shared/` (vinca.yaml, pkg_additional_info.yaml with the dependency fixes,
   robostack.yaml, pinning, tests), tools in `tools/`. See README.md for the layout and
   how they combine. Never edit `distros/<d>/work/`: every task regenerates it.
 - A fix that applies to every distribution goes into `shared/`; a version-specific one
@@ -39,8 +39,8 @@ to read without Claude):
   `vinca.yaml` (see `robostack-package-selection`), not an ad-hoc comment.
 - One patch per package and platform:
   `distros/<d>/patch/ros2-<pkg>[.osx|.linux|.win|.unix].patch`. Packages are only built
-  under the new `ros2-<pkg>` names (`package_name_mode: new`); write dependencies in
-  `dependencies.yaml` as `ros2-<pkg>` too.
+  under the new `ros2-<pkg>` names (`package_name_mode: new`); write dependency fixes in
+  `pkg_additional_info.yaml` as `ros2-<pkg>` too.
 
 ## Everyday commands
 

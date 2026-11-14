@@ -1398,6 +1398,41 @@ def unmatched_patches(patches: list[str], packages: set[str]) -> list[str]:
     return [p for p in patches if (m := PATCH_NAME.match(p)) and m["package"] not in names]
 
 
+def _selector_items(node):
+    """The values of a list or mapping with `- if: ... then: ... else: ...` selectors, for every platform."""
+    if isinstance(node, list):
+        for item in node:
+            yield from _selector_items(item)
+    elif isinstance(node, dict) and "if" in node and "then" in node:
+        yield from _selector_items(node["then"])
+        yield from _selector_items(node.get("else"))
+    elif node is not None:
+        yield node
+
+
+def package_key(name: str) -> str:
+    """The ROS name of a per-package entry, as vinca-rs looks it up: conda prefixes
+    (ros-<distro>-, ros2-) dropped, dashes as underscores."""
+    name = re.sub(r"^(ros-[a-z]+-|ros2-)", "", name) if name.startswith(("ros2-", "ros-")) else name
+    return name.replace("-", "_")
+
+
+def unknown_package_entries(layer: Path, packages: set[str]) -> list[tuple[str, str]]:
+    """Per-package entries of a layer (shared/ or distros/<distro>/) for packages that
+    aren't in `packages`: typos, or entries left behind when a package went away."""
+    entries = []
+    vinca = yaml.safe_load((layer / "vinca.yaml").read_text()) or {}
+    entries += [("vinca.yaml packages_select_by_deps", n) for n in _selector_items(vinca.get("packages_select_by_deps"))]
+    for name in ("pkg_additional_info.yaml",):
+        path = layer / name
+        data = yaml.safe_load(path.read_text()) if path.is_file() else None
+        for mapping in _selector_items(data):
+            if isinstance(mapping, dict):
+                entries += [(name, k) for k in mapping if k not in ("if", "then", "else")]
+    known = {p.replace("-", "_") for p in packages}
+    return sorted({(where, n) for where, n in entries if isinstance(n, str) and package_key(n) not in known})
+
+
 def check() -> Result:
     """Sanity checks: every distribution assembles and its generated files are consistent."""
     problems: list[str] = []
@@ -1442,6 +1477,8 @@ def check() -> Result:
         all_packages |= packages
         for patch in unmatched_patches(patches, packages):
             problems.append(f"{distro}: patch {patch} matches no package of the distribution, so it is never applied")
+        for where, name in unknown_package_entries(d, packages):
+            problems.append(f"{distro}: {where} has an entry for {name}, which the distribution doesn't have")
         rendered = d / "conda_build_config.yaml"
         before = rendered.read_text() if rendered.is_file() else ""
         if rs.task(distro, "render-pinning", []) or rendered.read_text() != before:
@@ -1451,6 +1488,8 @@ def check() -> Result:
     shared = sorted(p.name for p in (rs.SHARED / "patch").glob("*.patch"))
     for patch in unmatched_patches(shared, all_packages):
         problems.append(f"shared: patch {patch} matches no package of any distribution, so it is never applied")
+    for where, name in unknown_package_entries(rs.SHARED, all_packages):
+        problems.append(f"shared: {where} has an entry for {name}, which no distribution has")
     # file names: .yaml everywhere (GitHub requires FUNDING.yml by that name)
     for yml in sorted(p for p in (rs.ROOT / ".github").rglob("*.yml") if p.name != "FUNDING.yml"):
         problems.append(f"{yml.relative_to(rs.ROOT)}: use the .yaml extension")
