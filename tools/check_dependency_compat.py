@@ -464,6 +464,9 @@ class Solver:
             server.stdin.write(json.dumps({"recipe": str(recipe.resolve()), "glibc": glibc}) + "\n")
             server.stdin.flush()
             response = json.loads(server.stdout.readline())
+            # a failure that isn't the solver's answer (render, network): not a conflict
+            if response.get("error"):
+                raise RuntimeError(f"vinca-rs solve failed for {label}: {response['error']}")
             return response["ok"], response["text"]
         return run_solve(
             recipe,
