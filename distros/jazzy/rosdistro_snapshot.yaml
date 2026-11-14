@@ -43,6 +43,23 @@ ackermann_nlmpc_msgs:
   url: https://github.com/ros2-gbp/ackmerann_nlmpc-release.git
   version: 1.0.3
 ackermann_steering_controller:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gmock
+  - backward_ros
+  - control_msgs
+  - controller_interface
+  - controller_manager
+  - generate_parameter_library
+  - hardware_interface
+  - hardware_interface_testing
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - ros2_control_cmake
+  - ros2_control_test_assets
+  - std_srvs
+  - steering_controllers_library
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/ackermann_steering_controller/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
@@ -191,6 +208,33 @@ adi_imu:
   url: https://github.com/ros2-gbp/adi_imu-release.git
   version: 1.1.0
 admittance_controller:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gmock
+  - angles
+  - backward_ros
+  - control_msgs
+  - control_toolbox
+  - controller_interface
+  - controller_manager
+  - generate_parameter_library
+  - geometry_msgs
+  - hardware_interface
+  - hardware_interface_testing
+  - kinematics_interface
+  - kinematics_interface_kdl
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - realtime_tools
+  - ros2_control_cmake
+  - ros2_control_test_assets
+  - tf2
+  - tf2_eigen
+  - tf2_geometry_msgs
+  - tf2_kdl
+  - tf2_ros
+  - trajectory_msgs
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/admittance_controller/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
@@ -3571,6 +3615,23 @@ bag2_to_image:
   url: https://github.com/ros2-gbp/bag2_to_image-release.git
   version: 0.1.1
 battery_state_broadcaster:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gmock
+  - backward_ros
+  - control_msgs
+  - controller_interface
+  - controller_manager
+  - generate_parameter_library
+  - hardware_interface
+  - hardware_interface_testing
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - realtime_tools
+  - ros2_control_cmake
+  - ros2_control_test_assets
+  - sensor_msgs
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/battery_state_broadcaster/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
@@ -3762,6 +3823,23 @@ beluga_ros:
   url: https://github.com/ros2-gbp/beluga-release.git
   version: 2.1.1
 bicycle_steering_controller:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gmock
+  - backward_ros
+  - control_msgs
+  - controller_interface
+  - controller_manager
+  - generate_parameter_library
+  - hardware_interface
+  - hardware_interface_testing
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - ros2_control_cmake
+  - ros2_control_test_assets
+  - std_srvs
+  - steering_controllers_library
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/bicycle_steering_controller/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
@@ -4327,6 +4405,20 @@ catch_ros2:
   url: https://github.com/ros2-gbp/catch_ros2-release.git
   version: 0.2.2
 chained_filter_controller:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gmock
+  - controller_interface
+  - controller_manager
+  - filters
+  - generate_parameter_library
+  - hardware_interface
+  - hardware_interface_testing
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - ros2_control_cmake
+  - ros2_control_test_assets
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/chained_filter_controller/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
@@ -5185,16 +5277,69 @@ control_toolbox:
   url: https://github.com/ros2-gbp/control_toolbox-release.git
   version: 4.11.1
 controller_interface:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gen_version_h
+  - ament_cmake_gmock
+  - geometry_msgs
+  - hardware_interface
+  - pal_statistics
+  - rclcpp_lifecycle
+  - realtime_tools
+  - ros2_control_cmake
+  - sensor_msgs
+  - std_msgs
   repository: https://github.com/ros-controls/ros2_control
   tag: release/jazzy/controller_interface/4.49.0-1
   url: https://github.com/ros2-gbp/ros2_control-release.git
   version: 4.49.0
 controller_manager:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gen_version_h
+  - ament_cmake_gmock
+  - ament_cmake_pytest
+  - ament_cmake_python
+  - backward_ros
+  - controller_interface
+  - controller_manager_msgs
+  - diagnostic_msgs
+  - diagnostic_updater
+  - example_interfaces
+  - generate_parameter_library
+  - hardware_interface
+  - hardware_interface_testing
+  - launch
+  - launch_ros
+  - launch_testing
+  - launch_testing_ament_cmake
+  - launch_testing_ros
+  - libstatistics_collector
+  - lifecycle_msgs
+  - pluginlib
+  - rcl_interfaces
+  - rclcpp
+  - rclpy
+  - realtime_tools
+  - robot_state_publisher
+  - ros2_control_cmake
+  - ros2_control_test_assets
+  - ros2param
+  - ros2pkg
+  - sensor_msgs
+  - std_msgs
   repository: https://github.com/ros-controls/ros2_control
   tag: release/jazzy/controller_manager/4.49.0-1
   url: https://github.com/ros2-gbp/ros2_control-release.git
   version: 4.49.0
 controller_manager_msgs:
+  dependencies:
+  - ament_cmake
+  - builtin_interfaces
+  - lifecycle_msgs
+  - rosidl_default_generators
+  - rosidl_default_runtime
+  - std_msgs
   repository: https://github.com/ros-controls/ros2_control
   tag: release/jazzy/controller_manager_msgs/4.49.0-1
   url: https://github.com/ros2-gbp/ros2_control-release.git
@@ -6601,6 +6746,27 @@ diagnostics:
   url: https://github.com/ros2-gbp/diagnostics-release.git
   version: 4.2.7
 diff_drive_controller:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gmock
+  - backward_ros
+  - control_toolbox
+  - controller_interface
+  - controller_manager
+  - generate_parameter_library
+  - geometry_msgs
+  - hardware_interface
+  - hardware_interface_testing
+  - nav_msgs
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - rcpputils
+  - realtime_tools
+  - ros2_control_cmake
+  - ros2_control_test_assets
+  - tf2
+  - tf2_msgs
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/diff_drive_controller/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
@@ -8632,6 +8798,19 @@ ecl_utilities:
   url: https://github.com/ros2-gbp/ecl_core-release.git
   version: 1.2.1
 effort_controllers:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gmock
+  - backward_ros
+  - controller_interface
+  - controller_manager
+  - forward_command_controller
+  - hardware_interface
+  - hardware_interface_testing
+  - pluginlib
+  - rclcpp
+  - ros2_control_cmake
+  - ros2_control_test_assets
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/effort_controllers/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
@@ -10234,11 +10413,47 @@ foonathan_memory_vendor:
   url: https://github.com/ros2-gbp/foonathan_memory_vendor-release.git
   version: 1.3.1
 force_torque_sensor_broadcaster:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gmock
+  - backward_ros
+  - controller_interface
+  - controller_manager
+  - filters
+  - generate_parameter_library
+  - geometry_msgs
+  - hardware_interface
+  - hardware_interface_testing
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - realtime_tools
+  - ros2_control_cmake
+  - ros2_control_test_assets
+  - tf2
+  - tf2_geometry_msgs
+  - tf2_ros
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/force_torque_sensor_broadcaster/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
   version: 4.43.0
 forward_command_controller:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gmock
+  - backward_ros
+  - controller_interface
+  - controller_manager
+  - generate_parameter_library
+  - hardware_interface
+  - hardware_interface_testing
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - realtime_tools
+  - ros2_control_cmake
+  - ros2_control_test_assets
+  - std_msgs
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/forward_command_controller/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
@@ -10772,11 +10987,23 @@ gc_spl_interfaces:
   url: https://github.com/ros2-gbp/game_controller_spl-release.git
   version: 4.1.0
 generate_parameter_library:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_python
+  - generate_parameter_library_py
+  - parameter_traits
+  - rclcpp
+  - rclcpp_lifecycle
+  - rclpy
+  - rsl
+  - tcb_span
+  - tl_expected
   repository: https://github.com/PickNikRobotics/generate_parameter_library
   tag: release/jazzy/generate_parameter_library/0.7.7-1
   url: https://github.com/ros2-gbp/generate_parameter_library-release.git
   version: 0.7.7
 generate_parameter_library_py:
+  dependencies: []
   repository: https://github.com/PickNikRobotics/generate_parameter_library
   tag: release/jazzy/generate_parameter_library_py/0.7.7-1
   url: https://github.com/ros2-gbp/generate_parameter_library-release.git
@@ -10893,6 +11120,21 @@ google_benchmark_vendor:
   url: https://github.com/ros2-gbp/google_benchmark_vendor-release.git
   version: 0.5.1
 gpio_controllers:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gmock
+  - control_msgs
+  - controller_interface
+  - controller_manager
+  - generate_parameter_library
+  - hardware_interface
+  - hardware_interface_testing
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - realtime_tools
+  - ros2_control_cmake
+  - ros2_control_test_assets
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/gpio_controllers/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
@@ -10908,6 +11150,20 @@ gps_msgs:
   url: https://github.com/ros2-gbp/gps_umd-release.git
   version: 3.1.1
 gps_sensor_broadcaster:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gmock
+  - controller_interface
+  - controller_manager
+  - generate_parameter_library
+  - hardware_interface
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - realtime_tools
+  - ros2_control_cmake
+  - ros2_control_test_assets
+  - sensor_msgs
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/gps_sensor_broadcaster/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
@@ -11301,6 +11557,23 @@ grid_map_visualization:
   url: https://github.com/ros2-gbp/grid_map-release.git
   version: 2.2.2
 gripper_controllers:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gmock
+  - backward_ros
+  - control_msgs
+  - control_toolbox
+  - controller_interface
+  - controller_manager
+  - generate_parameter_library
+  - hardware_interface
+  - hardware_interface_testing
+  - pluginlib
+  - rclcpp
+  - rclcpp_action
+  - realtime_tools
+  - ros2_control_cmake
+  - ros2_control_test_assets
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/gripper_controllers/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
@@ -11701,11 +11974,40 @@ gz_utils_vendor:
   url: https://github.com/ros2-gbp/gz_utils_vendor-release.git
   version: 0.0.5
 hardware_interface:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gen_version_h
+  - ament_cmake_gmock
+  - backward_ros
+  - control_msgs
+  - joint_limits
+  - lifecycle_msgs
+  - pal_statistics
+  - pluginlib
+  - rclcpp_lifecycle
+  - rcpputils
+  - rcutils
+  - realtime_tools
+  - ros2_control_cmake
+  - ros2_control_test_assets
+  - sdformat_urdf
+  - tinyxml2_vendor
+  - urdf
   repository: https://github.com/ros-controls/ros2_control
   tag: release/jazzy/hardware_interface/4.49.0-1
   url: https://github.com/ros2-gbp/ros2_control-release.git
   version: 4.49.0
 hardware_interface_testing:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gmock
+  - control_msgs
+  - hardware_interface
+  - lifecycle_msgs
+  - pluginlib
+  - rclcpp_lifecycle
+  - ros2_control_cmake
+  - ros2_control_test_assets
   repository: https://github.com/ros-controls/ros2_control
   tag: release/jazzy/hardware_interface_testing/4.49.0-1
   url: https://github.com/ros2-gbp/ros2_control-release.git
@@ -12211,6 +12513,22 @@ imu_processors:
   url: https://github.com/ros2-gbp/imu_pipeline-release.git
   version: 0.5.2
 imu_sensor_broadcaster:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gmock
+  - backward_ros
+  - controller_interface
+  - controller_manager
+  - generate_parameter_library
+  - hardware_interface
+  - hardware_interface_testing
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - realtime_tools
+  - ros2_control_cmake
+  - ros2_control_test_assets
+  - sensor_msgs
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/imu_sensor_broadcaster/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
@@ -12600,11 +12918,45 @@ joint_group_impedance_controller:
   url: https://github.com/ros2-gbp/kuka_drivers-release.git
   version: 2.0.0
 joint_limits:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gen_version_h
+  - ament_cmake_gmock
+  - backward_ros
+  - generate_parameter_library
+  - launch_ros
+  - launch_testing_ament_cmake
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - realtime_tools
+  - ros2_control_cmake
+  - trajectory_msgs
+  - urdf
   repository: https://github.com/ros-controls/ros2_control
   tag: release/jazzy/joint_limits/4.49.0-1
   url: https://github.com/ros2-gbp/ros2_control-release.git
   version: 4.49.0
 joint_state_broadcaster:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gmock
+  - backward_ros
+  - builtin_interfaces
+  - control_msgs
+  - controller_interface
+  - controller_manager
+  - generate_parameter_library
+  - hardware_interface
+  - hardware_interface_testing
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - realtime_tools
+  - ros2_control_cmake
+  - ros2_control_test_assets
+  - sensor_msgs
+  - urdf
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/joint_state_broadcaster/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
@@ -12667,6 +13019,28 @@ joint_state_topic_hardware_interface:
   url: https://github.com/ros2-gbp/topic_based_hardware-release.git
   version: 1.1.0
 joint_trajectory_controller:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gmock
+  - angles
+  - backward_ros
+  - control_msgs
+  - control_toolbox
+  - controller_interface
+  - controller_manager
+  - generate_parameter_library
+  - hardware_interface
+  - hardware_interface_testing
+  - pluginlib
+  - rclcpp
+  - rclcpp_action
+  - rclcpp_lifecycle
+  - realtime_tools
+  - ros2_control_cmake
+  - ros2_control_test_assets
+  - rsl
+  - trajectory_msgs
+  - urdf
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/joint_trajectory_controller/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
@@ -14648,6 +15022,21 @@ magnetic_model:
   url: https://github.com/ros2-gbp/compass-release.git
   version: 4.0.1
 magnetometer_broadcaster:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gmock
+  - backward_ros
+  - controller_interface
+  - controller_manager
+  - generate_parameter_library
+  - hardware_interface
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - realtime_tools
+  - ros2_control_cmake
+  - ros2_control_test_assets
+  - sensor_msgs
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/magnetometer_broadcaster/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
@@ -15272,6 +15661,30 @@ mcap_vendor:
   url: https://github.com/ros2-gbp/rosbag2-release.git
   version: 0.26.11
 mecanum_drive_controller:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gmock
+  - backward_ros
+  - control_msgs
+  - control_toolbox
+  - controller_interface
+  - controller_manager
+  - generate_parameter_library
+  - geometry_msgs
+  - hardware_interface
+  - hardware_interface_testing
+  - nav_msgs
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - rcpputils
+  - realtime_tools
+  - ros2_control_cmake
+  - ros2_control_test_assets
+  - std_srvs
+  - tf2
+  - tf2_geometry_msgs
+  - tf2_msgs
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/mecanum_drive_controller/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
@@ -15512,6 +15925,20 @@ mocap_optitrack:
   url: https://github.com/ros2-gbp/mocap_optitrack-release.git
   version: 1.0.1
 mola:
+  dependencies:
+  - mola_bridge_ros2
+  - mola_demos
+  - mola_input_rawlog
+  - mola_input_rosbag2
+  - mola_input_video
+  - mola_kernel
+  - mola_launcher
+  - mola_metric_maps
+  - mola_pose_list
+  - mola_relocalization
+  - mola_traj_tools
+  - mola_viz
+  - mola_yaml
   repository: https://github.com/MOLAorg/mola
   tag: release/jazzy/mola/3.3.1-1
   url: https://github.com/ros2-gbp/mola-release.git
@@ -15529,6 +15956,29 @@ mola_academic_datasets:
   url: https://github.com/ros2-gbp/mola_academic_datasets-release.git
   version: 3.1.0
 mola_bridge_ros2:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gmock
+  - ament_cmake_gtest
+  - ament_cmake_xmllint
+  - ament_lint_auto
+  - ament_lint_cmake
+  - diagnostic_msgs
+  - geographic_msgs
+  - geometry_msgs
+  - gps_msgs
+  - mola_common
+  - mola_kernel
+  - mola_msgs
+  - mrpt_libros_bridge
+  - mrpt_maps
+  - mrpt_nav_interfaces
+  - nav_msgs
+  - rclcpp
+  - ros_environment
+  - sensor_msgs
+  - tf2
+  - tf2_geometry_msgs
   repository: https://github.com/MOLAorg/mola
   tag: release/jazzy/mola_bridge_ros2/3.3.1-1
   url: https://github.com/ros2-gbp/mola-release.git
@@ -15546,6 +15996,14 @@ mola_common:
   url: https://github.com/ros2-gbp/mola_common-release.git
   version: 0.6.1
 mola_demos:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_cmake_lint_cmake
+  - ament_cmake_pep257
+  - ament_cmake_xmllint
+  - ament_lint_auto
+  - ros_environment
   repository: https://github.com/MOLAorg/mola
   tag: release/jazzy/mola_demos/3.3.1-1
   url: https://github.com/ros2-gbp/mola-release.git
@@ -15627,6 +16085,14 @@ mola_input_kitti_dataset:
   url: https://github.com/ros2-gbp/mola_academic_datasets-release.git
   version: 3.1.0
 mola_input_lidar_bin_dataset:
+  dependencies:
+  - mola_common
+  - mola_kernel
+  - mola_yaml
+  - mrpt_core
+  - mrpt_maps
+  - mrpt_obs
+  - mrpt_system
   repository: https://github.com/MOLAorg/mola
   tag: release/jazzy/mola_input_lidar_bin_dataset/3.3.1-1
   url: https://github.com/ros2-gbp/mola-release.git
@@ -15663,6 +16129,9 @@ mola_input_paris_luco_dataset:
   url: https://github.com/ros2-gbp/mola_academic_datasets-release.git
   version: 3.1.0
 mola_input_rawlog:
+  dependencies:
+  - mola_kernel
+  - mrpt_obs
   repository: https://github.com/MOLAorg/mola
   tag: release/jazzy/mola_input_rawlog/3.3.1-1
   url: https://github.com/ros2-gbp/mola-release.git
@@ -15682,21 +16151,51 @@ mola_input_rosbag1:
   url: https://github.com/ros2-gbp/mola_input_rosbag1-release.git
   version: 0.5.0
 mola_input_rosbag2:
+  dependencies:
+  - cv_bridge
+  - gps_msgs
+  - mola_kernel
+  - mrpt_libros_bridge
+  - mrpt_obs
+  - rosbag2_cpp
+  - sensor_msgs
+  - tf2_geometry_msgs
+  - tf2_msgs
+  - tf2_ros
   repository: https://github.com/MOLAorg/mola
   tag: release/jazzy/mola_input_rosbag2/3.3.1-1
   url: https://github.com/ros2-gbp/mola-release.git
   version: 3.3.1
 mola_input_video:
+  dependencies:
+  - mola_kernel
+  - mrpt_hwdrivers
+  - mrpt_obs
   repository: https://github.com/MOLAorg/mola
   tag: release/jazzy/mola_input_video/3.3.1-1
   url: https://github.com/ros2-gbp/mola-release.git
   version: 3.3.1
 mola_kernel:
+  dependencies:
+  - mola_common
+  - mola_yaml
+  - mrpt_maps
+  - mrpt_obs
+  - mrpt_topography
   repository: https://github.com/MOLAorg/mola
   tag: release/jazzy/mola_kernel/3.3.1-1
   url: https://github.com/ros2-gbp/mola-release.git
   version: 3.3.1
 mola_launcher:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_cmake_pep257
+  - ament_cmake_xmllint
+  - ament_lint_auto
+  - mola_kernel
+  - mrpt_core
+  - ros_environment
   repository: https://github.com/MOLAorg/mola
   tag: release/jazzy/mola_launcher/3.3.1-1
   url: https://github.com/ros2-gbp/mola-release.git
@@ -15738,21 +16237,53 @@ mola_lidar_odometry:
   url: https://github.com/ros2-gbp/mola_lidar_odometry-release.git
   version: 3.3.0
 mola_metric_maps:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - ament_cmake_xmllint
+  - ament_lint_auto
+  - ament_lint_common
+  - mola_common
+  - mola_kernel
+  - mola_test_datasets
+  - mp2p_icp
+  - mrpt_maps
+  - mrpt_viz
+  - nanoflann_vendor
+  - ros_environment
   repository: https://github.com/MOLAorg/mola
   tag: release/jazzy/mola_metric_maps/3.3.1-1
   url: https://github.com/ros2-gbp/mola-release.git
   version: 3.3.1
 mola_msgs:
+  dependencies:
+  - action_msgs
+  - ament_cmake
+  - mrpt_msgs
+  - nav_msgs
+  - rosidl_default_generators
+  - rosidl_default_runtime
   repository: https://github.com/MOLAorg/mola
   tag: release/jazzy/mola_msgs/3.3.1-1
   url: https://github.com/ros2-gbp/mola-release.git
   version: 3.3.1
 mola_pose_list:
+  dependencies:
+  - mola_common
+  - mrpt_maps
+  - mrpt_poses
   repository: https://github.com/MOLAorg/mola
   tag: release/jazzy/mola_pose_list/3.3.1-1
   url: https://github.com/ros2-gbp/mola-release.git
   version: 3.3.1
 mola_relocalization:
+  dependencies:
+  - mola_common
+  - mola_pose_list
+  - mola_test_datasets
+  - mp2p_icp
+  - mrpt_maps
+  - mrpt_obs
   repository: https://github.com/MOLAorg/mola
   tag: release/jazzy/mola_relocalization/3.3.1-1
   url: https://github.com/ros2-gbp/mola-release.git
@@ -15848,21 +16379,42 @@ mola_test_datasets:
   url: https://github.com/ros2-gbp/mola_test_datasets-release.git
   version: 0.5.0
 mola_traj_tools:
+  dependencies:
+  - mola_common
+  - mrpt_poses
   repository: https://github.com/MOLAorg/mola
   tag: release/jazzy/mola_traj_tools/3.3.1-1
   url: https://github.com/ros2-gbp/mola-release.git
   version: 3.3.1
 mola_viz:
+  dependencies:
+  - mola_kernel
+  - mrpt_gui
+  - mrpt_maps
+  - mrpt_opengl
+  - mrpt_viz
   repository: https://github.com/MOLAorg/mola
   tag: release/jazzy/mola_viz/3.3.1-1
   url: https://github.com/ros2-gbp/mola-release.git
   version: 3.3.1
 mola_viz_imgui:
+  dependencies:
+  - mola_kernel
+  - mrpt_gui
+  - mrpt_imgui
+  - mrpt_maps
+  - mrpt_obs
+  - mrpt_opengl
+  - mrpt_viz
   repository: https://github.com/MOLAorg/mola
   tag: release/jazzy/mola_viz_imgui/3.3.1-1
   url: https://github.com/ros2-gbp/mola-release.git
   version: 3.3.1
 mola_yaml:
+  dependencies:
+  - mola_common
+  - mrpt_containers
+  - mrpt_system
   repository: https://github.com/MOLAorg/mola
   tag: release/jazzy/mola_yaml/3.3.1-1
   url: https://github.com/ros2-gbp/mola-release.git
@@ -15895,6 +16447,21 @@ motion_capture_tracking_interfaces:
   url: https://github.com/ros2-gbp/motion_capture_tracking-release.git
   version: 1.0.9
 motion_primitives_controllers:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gmock
+  - control_msgs
+  - controller_interface
+  - controller_manager
+  - generate_parameter_library
+  - hardware_interface
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - realtime_tools
+  - ros2_control_cmake
+  - ros2_control_test_assets
+  - std_srvs
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/motion_primitives_controllers/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
@@ -16898,56 +17465,97 @@ mrpt_apps:
   url: https://github.com/ros2-gbp/mrpt_ros-release.git
   version: 2.15.21
 mrpt_apps_cli:
+  dependencies:
+  - mrpt_common
+  - mrpt_libapps_cli
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_apps_cli/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
   version: 3.4.0
 mrpt_apps_gui:
+  dependencies:
+  - mrpt_common
+  - mrpt_graphslam
+  - mrpt_kinematics
+  - mrpt_libapps_gui
+  - mrpt_nav
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_apps_gui/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
   version: 3.4.0
 mrpt_bayes:
+  dependencies:
+  - mrpt_common
+  - mrpt_config
+  - mrpt_math
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_bayes/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
   version: 3.4.0
 mrpt_common:
+  dependencies: []
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_common/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
   version: 3.4.0
 mrpt_comms:
+  dependencies:
+  - mrpt_common
+  - mrpt_io
+  - mrpt_poses
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_comms/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
   version: 3.4.0
 mrpt_config:
+  dependencies:
+  - mrpt_common
+  - mrpt_expr
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_config/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
   version: 3.4.0
 mrpt_containers:
+  dependencies:
+  - mrpt_common
+  - mrpt_core
+  - mrpt_typemeta
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_containers/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
   version: 3.4.0
 mrpt_core:
+  dependencies:
+  - mrpt_common
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_core/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
   version: 3.4.0
 mrpt_data:
+  dependencies: []
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_data/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
   version: 3.4.0
 mrpt_examples_cpp:
+  dependencies:
+  - mrpt_common
+  - mrpt_data
+  - mrpt_graphslam
+  - mrpt_gui
+  - mrpt_imgui
+  - mrpt_imgui_vendor
+  - mrpt_libapps_cli
+  - mrpt_libapps_gui
+  - mrpt_nav
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_examples_cpp/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
   version: 3.4.0
 mrpt_expr:
+  dependencies:
+  - mrpt_common
+  - mrpt_system
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_expr/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
@@ -16971,46 +17579,76 @@ mrpt_generic_sensor:
   url: https://github.com/ros2-gbp/mrpt_sensors-release.git
   version: 0.4.0
 mrpt_graphs:
+  dependencies:
+  - mrpt_common
+  - mrpt_io
+  - mrpt_poses
+  - mrpt_viz
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_graphs/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
   version: 3.4.0
 mrpt_graphslam:
+  dependencies:
+  - mrpt_gui
+  - mrpt_slam
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_graphslam/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
   version: 3.4.0
 mrpt_gui:
+  dependencies:
+  - mrpt_opengl
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_gui/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
   version: 3.4.0
 mrpt_hwdrivers:
+  dependencies:
+  - mrpt_comms
+  - mrpt_maps
+  - mrpt_viz
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_hwdrivers/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
   version: 3.4.0
 mrpt_img:
+  dependencies:
+  - mrpt_common
+  - mrpt_config
+  - mrpt_io
+  - mrpt_math
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_img/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
   version: 3.4.0
 mrpt_imgui:
+  dependencies:
+  - mrpt_opengl
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_imgui/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
   version: 3.4.0
 mrpt_imgui_vendor:
+  dependencies:
+  - mrpt_common
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_imgui_vendor/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
   version: 3.4.0
 mrpt_io:
+  dependencies:
+  - mrpt_common
+  - mrpt_serialization
+  - mrpt_system
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_io/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
   version: 3.4.0
 mrpt_kinematics:
+  dependencies:
+  - mrpt_common
+  - mrpt_viz
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_kinematics/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
@@ -17027,11 +17665,18 @@ mrpt_libapps:
   url: https://github.com/ros2-gbp/mrpt_ros-release.git
   version: 2.15.21
 mrpt_libapps_cli:
+  dependencies:
+  - mrpt_hwdrivers
+  - mrpt_slam
+  - mrpt_topography
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_libapps_cli/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
   version: 3.4.0
 mrpt_libapps_gui:
+  dependencies:
+  - mrpt_gui
+  - mrpt_libapps_cli
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_libapps_gui/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
@@ -17162,11 +17807,21 @@ mrpt_map_server:
   url: https://github.com/ros2-gbp/mrpt_navigation-release.git
   version: 2.6.0
 mrpt_maps:
+  dependencies:
+  - mrpt_graphs
+  - mrpt_obs
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_maps/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
   version: 3.4.0
 mrpt_math:
+  dependencies:
+  - mrpt_common
+  - mrpt_io
+  - mrpt_random
+  - mrpt_serialization
+  - mrpt_system
+  - nanoflann_vendor
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_math/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
@@ -17207,6 +17862,10 @@ mrpt_msgs_bridge:
   url: https://github.com/ros2-gbp/mrpt_navigation-release.git
   version: 2.6.0
 mrpt_nav:
+  dependencies:
+  - mrpt_kinematics
+  - mrpt_maps
+  - mrpt_viz
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_nav/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
@@ -17243,11 +17902,19 @@ mrpt_navigation:
   url: https://github.com/ros2-gbp/mrpt_navigation-release.git
   version: 2.6.0
 mrpt_obs:
+  dependencies:
+  - mrpt_common
+  - mrpt_tfest
+  - mrpt_viz
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_obs/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
   version: 3.4.0
 mrpt_opengl:
+  dependencies:
+  - mrpt_img
+  - mrpt_poses
+  - mrpt_viz
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_opengl/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
@@ -17330,11 +17997,17 @@ mrpt_pointcloud_pipeline:
   url: https://github.com/ros2-gbp/mrpt_navigation-release.git
   version: 2.6.0
 mrpt_poses:
+  dependencies:
+  - mrpt_bayes
+  - mrpt_common
+  - mrpt_io
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_poses/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
   version: 3.4.0
 mrpt_random:
+  dependencies:
+  - mrpt_common
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_random/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
@@ -17365,6 +18038,10 @@ mrpt_reactivenav2d:
   url: https://github.com/ros2-gbp/mrpt_navigation-release.git
   version: 2.6.0
 mrpt_rtti:
+  dependencies:
+  - mrpt_common
+  - mrpt_core
+  - mrpt_typemeta
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_rtti/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
@@ -17468,26 +18145,41 @@ mrpt_sensors:
   url: https://github.com/ros2-gbp/mrpt_sensors-release.git
   version: 0.4.0
 mrpt_serialization:
+  dependencies:
+  - mrpt_common
+  - mrpt_rtti
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_serialization/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
   version: 3.4.0
 mrpt_slam:
+  dependencies:
+  - mrpt_maps
+  - mrpt_topography
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_slam/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
   version: 3.4.0
 mrpt_system:
+  dependencies:
+  - mrpt_common
+  - mrpt_containers
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_system/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
   version: 3.4.0
 mrpt_tfest:
+  dependencies:
+  - mrpt_common
+  - mrpt_poses
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_tfest/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
   version: 3.4.0
 mrpt_topography:
+  dependencies:
+  - mrpt_common
+  - mrpt_math
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_topography/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
@@ -17561,11 +18253,17 @@ mrpt_tutorials:
   url: https://github.com/ros2-gbp/mrpt_navigation-release.git
   version: 2.6.0
 mrpt_typemeta:
+  dependencies:
+  - mrpt_common
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_typemeta/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
   version: 3.4.0
 mrpt_viz:
+  dependencies:
+  - mrpt_common
+  - mrpt_img
+  - mrpt_poses
   repository: https://github.com/MRPT/mrpt
   tag: release/jazzy/mrpt_viz/3.4.0-1
   url: https://github.com/ros2-gbp/mrpt3-release.git
@@ -17742,6 +18440,26 @@ multisensor_calibration_interface:
   url: https://github.com/ros2-gbp/multisensor_calibration-release.git
   version: 2.1.0
 mvsim:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gmock
+  - ament_cmake_gtest
+  - ament_cmake_xmllint
+  - ament_lint_auto
+  - ament_lint_common
+  - mrpt_gui
+  - mrpt_libros_bridge
+  - mrpt_maps
+  - mrpt_tfest
+  - mrpt_topography
+  - nav_msgs
+  - ros2launch
+  - ros_environment
+  - sensor_msgs
+  - stereo_msgs
+  - tf2
+  - tf2_geometry_msgs
+  - visualization_msgs
   repository: https://github.com/MRPT/mvsim
   tag: release/jazzy/mvsim/1.6.0-1
   url: https://github.com/ros2-gbp/mvsim-release.git
@@ -19989,6 +20707,23 @@ om_spring_actuator_controller:
   url: https://github.com/ros2-gbp/open_manipulator-release.git
   version: 4.1.3
 omni_wheel_drive_controller:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gmock
+  - controller_interface
+  - controller_manager
+  - generate_parameter_library
+  - geometry_msgs
+  - hardware_interface
+  - nav_msgs
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - realtime_tools
+  - ros2_control_cmake
+  - ros2_control_test_assets
+  - tf2
+  - tf2_msgs
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/omni_wheel_drive_controller/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
@@ -20469,6 +21204,22 @@ pangolin:
   url: https://github.com/ros2-gbp/Pangolin-release.git
   version: 0.9.6
 parallel_gripper_controller:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gmock
+  - backward_ros
+  - control_msgs
+  - control_toolbox
+  - controller_interface
+  - controller_manager
+  - generate_parameter_library
+  - hardware_interface
+  - pluginlib
+  - rclcpp
+  - rclcpp_action
+  - realtime_tools
+  - ros2_control_cmake
+  - ros2_control_test_assets
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/parallel_gripper_controller/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
@@ -20489,6 +21240,13 @@ parameter_expression:
   url: https://github.com/ros2-gbp/parameter_expression-release.git
   version: 0.0.2
 parameter_traits:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gtest
+  - rclcpp
+  - rsl
+  - tcb_span
+  - tl_expected
   repository: https://github.com/PickNikRobotics/generate_parameter_library
   tag: release/jazzy/parameter_traits/0.7.7-1
   url: https://github.com/ros2-gbp/generate_parameter_library-release.git
@@ -20914,6 +21672,25 @@ picknik_twist_controller:
   url: https://github.com/ros2-gbp/picknik_controllers-release.git
   version: 0.0.4
 pid_controller:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gmock
+  - angles
+  - backward_ros
+  - control_msgs
+  - control_toolbox
+  - controller_interface
+  - controller_manager
+  - generate_parameter_library
+  - hardware_interface
+  - hardware_interface_testing
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - realtime_tools
+  - ros2_control_cmake
+  - ros2_control_test_assets
+  - std_srvs
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/pid_controller/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
@@ -21601,6 +22378,22 @@ popf:
   url: https://github.com/ros2-gbp/popf-release.git
   version: 0.1.0
 pose_broadcaster:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gmock
+  - backward_ros
+  - controller_interface
+  - controller_manager
+  - generate_parameter_library
+  - geometry_msgs
+  - hardware_interface_testing
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - realtime_tools
+  - ros2_control_cmake
+  - ros2_control_test_assets
+  - tf2_msgs
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/pose_broadcaster/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
@@ -21647,6 +22440,19 @@ posedetection_msgs:
   url: https://github.com/tork-a/jsk_common_msgs-release.git
   version: 5.0.2
 position_controllers:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gmock
+  - backward_ros
+  - controller_interface
+  - controller_manager
+  - forward_command_controller
+  - hardware_interface
+  - hardware_interface_testing
+  - pluginlib
+  - rclcpp
+  - ros2_control_cmake
+  - ros2_control_test_assets
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/position_controllers/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
@@ -22161,6 +22967,22 @@ random_numbers:
   url: https://github.com/ros2-gbp/random_numbers-release.git
   version: 2.0.5
 range_sensor_broadcaster:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gmock
+  - backward_ros
+  - controller_interface
+  - controller_manager
+  - generate_parameter_library
+  - hardware_interface
+  - hardware_interface_testing
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - realtime_tools
+  - ros2_control_cmake
+  - ros2_control_test_assets
+  - sensor_msgs
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/range_sensor_broadcaster/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
@@ -24619,6 +25441,16 @@ robstride_ros2_control:
   url: https://github.com/ros2-gbp/robstride_ros2-release.git
   version: 0.2.0
 ros2_control:
+  dependencies:
+  - ament_cmake
+  - controller_interface
+  - controller_manager
+  - controller_manager_msgs
+  - hardware_interface
+  - joint_limits
+  - ros2_control_test_assets
+  - ros2controlcli
+  - transmission_interface
   repository: https://github.com/ros-controls/ros2_control
   tag: release/jazzy/ros2_control/4.49.0-1
   url: https://github.com/ros2-gbp/ros2_control-release.git
@@ -24633,16 +25465,55 @@ ros2_control_cmake:
   url: https://github.com/ros2-gbp/ros2_control_cmake-release.git
   version: 0.4.0
 ros2_control_test_assets:
+  dependencies:
+  - ament_cmake
   repository: https://github.com/ros-controls/ros2_control
   tag: release/jazzy/ros2_control_test_assets/4.49.0-1
   url: https://github.com/ros2-gbp/ros2_control-release.git
   version: 4.49.0
 ros2_controllers:
+  dependencies:
+  - ackermann_steering_controller
+  - admittance_controller
+  - ament_cmake
+  - battery_state_broadcaster
+  - bicycle_steering_controller
+  - chained_filter_controller
+  - diff_drive_controller
+  - effort_controllers
+  - force_torque_sensor_broadcaster
+  - forward_command_controller
+  - gpio_controllers
+  - gps_sensor_broadcaster
+  - gripper_controllers
+  - imu_sensor_broadcaster
+  - joint_state_broadcaster
+  - joint_trajectory_controller
+  - magnetometer_broadcaster
+  - mecanum_drive_controller
+  - omni_wheel_drive_controller
+  - parallel_gripper_controller
+  - pid_controller
+  - pose_broadcaster
+  - position_controllers
+  - range_sensor_broadcaster
+  - state_interfaces_broadcaster
+  - steering_controllers_library
+  - tricycle_controller
+  - tricycle_steering_controller
+  - velocity_controllers
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/ros2_controllers/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
   version: 4.43.0
 ros2_controllers_test_nodes:
+  dependencies:
+  - launch_ros
+  - launch_testing_ros
+  - rclpy
+  - sensor_msgs
+  - std_msgs
+  - trajectory_msgs
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/ros2_controllers_test_nodes/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
@@ -25210,6 +26081,15 @@ ros2component:
   url: https://github.com/ros2-gbp/ros2cli-release.git
   version: 0.32.13
 ros2controlcli:
+  dependencies:
+  - controller_manager
+  - controller_manager_msgs
+  - rcl_interfaces
+  - rclpy
+  - ros2cli
+  - ros2node
+  - ros2param
+  - rosidl_runtime_py
   repository: https://github.com/ros-controls/ros2_control
   tag: release/jazzy/ros2controlcli/4.49.0-1
   url: https://github.com/ros2-gbp/ros2_control-release.git
@@ -27221,6 +28101,25 @@ rot_conv:
   url: https://github.com/ros2-gbp/rot_conv_lib-release.git
   version: 1.1.0
 rplidar_driver:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_cppcheck
+  - ament_cmake_gtest
+  - ament_cmake_lint_cmake
+  - ament_cmake_xmllint
+  - ament_lint_auto
+  - diagnostic_updater
+  - geometry_msgs
+  - launch_ros
+  - lifecycle_msgs
+  - rclcpp
+  - rclcpp_components
+  - rclcpp_lifecycle
+  - sensor_msgs
+  - std_srvs
+  - tf2
+  - tf2_geometry_msgs
+  - tf2_ros
   repository: https://github.com/frozenreboot/rplidar_driver
   tag: release/jazzy/rplidar_driver/1.4.2-1
   url: https://github.com/ros2-gbp/rplidar_driver-release.git
@@ -27383,6 +28282,14 @@ rqt_console:
   url: https://github.com/ros2-gbp/rqt_console-release.git
   version: 2.2.2
 rqt_controller_manager:
+  dependencies:
+  - controller_manager
+  - controller_manager_msgs
+  - launch_testing
+  - launch_testing_ros
+  - rclpy
+  - rqt_gui
+  - rqt_gui_py
   repository: https://github.com/ros-controls/ros2_control
   tag: release/jazzy/rqt_controller_manager/4.49.0-1
   url: https://github.com/ros2-gbp/ros2_control-release.git
@@ -27510,6 +28417,17 @@ rqt_image_view:
   url: https://github.com/ros2-gbp/rqt_image_view-release.git
   version: 1.3.0
 rqt_joint_trajectory_controller:
+  dependencies:
+  - control_msgs
+  - controller_manager_msgs
+  - launch_testing
+  - launch_testing_ros
+  - python_qt_binding
+  - qt_gui
+  - rclpy
+  - rqt_gui
+  - rqt_gui_py
+  - trajectory_msgs
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/rqt_joint_trajectory_controller/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
@@ -28126,6 +29044,23 @@ rtcm_msgs:
   url: https://github.com/ros2-gbp/rtcm_msgs-release.git
   version: 1.1.6
 rtest:
+  dependencies:
+  - action_msgs
+  - ament_clang_tidy
+  - ament_cmake
+  - ament_cmake_copyright
+  - ament_cmake_gmock
+  - ament_cmake_ros
+  - ament_lint_auto
+  - ament_lint_common
+  - example_interfaces
+  - rcl
+  - rcl_action
+  - rclcpp
+  - rclcpp_action
+  - ros_environment
+  - std_msgs
+  - std_srvs
   repository: https://github.com/Beam-and-Spyrosoft/rtest
   tag: release/jazzy/rtest/0.2.5-1
   url: https://github.com/ros2-gbp/rtest-release.git
@@ -29487,6 +30422,21 @@ sros2_cmake:
   url: https://github.com/ros2-gbp/sros2-release.git
   version: 0.13.6
 state_interfaces_broadcaster:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gmock
+  - backward_ros
+  - control_msgs
+  - controller_interface
+  - controller_manager
+  - generate_parameter_library
+  - hardware_interface
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - realtime_tools
+  - ros2_control_cmake
+  - ros2_control_test_assets
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/state_interfaces_broadcaster/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
@@ -29524,6 +30474,28 @@ std_srvs:
   url: https://github.com/ros2-gbp/common_interfaces-release.git
   version: 5.3.8
 steering_controllers_library:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gmock
+  - backward_ros
+  - control_msgs
+  - controller_interface
+  - controller_manager
+  - generate_parameter_library
+  - geometry_msgs
+  - hardware_interface
+  - nav_msgs
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - rcpputils
+  - realtime_tools
+  - ros2_control_cmake
+  - ros2_control_test_assets
+  - std_srvs
+  - tf2
+  - tf2_geometry_msgs
+  - tf2_msgs
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/steering_controllers_library/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
@@ -30331,866 +31303,1966 @@ tlsf_cpp:
   url: https://github.com/ros2-gbp/realtime_support-release.git
   version: 0.17.1
 tobas:
+  dependencies:
+  - ament_cmake
+  - tobas_core
+  - tobas_examples
+  - tobas_external
+  - tobas_gui
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_actuator_test:
+  dependencies:
+  - ament_cmake
+  - tobas_dparam_client
+  - tobas_drone_core
+  - tobas_gui_common
+  - tobas_qt_tools
+  - tobas_rqt_bridge
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_actuator_test/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_algorithm:
+  dependencies:
+  - ament_cmake
+  - tobas_math
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_algorithm/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_bootmedia_config:
+  dependencies:
+  - ament_cmake
+  - ament_index_cpp
+  - magic_enum
+  - tobas_constants
+  - tobas_crypt
+  - tobas_gui_common
+  - tobas_inja_vendor
+  - tobas_path_tools
+  - tobas_qt_tools
+  - tobas_ssh_authkey
+  - tobas_udev
+  - tobas_wpa_supplicant
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_bootmedia_config/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_camera:
+  dependencies:
+  - ament_cmake
+  - tobas_camera_msgs
+  - tobas_camera_ros_interface
+  - tobas_image_processing
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_camera/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_camera_msgs:
+  dependencies:
+  - ament_cmake
+  - rosidl_default_generators
+  - rosidl_default_runtime
+  - std_msgs
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_camera_msgs/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_camera_ros_interface:
+  dependencies:
+  - ament_cmake
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_camera_ros_interface/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_code_style:
+  dependencies:
+  - ament_cmake
+  - tobas_cpp_code_style_example
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_code_style/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_colcon_cpp:
+  dependencies:
+  - ament_cmake
+  - tobas_linux
+  - tobas_ros2_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_colcon_cpp/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_command_msgs:
+  dependencies:
+  - ament_cmake
+  - rosidl_default_generators
+  - rosidl_default_runtime
+  - tobas_kdl_msgs
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_command_msgs/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_command_msgs_adapter:
+  dependencies:
+  - ament_cmake
+  - tobas_command_msgs
+  - tobas_kdl_msgs_adapter
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_command_msgs_adapter/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_common:
+  dependencies:
+  - ament_cmake
+  - tobas_algorithm
+  - tobas_control
+  - tobas_dsp
+  - tobas_eigen_conversions
+  - tobas_eigen_msgs
+  - tobas_eigen_msgs_adapter
+  - tobas_eigen_tools
+  - tobas_geographic
+  - tobas_ic_drivers
+  - tobas_ic_drivers_ros
+  - tobas_kdl
+  - tobas_kdl_conversions
+  - tobas_kdl_msgs
+  - tobas_kdl_msgs_adapter
+  - tobas_linux
+  - tobas_math
+  - tobas_nlp
+  - tobas_path_tools
+  - tobas_quadprog
+  - tobas_ros2_tools
+  - tobas_std_msgs
+  - tobas_std_msgs_adapter
+  - tobas_std_tools
+  - tobas_string_tools
+  - tobas_time_tools
+  - tobas_trajectory_generation
+  - tobas_urdf
+  - tobas_xml_tools
+  - tobas_yaml_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_common/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_components_rt:
+  dependencies:
+  - ament_cmake
+  - rclcpp
+  - rclcpp_components
+  - tobas_linux
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_components_rt/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_config_servers:
+  dependencies:
+  - ament_cmake
+  - tobas_constants
+  - tobas_msgs_adapter
+  - tobas_node
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_config_servers/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_connection_monitor:
+  dependencies:
+  - ament_cmake
+  - tobas_constants
+  - tobas_msgs
+  - tobas_node
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_connection_monitor/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_constants:
+  dependencies:
+  - ament_cmake
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_constants/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_control:
+  dependencies:
+  - ament_cmake
+  - tobas_quadprog
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_control/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_control_system:
+  dependencies:
+  - ament_cmake
+  - magic_enum
+  - tobas_constants
+  - tobas_drone_core
+  - tobas_geographic
+  - tobas_gui_common
+  - tobas_mission_msgs_adapter
+  - tobas_msgs_adapter
+  - tobas_path_tools
+  - tobas_property_client
+  - tobas_qt_tools
+  - tobas_ros2_tools
+  - tobas_rqt_bridge
+  - tobas_trajectory_generation
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_control_system/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_controllers:
+  dependencies:
+  - ament_cmake
+  - tobas_fixed_wing_controller
+  - tobas_nonplanar_multi_controller
+  - tobas_planar_multi_controller
+  - tobas_random_axis_tilt_multi_controller
+  - tobas_y_axis_tilt_multi_controller
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_controllers/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_core:
+  dependencies:
+  - ament_cmake
+  - tobas_camera
+  - tobas_command_msgs
+  - tobas_command_msgs_adapter
+  - tobas_common
+  - tobas_components_rt
+  - tobas_config_servers
+  - tobas_connection_monitor
+  - tobas_constants
+  - tobas_controllers
+  - tobas_cui
+  - tobas_debug_msgs
+  - tobas_debug_msgs_adapter
+  - tobas_debug_tools
+  - tobas_description
+  - tobas_disturbance_observer
+  - tobas_dparam
+  - tobas_drone
+  - tobas_dummy_pkg
+  - tobas_eskf
+  - tobas_failsafe
+  - tobas_fake_publishers
+  - tobas_hardware
+  - tobas_joint_states_bridge
+  - tobas_landing_detection
+  - tobas_manipulation
+  - tobas_mission
+  - tobas_msgs
+  - tobas_msgs_adapter
+  - tobas_node
+  - tobas_object_avoidance
+  - tobas_pose_pid
+  - tobas_property
+  - tobas_rc_teleop
+  - tobas_real
+  - tobas_ros_interface
+  - tobas_rosbag_recorder
+  - tobas_rotor_anomaly_detection
+  - tobas_rotor_controller
+  - tobas_tools
+  - tobas_topic_throttle
+  - tobas_tree_server
+  - tobas_version
+  - tobas_vibration_filter
+  - tobas_wind_model
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_core/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_cpp_code_style_example:
+  dependencies:
+  - ament_cmake
+  - launch
+  - launch_ros
+  - mavros_msgs
+  - rclcpp
+  - rclcpp_components
+  - std_msgs
+  - tobas_math
+  - tobas_msgs_adapter
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_cpp_code_style_example/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_crypt:
+  dependencies:
+  - ament_cmake
+  - tobas_linux
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_crypt/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_cui:
+  dependencies:
+  - ament_cmake
+  - tobas_keyboard
+  - tobas_keyboard_teleop
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_cui/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_cyclonedds_config:
+  dependencies:
+  - ament_cmake
+  - tobas_string_tools
+  - tobas_xml_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_cyclonedds_config/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_debug_msgs:
+  dependencies:
+  - ament_cmake
+  - rosidl_default_generators
+  - rosidl_default_runtime
+  - tobas_eigen_msgs
+  - tobas_kdl_msgs
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_debug_msgs/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_debug_msgs_adapter:
+  dependencies:
+  - ament_cmake
+  - tobas_debug_msgs
+  - tobas_eigen_msgs_adapter
+  - tobas_kdl_msgs_adapter
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_debug_msgs_adapter/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_debug_tools:
+  dependencies:
+  - ament_cmake
+  - tobas_dsp
+  - tobas_msgs_adapter
+  - tobas_node
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_debug_tools/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_description:
+  dependencies:
+  - ament_cmake
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_description/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_disturbance_observer:
+  dependencies:
+  - ament_cmake
+  - tobas_drone_msgs_adapter
+  - tobas_dsp
+  - tobas_msgs_adapter
+  - tobas_node
+  - tobas_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_disturbance_observer/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_dparam:
+  dependencies:
+  - ament_cmake
+  - tobas_dparam_client
+  - tobas_dparam_common
+  - tobas_dparam_msgs
+  - tobas_dparam_server
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_dparam/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_dparam_client:
+  dependencies:
+  - ament_cmake
+  - tobas_dparam_common
+  - tobas_dparam_msgs
+  - tobas_path_tools
+  - tobas_ros2_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_dparam_client/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_dparam_common:
+  dependencies:
+  - ament_cmake
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_dparam_common/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_dparam_msgs:
+  dependencies:
+  - ament_cmake
+  - rosidl_default_generators
+  - rosidl_default_runtime
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_dparam_msgs/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_dparam_server:
+  dependencies:
+  - ament_cmake
+  - tobas_dparam_common
+  - tobas_dparam_msgs
+  - tobas_node
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_dparam_server/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_drone:
+  dependencies:
+  - ament_cmake
+  - tobas_drone_core
+  - tobas_drone_msgs
+  - tobas_drone_msgs_adapter
+  - tobas_drone_server
+  - tobas_drone_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_drone/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_drone_core:
+  dependencies:
+  - ament_cmake
+  - tobas_constants
+  - tobas_kdl
+  - tobas_nlp
+  - tobas_yaml_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_drone_core/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_drone_msgs:
+  dependencies:
+  - ament_cmake
+  - rosidl_default_generators
+  - rosidl_default_runtime
+  - tobas_kdl_msgs
+  - tobas_std_msgs
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_drone_msgs/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_drone_msgs_adapter:
+  dependencies:
+  - ament_cmake
+  - rosidl_default_generators
+  - rosidl_default_runtime
+  - tobas_drone_core
+  - tobas_drone_msgs
+  - tobas_kdl_msgs_adapter
+  - tobas_std_msgs_adapter
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_drone_msgs_adapter/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_drone_server:
+  dependencies:
+  - ament_cmake
+  - tobas_drone_msgs_adapter
+  - tobas_msgs
+  - tobas_node
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_drone_server/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_drone_tools:
+  dependencies:
+  - ament_cmake
+  - tobas_drone_core
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_drone_tools/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_dsp:
+  dependencies:
+  - ament_cmake
+  - tobas_eigen_tools
+  - tobas_std_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_dsp/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_dummy_pkg:
+  dependencies:
+  - ament_cmake
+  - rclcpp
+  - rclcpp_components
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_dummy_pkg/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_dynamixel:
+  dependencies:
+  - ament_cmake
+  - tobas_dynamixel_handler
+  - tobas_dynamixel_msgs
+  - tobas_dynamixel_ros_interface
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_dynamixel/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_dynamixel_handler:
+  dependencies:
+  - ament_cmake
+  - dynamixel_sdk
+  - std_srvs
+  - tobas_dynamixel_msgs
+  - tobas_dynamixel_ros_interface
+  - tobas_msgs_adapter
+  - tobas_node
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_dynamixel_handler/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_dynamixel_msgs:
+  dependencies:
+  - ament_cmake
+  - rosidl_default_generators
+  - rosidl_default_runtime
+  - std_msgs
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_dynamixel_msgs/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_dynamixel_ros_interface:
+  dependencies:
+  - ament_cmake
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_dynamixel_ros_interface/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_eigen_conversions:
+  dependencies:
+  - ament_cmake
+  - geometry_msgs
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_eigen_conversions/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_eigen_msgs:
+  dependencies:
+  - ament_cmake
+  - rosidl_default_generators
+  - rosidl_default_runtime
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_eigen_msgs/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_eigen_msgs_adapter:
+  dependencies:
+  - ament_cmake
+  - rosidl_default_generators
+  - rosidl_default_runtime
+  - tobas_eigen_msgs
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_eigen_msgs_adapter/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_eigen_tools:
+  dependencies:
+  - ament_cmake
+  - tobas_std_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_eigen_tools/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_eskf:
+  dependencies:
+  - ament_cmake
+  - tobas_debug_msgs_adapter
+  - tobas_eigen_tools
+  - tobas_geographic
+  - tobas_kdl_conversions
+  - tobas_msgs_adapter
+  - tobas_node
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_eskf/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_examples:
+  dependencies:
+  - ament_cmake
+  - tobas_code_style
+  - tobas_examples_cpp
+  - tobas_examples_py
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_examples/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_examples_cpp:
+  dependencies:
+  - ament_cmake
+  - tobas_command_msgs
+  - tobas_constants
+  - tobas_mission_items
+  - tobas_mission_msgs
+  - tobas_msgs_adapter
+  - tobas_node
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_examples_cpp/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_examples_py:
+  dependencies:
+  - rclpy
+  - tobas_msgs
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_examples_py/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_external:
+  dependencies:
+  - ament_cmake
+  - tobas_inja_vendor
+  - tobas_rapidcsv_vendor
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_external/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_failsafe:
+  dependencies:
+  - ament_cmake
+  - tobas_drone_msgs_adapter
+  - tobas_dsp
+  - tobas_mission_items
+  - tobas_mission_msgs
+  - tobas_msgs_adapter
+  - tobas_node
+  - tobas_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_failsafe/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_fake_publishers:
+  dependencies:
+  - ament_cmake
+  - tobas_constants
+  - tobas_msgs_adapter
+  - tobas_node
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_fake_publishers/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_fc1xx:
+  dependencies:
+  - ament_cmake
+  - tobas_fc1xx_core
+  - tobas_fc1xx_ros
+  - tobas_fc1xx_test
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_fc1xx/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_fc1xx_core:
+  dependencies:
+  - ament_cmake
+  - tobas_linux
+  - tobas_std_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_fc1xx_core/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_fc1xx_ros:
+  dependencies:
+  - ament_cmake
+  - launch
+  - launch_ros
+  - tobas_drone_msgs_adapter
+  - tobas_dsp
+  - tobas_fc1xx_core
+  - tobas_hardware_common
+  - tobas_ic_drivers
+  - tobas_msgs_adapter
+  - tobas_real_common
+  - tobas_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_fc1xx_ros/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_fc1xx_test:
+  dependencies:
+  - ament_cmake
+  - tobas_fc1xx_core
+  - tobas_ic_drivers
+  - tobas_sbus_driver
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_fc1xx_test/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_fc2xx:
+  dependencies:
+  - ament_cmake
+  - tobas_fc2xx_core
+  - tobas_fc2xx_ros
+  - tobas_fc2xx_test
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_fc2xx/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_fc2xx_core:
+  dependencies:
+  - ament_cmake
+  - tobas_algorithm
+  - tobas_linux
+  - tobas_std_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_fc2xx_core/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_fc2xx_ros:
+  dependencies:
+  - ament_cmake
+  - launch
+  - launch_ros
+  - tobas_drone_msgs_adapter
+  - tobas_fc2xx_core
+  - tobas_ic_drivers
+  - tobas_msgs_adapter
+  - tobas_node
+  - tobas_real_common
+  - tobas_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_fc2xx_ros/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_fc2xx_test:
+  dependencies:
+  - ament_cmake
+  - tobas_fc2xx_core
+  - tobas_ic_drivers
+  - tobas_sbus_driver
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_fc2xx_test/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_fixed_wing_controller:
+  dependencies:
+  - ament_cmake
+  - tobas_control
+  - tobas_debug_msgs_adapter
+  - tobas_drone_msgs_adapter
+  - tobas_drone_tools
+  - tobas_node
+  - tobas_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_fixed_wing_controller/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_flight_log_gui:
+  dependencies:
+  - ament_cmake
+  - tobas_debug_msgs
+  - tobas_gui_common
+  - tobas_kdl
+  - tobas_msgs
+  - tobas_property_client
+  - tobas_qt_tools
+  - tobas_qwt_wrapper
+  - tobas_ros2_tools
+  - tobas_rqt_bridge
+  - tobas_string_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_flight_log_gui/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_gamepad:
+  dependencies:
+  - ament_cmake
+  - tobas_gamepad_core
+  - tobas_gamepad_ros
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_gamepad/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_gamepad_core:
+  dependencies:
+  - ament_cmake
+  - magic_enum
+  - tobas_constants
+  - tobas_math
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_gamepad_core/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_gamepad_ros:
+  dependencies:
+  - ament_cmake
+  - tobas_constants
+  - tobas_gamepad_core
+  - tobas_msgs_adapter
+  - tobas_node
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_gamepad_ros/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_gazebo:
+  dependencies:
+  - ament_cmake
+  - tobas_gazebo_common
+  - tobas_gazebo_conversions
+  - tobas_gazebo_gui_plugins
+  - tobas_gazebo_msgs
+  - tobas_gazebo_ros
+  - tobas_gazebo_sim
+  - tobas_gazebo_system_plugins
+  - tobas_gazebo_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_gazebo/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_gazebo_common:
+  dependencies:
+  - ament_cmake
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_gazebo_common/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_gazebo_conversions:
+  dependencies:
+  - ament_cmake
+  - geometry_msgs
+  - gz_math_vendor
+  - gz_msgs_vendor
+  - tobas_kdl
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_gazebo_conversions/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_gazebo_gui_plugins:
+  dependencies:
+  - ament_cmake
+  - gz_plugin_vendor
+  - gz_sim_vendor
+  - tobas_gazebo_common
+  - tobas_gazebo_conversions
+  - tobas_gazebo_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_gazebo_gui_plugins/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_gazebo_msgs:
+  dependencies:
+  - ament_cmake
+  - geometry_msgs
+  - rosidl_default_generators
+  - rosidl_default_runtime
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_gazebo_msgs/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_gazebo_ros:
+  dependencies:
+  - ament_cmake
+  - tobas_drone_msgs_adapter
+  - tobas_gazebo_common
+  - tobas_gazebo_msgs
+  - tobas_msgs_adapter
+  - tobas_node
+  - tobas_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_gazebo_ros/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_gazebo_sim:
+  dependencies:
+  - ament_cmake
+  - gz_sim_vendor
+  - ros_gz
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_gazebo_sim/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_gazebo_system_plugins:
+  dependencies:
+  - ament_cmake
+  - gz_plugin_vendor
+  - gz_sim_vendor
+  - sensor_msgs
+  - std_srvs
+  - tobas_drone_tools
+  - tobas_dsp
+  - tobas_gazebo_common
+  - tobas_gazebo_conversions
+  - tobas_gazebo_msgs
+  - tobas_gazebo_tools
+  - tobas_geographic
+  - tobas_msgs_adapter
+  - tobas_nlp
+  - tobas_node
+  - tobas_tools
+  - tobas_wind_model
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_gazebo_system_plugins/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_gazebo_tools:
+  dependencies:
+  - ament_cmake
+  - gz_sim_vendor
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_gazebo_tools/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_gcs:
+  dependencies:
+  - ament_cmake
+  - launch
+  - launch_ros
+  - rmw_cyclonedds_cpp
+  - tobas_actuator_test
+  - tobas_connection_monitor
+  - tobas_control_system
+  - tobas_cyclonedds_config
+  - tobas_flight_log_gui
+  - tobas_gazebo_sim
+  - tobas_parameter_tuning
+  - tobas_property_server
+  - tobas_sensor_calibration
+  - tobas_simulation_gui
+  - tobas_ssh_server
+  - tobas_tile_proxy
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_gcs/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_geographic:
+  dependencies:
+  - ament_cmake
+  - ament_index_cpp
+  - tobas_std_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_geographic/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_git:
+  dependencies:
+  - ament_cmake
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_git/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_gui:
+  dependencies:
+  - ament_cmake
+  - tobas_actuator_test
+  - tobas_bootmedia_config
+  - tobas_colcon_cpp
+  - tobas_control_system
+  - tobas_crypt
+  - tobas_cyclonedds_config
+  - tobas_flight_log_gui
+  - tobas_gamepad
+  - tobas_gazebo
+  - tobas_gcs
+  - tobas_git
+  - tobas_gui_common
+  - tobas_parameter_tuning
+  - tobas_qt_tools
+  - tobas_qwt_wrapper
+  - tobas_rviz_plugin
+  - tobas_rviz_wrapper
+  - tobas_sensor_calibration
+  - tobas_setup_assistant
+  - tobas_simulation_gui
+  - tobas_ssh
+  - tobas_tile_proxy
+  - tobas_uadf
+  - tobas_udev
+  - tobas_urdf_builder
+  - tobas_urdf_builder_plugin
+  - tobas_visualization_msgs
+  - tobas_wpa_supplicant
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_gui/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_gui_common:
+  dependencies:
+  - ament_cmake
+  - tobas_colcon_cpp
+  - tobas_constants
+  - tobas_linux
+  - tobas_qt_tools
+  - tobas_ssh_client
+  - tobas_std_tools
+  - tobas_version
+  - tobas_yaml_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_gui_common/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_hardware:
+  dependencies:
+  - ament_cmake
+  - tobas_fc1xx
+  - tobas_fc2xx
+  - tobas_hardware_common
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_hardware/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_hardware_common:
+  dependencies:
+  - ament_cmake
+  - std_srvs
+  - tobas_node
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_hardware_common/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_ic_drivers:
+  dependencies:
+  - ament_cmake
+  - tobas_linux
+  - tobas_time_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_ic_drivers/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_ic_drivers_ros:
+  dependencies:
+  - ament_cmake
+  - geometry_msgs
+  - rclcpp
+  - rclcpp_components
+  - tobas_ic_drivers
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_ic_drivers_ros/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_image_processing:
+  dependencies:
+  - ament_cmake
+  - cv_bridge
+  - ffmpeg_encoder_decoder
+  - ffmpeg_image_transport_msgs
+  - launch
+  - launch_ros
+  - sensor_msgs
+  - tobas_camera_msgs
+  - tobas_camera_ros_interface
+  - tobas_ic_drivers
+  - tobas_msgs_adapter
+  - tobas_node
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_image_processing/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_inja_vendor:
+  dependencies:
+  - ament_cmake
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_inja_vendor/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_joint_states_bridge:
+  dependencies:
+  - ament_cmake
+  - sensor_msgs
+  - tobas_constants
+  - tobas_msgs_adapter
+  - tobas_node
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_joint_states_bridge/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_kdl:
+  dependencies:
+  - ament_cmake
+  - tobas_eigen_tools
+  - tobas_math
+  - tobas_quadprog
+  - tobas_std_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_kdl/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_kdl_conversions:
+  dependencies:
+  - ament_cmake
+  - geometry_msgs
+  - tobas_kdl
+  - urdf
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_kdl_conversions/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_kdl_msgs:
+  dependencies:
+  - ament_cmake
+  - rosidl_default_generators
+  - rosidl_default_runtime
+  - std_msgs
+  - tobas_eigen_msgs
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_kdl_msgs/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_kdl_msgs_adapter:
+  dependencies:
+  - ament_cmake
+  - tobas_eigen_msgs_adapter
+  - tobas_eigen_tools
+  - tobas_kdl
+  - tobas_kdl_msgs
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_kdl_msgs_adapter/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_kdl_parser:
+  dependencies:
+  - ament_cmake
+  - tobas_kdl_conversions
+  - tobas_urdf
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_kdl_parser/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_keyboard:
+  dependencies:
+  - ament_cmake
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_keyboard/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_keyboard_teleop:
+  dependencies:
+  - ament_cmake
+  - tobas_command_msgs_adapter
+  - tobas_keyboard
+  - tobas_mission_items
+  - tobas_mission_msgs
+  - tobas_msgs_adapter
+  - tobas_node
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_keyboard_teleop/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_landing_detection:
+  dependencies:
+  - ament_cmake
+  - tobas_dsp
+  - tobas_msgs_adapter
+  - tobas_node
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_landing_detection/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_linux:
+  dependencies:
+  - ament_cmake
+  - tobas_std_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_linux/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_manipulation:
+  dependencies:
+  - ament_cmake
+  - tobas_drone_msgs_adapter
+  - tobas_kdl_conversions
+  - tobas_msgs_adapter
+  - tobas_node
+  - tobas_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_manipulation/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_math:
+  dependencies:
+  - ament_cmake
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_math/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_mission:
+  dependencies:
+  - ament_cmake
+  - tobas_mission_execution_mc
+  - tobas_mission_items
+  - tobas_mission_msgs
+  - tobas_mission_msgs_adapter
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_mission/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_mission_execution_mc:
+  dependencies:
+  - ament_cmake
+  - tobas_command_msgs_adapter
+  - tobas_geographic
+  - tobas_mission_items
+  - tobas_mission_msgs
+  - tobas_msgs_adapter
+  - tobas_node
+  - tobas_trajectory_generation
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_mission_execution_mc/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_mission_items:
+  dependencies:
+  - ament_cmake
+  - tobas_std_tools
+  - tobas_yaml_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_mission_items/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_mission_msgs:
+  dependencies:
+  - ament_cmake
+  - rosidl_default_generators
+  - rosidl_default_runtime
+  - std_msgs
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_mission_msgs/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_mission_msgs_adapter:
+  dependencies:
+  - ament_cmake
+  - tobas_mission_items
+  - tobas_mission_msgs
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_mission_msgs_adapter/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_msgs:
+  dependencies:
+  - ament_cmake
+  - geometry_msgs
+  - rosidl_default_generators
+  - rosidl_default_runtime
+  - tobas_eigen_msgs
+  - tobas_kdl_msgs
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_msgs/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_msgs_adapter:
+  dependencies:
+  - ament_cmake
+  - tobas_constants
+  - tobas_eigen_msgs_adapter
+  - tobas_kdl_msgs_adapter
+  - tobas_msgs
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_msgs_adapter/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_nlp:
+  dependencies:
+  - ament_cmake
+  - tobas_quadprog
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_nlp/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_node:
+  dependencies:
+  - ament_cmake
+  - rclcpp_components
+  - tobas_constants
+  - tobas_dparam_msgs
+  - tobas_msgs
+  - tobas_ros2_tools
+  - tobas_std_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_node/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_nonplanar_multi_controller:
+  dependencies:
+  - ament_cmake
+  - tobas_debug_msgs_adapter
+  - tobas_drone_msgs_adapter
+  - tobas_drone_tools
+  - tobas_node
+  - tobas_pose_pid
+  - tobas_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_nonplanar_multi_controller/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_object_avoidance:
+  dependencies:
+  - ament_cmake
+  - octomap
+  - octomap_msgs
+  - tobas_constants
+  - tobas_msgs_adapter
+  - tobas_node
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_object_avoidance/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_parameter_tuning:
+  dependencies:
+  - ament_cmake
+  - tobas_dparam_client
+  - tobas_drone_core
+  - tobas_gui_common
+  - tobas_qt_tools
+  - tobas_ros2_tools
+  - tobas_ssh_client
+  - tobas_string_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_parameter_tuning/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_path_tools:
+  dependencies:
+  - ament_cmake
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_path_tools/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_planar_multi_controller:
+  dependencies:
+  - ament_cmake
+  - tobas_debug_msgs_adapter
+  - tobas_drone_msgs_adapter
+  - tobas_drone_tools
+  - tobas_node
+  - tobas_tools
+  - tobas_trajectory_generation
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_planar_multi_controller/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_pose_pid:
+  dependencies:
+  - ament_cmake
+  - tobas_kdl
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_pose_pid/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_property:
+  dependencies:
+  - ament_cmake
+  - tobas_property_client
+  - tobas_property_common
+  - tobas_property_msgs
+  - tobas_property_server
+  - tobas_property_tree
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_property/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_property_client:
+  dependencies:
+  - ament_cmake
+  - std_srvs
+  - tobas_property_common
+  - tobas_property_msgs
+  - tobas_ros2_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_property_client/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_property_common:
+  dependencies:
+  - ament_cmake
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_property_common/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_property_msgs:
+  dependencies:
+  - ament_cmake
+  - rosidl_default_generators
+  - rosidl_default_runtime
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_property_msgs/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_property_server:
+  dependencies:
+  - ament_cmake
+  - std_srvs
+  - tobas_node
+  - tobas_path_tools
+  - tobas_property_common
+  - tobas_property_msgs
+  - tobas_property_tree
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_property_server/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_property_tree:
+  dependencies:
+  - ament_cmake
+  - tobas_path_tools
+  - tobas_property_common
+  - tobas_property_msgs
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_property_tree/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_qt_tools:
+  dependencies:
+  - ament_cmake
+  - ament_index_cpp
+  - tobas_math
+  - tobas_std_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_qt_tools/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_quadprog:
+  dependencies:
+  - ament_cmake
+  - tobas_eigen_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_quadprog/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_qwt_wrapper:
+  dependencies:
+  - ament_cmake
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_qwt_wrapper/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_random_axis_tilt_multi_controller:
+  dependencies:
+  - ament_cmake
+  - tobas_debug_msgs_adapter
+  - tobas_drone_msgs_adapter
+  - tobas_drone_tools
+  - tobas_nlp
+  - tobas_node
+  - tobas_nonplanar_multi_controller
+  - tobas_pose_pid
+  - tobas_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_random_axis_tilt_multi_controller/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_rapidcsv_vendor:
+  dependencies:
+  - ament_cmake
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_rapidcsv_vendor/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_rc_teleop:
+  dependencies:
+  - ament_cmake
+  - magic_enum
+  - tobas_command_msgs_adapter
+  - tobas_msgs_adapter
+  - tobas_node
+  - tobas_path_tools
+  - tobas_ros2_tools
+  - tobas_trajectory_generation
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_rc_teleop/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_real:
+  dependencies:
+  - ament_cmake
+  - tobas_dynamixel
+  - tobas_real_common
+  - tobas_real_msgs
+  - tobas_real_ros
+  - tobas_sbus_driver
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_real/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_real_common:
+  dependencies:
+  - ament_cmake
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_real_common/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_real_msgs:
+  dependencies:
+  - ament_cmake
+  - rosidl_default_generators
+  - rosidl_default_runtime
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_real_msgs/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_real_ros:
+  dependencies:
+  - ament_cmake
+  - magic_enum
+  - sensor_msgs
+  - tobas_drone_msgs_adapter
+  - tobas_dsp
+  - tobas_linux
+  - tobas_msgs_adapter
+  - tobas_node
+  - tobas_property_tree
+  - tobas_real_common
+  - tobas_real_msgs
+  - tobas_string_tools
+  - tobas_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_real_ros/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_ros2_tools:
+  dependencies:
+  - ament_cmake
+  - rclcpp
+  - ros2launch
+  - rosbag2_cpp
+  - tf2_ros
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_ros2_tools/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_ros_interface:
+  dependencies:
+  - ament_cmake
+  - std_srvs
+  - tobas_drone_msgs
+  - tobas_mission_msgs
+  - tobas_msgs
+  - tobas_node
+  - tobas_real_common
+  - tobas_real_msgs
+  - tobas_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_ros_interface/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_rosbag_recorder:
+  dependencies:
+  - ament_cmake
+  - rosbag2_cpp
+  - std_srvs
+  - tobas_command_msgs_adapter
+  - tobas_debug_msgs_adapter
+  - tobas_drone_msgs_adapter
+  - tobas_linux
+  - tobas_msgs_adapter
+  - tobas_node
+  - tobas_path_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_rosbag_recorder/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_rotor_anomaly_detection:
+  dependencies:
+  - ament_cmake
+  - std_srvs
+  - tobas_drone_msgs_adapter
+  - tobas_msgs_adapter
+  - tobas_node
+  - tobas_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_rotor_anomaly_detection/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_rotor_controller:
+  dependencies:
+  - ament_cmake
+  - std_srvs
+  - tobas_drone_msgs_adapter
+  - tobas_msgs_adapter
+  - tobas_node
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_rotor_controller/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_rqt_bridge:
+  dependencies:
+  - ament_cmake
+  - tobas_constants
+  - tobas_msgs_adapter
+  - tobas_path_tools
+  - tobas_real_common
+  - tobas_ros2_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_rqt_bridge/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_rviz_plugin:
+  dependencies:
+  - ament_cmake
+  - rsl
+  - rviz_common
+  - rviz_default_plugins
+  - tf2_eigen
+  - tobas_visualization_msgs
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_rviz_plugin/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_rviz_wrapper:
+  dependencies:
+  - ament_cmake
+  - rviz_common
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_rviz_wrapper/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_sbus_driver:
+  dependencies:
+  - ament_cmake
+  - tobas_linux
+  - tobas_msgs
+  - tobas_node
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_sbus_driver/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_sensor_calibration:
+  dependencies:
+  - ament_cmake
+  - geometry_msgs
+  - sensor_msgs
+  - tobas_drone_core
+  - tobas_eigen_conversions
+  - tobas_geographic
+  - tobas_gui_common
+  - tobas_kdl_conversions
+  - tobas_property_tree
+  - tobas_qt_tools
+  - tobas_real_common
+  - tobas_real_msgs
+  - tobas_rqt_bridge
+  - tobas_rviz_wrapper
+  - tobas_time_tools
+  - visualization_msgs
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_sensor_calibration/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_setup_assistant:
+  dependencies:
+  - ament_cmake
+  - hardware_interface
+  - launch
+  - launch_ros
+  - magic_enum
+  - robot_state_publisher
+  - sensor_msgs
+  - tobas_drone_msgs_adapter
+  - tobas_git
+  - tobas_gui_common
+  - tobas_inja_vendor
+  - tobas_kdl_parser
+  - tobas_path_tools
+  - tobas_property_client
+  - tobas_property_server
+  - tobas_qt_tools
+  - tobas_rapidcsv_vendor
+  - tobas_ros2_tools
+  - tobas_rviz_plugin
+  - tobas_rviz_wrapper
+  - tobas_string_tools
+  - tobas_uadf
+  - tobas_urdf
+  - tobas_visualization_msgs
+  - tobas_xml_tools
+  - visualization_msgs
+  - xacro
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_setup_assistant/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_simulation_gui:
+  dependencies:
+  - ament_cmake
+  - tobas_command_msgs_adapter
+  - tobas_drone_core
+  - tobas_eigen_conversions
+  - tobas_gazebo_common
+  - tobas_gazebo_msgs
+  - tobas_gazebo_tools
+  - tobas_gui_common
+  - tobas_kdl_parser
+  - tobas_msgs_adapter
+  - tobas_property_client
+  - tobas_qt_tools
+  - tobas_ros2_tools
+  - tobas_rqt_bridge
+  - tobas_uadf
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_simulation_gui/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_ssh:
+  dependencies:
+  - ament_cmake
+  - tobas_ssh_authkey
+  - tobas_ssh_client
+  - tobas_ssh_msgs
+  - tobas_ssh_server
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_ssh/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_ssh_authkey:
+  dependencies:
+  - ament_cmake
+  - tobas_string_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_ssh_authkey/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_ssh_client:
+  dependencies:
+  - ament_cmake
+  - tobas_ros2_tools
+  - tobas_ssh_msgs
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_ssh_client/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_ssh_msgs:
+  dependencies:
+  - ament_cmake
+  - rosidl_default_generators
+  - rosidl_default_runtime
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_ssh_msgs/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_ssh_server:
+  dependencies:
+  - rclpy
+  - tobas_ssh_msgs
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_ssh_server/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_std_msgs:
+  dependencies:
+  - ament_cmake
+  - rosidl_default_generators
+  - rosidl_default_runtime
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_std_msgs/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_std_msgs_adapter:
+  dependencies:
+  - ament_cmake
+  - rclcpp
+  - tobas_std_msgs
+  - tobas_std_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_std_msgs_adapter/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_std_tools:
+  dependencies:
+  - ament_cmake
+  - tobas_algorithm
+  - tobas_math
+  - tobas_time_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_std_tools/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_string_tools:
+  dependencies:
+  - ament_cmake
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_string_tools/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_tile_proxy:
+  dependencies: []
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_tile_proxy/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_time_tools:
+  dependencies:
+  - ament_cmake
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_time_tools/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_tools:
+  dependencies:
+  - ament_cmake
+  - tobas_command_msgs_adapter
+  - tobas_constants
+  - tobas_msgs_adapter
+  - tobas_path_tools
+  - tobas_ros2_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_tools/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_topic_throttle:
+  dependencies:
+  - ament_cmake
+  - tobas_msgs_adapter
+  - tobas_node
+  - tobas_real_common
+  - tobas_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_topic_throttle/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_trajectory_generation:
+  dependencies:
+  - ament_cmake
+  - tobas_math
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_trajectory_generation/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_tree_server:
+  dependencies:
+  - ament_cmake
+  - tobas_kdl_msgs_adapter
+  - tobas_kdl_parser
+  - tobas_node
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_tree_server/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_uadf:
+  dependencies:
+  - ament_cmake
+  - tobas_urdf
+  - tobas_xml_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_uadf/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_udev:
+  dependencies:
+  - ament_cmake
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_udev/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_urdf:
+  dependencies:
+  - ament_cmake
+  - ament_index_cpp
+  - tobas_ros2_tools
+  - tobas_string_tools
+  - urdf
+  - urdfdom
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_urdf/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_urdf_builder:
+  dependencies:
+  - ament_cmake
+  - launch
+  - launch_ros
+  - tobas_gui_common
+  - tobas_property_server
+  - tobas_qt_tools
+  - tobas_rviz_wrapper
+  - tobas_urdf_builder_plugin
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_urdf_builder/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_urdf_builder_plugin:
+  dependencies:
+  - ament_cmake
+  - rviz_common
+  - rviz_default_plugins
+  - rviz_rendering
+  - tobas_constants
+  - tobas_property_client
+  - tobas_qt_tools
+  - tobas_ros2_tools
+  - tobas_std_tools
+  - tobas_urdf
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_urdf_builder_plugin/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_version:
+  dependencies:
+  - ament_cmake
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_version/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_vibration_filter:
+  dependencies:
+  - ament_cmake
+  - tobas_dsp
+  - tobas_msgs_adapter
+  - tobas_node
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_vibration_filter/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_visualization_msgs:
+  dependencies:
+  - ament_cmake
+  - rosidl_default_generators
+  - rosidl_default_runtime
+  - sensor_msgs
+  - std_msgs
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_visualization_msgs/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_wind_model:
+  dependencies:
+  - ament_cmake
+  - tobas_constants
+  - tobas_std_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_wind_model/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_wpa_supplicant:
+  dependencies:
+  - ament_cmake
+  - tobas_string_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_wpa_supplicant/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_xml_tools:
+  dependencies:
+  - ament_cmake
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_xml_tools/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_y_axis_tilt_multi_controller:
+  dependencies:
+  - ament_cmake
+  - tobas_debug_msgs_adapter
+  - tobas_drone_msgs_adapter
+  - tobas_drone_tools
+  - tobas_node
+  - tobas_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_y_axis_tilt_multi_controller/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
   version: 2.16.6
 tobas_yaml_tools:
+  dependencies:
+  - ament_cmake
+  - tobas_math
+  - tobas_std_tools
   repository: https://github.com/TobasFlightControl/tobas
   tag: release/jazzy/tobas_yaml_tools/2.16.6-1
   url: https://github.com/ros2-gbp/tobas-release.git
@@ -31487,16 +33559,64 @@ trajectory_msgs:
   url: https://github.com/ros2-gbp/common_interfaces-release.git
   version: 5.3.8
 transmission_interface:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gen_version_h
+  - ament_cmake_gmock
+  - hardware_interface
+  - pluginlib
+  - ros2_control_cmake
+  - ros2_control_test_assets
   repository: https://github.com/ros-controls/ros2_control
   tag: release/jazzy/transmission_interface/4.49.0-1
   url: https://github.com/ros2-gbp/ros2_control-release.git
   version: 4.49.0
 tricycle_controller:
+  dependencies:
+  - ackermann_msgs
+  - ament_cmake
+  - ament_cmake_gmock
+  - backward_ros
+  - builtin_interfaces
+  - controller_interface
+  - controller_manager
+  - generate_parameter_library
+  - geometry_msgs
+  - hardware_interface
+  - hardware_interface_testing
+  - nav_msgs
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - rcpputils
+  - realtime_tools
+  - ros2_control_cmake
+  - ros2_control_test_assets
+  - std_srvs
+  - tf2
+  - tf2_msgs
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/tricycle_controller/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
   version: 4.43.0
 tricycle_steering_controller:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gmock
+  - backward_ros
+  - control_msgs
+  - controller_interface
+  - controller_manager
+  - generate_parameter_library
+  - hardware_interface
+  - hardware_interface_testing
+  - pluginlib
+  - rclcpp
+  - rclcpp_lifecycle
+  - ros2_control_cmake
+  - ros2_control_test_assets
+  - std_srvs
+  - steering_controllers_library
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/tricycle_steering_controller/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
@@ -33170,6 +35290,19 @@ vector_pursuit_controller:
   url: https://github.com/ros2-gbp/vector_pursuit_controller-release.git
   version: 2.0.0
 velocity_controllers:
+  dependencies:
+  - ament_cmake
+  - ament_cmake_gmock
+  - backward_ros
+  - controller_interface
+  - controller_manager
+  - forward_command_controller
+  - hardware_interface
+  - hardware_interface_testing
+  - pluginlib
+  - rclcpp
+  - ros2_control_cmake
+  - ros2_control_test_assets
   repository: https://github.com/ros-controls/ros2_controllers
   tag: release/jazzy/velocity_controllers/4.43.0-1
   url: https://github.com/ros2-gbp/ros2_controllers-release.git
