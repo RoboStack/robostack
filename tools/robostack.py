@@ -441,7 +441,8 @@ def upload(distro: str, files: list[str], cwd: Path) -> int:
 
     def anaconda_upload() -> list[str] | None:
         # asked again before every attempt: an upload that timed out may still have
-        # arrived, and uploading it again fails with "already exists"
+        # arrived, or another platform's job uploaded the same noarch package, and
+        # uploading it again fails with "already exists"
         missing = [f for f in files if not on_anaconda(channel, Path(cwd, f))]
         return ["rattler-build", "upload", "anaconda", "-o", channel, "--api-key", token, *missing] if missing else None
 
@@ -550,6 +551,8 @@ def task(distro: str, name: str, args: list[str]) -> int:
         return run(py + [str(TOOLS / "check_dependency_compat.py"), *args], w)
     if name == "gap-report":
         return run(py + [str(TOOLS / "build_gap_report.py"), *args], w)
+    if name == "python-audit":
+        return run(py + [str(TOOLS / "python_abi_audit.py"), "--channel", repodata_url(distro), *args], w)
     if name in ("build", "build-one"):
         if not (w / "recipes").is_dir():
             print(f"No {(w / 'recipes').relative_to(ROOT)}: run `pixi run rs {distro} generate-recipes` first",
