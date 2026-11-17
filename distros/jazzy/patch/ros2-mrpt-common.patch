@@ -1,0 +1,32 @@
+diff --git a/cmake/mrpt_cmake_functions.cmake b/cmake/mrpt_cmake_functions.cmake
+index 87ec9fe..6cd528f 100644
+--- a/cmake/mrpt_cmake_functions.cmake
++++ b/cmake/mrpt_cmake_functions.cmake
+@@ -495,7 +495,10 @@ function(handle_special_simd_flags lst_files FILE_PATTERN FLAGS_TO_ADD)
+     keep_matching_files_from_list(${FILE_PATTERN} _lst)
+     if(NOT "${_lst}" STREQUAL "")
+       #message(STATUS "Adding special flags ${FLAGS_TO_ADD} to ${_lst}")
+-      set_source_files_properties(${_lst} PROPERTIES COMPILE_FLAGS "${FLAGS_TO_ADD}")
++      # RoboStack: without the precompiled header, which is built without these flags (clang
++      # rejects a PCH built for other target features, e.g. -msse2 on osx-64)
++      set_source_files_properties(${_lst} PROPERTIES COMPILE_FLAGS "${FLAGS_TO_ADD}"
++        SKIP_PRECOMPILE_HEADERS ON)
+     endif()
+   endif()
+ endfunction()
+@@ -926,6 +929,15 @@ function(mrpt_add_python_module MODULE_NAME CPP_SOURCES)
+   find_package(pybind11 QUIET)
+   if (pybind11_FOUND)
+     mrpt_ament_cmake_python_get_python_install_dir()
++    # RoboStack: conda's CMAKE_ARGS pass CMAKE_STRIP as a bare program name, which CMake
++    # turns into a path in the build directory; pybind11 strips the module with it.
++    if(CMAKE_STRIP AND NOT EXISTS "${CMAKE_STRIP}")
++      get_filename_component(_mrpt_strip_name "${CMAKE_STRIP}" NAME)
++      find_program(MRPT_PYBIND11_STRIP NAMES "${_mrpt_strip_name}")
++      if(MRPT_PYBIND11_STRIP)
++        set(CMAKE_STRIP "${MRPT_PYBIND11_STRIP}")
++      endif()
++    endif()
+     pybind11_add_module(_bindings MODULE ${CPP_SOURCES})
+     target_link_libraries(_bindings PRIVATE ${PROJECT_NAME})
+     # pybind11/eigen.h includes <Eigen/Core> unconditionally; link Eigen3 directly
