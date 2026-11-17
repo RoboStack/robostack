@@ -1,0 +1,105 @@
+diff --git a/apps/mola-cli.cpp b/apps/mola-cli.cpp
+index 5a04f80..37a7042 100644
+--- a/apps/mola-cli.cpp
++++ b/apps/mola-cli.cpp
+@@ -24,7 +24,11 @@
+ #include <mrpt/core/exceptions.h>
+ #include <mrpt/rtti/CObject.h>
+ #include <mrpt/system/filesystem.h>
++#if defined(_WIN32)
++#include <io.h>  // _write()
++#else
+ #include <unistd.h>  // write()
++#endif
+ 
+ #if defined(MOLA_CLI_HAS_TBB)
+ #include <tbb/global_control.h>
+@@ -53,7 +57,11 @@ void mola_signal_handler([[maybe_unused]] int s)
+   // raw write() to stderr. The actual shutdown (which logs, sleeps and joins
+   // threads) is done by the main thread as soon as spin() returns.
+   static const char           msg[] = "\nTermination signal caught. Shutting down...\n";
++#if defined(_WIN32)
++  [[maybe_unused]] const auto n = ::_write(2, msg, sizeof(msg) - 1);
++#else
+   [[maybe_unused]] const auto n     = ::write(STDERR_FILENO, msg, sizeof(msg) - 1);
++#endif
+ 
+   if (auto* app = theApp.load())
+   {
+@@ -63,6 +71,11 @@ void mola_signal_handler([[maybe_unused]] int s)
+ 
+ void mola_install_signal_handler()
+ {
++#if defined(_WIN32)
++  // No sigaction() on Windows:
++  std::signal(SIGINT, &mola_signal_handler);
++  std::signal(SIGTERM, &mola_signal_handler);
++#else
+   struct sigaction sigIntHandler;
+ 
+   sigIntHandler.sa_handler = &mola_signal_handler;
+@@ -76,6 +89,7 @@ void mola_install_signal_handler()
+   // the main MOLA loop keeps running, so the process never exits and lingers
+   // with its ROS 2 endpoints still advertised but no longer served.
+   sigaction(SIGTERM, &sigIntHandler, nullptr);
++#endif
+ }
+ 
+ // Default task for mola-cli: launching a SLAM system
+diff --git a/src/MolaDLL_Loader.cpp b/src/MolaDLL_Loader.cpp
+index cb05408..ec2d084 100644
+--- a/src/MolaDLL_Loader.cpp
++++ b/src/MolaDLL_Loader.cpp
+@@ -26,6 +26,11 @@
+ 
+ #if defined(__unix__) || defined(__APPLE__)
+ #include <dlfcn.h>
++#elif defined(_WIN32)
++#ifndef NOMINMAX
++#define NOMINMAX
++#endif
++#include <windows.h>  // LoadLibraryA(), FreeLibrary()
+ #endif
+ 
+ /** From internal_load_lib_modules() */
+@@ -101,7 +106,7 @@ void internal_load_lib_modules(
+ 
+       void* handle = dlopen(lib.wholePath.c_str(), RTLD_LAZY);
+ #else
+-      HMODULE handle = LoadLibrary(lib.wholePath.c_str());
++      void* handle = LoadLibraryA(lib.wholePath.c_str());
+ #endif
+       if (handle == nullptr)
+       {
+@@ -116,7 +121,8 @@ void internal_load_lib_modules(
+         }
+ #else
+         const std::string err =
+-            mrpt::format("LoadLibrary() failed, error code %lu", ::GetLastError());
++            mrpt::format(
++                "LoadLibrary() failed, error code %lu", static_cast<unsigned long>(::GetLastError()));
+ #endif
+         failed_lib_errors[lib.wholePath] = err;
+         app.logStr(
+@@ -154,7 +160,7 @@ void internal_unload_lib_modules()
+ #if defined(__unix__) || defined(__APPLE__)
+     dlclose(lib.second.handle);
+ #else
+-    FreeLibrary(lib.second.handle);
++    FreeLibrary(static_cast<HMODULE>(lib.second.handle));
+ #endif
+   }
+   loaded_lib_handled.clear();
+diff --git a/src/MolaLauncherApp.cpp b/src/MolaLauncherApp.cpp
+index 85407a4..96229f3 100644
+--- a/src/MolaLauncherApp.cpp
++++ b/src/MolaLauncherApp.cpp
+@@ -100,7 +100,7 @@ std::string relative_to_abs_path(
+   if (f.is_relative())
+   {
+     f = fs::path(*basePath) / f;
+-    return f;
++    return f.string();  // no implicit conversion on Windows (wchar_t paths)
+   }
+   else
+     return path;
