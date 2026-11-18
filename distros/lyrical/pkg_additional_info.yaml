@@ -135,6 +135,8 @@ mrpt_gui:
   build_number: 34
 nav2_rviz_plugins:
   build_number: 31
+rqt_robot_monitor:  # Qt6 patch (upstream PR #52)
+  build_number: 31
 rtabmap_rviz_plugins:
   build_number: 31
 rtabmap_slam:  # its recipe test stops the node for sure (package tests hung on macOS)
