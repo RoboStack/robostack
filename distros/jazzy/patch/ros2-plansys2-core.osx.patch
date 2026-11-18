@@ -12,3 +12,18 @@ diff --git a/CMakeLists.txt b/CMakeLists.txt
  find_package(ament_cmake REQUIRED)
  find_package(rclcpp REQUIRED)
  
+diff --git a/src/plansys2_core/PlanSolverBase.cpp b/src/plansys2_core/PlanSolverBase.cpp
+--- a/src/plansys2_core/PlanSolverBase.cpp
++++ b/src/plansys2_core/PlanSolverBase.cpp
+@@ -120,7 +120,10 @@
+   }
+ 
+   int pipe_fd[2];
+-  if (pipe2(pipe_fd, O_CLOEXEC) == -1) {
++  // RoboStack: pipe2 is missing from older macOS SDKs
++  if (pipe(pipe_fd) == -1 || fcntl(pipe_fd[0], F_SETFD, FD_CLOEXEC) == -1 ||
++    fcntl(pipe_fd[1], F_SETFD, FD_CLOEXEC) == -1)
++  {
+     RCLCPP_ERROR(logger, "Cannot create pipe for the planner: %s", std::strerror(errno));
+     close(output_fd);
+     return false;
