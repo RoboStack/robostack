@@ -1,0 +1,14 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -10,6 +10,10 @@ set(CMAKE_CXX_STANDARD 20)
+ set(CMAKE_CXX_STANDARD_REQUIRED ON)
+ set(CMAKE_CXX_EXTENSIONS OFF)
+ 
++# RoboStack: floating-point std::from_chars, which libc++ marks unavailable on
++# macOS (the system libc++ lacks it); conda-forge ships its own libc++, which has it
++add_compile_definitions(_LIBCPP_DISABLE_AVAILABILITY)
++
+ find_package(ament_cmake REQUIRED)
+ find_package(rclcpp REQUIRED)
+ 
