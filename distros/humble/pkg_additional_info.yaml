@@ -91,6 +91,10 @@ rtabmap:
     if: win
     then: "-DWITH_QT=OFF -DBUILD_TOOLS=OFF -DBUILD_EXAMPLES=OFF -DWITH_GTSAM=OFF"
     else: "-DWITH_QT=OFF -DBUILD_TOOLS=OFF -DBUILD_EXAMPLES=OFF"
+turtlebot3_node:  # odometry.cpp uses M_PI
+  additional_cmake_args:
+    if: win
+    then: "-DCMAKE_CXX_FLAGS_INIT=/D_USE_MATH_DEFINES"
 urdfdom:
   generate_dummy_package_with_run_deps:
     dep_name: urdfdom
