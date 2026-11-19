@@ -1,0 +1,14 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -19,6 +19,10 @@
+   DESCRIPTION "Modern temporal and numeric PDDL planner"
+   LANGUAGES CXX)
+ 
++# RoboStack: floating-point std::from_chars, which libc++ marks unavailable on
++# macOS (the system libc++ lacks it); conda-forge ships its own libc++, which has it
++add_compile_definitions(_LIBCPP_DISABLE_AVAILABILITY)
++
+ # The version lives in package.xml and pixi.toml too
+ foreach(manifest package.xml pixi.toml)
+   file(READ "${CMAKE_CURRENT_SOURCE_DIR}/${manifest}" _text)
