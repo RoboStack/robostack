@@ -118,6 +118,13 @@ rtabmap:
   additional_cmake_args: -DBUILD_TESTING=OFF
 rviz_ogre_vendor:
   additional_cmake_args: "-DRVIZ_OGRE_VENDOR_MANGLE_NAME_OF_LIBRARIES_USED_BY_RVIZ=ON"
+toppra:
+  generate_dummy_package_with_run_deps:
+    dep_name: toppra-python
+    max_pin: 'x.x'
+    # conda-forge's roboplan 0.8.0 (roboplan_toppra) is built against libtoppra 0.6.10;
+    # drop once roboplan-feedstock is rebuilt for 0.6.11
+    override_version: 0.6.10
 urdfdom:
   generate_dummy_package_with_run_deps:
     dep_name: urdfdom
