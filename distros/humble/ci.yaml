@@ -23,4 +23,9 @@ full_rebuild: false
 #
 # Remember that dependents are not rebuilt automatically: evict them as well if
 # they must pick up the change.
-evict_cache: []
+evict_cache:
+  # temporary: rebuild with -D_LIBCPP_DISABLE_AVAILABILITY from pkg_additional_info instead of patches
+  - plansys2_pddl_parser
+  - plansys2_core
+  - plansys2_popf_plan_solver
+  - kairos
