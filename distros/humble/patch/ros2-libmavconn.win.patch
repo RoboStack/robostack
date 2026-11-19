@@ -1,5 +1,4 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index d349d81..005f018 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1,6 +1,8 @@
@@ -11,7 +10,7 @@ index d349d81..005f018 100644
  # Default to C11
  if(NOT CMAKE_C_STANDARD)
    set(CMAKE_C_STANDARD 11)
-@@ -16,7 +18,9 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+@@ -16,7 +18,9 @@
    # because the Python C extensions dont comply with it
    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
  endif()
@@ -23,20 +22,20 @@ index d349d81..005f018 100644
  # Allow GNU extensions (-std=gnu++20)
  set(CMAKE_C_EXTENSIONS ON)
 diff --git a/include/mavconn/thread_utils.hpp b/include/mavconn/thread_utils.hpp
-index f0678c8..2d53b4d 100644
 --- a/include/mavconn/thread_utils.hpp
 +++ b/include/mavconn/thread_utils.hpp
-@@ -20,7 +20,9 @@
+@@ -20,8 +20,10 @@
  #ifndef MAVCONN__THREAD_UTILS_HPP_
  #define MAVCONN__THREAD_UTILS_HPP_
  
 +#ifndef _WIN32
  #include <pthread.h>
-+#endif
  #include <sched.h>
++#endif
  
  #include <array>
-@@ -76,6 +78,12 @@ std::string format(const std::string & fmt, Args... args)
+ #include <cerrno>
+@@ -76,6 +78,12 @@
  template<typename ... Args>
  bool set_this_thread_name(const std::string & name, Args && ... args)
  {
@@ -49,7 +48,7 @@ index f0678c8..2d53b4d 100644
    auto new_name = format(name, std::forward<Args>(args)...);
  
  #ifdef __APPLE__
-@@ -84,6 +92,7 @@ bool set_this_thread_name(const std::string & name, Args && ... args)
+@@ -84,6 +92,7 @@
    pthread_t pth = pthread_self();
    return pthread_setname_np(pth, new_name.c_str()) == 0;
  #endif
