@@ -36,6 +36,11 @@ iceoryx_posh:
     dep_name: libiceoryx-posh
     max_pin: 'x.x'
     override_version: '2.95.8'
+kairos:
+  # floating-point std::from_chars: libc++ marks it unavailable on macOS, conda-forge's libc++ has it
+  additional_cmake_args:
+    if: osx
+    then: "-DCMAKE_CXX_FLAGS_INIT=-D_LIBCPP_DISABLE_AVAILABILITY"
 libcamera:
   generate_dummy_package_with_run_deps:
     dep_name: libcamera
@@ -68,6 +73,21 @@ ompl:
     max_pin: 'x.x'
     # OMPL 2 is rebuilt for Boost 1.90 on all supported platforms.
     override_version: '2.0.1'
+plansys2_core:
+  # floating-point std::from_chars: libc++ marks it unavailable on macOS, conda-forge's libc++ has it
+  additional_cmake_args:
+    if: osx
+    then: "-DCMAKE_CXX_FLAGS_INIT=-D_LIBCPP_DISABLE_AVAILABILITY"
+plansys2_pddl_parser:
+  # floating-point std::from_chars: libc++ marks it unavailable on macOS, conda-forge's libc++ has it
+  additional_cmake_args:
+    if: osx
+    then: "-DCMAKE_CXX_FLAGS_INIT=-D_LIBCPP_DISABLE_AVAILABILITY"
+plansys2_popf_plan_solver:
+  # floating-point std::from_chars: libc++ marks it unavailable on macOS, conda-forge's libc++ has it
+  additional_cmake_args:
+    if: osx
+    then: "-DCMAKE_CXX_FLAGS_INIT=-D_LIBCPP_DISABLE_AVAILABILITY"
 proxsuite:
   generate_dummy_package_with_run_deps:
     dep_name: proxsuite
@@ -118,13 +138,6 @@ rtabmap:
   additional_cmake_args: -DBUILD_TESTING=OFF
 rviz_ogre_vendor:
   additional_cmake_args: "-DRVIZ_OGRE_VENDOR_MANGLE_NAME_OF_LIBRARIES_USED_BY_RVIZ=ON"
-toppra:
-  generate_dummy_package_with_run_deps:
-    dep_name: toppra-python
-    max_pin: 'x.x'
-    # conda-forge's roboplan 0.8.0 (roboplan_toppra) is built against libtoppra 0.6.10;
-    # drop once roboplan-feedstock is rebuilt for 0.6.11
-    override_version: 0.6.10
 turtlebot3_node:  # 2.3.7's odometry.cpp uses M_PI
   additional_cmake_args:
     if: win
