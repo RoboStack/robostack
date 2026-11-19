@@ -7,6 +7,9 @@ upload_to: [prefix, anaconda]
 read_from: prefix
 rosdistro_sync: lyrical/2026-10-05
 pinning_overrides:
+  # Zenoh 1.10.2 includes the StartConditions deadlock fix (eclipse-zenoh/zenoh#2779).
+  libzenohc: [1.10.2]
+  libzenohcxx: [1.10.2]
   # build every python package for 3.14 (the shared default) and 3.12;
   # is_python_min is zipped with python, so it needs one entry per version
   python: [3.14.* *_cp314, 3.12.* *_cpython]

@@ -7,7 +7,7 @@
 
 # Ignore the PR build cache and rebuild everything, e.g. for a full rebuild PR
 # that bumps the build number of all packages.
-full_rebuild: false
+full_rebuild: true
 
 # Packages to drop from the PR build cache. Needed when a package changes without
 # a new build number, e.g. you fixed one of its patches in patch/: the cache
