@@ -47,7 +47,7 @@ index 5a04f80..37a7042 100644
  
  // Default task for mola-cli: launching a SLAM system
 diff --git a/src/MolaDLL_Loader.cpp b/src/MolaDLL_Loader.cpp
-index cb05408..ec2d084 100644
+index 1cd163d..ee34ae2 100644
 --- a/src/MolaDLL_Loader.cpp
 +++ b/src/MolaDLL_Loader.cpp
 @@ -26,6 +26,11 @@

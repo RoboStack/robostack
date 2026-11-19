@@ -1,5 +1,5 @@
 diff --git a/src/MolaDLL_Loader.cpp b/src/MolaDLL_Loader.cpp
-index a5ccf39..cb05408 100644
+index a5ccf39..1cd163d 100644
 --- a/src/MolaDLL_Loader.cpp
 +++ b/src/MolaDLL_Loader.cpp
 @@ -24,7 +24,7 @@
@@ -38,6 +38,15 @@ index a5ccf39..cb05408 100644
        // Check if already loaded?
        {
          void* handle = dlopen(lib.wholePath.c_str(), RTLD_NOLOAD);
+@@ -103,7 +108,7 @@ void internal_load_lib_modules(
+         // Not fatal: the library may provide modules this system does not use
+         // (e.g. a GUI with missing system dependencies on a headless machine).
+         // If one of its modules is requested, that error lists this one.
+-#if defined(__unix__)
++#if defined(__unix__) || defined(__APPLE__)
+         const char* err = dlerror();
+         if (!err)
+         {
 @@ -146,7 +151,7 @@ void internal_unload_lib_modules()
    {
      // printf("[mola-launcher] Unloading: %s\n",
