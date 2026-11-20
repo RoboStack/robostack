@@ -642,7 +642,7 @@ packages_exclude:
 
   - if: not linux
     then:
-      - camera_ros  # libcamera is Linux-only; also dropped from apriltag_ros (only its camera launch file uses it)
+      - camera_ros  # libcamera is Linux-only; also removed from the dependencies of the packages that use it
       - pendulum_control
       - rttest
       - tlsf
