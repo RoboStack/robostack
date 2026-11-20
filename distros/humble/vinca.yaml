@@ -12,7 +12,6 @@ mutex_package:
   version: "0.12.0"
 
 packages_exclude:
-  - rtabmap_viz  # needs rtabmap's GUI, which follows VTK's Qt 6, while humble's RViz is Qt 5 (rtabmap is built without Qt here)
 
   - if: not linux
     then:
