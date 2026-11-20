@@ -45,6 +45,11 @@ ignition_cmake2_vendor:
   additional_cmake_args: "-DAMENT_VENDOR_POLICY=NEVER_VENDOR_IGNORE_SATISFIED_CHECK -DBUILD_TESTING=OFF"
 ignition_math6_vendor:
   additional_cmake_args: "-DAMENT_VENDOR_POLICY=NEVER_VENDOR_IGNORE_SATISFIED_CHECK -DBUILD_TESTING=OFF"
+kairos:
+  # floating-point std::from_chars: libc++ marks it unavailable on macOS, conda-forge's libc++ has it
+  additional_cmake_args:
+    if: osx
+    then: "-DCMAKE_CXX_FLAGS_INIT=-D_LIBCPP_DISABLE_AVAILABILITY"
 libcamera:
   generate_dummy_package_with_run_deps:
     dep_name: libcamera
@@ -74,6 +79,21 @@ ompl:
     max_pin: 'x.x'
     # OMPL 2 is rebuilt for Boost 1.90 on all supported platforms.
     override_version: '2.0.1'
+plansys2_core:
+  # floating-point std::from_chars: libc++ marks it unavailable on macOS, conda-forge's libc++ has it
+  additional_cmake_args:
+    if: osx
+    then: "-DCMAKE_CXX_FLAGS_INIT=-D_LIBCPP_DISABLE_AVAILABILITY"
+plansys2_pddl_parser:
+  # floating-point std::from_chars: libc++ marks it unavailable on macOS, conda-forge's libc++ has it
+  additional_cmake_args:
+    if: osx
+    then: "-DCMAKE_CXX_FLAGS_INIT=-D_LIBCPP_DISABLE_AVAILABILITY"
+plansys2_popf_plan_solver:
+  # floating-point std::from_chars: libc++ marks it unavailable on macOS, conda-forge's libc++ has it
+  additional_cmake_args:
+    if: osx
+    then: "-DCMAKE_CXX_FLAGS_INIT=-D_LIBCPP_DISABLE_AVAILABILITY"
 proxsuite:
   generate_dummy_package_with_run_deps:
     dep_name: proxsuite
@@ -91,6 +111,10 @@ rtabmap:
     if: win
     then: "-DWITH_QT=OFF -DBUILD_TOOLS=OFF -DBUILD_EXAMPLES=OFF -DWITH_GTSAM=OFF"
     else: "-DWITH_QT=OFF -DBUILD_TOOLS=OFF -DBUILD_EXAMPLES=OFF"
+turtlebot3_node:  # odometry.cpp uses M_PI
+  additional_cmake_args:
+    if: win
+    then: "-DCMAKE_CXX_FLAGS_INIT=/D_USE_MATH_DEFINES"
 urdfdom:
   generate_dummy_package_with_run_deps:
     dep_name: urdfdom
@@ -105,19 +129,3 @@ urdfdom_headers:
 # Remove build_number fields below on new full rebuild
 zenoh_cpp_vendor:
   additional_cmake_args: "-DAMENT_VENDOR_POLICY=NEVER_VENDOR_IGNORE_SATISFIED_CHECK -DUSE_SYSTEM_ZENOH=ON"
-ament_cmake_gmock:  # as ament_cmake_gtest
-  build_number: 23
-ament_cmake_gtest:  # uses conda-forge's gtest instead of gtest_vendor's sources
-  build_number: 23
-aruco_ros:  # its recipe test stops the node for sure (package tests hung on macOS)
-  build_number: 23
-mrpt_gui:
-  build_number: 24
-rtabmap_slam:  # its recipe test stops the node for sure (package tests hung on macOS)
-  build_number: 23
-spatio_temporal_voxel_layer:
-  build_number: 23
-urdf:  # drop deprecated urdf_world/types.h include (ros2/urdf#54) for headers 3.x
-  build_number: 23
-urdf_parser_plugin:  # use urdf_model/types.h (ros2/urdf#54) for headers 3.x
-  build_number: 23

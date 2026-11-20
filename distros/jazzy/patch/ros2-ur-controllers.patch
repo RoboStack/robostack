@@ -1,0 +1,12 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -133,6 +133,8 @@ target_link_libraries(${PROJECT_NAME}
+   scaled_joint_trajectory_controller_parameters
+   freedrive_mode_controller_parameters
+   passthrough_trajectory_controller_parameters
++  # RoboStack: twist_controller.cpp needs the generated header (build race without it)
++  twist_controller_parameters
+   ur_configuration_controller_parameters
+ )
+ 

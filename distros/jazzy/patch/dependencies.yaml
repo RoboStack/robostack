@@ -64,6 +64,11 @@ gz_rendering_vendor:
   add_host: ["gz-rendering8", "swig"]
   # find_package(gz-rendering) requires find_package(OpenGL) to work
   add_run: ["gz-rendering8", "swig", "${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
+  # libogre-dev is only needed to build gz-rendering from source; conda-forge's gz-rendering8
+  # no longer links OGRE 1 (8.2.2_1), so an unpinned ogre resolves to 14.x, which clashes
+  # with gz-gui8 (still built against ogre 1.10) in gz_gui_vendor.
+  remove_host: ["ogre"]
+  remove_run: ["ogre"]
 gz_ros2_control:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
 gz_ros2_control_demos:

@@ -62,3 +62,18 @@ index c3cf7d7..48d26eb 100644
          if (!err)
          {
              err = "(error calling dlerror())";
+diff --git a/mp2p_icp_filters/CMakeLists.txt b/mp2p_icp_filters/CMakeLists.txt
+--- a/mp2p_icp_filters/CMakeLists.txt
++++ b/mp2p_icp_filters/CMakeLists.txt
+@@ -140,6 +140,11 @@
+ 
+ # We want C++20 for mp2p_icp_filters, to capture structured bindings (FilterDeskew.cpp)
+ set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
++if(MSVC)
++  # RoboStack: with mola_common's /std:c++latest, CMake >= 4.5 builds the std module for
++  # this C++20 target, with a /std:c++17 that breaks it; no modules are used
++  set_target_properties(${PROJECT_NAME} PROPERTIES CXX_MODULE_STD OFF CXX_SCAN_FOR_MODULES OFF)
++endif()
+ 
+ # ---------------------------------------------------------------------------
+ # Per-file SIMD compiler flags for the view-vector kernel.

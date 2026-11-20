@@ -8,7 +8,7 @@ conda_index: [robostack.yaml]
 
 
 # mapping for package keys
-build_number: 27
+build_number: 31
 
 mutex_package:
-  version: "0.20.0"
+  version: "0.21.0"
