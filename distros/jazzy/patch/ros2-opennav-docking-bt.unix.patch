@@ -1,0 +1,14 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index fe81417..8047e34 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -16,7 +16,8 @@ find_package(behaviortree_cpp REQUIRED)
+ 
+ # potentially replace with nav2_common, nav2_package()
+ set(CMAKE_CXX_STANDARD 17)
+-add_compile_options(-Wall -Wextra -Wpedantic -Werror -Wdeprecated -fPIC -Wshadow -Wnull-dereference)
++# RoboStack: no -Werror, as in nav2_common (gcc 15 -Wnull-dereference in behaviortree_cpp headers)
++add_compile_options(-Wall -Wextra -Wpedantic -Wdeprecated -fPIC -Wshadow -Wnull-dereference)
+ 
+ include_directories(
+   include

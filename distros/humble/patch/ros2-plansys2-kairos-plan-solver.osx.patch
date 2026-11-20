@@ -1,0 +1,12 @@
+diff --git a/src/plansys2_kairos_plan_solver/kairos_plan_solver.cpp b/src/plansys2_kairos_plan_solver/kairos_plan_solver.cpp
+--- a/src/plansys2_kairos_plan_solver/kairos_plan_solver.cpp
++++ b/src/plansys2_kairos_plan_solver/kairos_plan_solver.cpp
+@@ -26,6 +26,8 @@
+ #include <sstream>
+ #include <string>
+ #include <vector>
++
++#include <unistd.h>  // RoboStack: mkdtemp() on macOS
+ 
+ #include "kairos/kairos.hpp"
+ #include "plansys2_core/PddlRequirements.hpp"
