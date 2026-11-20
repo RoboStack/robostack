@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 30c9811..abea531 100644
+index 80a215b..e38592c 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -77,7 +77,7 @@ macro(generateMavlink_v10 definitions)
@@ -24,32 +24,8 @@ index 30c9811..abea531 100644
              DEPENDS ${definitionAbsPath} ${common_xml_path} ${mavgen_path}
              )
          add_custom_target(${definition}.xml-v2.0
-diff --git a/pymavlink/generator/CPP11/include_v2.0/msgmap.hpp b/pymavlink/generator/CPP11/include_v2.0/msgmap.hpp
-index a3956aa..91ce908 100644
---- a/pymavlink/generator/CPP11/include_v2.0/msgmap.hpp
-+++ b/pymavlink/generator/CPP11/include_v2.0/msgmap.hpp
-@@ -6,6 +6,19 @@
- #include <sys/endian.h>
- #elif __APPLE__
- #include <machine/endian.h>
-+#elif defined(_WIN32)
-+// Windows has no <endian.h>, and every Windows target (x86, x64, ARM64) is
-+// little-endian, so the little-endian <-> host conversions are no-ops.
-+#include <cstdint>
-+inline uint16_t htole16(uint16_t x) { return x; }
-+inline uint32_t htole32(uint32_t x) { return x; }
-+inline uint64_t htole64(uint64_t x) { return x; }
-+inline uint16_t le16toh(uint16_t x) { return x; }
-+inline uint32_t le32toh(uint32_t x) { return x; }
-+inline uint64_t le64toh(uint64_t x) { return x; }
-+// Also no POSIX ssize_t on MSVC.
-+#include <cstddef>
-+typedef ptrdiff_t ssize_t;
- #else
- #include <endian.h>
- #endif
 diff --git a/pymavlink/generator/CPP11/include_v2.0/message.hpp b/pymavlink/generator/CPP11/include_v2.0/message.hpp
-index 4d6d424..c095ee7 100644
+index 08cd62b..411ec10 100644
 --- a/pymavlink/generator/CPP11/include_v2.0/message.hpp
 +++ b/pymavlink/generator/CPP11/include_v2.0/message.hpp
 @@ -1,6 +1,22 @@
@@ -75,3 +51,27 @@ index 4d6d424..c095ee7 100644
  #include <array>
  #include <cassert>
  #include <cstring>
+diff --git a/pymavlink/generator/CPP11/include_v2.0/msgmap.hpp b/pymavlink/generator/CPP11/include_v2.0/msgmap.hpp
+index d325f0a..dd3bf89 100644
+--- a/pymavlink/generator/CPP11/include_v2.0/msgmap.hpp
++++ b/pymavlink/generator/CPP11/include_v2.0/msgmap.hpp
+@@ -6,6 +6,19 @@
+ #include <sys/endian.h>
+ #elif defined(__APPLE__) && __APPLE__
+ #include <machine/endian.h>
++#elif defined(_WIN32)
++// Windows has no <endian.h>, and every Windows target (x86, x64, ARM64) is
++// little-endian, so the little-endian <-> host conversions are no-ops.
++#include <cstdint>
++inline uint16_t htole16(uint16_t x) { return x; }
++inline uint32_t htole32(uint32_t x) { return x; }
++inline uint64_t htole64(uint64_t x) { return x; }
++inline uint16_t le16toh(uint16_t x) { return x; }
++inline uint32_t le32toh(uint32_t x) { return x; }
++inline uint64_t le64toh(uint64_t x) { return x; }
++// Also no POSIX ssize_t on MSVC.
++#include <cstddef>
++typedef ptrdiff_t ssize_t;
+ #else
+ #include <endian.h>
+ #endif
