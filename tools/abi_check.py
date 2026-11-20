@@ -237,11 +237,16 @@ def _belongs_to(rec: dict, distro: str) -> bool:
     return any(dep.startswith("ros2-distro-mutex") and f" {distro}_" in dep for dep in rec.get("depends", []))
 
 
+def _build_key(rec: dict) -> tuple[int, int]:
+    return rec.get("build_number", 0), rec.get("timestamp", 0)
+
+
 def released(channels: str | list[str], platform: str, distro: str) -> dict[str, dict[str, dict]]:
     """The ROS packages of the distribution on the channels: package -> version -> newest
-    real build across them (with its "file" and "channel"); vinca's empty compatibility
-    packages are left out."""
-    by_name: dict[str, dict[str, dict]] = {}
+    real build across them (with its "file" and "channel", and in "variants" every build
+    with its build number, e.g. one per Python version, see `matching_variant`); vinca's
+    empty compatibility packages are left out."""
+    builds: dict[str, dict[str, list[dict]]] = {}
     for channel in [channels] if isinstance(channels, str) else channels:
         try:
             with _open(f"{channel.rstrip('/')}/{platform}/repodata.json") as r:
@@ -255,13 +260,27 @@ def released(channels: str | list[str], platform: str, distro: str) -> dict[str,
             short = short_name(rec["name"], distro)
             if short is None or _is_compatibility_package(rec) or not _belongs_to(rec, distro):
                 continue
-            versions = by_name.setdefault(short, {})
-            current = versions.get(rec["version"])
-            if current is None or (rec.get("build_number", 0), rec.get("timestamp", 0)) > (
-                current.get("build_number", 0), current.get("timestamp", 0)
-            ):
-                versions[rec["version"]] = {"file": filename, "channel": channel, **rec}
+            builds.setdefault(short, {}).setdefault(rec["version"], []).append(
+                {"file": filename, "channel": channel, **rec})
+    by_name: dict[str, dict[str, dict]] = {}
+    for short, versions in builds.items():
+        for version, recs in versions.items():
+            best = max(recs, key=_build_key)
+            variants = [r for r in recs if r.get("build_number", 0) == best.get("build_number", 0)]
+            by_name.setdefault(short, {})[version] = {**best, "variants": variants}
     return by_name
+
+
+def matching_variant(old: dict, new: dict) -> dict:
+    """The build of the released `old` (see `released`) to compare a new build with: the
+    variant built like it (the same python_abi, then the most identical dependencies), so
+    that e.g. a Python 3.14 build isn't compared with the Python 3.12 one."""
+    def python_abi(rec):
+        return next((d for d in rec.get("depends", []) if d.split(" ", 1)[0] == "python_abi"), None)
+
+    deps = set(new.get("depends", []))
+    return max(old.get("variants") or [old], key=lambda r: (
+        python_abi(r) == python_abi(new), len(deps & set(r.get("depends", []))), _build_key(r)))
 
 
 def newest(versions: dict[str, dict]) -> dict:
@@ -403,7 +422,7 @@ def check_pr_builds(pr_dir: Path, channel: str, platform: str, distro: str, tmp:
         if short not in by_name:
             results[short] = {"verdict": "new package", "new": index["version"], "libraries": {}, "removed_libraries": []}
             continue
-        old = newest(by_name[short])
+        old = matching_variant(newest(by_name[short]), index)
         if old["file"] == pkg.name:
             continue
         print(f"{short}: {old['version']} (build {old.get('build_number', 0)}) -> {index['version']} (PR)", flush=True)
