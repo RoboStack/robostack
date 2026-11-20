@@ -59,8 +59,12 @@ def collect(days: int = 8) -> int:
     files = {p.stem: json.loads(p.read_text()) for p in TIMINGS.glob("*.json")}
     count = 0
     with tempfile.TemporaryDirectory() as tmp:
+        distros = set(rs.distros())
         for run in sorted(runs, key=lambda r: r["createdAt"]):
-            distro = run["headBranch"].removeprefix("buildbranch_").split("_")[0]
+            branch = run["headBranch"]
+            distro = branch.removeprefix("buildbranch_").split("_")[0]
+            if not branch.startswith("buildbranch_") or distro not in distros:
+                continue  # build.yaml on some other branch (a trial push): not a distribution's times
             out = Path(tmp) / str(run["databaseId"])
             subprocess.run(["gh", "run", "download", str(run["databaseId"]), "--repo", "RoboStack/robostack",
                             "--dir", str(out)], capture_output=True, check=False)

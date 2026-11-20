@@ -20,11 +20,14 @@ def test_collect_merges_the_runs_journals(tmp_path, monkeypatch):
     monkeypatch.setattr(build_timings, "TIMINGS", tmp_path / "timings")
     runs = [{"databaseId": 2, "headBranch": "buildbranch_jazzy_linux_64", "createdAt": "2026-10-22T02:00:00Z"},
             {"databaseId": 1, "headBranch": "buildbranch_jazzy_linux_64", "createdAt": "2026-10-22T01:00:00Z"},
-            {"databaseId": 3, "headBranch": "buildbranch_lyrical_linux_64", "createdAt": "2026-10-22T03:00:00Z"}]
+            {"databaseId": 3, "headBranch": "buildbranch_lyrical_linux_64", "createdAt": "2026-10-22T03:00:00Z"},
+            # build.yaml on a branch that is no build branch: its times are not a distribution's
+            {"databaseId": 4, "headBranch": "vinca-rs-trial/humble-linux-64", "createdAt": "2026-10-22T04:00:00Z"}]
     # (recipe, seconds, upload): the uploads come after the job's builds
     journals = {1: [("ros2-a", 10.0, False), ("ros2-b", 5.0, False), ("ros-jazzy-a", 0.2, False), ("ros2-b", 1.0, True)],
                 2: [("ros2-a", 12.0, False), ("ros2-a", 2.0, True), ("ros-jazzy-a", 1.0, True)],
-                3: [("ros2-a", 20.0, False)]}
+                3: [("ros2-a", 20.0, False)],
+                4: [("ros2-a", 0.1, False)]}
 
     def run(cmd, **kwargs):
         if cmd[1:3] == ["run", "list"]:
