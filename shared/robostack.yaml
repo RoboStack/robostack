@@ -746,6 +746,8 @@ muparser:
   robostack: [muparser]
 nanobind-dev:
   robostack: [nanobind]
+nanoflann:
+  robostack: [nanoflann]
 netpbm:
   robostack:
     linux-aarch64: []
