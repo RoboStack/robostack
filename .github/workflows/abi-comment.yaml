@@ -1,0 +1,84 @@
+# The ABI checks of a pull request's build (testpr.yaml) as one pull-request comment,
+# updated on every push. A separate workflow_run workflow, so that pull requests from
+# forks get the comment too: their own runs only have a read-only token.
+#
+# This runs with a write token, so it never checks out or runs pull-request code. The
+# abi-check-*.md artifacts and the run's branch name come from the pull request (a fork
+# can change testpr.yaml in its pull request), so they are only data: the comment text,
+# and the pull request is looked up from the API, not taken from the artifacts.
+name: ABI check comment
+
+on:
+  workflow_run:
+    workflows: [Build]
+    types: [completed]
+
+permissions: {}
+
+jobs:
+  comment:
+    name: ABI check comment
+    if: ${{ github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion != 'cancelled' }}
+    runs-on: ubuntu-latest
+    permissions:
+      actions: read
+      pull-requests: write
+    concurrency:
+      group: abi-comment-${{ github.event.workflow_run.head_repository.full_name }}-${{ github.event.workflow_run.head_branch }}
+    steps:
+      - name: Find the pull request
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          HEAD_OWNER: ${{ github.event.workflow_run.head_repository.owner.login }}
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          # the open pull request whose head is still the commit that was built
+          pr=$(gh api -X GET "repos/$REPO/pulls" -f state=open -f head="$HEAD_OWNER:$HEAD_BRANCH" \
+            -q ".[] | select(.head.sha == \"$HEAD_SHA\") | .number" | head -1)
+          if [ -z "$pr" ]; then echo "No open pull request at $HEAD_SHA (newer push or closed)"; fi
+          echo "number=$pr" >> "$GITHUB_OUTPUT"
+      - uses: actions/download-artifact@v7
+        if: ${{ steps.pr.outputs.number != '' }}
+        with:
+          pattern: abi-check-*
+          merge-multiple: true
+          path: abi
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+      - name: Post or update the comment
+        if: ${{ steps.pr.outputs.number != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ steps.pr.outputs.number }}
+        run: |
+          shopt -s nullglob
+          files=(abi/abi-check-*.md)
+          marker='<!-- robostack-abi-check -->'
+          existing=$(gh api "repos/$REPO/issues/$PR/comments" --paginate -q ".[] | select(.body | startswith(\"$marker\")) | .id" | head -1)
+          # no comment for pull requests that build nothing released before
+          if ! grep -q '^| package |' "${files[@]}" /dev/null && [ -z "$existing" ]; then exit 0; fi
+          {
+            echo "$marker"
+            echo "### ABI check (linux-64)"
+            echo
+            # GitHub's comment limit is 65536 characters
+            cat "${files[@]}" | head -c 60000
+            echo "<details><summary>About this check</summary>"
+            echo
+            echo "Each package this pull request built, compared with its newest released build (\`tools/abi_check.py\`, libabigail):"
+            echo "- **compatible** / **additions**: the package can be bumped on its own;"
+            echo "- **soname** / **incompatible**: the packages that depend on it need a rebuild (build number bump) in the same pull request."
+            echo
+            echo "Exported symbols are compared (the released packages are stripped, so struct layouts aren't); unchanged installed headers rule out layout and inline changes, changed ones are listed for review. Dependents to rebuild are the released ones linking to a changed library. A changed pin is part of the comparison."
+            echo
+            echo "</details>"
+          } > body.md
+          if [ -n "$existing" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$existing" -F body=@body.md > /dev/null
+          else
+            gh api "repos/$REPO/issues/$PR/comments" -F body=@body.md > /dev/null
+          fi
