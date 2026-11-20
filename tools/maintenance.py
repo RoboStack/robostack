@@ -1403,6 +1403,9 @@ def check() -> Result:
         text = wf.read_text()
         if "\non:" not in "\n" + text or "\ntrue:" in "\n" + text:
             problems.append(f"{wf.name}: no top-level `on:` trigger")
+    import rerender
+
+    problems += rerender.check()
     sort = subprocess.run(["pixi", "run", "sort", "--check"], cwd=rs.ROOT, capture_output=True, text=True)
     if sort.returncode:
         problems.append("YAML files are not sorted (pixi run sort):\n" + tail(sort.stdout + sort.stderr, 10))
