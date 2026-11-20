@@ -1,0 +1,21 @@
+diff --git a/src/plansys2_node.cpp b/src/plansys2_node.cpp
+--- a/src/plansys2_node.cpp
++++ b/src/plansys2_node.cpp
+@@ -12,6 +12,7 @@
+ // See the License for the specific language governing permissions and
+ // limitations under the License.
+ 
++#include <pthread.h>
+ #include <sched.h>
+ 
+ #include <cerrno>
+@@ -108,7 +109,8 @@
+     // Before any thread starts: they all inherit the policy
+     sched_param sch {};
+     sch.sched_priority = 80;
+-    if (sched_setscheduler(0, SCHED_FIFO, &sch) == -1) {
++    // RoboStack: macOS has no sched_setscheduler(); set the main thread's policy
++    if ((errno = pthread_setschedparam(pthread_self(), SCHED_FIFO, &sch)) != 0) {
+       RCLCPP_ERROR(
+         logger(), "Failed to set PlanSys2 to execute in Real Time: %s", std::strerror(errno));
+       RCLCPP_ERROR(

@@ -1,0 +1,12 @@
+diff --git a/src/plansys2_popf_plan_solver/popf_plan_solver.cpp b/src/plansys2_popf_plan_solver/popf_plan_solver.cpp
+--- a/src/plansys2_popf_plan_solver/popf_plan_solver.cpp
++++ b/src/plansys2_popf_plan_solver/popf_plan_solver.cpp
+@@ -24,6 +24,8 @@
+ #include <sstream>
+ #include <string>
+ #include <system_error>
++
++#include <unistd.h>  // RoboStack: mkdtemp() on macOS
+ 
+ #include "plansys2_core/PackagePaths.hpp"
+ #include "plansys2_msgs/msg/plan_item.hpp"
