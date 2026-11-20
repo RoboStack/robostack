@@ -541,7 +541,7 @@ packages_select_by_deps:
 
   - if: not win
     then:
-      - apriltag_ros  # macOS needs no -Werror and no GNU linker flags (patch); Windows builds failed
+      - apriltag_ros  # Windows builds failed
       - as2_cli
       - as2_msgs
       - automatika_embodied_agents
