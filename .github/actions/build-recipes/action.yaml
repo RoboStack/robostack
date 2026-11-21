@@ -1,0 +1,76 @@
+# Build and upload some of a distribution's recipes: the steps of every job of the
+# build workflows (.github/build-template.yaml). One action keeps each generated job
+# a few lines long, so many more jobs fit GitHub's 500 KiB workflow file limit.
+name: Build recipes
+description: Build the given recipes of distros/<distro>/work/recipes and upload them
+inputs:
+  recipes:
+    description: Space-separated recipe names
+    required: true
+  platform:
+    description: Target platform (conda subdir)
+    required: true
+  token:
+    description: anaconda.org API token of the distribution's organization
+    required: false
+  keep-file:
+    description: File kept as an artifact (the build times the job recorded)
+    required: false
+runs:
+  using: composite
+  steps:
+    # git auto-maintenance can leave a lock file in the git clones pixi caches,
+    # which breaks every later run restoring that cache
+    - name: Disable git auto-maintenance
+      shell: bash
+      run: git config --global maintenance.auto false && git config --global gc.auto 0
+    - name: Setup pixi
+      uses: prefix-dev/setup-pixi@v0.11.0
+      with:
+        pixi-version: v0.81.0
+        cache: "true"
+        log-level: v
+        frozen: "true"
+    - if: runner.os == 'Windows'
+      uses: egor-tensin/cleanup-path@v5
+      with:
+        dirs: C:\Program Files\Git\usr\bin;C:\Program Files\Git\bin;C:\Program Files\Git\cmd;C:\Program Files\Git\mingw64\bin
+    - if: runner.os == 'Windows'
+      name: conda-forge build setup
+      shell: cmd
+      run: |
+        :: hosted runners may have libcrypto/libssl DLLs in System32, found before
+        :: the environment's openssl
+        DEL C:\Windows\System32\libcrypto-1_1-x64.dll || (Echo Ignoring failure to delete libcrypto)
+        DEL C:\Windows\System32\libssl-1_1-x64.dll || (Echo Ignoring failure to delete libssl)
+    - if: runner.os == 'Windows'
+      name: Build
+      shell: cmd
+      env:
+        ANACONDA_API_TOKEN: ${{ inputs.token }}
+        CURRENT_RECIPES: ${{ inputs.recipes }}
+        CONDA_BLD_PATH: C:\\bld\\
+        VINCA_CUSTOM_CMAKE_BUILD_DIR: C:\\x\\
+        PYTHONUNBUFFERED: "1"
+      run: call .scripts\build_win.bat
+    - if: runner.os != 'Windows'
+      name: Build
+      shell: bash
+      env:
+        ANACONDA_API_TOKEN: ${{ inputs.token }}
+        CURRENT_RECIPES: ${{ inputs.recipes }}
+        BUILD_TARGET: ${{ inputs.platform }}
+        PYTHONUNBUFFERED: "1"
+        CI: github
+      run: |
+        export GIT_BRANCH=${GITHUB_REF_NAME}
+        export FEEDSTOCK_NAME=${GITHUB_REPOSITORY##*/}
+        .scripts/build_unix.sh --target "$BUILD_TARGET"
+    - name: Keep build times
+      if: always() && inputs.keep-file != ''
+      uses: actions/upload-artifact@v6
+      with:
+        name: ${{ github.job }}-${{ github.run_attempt }}
+        path: ${{ inputs.keep-file }}
+        if-no-files-found: ignore
+        retention-days: 30

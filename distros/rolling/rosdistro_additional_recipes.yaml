@@ -22,10 +22,6 @@ autoware_behavior_velocity_stop_line_module:
   tag: release/humble/autoware_behavior_velocity_stop_line_module/1.7.0-1
   url: https://github.com/ros2-gbp/autoware_core-release.git
   version: 1.7.0
-autoware_cmake:
-  tag: release/jazzy/autoware_cmake/1.1.0-1
-  url: https://github.com/ros2-gbp/autoware_cmake-release.git
-  version: 1.1.0
 autoware_component_interface_specs:
   tag: release/humble/autoware_component_interface_specs/1.7.0-1
   url: https://github.com/ros2-gbp/autoware_core-release.git
@@ -106,14 +102,6 @@ autoware_gyro_odometer:
   tag: release/humble/autoware_gyro_odometer/1.7.0-1
   url: https://github.com/ros2-gbp/autoware_core-release.git
   version: 1.7.0
-autoware_internal_localization_msgs:
-  tag: release/jazzy/autoware_internal_localization_msgs/1.10.0-1
-  url: https://github.com/ros2-gbp/autoware_internal_msgs-release.git
-  version: 1.10.0
-autoware_internal_planning_msgs:
-  tag: release/humble/autoware_internal_planning_msgs/1.12.0-1
-  url: https://github.com/ros2-gbp/autoware_internal_msgs-release.git
-  version: 1.12.0
 autoware_interpolation:
   tag: release/humble/autoware_interpolation/1.7.0-1
   url: https://github.com/ros2-gbp/autoware_core-release.git
@@ -122,14 +110,6 @@ autoware_kalman_filter:
   tag: release/humble/autoware_kalman_filter/1.7.0-1
   url: https://github.com/ros2-gbp/autoware_core-release.git
   version: 1.7.0
-autoware_lanelet2_extension:
-  tag: release/humble/autoware_lanelet2_extension/0.8.0-1
-  url: https://github.com/ros2-gbp/autoware_lanelet2_extension-release.git
-  version: 0.8.0
-autoware_lanelet2_extension_python:
-  tag: release/humble/autoware_lanelet2_extension_python/0.8.0-1
-  url: https://github.com/ros2-gbp/autoware_lanelet2_extension-release.git
-  version: 0.8.0
 autoware_lanelet2_map_visualizer:
   tag: release/humble/autoware_lanelet2_map_visualizer/1.7.0-1
   url: https://github.com/ros2-gbp/autoware_core-release.git
@@ -138,10 +118,6 @@ autoware_lanelet2_utils:
   tag: release/humble/autoware_lanelet2_utils/1.7.0-1
   url: https://github.com/ros2-gbp/autoware_core-release.git
   version: 1.7.0
-autoware_localization_msgs:
-  tag: release/humble/autoware_localization_msgs/1.9.0-1
-  url: https://github.com/ros2-gbp/autoware_msgs-release.git
-  version: 1.9.0
 autoware_localization_util:
   tag: release/humble/autoware_localization_util/1.7.0-1
   url: https://github.com/ros2-gbp/autoware_core-release.git
@@ -214,10 +190,6 @@ autoware_planning_factor_interface:
   tag: release/humble/autoware_planning_factor_interface/1.7.0-1
   url: https://github.com/ros2-gbp/autoware_core-release.git
   version: 1.7.0
-autoware_planning_msgs:
-  tag: release/humble/autoware_planning_msgs/1.9.0-1
-  url: https://github.com/ros2-gbp/autoware_msgs-release.git
-  version: 1.9.0
 autoware_planning_test_manager:
   tag: release/humble/autoware_planning_test_manager/1.7.0-1
   url: https://github.com/ros2-gbp/autoware_core-release.git
@@ -262,10 +234,6 @@ autoware_stop_filter:
   tag: release/humble/autoware_stop_filter/1.7.0-1
   url: https://github.com/ros2-gbp/autoware_core-release.git
   version: 1.7.0
-autoware_system_msgs:
-  tag: release/humble/autoware_system_msgs/1.9.0-1
-  url: https://github.com/ros2-gbp/autoware_msgs-release.git
-  version: 1.9.0
 autoware_test_node:
   tag: release/humble/autoware_test_node/1.7.0-1
   url: https://github.com/ros2-gbp/autoware_core-release.git
@@ -286,54 +254,6 @@ autoware_twist2accel:
   tag: release/humble/autoware_twist2accel/1.7.0-1
   url: https://github.com/ros2-gbp/autoware_core-release.git
   version: 1.7.0
-autoware_utils:
-  tag: release/jazzy/autoware_utils/1.4.2-1
-  url: https://github.com/ros2-gbp/autoware_utils-release.git
-  version: 1.4.2
-autoware_utils_debug:
-  tag: release/jazzy/autoware_utils_debug/1.4.2-1
-  url: https://github.com/ros2-gbp/autoware_utils-release.git
-  version: 1.4.2
-autoware_utils_diagnostics:
-  tag: release/jazzy/autoware_utils_diagnostics/1.4.2-1
-  url: https://github.com/ros2-gbp/autoware_utils-release.git
-  version: 1.4.2
-autoware_utils_geometry:
-  tag: release/jazzy/autoware_utils_geometry/1.4.2-1
-  url: https://github.com/ros2-gbp/autoware_utils-release.git
-  version: 1.4.2
-autoware_utils_logging:
-  tag: release/jazzy/autoware_utils_logging/1.4.2-1
-  url: https://github.com/ros2-gbp/autoware_utils-release.git
-  version: 1.4.2
-autoware_utils_math:
-  tag: release/jazzy/autoware_utils_math/1.4.2-1
-  url: https://github.com/ros2-gbp/autoware_utils-release.git
-  version: 1.4.2
-autoware_utils_pcl:
-  tag: release/jazzy/autoware_utils_pcl/1.4.2-1
-  url: https://github.com/ros2-gbp/autoware_utils-release.git
-  version: 1.4.2
-autoware_utils_rclcpp:
-  tag: release/jazzy/autoware_utils_rclcpp/1.4.2-1
-  url: https://github.com/ros2-gbp/autoware_utils-release.git
-  version: 1.4.2
-autoware_utils_system:
-  tag: release/jazzy/autoware_utils_system/1.4.2-1
-  url: https://github.com/ros2-gbp/autoware_utils-release.git
-  version: 1.4.2
-autoware_utils_tf:
-  tag: release/jazzy/autoware_utils_tf/1.4.2-1
-  url: https://github.com/ros2-gbp/autoware_utils-release.git
-  version: 1.4.2
-autoware_utils_uuid:
-  tag: release/jazzy/autoware_utils_uuid/1.4.2-1
-  url: https://github.com/ros2-gbp/autoware_utils-release.git
-  version: 1.4.2
-autoware_utils_visualization:
-  tag: release/jazzy/autoware_utils_visualization/1.4.2-1
-  url: https://github.com/ros2-gbp/autoware_utils-release.git
-  version: 1.4.2
 autoware_vehicle_info_utils:
   tag: release/humble/autoware_vehicle_info_utils/1.7.0-1
   url: https://github.com/ros2-gbp/autoware_core-release.git
@@ -694,13 +614,6 @@ rslidar_sdk:
   tag: v1.5.18
   url: https://github.com/RoboSense-LiDAR/rslidar_sdk.git
   version: 1.5.18
-rtabmap:
-  # rolling's own release is 0.22.1, which no longer links on Windows against gtsam (LNK2005
-  # on a std::vector<std::uint64_t, tbb_allocator> member); jazzy's 0.23.13 does. rolling has
-  # no rtabmap_ros to keep in step.
-  tag: release/jazzy/rtabmap/0.23.13-1
-  url: https://github.com/ros2-gbp/rtabmap-release.git
-  version: 0.23.13
 yaets:
   tag: release/lyrical/yaets/1.2.0-1
   url: https://github.com/fmrico/yaets-release.git
