@@ -470,9 +470,18 @@ index 282b890..6139979 100644
    std::string last_frame_id_;
    rclcpp::Time last_timestamp_;
 diff --git a/src/offline_node.cpp b/src/offline_node.cpp
-index 94df3b0..4b3f60e 100644
+index 94df3b0..52d6aaa 100644
 --- a/src/offline_node.cpp
 +++ b/src/offline_node.cpp
+@@ -18,7 +18,7 @@
+ 
+ #include <errno.h>
+ #include <string>
+-#ifndef WIN32
++#ifndef _WIN32  // the compiler's macro: WIN32 is gone with CMAKE_CXX_FLAGS set (RoboStack)
+ #include <sys/resource.h>
+ #endif
+ #include <time.h>
 @@ -31,7 +31,11 @@
  #include "gflags/gflags.h"
  #include "rosgraph_msgs/msg/clock.hpp"
@@ -540,7 +549,7 @@ diff --git a/src/urdf_reader.cpp b/src/urdf_reader.cpp
 index d2380cd..c15582e 100644
 --- a/src/urdf_reader.cpp
 +++ b/src/urdf_reader.cpp
-@@ -20,6 +20,11 @@
+@@ -20,7 +20,12 @@
  #include <vector>
  
  #include "cartographer_ros/msg_conversion.h"
@@ -552,3 +561,4 @@ index d2380cd..c15582e 100644
 +#endif
  
  namespace cartographer_ros {
+ 
