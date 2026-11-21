@@ -335,6 +335,7 @@ packages_select_by_deps:
   - rqt_runtime_monitor
   - rtabmap
   - rtabmap_ros # requested in https://github.com/RoboStack/ros-lyrical/pull/83
+  - rtabmap_rviz_plugins
   - rtcm_msgs
   - rtest
   - rviz2
