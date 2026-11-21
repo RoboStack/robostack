@@ -399,7 +399,6 @@ packages_select_by_deps:
     then:
       - aerostack2
       - apex_containers
-      - apriltag_ros  # earlier macOS and Windows builds failed
       - avt_vimba_camera # ships some Linux .so in the repo, so it only supports linux
       - camera_ros # Depends on libcamera, only available on linux
       - can_dbc_parser
@@ -542,6 +541,7 @@ packages_select_by_deps:
 
   - if: not win
     then:
+      - apriltag_ros  # Windows builds failed
       - as2_cli
       - as2_msgs
       - automatika_embodied_agents
@@ -642,6 +642,7 @@ packages_exclude:
 
   - if: not linux
     then:
+      - camera_ros  # libcamera is Linux-only; also removed from the dependencies of the packages that use it
       - pendulum_control
       - rttest
       - tlsf
