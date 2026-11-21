@@ -129,3 +129,27 @@ urdfdom_headers:
 # Remove build_number fields below on new full rebuild
 zenoh_cpp_vendor:
   additional_cmake_args: "-DAMENT_VENDOR_POLICY=NEVER_VENDOR_IGNORE_SATISFIED_CHECK -DUSE_SYSTEM_ZENOH=ON"
+franka_bringup:
+  build_number: 26
+franka_example_controllers:
+  build_number: 26
+franka_fr3_moveit_config:
+  build_number: 26
+franka_gazebo_bringup:
+  build_number: 26
+franka_gripper:
+  build_number: 26
+franka_hardware:
+  build_number: 26
+franka_ign_ros2_control:
+  build_number: 26
+franka_robot_state_broadcaster:
+  build_number: 26
+franka_ros2:
+  build_number: 26
+franka_semantic_components:
+  build_number: 26
+libfranka:
+  build_number: 26
+onnxruntime_vendor:
+  build_number: 26
