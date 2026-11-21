@@ -1,0 +1,14 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 036ae74..2f9e406 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -63,6 +63,9 @@ target_include_directories(rmf_visualization_schedule
+   PUBLIC
+     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+ )
++# ament_target_dependencies looks for OpenSSL_LIBRARIES, but FindOpenSSL only sets
++# OPENSSL_LIBRARIES, so nothing was linked (macOS doesn't allow the symbols to stay undefined)
++target_link_libraries(rmf_visualization_schedule PUBLIC OpenSSL::SSL OpenSSL::Crypto)
+ 
+ ament_export_dependencies(
+   rmf_traffic

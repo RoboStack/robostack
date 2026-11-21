@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 0588eeac..7155d63c 100644
+index 0588eea..be41017 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -10,6 +10,13 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -204,6 +204,15 @@ index 0588eeac..7155d63c 100644
  
  target_include_directories(dump_fleet_states
    PRIVATE
+@@ -499,7 +583,7 @@ install(
+   TARGETS
+     rmf_fleet_adapter
+   EXPORT export_rmf_fleet_adapter
+-  RUNTIME DESTINATION lib/rmf_fleet_adapter
++  RUNTIME DESTINATION bin  # RoboStack: the DLL on PATH on Windows (was lib/rmf_fleet_adapter)
+   LIBRARY DESTINATION lib
+   ARCHIVE DESTINATION lib
+ )
 diff --git a/rmf_rxcpp/RxCpp-4.1.0/Rx/v2/src/rxcpp/rx-util.hpp b/rmf_rxcpp/RxCpp-4.1.0/Rx/v2/src/rxcpp/rx-util.hpp
 index d76fa76a..a7e36281 100644
 --- a/rmf_rxcpp/RxCpp-4.1.0/Rx/v2/src/rxcpp/rx-util.hpp

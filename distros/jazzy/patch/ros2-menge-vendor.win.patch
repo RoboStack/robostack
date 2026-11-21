@@ -1,0 +1,27 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 6eaedad..0a28fc4 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -57,10 +57,21 @@ add_library(
+ 
+ target_include_directories( menge_vendor PUBLIC ${tinyxml_INCLUDE_DIRS} )
+ 
+-target_link_libraries ( menge_vendor PUBLIC dl PRIVATE ${tinyxml_LIBRARIES} )
++if(WIN32)
++  target_link_libraries ( menge_vendor PRIVATE ${tinyxml_LINK_LIBRARIES} )
++else()
++  target_link_libraries ( menge_vendor PUBLIC dl PRIVATE ${tinyxml_LIBRARIES} )
++endif()
+ 
+ set_target_properties( menge_vendor PROPERTIES LINKER_LANGUAGE CXX )
+ 
++if(WIN32)
++  # CoreConfig.h exports MENGE_API symbols only with MENGECORE_EXPORTS (dllimport otherwise,
++  # and MSVC rejects defining dllimport static data members); no libdl on Windows
++  # (SharedLibrary.h uses LoadLibrary there).
++  target_compile_definitions( menge_vendor PRIVATE MENGECORE_EXPORTS )
++endif()
++
+ include(GNUInstallDirs)
+ 
+ ament_export_include_directories(include)

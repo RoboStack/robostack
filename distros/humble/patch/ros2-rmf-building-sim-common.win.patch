@@ -1,0 +1,17 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 19810d4..fd41036 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,6 +1,12 @@
+ cmake_minimum_required(VERSION 3.5)
+ project(rmf_building_sim_common)
+ 
++if(MSVC)
++  # Menge's headers include windows.h: without NOMINMAX its min/max macros break
++  # rclcpp's std::numeric_limits<...>::max() (C2589); M_PI needs _USE_MATH_DEFINES
++  add_compile_definitions(NOMINMAX _USE_MATH_DEFINES)
++endif()
++
+ # Default to C99
+ if(NOT CMAKE_C_STANDARD)
+   set(CMAKE_C_STANDARD 99)
