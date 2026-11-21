@@ -5,6 +5,7 @@ update-vinca and dependency-report (no network)."""
 import json
 
 import pytest
+import yaml
 
 import maintenance
 import robostack as rs
@@ -377,3 +378,20 @@ def test_update_pixi_takes_an_earlier_upgrade(monkeypatch, tmp_path):
     (tmp_path / "upgrade.json").write_text("{}")
     assert not maintenance.update_pixi(tmp_path / "upgrade.json").changed
     assert all(cmd[:2] != ["pixi", "upgrade"] for cmd in calls)  # the bot upgraded before `pixi run`
+
+
+def test_sync_pixi_mappings(tmp_path, monkeypatch):
+    assert jobs("@robostack-bot sync-pixi-mappings") == [
+        {"command": "sync-pixi-mappings", "distro": "", "args": "", "preview": False}]
+    assert maintenance.parse_command("@robostack-bot sync-pixi-mappings", "NONE") == []
+    backend = tmp_path / maintenance.PIXI_ROS_BACKEND
+    backend.mkdir(parents=True)
+    (backend / "robostack.yaml").write_text("gone:\n  robostack: [x]\n")
+    result = maintenance.sync_pixi_mappings(tmp_path)
+    assert result.changed
+    assert "- removed: `gone`" in result.summary
+    shared = yaml.safe_load((backend / "robostack.yaml").read_text())
+    assert shared == yaml.safe_load((rs.ROOT / "shared" / "robostack.yaml").read_text())
+    distros = yaml.safe_load((backend / "robostack_distros.yaml").read_text())
+    assert distros["humble"]["qtbase5-dev"]["robostack"]["osx"] == ["qt-main"]
+    assert not maintenance.sync_pixi_mappings(tmp_path).changed  # nothing left to copy
