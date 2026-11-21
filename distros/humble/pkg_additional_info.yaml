@@ -104,11 +104,6 @@ py_trees:
     dep_name: py-trees
     max_pin: 'x.x.x'
     override_version: 2.6.0
-rtabmap:
-  additional_cmake_args:
-    if: win
-    then: "-DWITH_QT=OFF -DBUILD_TOOLS=OFF -DBUILD_EXAMPLES=OFF -DWITH_GTSAM=OFF"
-    else: "-DWITH_QT=OFF -DBUILD_TOOLS=OFF -DBUILD_EXAMPLES=OFF"
 turtlebot3_node:  # odometry.cpp uses M_PI
   additional_cmake_args:
     if: win
@@ -130,3 +125,9 @@ zenoh_cpp_vendor:
 cartographer_ros:
   additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
   build_number: 26  # offline_node.cpp out of the shared library (duplicate gflags abort)
+rtabmap:
+  additional_cmake_args:
+    if: win
+    then: "-DBUILD_TOOLS=OFF -DBUILD_EXAMPLES=OFF -DWITH_GTSAM=OFF"
+    else: "-DBUILD_TOOLS=OFF -DBUILD_EXAMPLES=OFF"
+  build_number: 26  # built with Qt (its GUI library, for rtabmap_viz)

@@ -841,7 +841,7 @@ def rebuild_packages(packages: list[str], distros: list[str], with_dependents: b
 
 
 ABI_MARKER = "<!-- robostack-abi-check -->"
-ABI_AUTHOR = "github-actions[bot]"  # testpr.yaml's abi-comment job posts with the workflow token
+ABI_AUTHOR = "github-actions[bot]"  # abi-comment.yaml posts with the workflow token
 
 
 def abi_rebuilds(comment: str) -> dict[str, dict[str, int]]:

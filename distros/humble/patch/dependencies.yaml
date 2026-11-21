@@ -170,6 +170,9 @@ rtabmap:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "ceres-solver", "${{ 'libdc1394' if not win }}", "libusb", "vtk"]
   remove_host: ["ros2-qt-gui-cpp"]
   remove_run: ["ros2-qt-gui-cpp"]
+rtabmap_viz:  # find_package(RTABMap COMPONENTS gui): needs rtabmap built with Qt, built before it in parallel CI builds
+  add_host: ["ros2-rtabmap"]
+  add_run: ["ros2-rtabmap"]
 rviz_ogre_vendor:
   add_host: ["zlib", "freeimage", "freetype", "assimp", "zziplib", "pugixml", "${{ 'libglu' if linux }}"]
   add_build: ["vcstool"]
