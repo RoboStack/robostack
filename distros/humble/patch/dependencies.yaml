@@ -84,6 +84,11 @@ parameter_traits:
   add_run: ["cpp-expected"]
 pcl_conversions:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "libboost-devel"]
+plansys2_tools:
+  # rqt plugin: Qt 6 like rqt_gui_cpp
+  remove_host: ["qt-main"]
+  remove_run: ["qt-main"]
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "qt6-main"]
 plotjuggler:
   add_host: ["libxcb", "${{ 'elfutils' if linux }}", "ros2-ros-workspace", "git-lfs"]
 polygon_rviz_plugins:
@@ -146,6 +151,7 @@ ros_image_to_qimage:
   # Same PyQt6 port as qt_gui_cpp/rqt_gui_cpp above (patch/ros2-ros-image-to-qimage.patch).
   remove_host: ["qt-main"]
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "qt6-main"]
+  remove_run: ["qt-main"]
 rqt_gui_cpp:
   remove_host: ["qt-main"]
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "qt6-main"]
@@ -153,16 +159,24 @@ rqt_image_overlay:
   # Same PyQt6 port as qt_gui_cpp/rqt_gui_cpp above (patch/ros2-rqt-image-overlay.patch).
   remove_host: ["qt-main"]
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "qt6-main"]
+  remove_run: ["qt-main"]
 rqt_image_overlay_layer:
   # Same PyQt6 port as qt_gui_cpp/rqt_gui_cpp above (patch/ros2-rqt-image-overlay-layer.patch).
   remove_host: ["qt-main"]
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "qt6-main"]
+  remove_run: ["qt-main"]
 rqt_image_view:
   remove_host: ["qt-main"]
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "qt6-main"]
+rqt_mocap4r2_control:
+  # rqt plugin: Qt 6 like rqt_gui_cpp
+  remove_host: ["qt-main"]
+  remove_run: ["qt-main"]
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "qt6-main"]
 rqt_py_common:
   remove_host: ["qt-main"]
   add_host: ["qt6-main"]
+  remove_run: ["qt-main"]
 rtabmap:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "ceres-solver", "${{ 'libdc1394' if not win }}", "libusb", "vtk"]
   remove_host: ["ros2-qt-gui-cpp"]
@@ -184,6 +198,11 @@ spdlog_vendor:
   add_run: ["spdlog"]
 tracetools:
   remove_host: ["pkg-config"]
+turtlesim:
+  # Qt 6 (patch/ros2-turtlesim.patch), like rqt
+  remove_host: ["qt-main"]
+  remove_run: ["qt-main"]
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "qt6-main"]
 uncrustify_vendor:
   add_host: ["uncrustify"]
   add_run: ["uncrustify"]

@@ -1,0 +1,14 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index c49365b..4aa25dc 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -18,7 +18,8 @@ find_package(pluginlib REQUIRED)
+ find_package(angles REQUIRED)
+ 
+ # rviz switched to Qt6: https://github.com/ros2/rviz/pull/1635
+-if(rviz_common_VERSION_MAJOR GREATER_EQUAL 15 AND rviz_common_VERSION_MINOR GREATER_EQUAL 1)
++# RoboStack: rviz_common built with Qt 6 (its extras import Qt6::Widgets)
++if(rviz_common_VERSION_MAJOR GREATER_EQUAL 15 AND rviz_common_VERSION_MINOR GREATER_EQUAL 1 OR TARGET Qt6::Widgets)
+   find_package(Qt6 COMPONENTS Network REQUIRED)
+   set(QT_VERSION_MAJOR 6)
+ else()

@@ -125,9 +125,27 @@ zenoh_cpp_vendor:
 cartographer_ros:
   additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
   build_number: 26  # offline_node.cpp out of the shared library (duplicate gflags abort)
+plansys2_tools:  # no Qt 5 run dependency
+  build_number: 26
+python_qt_binding:  # PyQt5 compatibility layer (rqt on PyQt6)
+  build_number: 26
+ros_image_to_qimage:  # no Qt 5 run dependency
+  build_number: 26
+rqt_image_overlay:  # no Qt 5 run dependency
+  build_number: 26
+rqt_image_overlay_layer:  # no Qt 5 run dependency
+  build_number: 26
+rqt_mocap4r2_control:  # no Qt 5 run dependency
+  build_number: 26
+rqt_msg:  # rqt_msg#37 (constants helper)
+  build_number: 26
+rqt_py_common:  # no Qt 5 run dependency
+  build_number: 26
 rtabmap:
   additional_cmake_args:
     if: win
     then: "-DBUILD_TOOLS=OFF -DBUILD_EXAMPLES=OFF -DWITH_GTSAM=OFF"
     else: "-DBUILD_TOOLS=OFF -DBUILD_EXAMPLES=OFF"
   build_number: 26  # built with Qt (its GUI library, for rtabmap_viz)
+turtlesim:  # Qt 6
+  build_number: 26

@@ -1,0 +1,26 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 2610a37ea4..3c7c100d83 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -19,7 +19,7 @@ find_package(urdf REQUIRED)
+ set(CMAKE_AUTOMOC ON)
+ add_definitions(-DQT_NO_KEYWORDS)
+ 
+-qt5_wrap_cpp(
++qt6_wrap_cpp(
+   MOC_FILES include/moveit_setup_core_plugins/start_screen_widget.hpp
+   include/moveit_setup_core_plugins/configuration_files_widget.hpp
+   include/moveit_setup_core_plugins/author_information_widget.hpp)
+diff --git a/src/configuration_files_widget.cpp b/src/configuration_files_widget.cpp
+index 9e4c3484ab..4513942045 100644
+--- a/src/configuration_files_widget.cpp
++++ b/src/configuration_files_widget.cpp
+@@ -44,7 +44,7 @@
+ #include <QProgressBar>
+ #include <QPushButton>
+ #include <QPushButton>
+-#include <QRegExp>
++#include <QRegularExpression>
+ #include <QSplitter>
+ #include <QVBoxLayout>
+ 

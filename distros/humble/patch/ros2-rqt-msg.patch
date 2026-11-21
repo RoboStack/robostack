@@ -1,0 +1,44 @@
+diff --git a/src/rqt_msg/messages_tree_model.py b/src/rqt_msg/messages_tree_model.py
+index 0622b8c..4e5fbda 100644
+--- a/src/rqt_msg/messages_tree_model.py
++++ b/src/rqt_msg/messages_tree_model.py
+@@ -33,7 +33,38 @@
+ 
+ from python_qt_binding.QtGui import QStandardItem
+ 
+-from rqt_py_common.message_helpers import get_message_constants_from_class
++try:
++    from rqt_py_common.message_helpers import get_message_constants_from_class
++except ImportError:
++    # RoboStack: no released rqt_py_common has this helper yet
++    # (https://github.com/ros-visualization/rqt_msg/issues/37)
++    import os
++    import re
++
++    def get_message_constants_from_class(message):
++        """Return [(type, name, value)] of the constants of a message (instance or class)."""
++        msg_class = message if isinstance(message, type) else type(message)
++        metaclass = type(msg_class)
++        constants = getattr(metaclass, '_%s__constants' % metaclass.__name__, None) or {}
++        if not constants:
++            return []
++        # the constant types are only in the interface file
++        types = {}
++        package = msg_class.__module__.split('.')[0]
++        kind = msg_class.__module__.split('.')[1] if '.' in msg_class.__module__ else 'msg'
++        name = re.sub(r'_(Request|Response|Event|Goal|Result|Feedback)$', '', msg_class.__name__)
++        try:
++            from ament_index_python.packages import get_package_share_directory
++            path = os.path.join(get_package_share_directory(package), kind, '%s.%s' % (name, kind))
++            with open(path) as f:
++                for line in f:
++                    match = re.match(r'\s*([\w/\[\]<=]+)\s+([A-Z][A-Z0-9_]*)\s*=', line)
++                    if match:
++                        types.setdefault(match.group(2), match.group(1))
++        except Exception:  # noqa: B902 (no interface file: fall back to the Python types)
++            pass
++        return [(types.get(n, type(v).__name__), n, v) for n, v in constants.items()]
++
+ from rqt_py_common.message_tree_model import MessageTreeModel
+ 
+ 

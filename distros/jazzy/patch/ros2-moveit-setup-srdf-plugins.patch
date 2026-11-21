@@ -1,0 +1,57 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 6e34b6346b..a0a0e4f318 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -10,7 +10,7 @@ find_package(ament_cmake_ros REQUIRED)
+ find_package(moveit_setup_framework REQUIRED)
+ find_package(pluginlib REQUIRED)
+ 
+-qt5_wrap_cpp(
++qt6_wrap_cpp(
+   MOC_FILES
+   include/moveit_setup_srdf_plugins/collision_linear_model.hpp
+   include/moveit_setup_srdf_plugins/collision_matrix_model.hpp
+diff --git a/src/collision_linear_model.cpp b/src/collision_linear_model.cpp
+index 9fb5b65d1b..90ce75c40d 100644
+--- a/src/collision_linear_model.cpp
++++ b/src/collision_linear_model.cpp
+@@ -37,6 +37,7 @@
+ #include <moveit_setup_srdf_plugins/collision_linear_model.hpp>
+ #include <moveit_setup_srdf_plugins/collision_matrix_model.hpp>
+ 
++#include <QRegularExpression>
+ #include <QItemSelection>
+ #include <QPainter>
+ #include <cmath>
+@@ -264,8 +265,8 @@ bool SortFilterProxyModel::filterAcceptsRow(int source_row, const QModelIndex& s
+       m->data(m->index(source_row, 2), Qt::CheckStateRole) != Qt::Checked)
+     return false;  // not accepted due to check state
+ 
+-  const QRegExp regexp = filterRegExp();
+-  if (regexp.isEmpty())
++  const QRegularExpression regexp = filterRegularExpression();
++  if (regexp.pattern().isEmpty())
+     return true;
+ 
+   return m->data(m->index(source_row, 0, source_parent), Qt::DisplayRole).toString().contains(regexp) ||
+diff --git a/src/collision_matrix_model.cpp b/src/collision_matrix_model.cpp
+index f8de451567..0450fdcf18 100644
+--- a/src/collision_matrix_model.cpp
++++ b/src/collision_matrix_model.cpp
+@@ -36,6 +36,7 @@
+ 
+ #include <moveit_setup_srdf_plugins/collision_matrix_model.hpp>
+ #include <boost/assign.hpp>
++#include <QRegularExpression>
+ #include <QVector>
+ #include <QBrush>
+ #include <QColor>
+@@ -197,7 +198,7 @@ void CollisionMatrixModel::setEnabled(const QModelIndexList& indexes, bool value
+ void CollisionMatrixModel::setFilterRegExp(const QString& filter)
+ {
+   beginResetModel();
+-  QRegExp regexp(filter);
++  QRegularExpression regexp(filter);
+   visual_to_index_.clear();
+   for (int idx = 0, end = q_names_.size(); idx != end; ++idx)
+   {
