@@ -1,0 +1,34 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 352806f..5332f2d 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -24,7 +24,7 @@ find_package(rclcpp REQUIRED)
+ 
+ find_package(ignition-cmake2 REQUIRED)
+ 
+-ign_find_package(ignition-gazebo6 REQUIRED)
++ign_find_package(ignition-gazebo6 REQUIRED COMPONENTS gui)
+ set(IGN_GAZEBO_VER 6)
+ ign_find_package(ignition-plugin1 REQUIRED COMPONENTS register)
+ set(IGN_PLUGIN_VER 1)
+@@ -173,6 +173,8 @@ ament_target_dependencies(LightTuning
+   Qt5Quick
+   rclcpp
+ )
++# GuiSystem lives in the gui library (macOS doesn't allow it to stay undefined)
++target_link_libraries(LightTuning ignition-gazebo${IGN_GAZEBO_VER}::ignition-gazebo${IGN_GAZEBO_VER}-gui)
+ 
+ target_include_directories(LightTuning
+   PUBLIC
+diff --git a/src/LightTuning/LightTuning.cpp b/src/LightTuning/LightTuning.cpp
+index 0b23f05..bb52ad7 100644
+--- a/src/LightTuning/LightTuning.cpp
++++ b/src/LightTuning/LightTuning.cpp
+@@ -450,7 +450,6 @@ signals:
+   void markerSelected(QString nm);
+ 
+ public slots:
+-  void OnLightTypeSelect(sdf::Light& light, const QString& type);
+   void OnCreateLightBtnPress(
+     int idx, bool cast_shadow, const QString& type,
+     const QString& name, const QString& pose_str,

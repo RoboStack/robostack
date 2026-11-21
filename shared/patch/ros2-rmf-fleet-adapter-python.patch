@@ -1,0 +1,11 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 914a737..9be2883 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -38,3 +38,5 @@ find_package(pybind11_json REQUIRED)
+ 
+-pybind11_add_module(rmf_adapter SHARED
++# A Python extension module, not a SHARED library: SHARED makes pybind11 link pybind11::embed,
++# i.e. libpython, and on macOS importing it then crashes (a second, uninitialised interpreter)
++pybind11_add_module(rmf_adapter MODULE
+   src/adapter.cpp

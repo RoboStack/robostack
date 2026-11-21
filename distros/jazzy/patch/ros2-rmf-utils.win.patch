@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index a93554f..956d1ea 100644
+index a93554f..c3783a5 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -14,6 +14,10 @@ include(GNUInstallDirs)
@@ -13,3 +13,14 @@ index a93554f..956d1ea 100644
  
  target_include_directories(rmf_utils
    PUBLIC
+@@ -44,7 +48,9 @@ write_basic_package_version_file(
+ install(
+   TARGETS rmf_utils
+   EXPORT rmf_utils-targets
+-  DESTINATION lib
++  RUNTIME DESTINATION bin  # RoboStack: the DLL on PATH on Windows (was lib)
++  LIBRARY DESTINATION lib
++  ARCHIVE DESTINATION lib
+ )
+ 
+ install(

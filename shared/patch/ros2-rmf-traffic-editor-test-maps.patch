@@ -1,0 +1,17 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -8,7 +8,13 @@ install(DIRECTORY
+   DESTINATION share/${PROJECT_NAME}
+ )
+ 
+ ament_package()
+ 
++# RoboStack: don't download the maps' models from Gazebo Fuel at build time. The downloader
++# only fills the build machine's ~/.gazebo/models, not the package, so it adds nothing but a
++# network dependency (builds failed when fuel.gazebosim.org didn't resolve); on Windows its
++# "error: ..." lines for the missing crowd_sim models also failed MSBuild (MSB8066).
++set(NO_DOWNLOAD_MODELS ON)
++
+ file(GLOB_RECURSE traffic_editor_paths "maps/*.building.yaml")
+ 

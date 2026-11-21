@@ -1,9 +1,9 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 38a92790..9db1d821 100644
+index 32172de..702989f 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -7,6 +7,15 @@ project(rmf_websocket)
- # RoboStack/ros-lyrical#41's fix), which still provides io_service.
+@@ -8,6 +8,15 @@ project(rmf_websocket)
+ # standalone Asio 1.33.0, github.com/chriskohlhoff/asio@49fcd034).
  add_compile_definitions(ASIO_STANDALONE)
  
 +if(MSVC)
@@ -18,7 +18,7 @@ index 38a92790..9db1d821 100644
  if(NOT CMAKE_CXX_STANDARD)
    set(CMAKE_CXX_STANDARD 17)
  endif()
-@@ -35,6 +44,14 @@ add_library(rmf_websocket SHARED
+@@ -36,6 +45,14 @@ add_library(rmf_websocket SHARED
    src/rmf_websocket/BroadcastServer.cpp
  )
  
@@ -33,3 +33,12 @@ index 38a92790..9db1d821 100644
  target_link_libraries(rmf_websocket
    PUBLIC
      ${rclcpp_LIBRARIES}
+@@ -87,7 +104,7 @@ install(
+ install(
+   TARGETS rmf_websocket
+   EXPORT export_rmf_websocket
+-  RUNTIME DESTINATION lib/rmf_websocket
++  RUNTIME DESTINATION bin  # RoboStack: the DLL on PATH on Windows (was lib/rmf_websocket)
+   LIBRARY DESTINATION lib
+   ARCHIVE DESTINATION lib
+ )

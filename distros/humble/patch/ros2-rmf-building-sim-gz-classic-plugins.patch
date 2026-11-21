@@ -1,0 +1,29 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 9ffa144..c890ff0 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -148,6 +148,9 @@ target_include_directories(crowd_simulator
+     ${rmf_building_sim_common_INCLUDE_DIRS}
+ )
+ 
++# libgazebo and sdformat (macOS links with -undefined error)
++target_link_libraries(crowd_simulator ${GAZEBO_LIBRARIES})
++
+ ###############################
+ # install stuff
+ ###############################
+diff --git a/src/thumbnail_generator.cpp b/src/thumbnail_generator.cpp
+index 584a92f..c41c8cf 100644
+--- a/src/thumbnail_generator.cpp
++++ b/src/thumbnail_generator.cpp
+@@ -21,6 +21,10 @@
+ #include <boost/program_options.hpp>
+ #include <ignition/transport/Node.hh>
+ #include <opencv2/opencv.hpp>
++#if __has_include(<opencv2/geometry.hpp>)
++// OpenCV 5 moved cv::boundingRect to the geometry module
++#include <opencv2/geometry.hpp>
++#endif
+ 
+ #include "gazebo/msgs/msgs.hh"
+ #include "gazebo/transport/transport.hh"

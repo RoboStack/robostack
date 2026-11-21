@@ -136,6 +136,18 @@ mrpt_gui:
   build_number: 34
 nav2_rviz_plugins:
   build_number: 31
+rmf_fleet_adapter:  # its DLL moved to bin (Windows)
+  build_number: 31
+rmf_fleet_adapter_python:  # rmf_adapter as a Python MODULE (shared patch)
+  build_number: 31
+rmf_task_ros2:  # its DLL moved to bin (Windows)
+  build_number: 31
+rmf_traffic_ros2:  # its DLL moved to bin (Windows)
+  build_number: 31
+rmf_utils:  # its DLL moved to bin (Windows)
+  build_number: 31
+rmf_websocket:  # its DLL moved to bin (Windows)
+  build_number: 31
 rqt_robot_monitor:  # Qt6 patch (upstream PR #52)
   build_number: 31
 rtabmap_rviz_plugins:
