@@ -2,8 +2,6 @@ apriltag:
   generate_dummy_package_with_run_deps:
     dep_name: apriltag
     max_pin: 'x.x.x'
-cartographer_ros:
-  additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
 eigenpy:
   generate_dummy_package_with_run_deps:
     dep_name: eigenpy
@@ -157,3 +155,6 @@ zenoh_cpp_vendor:
   additional_cmake_args: "-DAMENT_VENDOR_POLICY=NEVER_VENDOR_IGNORE_SATISFIED_CHECK -DUSE_SYSTEM_ZENOH=ON"
 rmf_utils:  # its DLL moved from lib to bin (Windows)
   build_number: 32
+cartographer_ros:
+  additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
+  build_number: 32  # offline_node.cpp out of the shared library (duplicate gflags abort)
