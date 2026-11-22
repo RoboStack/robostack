@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index adbc48dd..455a72b1 100644
+index 33c8a0e03..9385394b4 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1,6 +1,13 @@
@@ -16,3 +16,16 @@ index adbc48dd..455a72b1 100644
  find_package(catkin REQUIRED COMPONENTS
               cv_bridge roscpp sensor_msgs std_msgs geometry_msgs
               tf tf_conversions eigen_conversions laser_geometry pcl_conversions 
+diff --git a/include/rtabmap_conversions/MsgConversion.h b/include/rtabmap_conversions/MsgConversion.h
+index 4c3b60bde..8af6ee40d 100644
+--- a/include/rtabmap_conversions/MsgConversion.h
++++ b/include/rtabmap_conversions/MsgConversion.h
+@@ -39,7 +39,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <sensor_msgs/PointCloud2.h>
+ 
+ #include <opencv2/opencv.hpp>
+-#include <opencv2/features2d/features2d.hpp>
++#include <opencv2/features2d.hpp>
+ #include <cv_bridge/cv_bridge.h>
+ 
+ #include <rtabmap/core/Transform.h>

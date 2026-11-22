@@ -1,6 +1,8 @@
+diff --git a/src/CoreWrapper.cpp b/src/CoreWrapper.cpp
+index ec9cc4a10..c850f1f83 100644
 --- a/src/CoreWrapper.cpp
 +++ b/src/CoreWrapper.cpp
-@@ -38,7 +38,7 @@
+@@ -38,7 +38,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  #include <sensor_msgs/image_encodings.h>
  #include <cv_bridge/cv_bridge.h>
  #include <pcl_conversions/pcl_conversions.h>
@@ -9,3 +11,12 @@
  
  #include <visualization_msgs/MarkerArray.h>
  
+@@ -1317,7 +1317,7 @@ void CoreWrapper::commonMultiCameraCallbackImpl(
+ 		cv::Mat leftMono;
+ 		if(rgb.channels() == 3)
+ 		{
+-			cv::cvtColor(rgb, leftMono, CV_BGR2GRAY);
++			cv::cvtColor(rgb, leftMono, cv::COLOR_BGR2GRAY);
+ 		}
+ 		else
+ 		{

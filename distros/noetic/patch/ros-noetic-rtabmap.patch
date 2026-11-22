@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 2d22f8b..4d8321d 100644
+index 2d22f8b9..ba07a40e 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -83,14 +83,6 @@ IF(MINGW)
@@ -34,7 +34,35 @@ index 2d22f8b..4d8321d 100644
  option(WITH_PYTHON_THREADING  "Use more than one Python interpreter."  OFF)
  option(WITH_PDAL          "Include PDAL support"                 ON)
  option(WITH_LIBLAS        "Include libLAS support"               OFF)
-@@ -339,9 +331,9 @@ IF(WITH_QT)
+@@ -234,7 +226,26 @@ option(BUILD_WITH_RPATH_NOT_RUNPATH "Explicitly disable usage of RUNPATH for the
+ set(RTABMAP_QT_VERSION AUTO CACHE STRING "Force a specific Qt version.")
+ set_property(CACHE RTABMAP_QT_VERSION PROPERTY STRINGS AUTO 4 5 6)
+ 
+-FIND_PACKAGE(OpenCV REQUIRED QUIET COMPONENTS core calib3d imgproc highgui stitching photo video videoio OPTIONAL_COMPONENTS aruco objdetect xfeatures2d nonfree gpu cudafeatures2d cudaoptflow cudaimgproc)
++# OpenCV components. calib3d was split into "calib" + "geometry" + "stereo" and
++# features2d was renamed "features" in OpenCV 5.
++# These lists are reused below to generate RTABMapConfig.cmake so downstream
++# find_package(RTABMap) requests the same components this build used.
++SET(RTABMAP_OpenCV_COMPONENTS_5 core imgproc highgui stitching photo video videoio features calib geometry stereo)
++SET(RTABMAP_OpenCV_COMPONENTS_4 core imgproc highgui stitching photo video videoio calib3d)
++SET(RTABMAP_OpenCV_OPTIONAL_COMPONENTS_5 objdetect xfeatures2d nonfree gpu cudafeatures2d cudaoptflow cudaimgproc)
++SET(RTABMAP_OpenCV_OPTIONAL_COMPONENTS_4 aruco objdetect xfeatures2d nonfree gpu cudafeatures2d cudaoptflow cudaimgproc)
++
++# Probe OpenCV without a version constraint first, then request the components
++# matching the detected major version. A version-constrained find that fails to
++# match (e.g. asking for 5 when only 4 is present) resets OpenCV_DIR to NOTFOUND,
++# which breaks toolchain builds that rely on a -DOpenCV_DIR hint (e.g. Android,
++# where CMAKE_FIND_ROOT_PATH restricts the search).
++FIND_PACKAGE(OpenCV REQUIRED QUIET COMPONENTS core)
++IF(OpenCV_VERSION_MAJOR GREATER 4)
++  FIND_PACKAGE(OpenCV REQUIRED QUIET COMPONENTS ${RTABMAP_OpenCV_COMPONENTS_5} OPTIONAL_COMPONENTS ${RTABMAP_OpenCV_OPTIONAL_COMPONENTS_5})
++ELSE()
++  FIND_PACKAGE(OpenCV REQUIRED QUIET COMPONENTS ${RTABMAP_OpenCV_COMPONENTS_4} OPTIONAL_COMPONENTS ${RTABMAP_OpenCV_OPTIONAL_COMPONENTS_4})
++ENDIF()
+ 
+ IF(WITH_QT)
+ FIND_PACKAGE(PCL 1.7 REQUIRED QUIET COMPONENTS common io kdtree search surface filters registration sample_consensus segmentation visualization)
+@@ -339,9 +350,9 @@ IF(WITH_QT)
      IF(QT4_FOUND OR Qt5_FOUND OR Qt6_FOUND)
          # For VCPKG build, set those global variables to off, 
          # we will enable them for jsut specific targets
@@ -47,7 +75,7 @@ index 2d22f8b..4d8321d 100644
          IF("${VTK_MAJOR_VERSION}" EQUAL 5)
              FIND_PACKAGE(QVTK REQUIRED) # only for VTK 5
          ELSE()
-@@ -386,6 +378,8 @@ IF(WITH_QT)
+@@ -386,6 +397,8 @@ IF(WITH_QT)
          ENDIF()
          ADD_DEFINITIONS(-DQT_NO_KEYWORDS) # To avoid conflicts with boost signals/foreach and Qt macros
      ENDIF(QT4_FOUND OR Qt5_FOUND OR Qt6_FOUND)
@@ -56,8 +84,59 @@ index 2d22f8b..4d8321d 100644
  ENDIF(WITH_QT)
  
  IF(NOT VTK_FOUND)
+@@ -567,10 +580,15 @@ IF(WITH_POINTMATCHER)
+ ENDIF(WITH_POINTMATCHER)
+ 
+ IF(libpointmatcher_FOUND OR GTSAM_FOUND)
+-    find_package(Boost COMPONENTS thread filesystem system program_options date_time REQUIRED)
+-    IF(Boost_MINOR_VERSION GREATER 47)
++    # Boost.System is header-only since 1.69 and its CMake component was removed in 1.89
++    find_package(Boost COMPONENTS thread filesystem program_options date_time REQUIRED)
++    IF(Boost_MINOR_VERSION GREATER 80)
++        find_package(Boost COMPONENTS thread filesystem program_options date_time chrono timer serialization REQUIRED)
++    ELSEIF(Boost_MINOR_VERSION GREATER 47)
+         find_package(Boost COMPONENTS thread filesystem system program_options date_time chrono timer serialization REQUIRED)
+-    ENDIF(Boost_MINOR_VERSION GREATER 47)
++    ELSE()
++        find_package(Boost COMPONENTS thread filesystem system program_options date_time REQUIRED)
++    ENDIF()
+     IF(WIN32)
+         MESSAGE(STATUS "Boost_LIBRARY_DIRS=${Boost_LIBRARY_DIRS}")
+         link_directories(${Boost_LIBRARY_DIRS})
+@@ -1198,6 +1216,18 @@ install(EXPORT rtabmapTargets
+ ####
+ # Setup RTABMapConfig.cmake
+ ####
++IF(OpenCV_VERSION_MAJOR GREATER 4)
++  SET(CONF_OPENCV_COMPONENTS ${RTABMAP_OpenCV_COMPONENTS_5})
++  SET(CONF_OPENCV_OPTIONAL_COMPONENTS ${RTABMAP_OpenCV_OPTIONAL_COMPONENTS_5})
++ELSE()
++  SET(CONF_OPENCV_COMPONENTS ${RTABMAP_OpenCV_COMPONENTS_4})
++  SET(CONF_OPENCV_OPTIONAL_COMPONENTS ${RTABMAP_OpenCV_OPTIONAL_COMPONENTS_4})
++ENDIF()
++STRING(REPLACE ";" " " CONF_OPENCV_COMPONENTS "${CONF_OPENCV_COMPONENTS}")
++STRING(REPLACE ";" " " CONF_OPENCV_OPTIONAL_COMPONENTS "${CONF_OPENCV_OPTIONAL_COMPONENTS}")
++# Pin the OpenCV major version so downstream projects find the same major RTAB-Map was
++# built against
++SET(CONF_OPENCV_VERSION_MAJOR ${OpenCV_VERSION_MAJOR})
+ include(CMakePackageConfigHelpers)
+ write_basic_package_version_file(
+   "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}ConfigVersion.cmake"
+diff --git a/RTABMapConfig.cmake.in b/RTABMapConfig.cmake.in
+index 155ef3ef..713359b4 100644
+--- a/RTABMapConfig.cmake.in
++++ b/RTABMapConfig.cmake.in
+@@ -1,7 +1,7 @@
+ include(CMakeFindDependencyMacro)
+ 
+ # Mandatory dependencies
+-find_dependency(OpenCV COMPONENTS core calib3d imgproc highgui stitching photo video OPTIONAL_COMPONENTS aruco objdetect xfeatures2d nonfree gpu cudafeatures2d)
++find_dependency(OpenCV @CONF_OPENCV_VERSION_MAJOR@ COMPONENTS @CONF_OPENCV_COMPONENTS@ OPTIONAL_COMPONENTS @CONF_OPENCV_OPTIONAL_COMPONENTS@)
+ 
+ if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/RTABMap_guiTargets.cmake")
+     find_dependency(PCL 1.7 COMPONENTS common io kdtree search surface filters registration sample_consensus segmentation visualization)
 diff --git a/cmake_modules/FindEigen3.cmake b/cmake_modules/FindEigen3.cmake
-index 0b36805..515d056 100644
+index 0b36805e..515d0563 100644
 --- a/cmake_modules/FindEigen3.cmake
 +++ b/cmake_modules/FindEigen3.cmake
 @@ -1,3 +1,15 @@
@@ -76,8 +155,267 @@ index 0b36805..515d056 100644
  # - Try to find Eigen3 lib
  #
  # This module supports requiring a minimum version, e.g. you can do
+diff --git a/corelib/include/rtabmap/core/DBDriverSqlite3.h b/corelib/include/rtabmap/core/DBDriverSqlite3.h
+index 407ec7e0..56e410cb 100644
+--- a/corelib/include/rtabmap/core/DBDriverSqlite3.h
++++ b/corelib/include/rtabmap/core/DBDriverSqlite3.h
+@@ -30,7 +30,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+ #include "rtabmap/core/rtabmap_core_export.h" // DLL export/import defines
+ #include "rtabmap/core/DBDriver.h"
++#if CV_MAJOR_VERSION < 5
+ #include <opencv2/features2d/features2d.hpp>
++#else
++#include <opencv2/features.hpp>
++#endif
+ 
+ typedef struct sqlite3_stmt sqlite3_stmt;
+ typedef struct sqlite3 sqlite3;
+diff --git a/corelib/include/rtabmap/core/EpipolarGeometry.h b/corelib/include/rtabmap/core/EpipolarGeometry.h
+index e9408cd8..c739d0d4 100644
+--- a/corelib/include/rtabmap/core/EpipolarGeometry.h
++++ b/corelib/include/rtabmap/core/EpipolarGeometry.h
+@@ -31,7 +31,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include "rtabmap/core/Parameters.h"
+ #include "rtabmap/utilite/UStl.h"
+ #include <opencv2/core/core.hpp>
++#if CV_MAJOR_VERSION < 5
+ #include <opencv2/features2d/features2d.hpp>
++#else
++#include <opencv2/features.hpp>
++#endif
+ #include <pcl/point_cloud.h>
+ #include <pcl/point_types.h>
+ #include <list>
+diff --git a/corelib/include/rtabmap/core/Features2d.h b/corelib/include/rtabmap/core/Features2d.h
+index f26f84be..e1107736 100644
+--- a/corelib/include/rtabmap/core/Features2d.h
++++ b/corelib/include/rtabmap/core/Features2d.h
+@@ -32,7 +32,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+ #include <opencv2/highgui/highgui.hpp>
+ #include <opencv2/core/core.hpp>
++#if CV_MAJOR_VERSION < 5
+ #include <opencv2/features2d/features2d.hpp>
++#else
++#include <opencv2/features.hpp>
++#endif
+ #include <list>
+ #include <numeric>
+ #include "rtabmap/core/Parameters.h"
+@@ -70,6 +74,10 @@ class BriefDescriptorExtractor;
+ class SIFT;
+ #endif
+ class SURF;
++#if (CV_MAJOR_VERSION == 5)
++class BRISK;
++class KAZE;
++#endif
+ }
+ namespace cuda {
+ class FastFeatureDetector;
+@@ -89,7 +97,13 @@ typedef cv::xfeatures2d::FREAK CV_FREAK;
+ typedef cv::xfeatures2d::DAISY CV_DAISY;
+ typedef cv::GFTTDetector CV_GFTT;
+ typedef cv::xfeatures2d::BriefDescriptorExtractor CV_BRIEF;
++#if (CV_MAJOR_VERSION < 5)
+ typedef cv::BRISK CV_BRISK;
++typedef cv::KAZE CV_KAZE;
++#else
++typedef cv::xfeatures2d::BRISK CV_BRISK;
++typedef cv::xfeatures2d::KAZE CV_KAZE;
++#endif
+ typedef cv::ORB CV_ORB;
+ typedef cv::cuda::SURF_CUDA CV_SURF_GPU;
+ typedef cv::cuda::ORB CV_ORB_GPU;
+@@ -573,7 +587,7 @@ private:
+ 	int diffusivity_;
+ 
+ #if CV_MAJOR_VERSION > 2
+-	cv::Ptr<cv::KAZE> kaze_;
++	cv::Ptr<CV_KAZE> kaze_;
+ #endif
+ };
+ 
+diff --git a/corelib/include/rtabmap/core/MarkerDetector.h b/corelib/include/rtabmap/core/MarkerDetector.h
+index d628ca02..6261aa08 100644
+--- a/corelib/include/rtabmap/core/MarkerDetector.h
++++ b/corelib/include/rtabmap/core/MarkerDetector.h
+@@ -34,6 +34,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+ #ifdef HAVE_OPENCV_ARUCO
+ #include <opencv2/aruco.hpp>
++#elif (CV_MAJOR_VERSION > 4 || (CV_MAJOR_VERSION == 4 && CV_MINOR_VERSION >= 7)) && defined(HAVE_OPENCV_OBJDETECT)
++// OpenCV >= 4.7 provides ArUco in objdetect; the contrib "aruco" module was removed in OpenCV 5
++#include <opencv2/objdetect/aruco_detector.hpp>
++#define RTABMAP_ARUCO_OBJDETECT
++#endif
++#if defined(HAVE_OPENCV_ARUCO) || defined(RTABMAP_ARUCO_OBJDETECT)
++#define RTABMAP_HAVE_ARUCO
+ #endif
+ 
+ namespace rtabmap {
+@@ -84,7 +91,7 @@ public:
+ 		    cv::Mat * imageWithDetections = 0);
+ 
+ private:
+-#ifdef HAVE_OPENCV_ARUCO
++#ifdef RTABMAP_HAVE_ARUCO
+ 	cv::Ptr<cv::aruco::DetectorParameters> detectorParams_;
+ 	float markerLength_;
+ 	float maxDepthError_;
+diff --git a/corelib/include/rtabmap/core/Memory.h b/corelib/include/rtabmap/core/Memory.h
+index 39996d92..fd8f75a3 100644
+--- a/corelib/include/rtabmap/core/Memory.h
++++ b/corelib/include/rtabmap/core/Memory.h
+@@ -41,7 +41,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <set>
+ #include "rtabmap/utilite/UStl.h"
+ #include <opencv2/core/core.hpp>
++#if CV_MAJOR_VERSION < 5
+ #include <opencv2/features2d/features2d.hpp>
++#else
++#include <opencv2/features.hpp>
++#endif
+ #include <pcl/pcl_config.h>
+ 
+ namespace rtabmap {
+diff --git a/corelib/include/rtabmap/core/OdometryInfo.h b/corelib/include/rtabmap/core/OdometryInfo.h
+index 484692b8..4f96a598 100644
+--- a/corelib/include/rtabmap/core/OdometryInfo.h
++++ b/corelib/include/rtabmap/core/OdometryInfo.h
+@@ -34,7 +34,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include "rtabmap/core/RegistrationInfo.h"
+ #include "rtabmap/core/CameraModel.h"
+ #include "rtabmap/core/LaserScan.h"
++#if CV_MAJOR_VERSION < 5
+ #include <opencv2/features2d/features2d.hpp>
++#else
++#include <opencv2/features.hpp>
++#endif
+ 
+ namespace rtabmap {
+ 
+diff --git a/corelib/include/rtabmap/core/SensorData.h b/corelib/include/rtabmap/core/SensorData.h
+index 8be56aa7..fe819f6d 100644
+--- a/corelib/include/rtabmap/core/SensorData.h
++++ b/corelib/include/rtabmap/core/SensorData.h
+@@ -34,7 +34,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <rtabmap/core/StereoCameraModel.h>
+ #include <rtabmap/core/Transform.h>
+ #include <opencv2/core/core.hpp>
++#if CV_MAJOR_VERSION < 5
+ #include <opencv2/features2d/features2d.hpp>
++#else
++#include <opencv2/features.hpp>
++#endif
+ #include <rtabmap/core/LaserScan.h>
+ #include <rtabmap/core/IMU.h>
+ #include <rtabmap/core/GPS.h>
+diff --git a/corelib/include/rtabmap/core/Signature.h b/corelib/include/rtabmap/core/Signature.h
+index 9dbbe532..11f6f9cc 100644
+--- a/corelib/include/rtabmap/core/Signature.h
++++ b/corelib/include/rtabmap/core/Signature.h
+@@ -31,7 +31,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+ #include <pcl/point_types.h>
+ #include <opencv2/core/core.hpp>
++#if CV_MAJOR_VERSION < 5
+ #include <opencv2/features2d/features2d.hpp>
++#else
++#include <opencv2/features.hpp>
++#endif
+ #include <opencv2/imgproc/imgproc.hpp>
+ #include <map>
+ #include <list>
+diff --git a/corelib/include/rtabmap/core/Statistics.h b/corelib/include/rtabmap/core/Statistics.h
+index 66d0f358..d924659a 100644
+--- a/corelib/include/rtabmap/core/Statistics.h
++++ b/corelib/include/rtabmap/core/Statistics.h
+@@ -31,7 +31,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include "rtabmap/core/rtabmap_core_export.h" // DLL export/import defines
+ 
+ #include <opencv2/core/core.hpp>
++#if CV_MAJOR_VERSION < 5
+ #include <opencv2/features2d/features2d.hpp>
++#else
++#include <opencv2/features.hpp>
++#endif
+ #include <opencv2/imgproc/imgproc.hpp>
+ #include <list>
+ #include <vector>
+diff --git a/corelib/include/rtabmap/core/VWDictionary.h b/corelib/include/rtabmap/core/VWDictionary.h
+index fbfa7ba5..bfd5394b 100644
+--- a/corelib/include/rtabmap/core/VWDictionary.h
++++ b/corelib/include/rtabmap/core/VWDictionary.h
+@@ -31,7 +31,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+ #include <opencv2/highgui/highgui.hpp>
+ #include <opencv2/core/core.hpp>
++#if CV_MAJOR_VERSION < 5
+ #include <opencv2/features2d/features2d.hpp>
++#else
++#include <opencv2/features.hpp>
++#endif
+ #include <list>
+ #include <set>
+ #include "rtabmap/core/Parameters.h"
+diff --git a/corelib/include/rtabmap/core/stereo/stereoRectifyFisheye.h b/corelib/include/rtabmap/core/stereo/stereoRectifyFisheye.h
+index 2fc12a25..60b1d792 100644
+--- a/corelib/include/rtabmap/core/stereo/stereoRectifyFisheye.h
++++ b/corelib/include/rtabmap/core/stereo/stereoRectifyFisheye.h
+@@ -32,6 +32,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #ifndef CORELIB_SRC_OPENCV_STEREORECTIFYFISHEYE_H_
+ #define CORELIB_SRC_OPENCV_STEREORECTIFYFISHEYE_H_
+ 
++// This header relies on the OpenCV C API (cvRodrigues2, cvProjectPoints2, ...)
++// which was removed in OpenCV 5. Pull in only the version macros (available in
++// all OpenCV versions) so we can fail early with a clear message rather than
++// with cryptic errors from the includes below.
++#include <opencv2/core/version.hpp>
++#if CV_MAJOR_VERSION >= 5
++#error "stereoRectifyFisheye.h is not supported with OpenCV 5 or later (it uses the removed OpenCV C API). Use cv::fisheye::stereoRectify() instead, or guard your include with '#if CV_MAJOR_VERSION < 5'."
++#endif
++
+ #include <opencv2/calib3d/calib3d.hpp>
+ #if CV_MAJOR_VERSION >= 3
+ #include <opencv2/calib3d/calib3d_c.h>
+diff --git a/corelib/include/rtabmap/core/util3d_correspondences.h b/corelib/include/rtabmap/core/util3d_correspondences.h
+index 6bbaeb2d..d53ece4c 100644
+--- a/corelib/include/rtabmap/core/util3d_correspondences.h
++++ b/corelib/include/rtabmap/core/util3d_correspondences.h
+@@ -32,7 +32,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+ #include <pcl/point_cloud.h>
+ #include <pcl/point_types.h>
++#include <opencv2/core/version.hpp>
++#if CV_MAJOR_VERSION < 5
+ #include <opencv2/features2d/features2d.hpp>
++#else
++#include <opencv2/features.hpp>
++#endif
+ #include <set>
+ #include <map>
+ #include <list>
+diff --git a/corelib/include/rtabmap/core/util3d_features.h b/corelib/include/rtabmap/core/util3d_features.h
+index 2a02bf2e..ac5cb753 100644
+--- a/corelib/include/rtabmap/core/util3d_features.h
++++ b/corelib/include/rtabmap/core/util3d_features.h
+@@ -30,7 +30,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+ #include <rtabmap/core/rtabmap_core_export.h>
+ 
++#include <opencv2/core/version.hpp>
++#if CV_MAJOR_VERSION < 5
+ #include <opencv2/calib3d/calib3d.hpp>
++#else
++#include <opencv2/calib.hpp>
++#endif
+ #include <rtabmap/core/Transform.h>
+ #include <rtabmap/core/CameraModel.h>
+ #include <rtabmap/core/StereoCameraModel.h>
 diff --git a/corelib/src/CMakeLists.txt b/corelib/src/CMakeLists.txt
-index dbc9b86..50b987a 100644
+index dbc9b865..50b987a6 100644
 --- a/corelib/src/CMakeLists.txt
 +++ b/corelib/src/CMakeLists.txt
 @@ -244,6 +244,8 @@ IF(WITH_PYTHON AND Python3_FOUND)
@@ -89,8 +427,2199 @@ index dbc9b86..50b987a 100644
  		${INCLUDE_DIRS}
  	)
  ENDIF(WITH_PYTHON AND Python3_FOUND)
+diff --git a/corelib/src/Compression.cpp b/corelib/src/Compression.cpp
+index 5f9fb46c..b346817e 100644
+--- a/corelib/src/Compression.cpp
++++ b/corelib/src/Compression.cpp
+@@ -34,6 +34,41 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+ namespace rtabmap {
+ 
++namespace {
++
++// The compressed blob trailer stores the cv::Mat type as a raw int, and the
++// database keeps those blobs forever. OpenCV 5 changed CV_CN_SHIFT from 3 to 5,
++// so the very same type has a different numeric value across major versions
++// (CV_32FC2 is 13 under OpenCV 4 but 37 under OpenCV 5). Reading an OpenCV 4
++// database with an OpenCV 5 build would decode 13 as a 1-channel Mat of a
++// nonsense depth.
++//
++// Persist the OpenCV 4 encoding in both cases: existing databases stay
++// readable, and databases written by an OpenCV 5 build stay readable by
++// OpenCV 4 builds. Under OpenCV 4 both helpers are the identity.
++const int kSerializedCnShift = 3;
++const int kSerializedDepthMask = (1 << kSerializedCnShift) - 1;
++
++int serializeMatType(int type)
++{
++	const int depth = CV_MAT_DEPTH(type);
++	// Only the 8 original depths (CV_8U..CV_16F) fit the on-disk encoding;
++	// rtabmap never persists the types OpenCV 5 added beyond them.
++	UASSERT_MSG(depth <= kSerializedDepthMask,
++			uFormat("Cannot serialize cv::Mat depth %d (type %d): the database "
++					"format only supports depths 0-%d.",
++					depth, type, kSerializedDepthMask).c_str());
++	return depth + ((CV_MAT_CN(type) - 1) << kSerializedCnShift);
++}
++
++int deserializeMatType(int serializedType)
++{
++	return CV_MAKETYPE(serializedType & kSerializedDepthMask,
++			((serializedType >> kSerializedCnShift) & 511) + 1);
++}
++
++}  // namespace
++
+ // format : ".jpg" ".png" ".rvl" "" (empty is general)
+ CompressionThread::CompressionThread(const cv::Mat & mat, const std::string & format) :
+ 	uncompressedData_(mat),
+@@ -222,7 +257,7 @@ std::vector<unsigned char> compressData(const cv::Mat & data)
+ 		bytes.resize(destLen+3*sizeof(int));
+ 		*((int*)&bytes[destLen]) = data.rows;
+ 		*((int*)&bytes[destLen+sizeof(int)]) = data.cols;
+-		*((int*)&bytes[destLen+2*sizeof(int)]) = data.type();
++		*((int*)&bytes[destLen+2*sizeof(int)]) = serializeMatType(data.type());
+ 
+ 		if(errCode == Z_MEM_ERROR)
+ 		{
+@@ -252,7 +287,7 @@ cv::Mat compressData2(const cv::Mat & data)
+ 		bytes = cv::Mat(bytes, cv::Rect(0,0, destLen+3*sizeof(int), 1));
+ 		*((int*)&bytes.data[destLen]) = data.rows;
+ 		*((int*)&bytes.data[destLen+sizeof(int)]) = data.cols;
+-		*((int*)&bytes.data[destLen+2*sizeof(int)]) = data.type();
++		*((int*)&bytes.data[destLen+2*sizeof(int)]) = serializeMatType(data.type());
+ 
+ 		if(errCode == Z_MEM_ERROR)
+ 		{
+@@ -285,7 +320,7 @@ cv::Mat uncompressData(const unsigned char * bytes, unsigned long size)
+ 		//last 3 int elements are matrix size and type
+ 		int height = *((int*)&bytes[size-3*sizeof(int)]);
+ 		int width = *((int*)&bytes[size-2*sizeof(int)]);
+-		int type = *((int*)&bytes[size-1*sizeof(int)]);
++		int type = deserializeMatType(*((int*)&bytes[size-1*sizeof(int)]));
+ 
+ 		data = cv::Mat(height, width, type);
+ 		uLongf totalUncompressed = uLongf(data.total())*uLongf(data.elemSize());
+@@ -331,6 +366,10 @@ std::string uncompressString(const cv::Mat & bytes)
+ 
+ std::string compressedDepthFormat(const cv::Mat & bytes)
+ {
++	if(bytes.empty())
++	{
++		return std::string();
++	}
+ 	return compressedDepthFormat(bytes.data, bytes.rows * bytes.cols * bytes.elemSize());
+ }
+ std::string compressedDepthFormat(const std::vector<unsigned char> & bytes)
+diff --git a/corelib/src/EpipolarGeometry.cpp b/corelib/src/EpipolarGeometry.cpp
+index 38f15844..758a14af 100644
+--- a/corelib/src/EpipolarGeometry.cpp
++++ b/corelib/src/EpipolarGeometry.cpp
+@@ -33,8 +33,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include "rtabmap/utilite/UMath.h"
+ 
+ #include <opencv2/core/core.hpp>
+-#include <opencv2/core/core_c.h>
++#if CV_MAJOR_VERSION < 5
+ #include <opencv2/calib3d/calib3d.hpp>
++#else
++#include <opencv2/geometry.hpp>
++#endif
+ #include <iostream>
+ 
+ namespace rtabmap
+diff --git a/corelib/src/Features2d.cpp b/corelib/src/Features2d.cpp
+index 5e674ee0..abf64c67 100644
+--- a/corelib/src/Features2d.cpp
++++ b/corelib/src/Features2d.cpp
+@@ -36,7 +36,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include "rtabmap/utilite/UMath.h"
+ #include "rtabmap/utilite/ULogger.h"
+ #include "rtabmap/utilite/UTimer.h"
+-#include <opencv2/imgproc/imgproc_c.h>
+ #include <opencv2/core/version.hpp>
+ #include <opencv2/opencv_modules.hpp>
+ 
+@@ -857,7 +856,7 @@ std::vector<cv::KeyPoint> Feature2D::generateKeypoints(const cv::Mat & image, co
+ 		cv::cornerSubPix( image, corners,
+ 				cv::Size( _subPixWinSize, _subPixWinSize ),
+ 				cv::Size( -1, -1 ),
+-				cv::TermCriteria( CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, _subPixIterations, _subPixEps ) );
++				cv::TermCriteria( cv::TermCriteria::MAX_ITER | cv::TermCriteria::EPS, _subPixIterations, _subPixEps ) );
+ 
+ 		for(unsigned int i=0;i<corners.size(); ++i)
+ 		{
+@@ -2345,8 +2344,13 @@ void BRISK::parseParameters(const ParametersMap & parameters)
+ 	Parameters::parse(parameters, Parameters::kBRISKThresh(), thresh_);
+ 	Parameters::parse(parameters, Parameters::kBRISKOctaves(), octaves_);
+ 	Parameters::parse(parameters, Parameters::kBRISKPatternScale(), patternScale_);
+-
+-#if CV_MAJOR_VERSION < 3
++#if CV_MAJOR_VERSION > 4
++#ifdef HAVE_OPENCV_XFEATURES2D
++	brisk_ = CV_BRISK::create(thresh_, octaves_, patternScale_);
++#else
++	UWARN("RTAB-Map is not built with OpenCV xfeatures2d module so BRISK cannot be used!");
++#endif
++#elif CV_MAJOR_VERSION < 3
+ 	brisk_ = cv::Ptr<CV_BRISK>(new CV_BRISK(thresh_, octaves_, patternScale_));
+ #else
+ 	brisk_ = CV_BRISK::create(thresh_, octaves_, patternScale_);
+@@ -2357,6 +2361,7 @@ std::vector<cv::KeyPoint> BRISK::generateKeypointsImpl(const cv::Mat & image, co
+ {
+ 	UASSERT(!image.empty() && image.channels() == 1 && image.depth() == CV_8U);
+ 	std::vector<cv::KeyPoint> keypoints;
++#if CV_MAJOR_VERSION < 5 || (CV_MAJOR_VERSION > 4 && defined(HAVE_OPENCV_XFEATURES2D))
+ 	cv::Mat imgRoi(image, roi);
+ 	cv::Mat maskRoi;
+ 	if(!mask.empty())
+@@ -2364,6 +2369,9 @@ std::vector<cv::KeyPoint> BRISK::generateKeypointsImpl(const cv::Mat & image, co
+ 		maskRoi = cv::Mat(mask, roi);
+ 	}
+ 	brisk_->detect(imgRoi, keypoints, maskRoi); // Opencv keypoints
++#else
++	UWARN("RTAB-Map is not built with BRISK feature support!");
++#endif
+ 	return keypoints;
+ }
+ 
+@@ -2371,7 +2379,11 @@ cv::Mat BRISK::generateDescriptorsImpl(const cv::Mat & image, std::vector<cv::Ke
+ {
+ 	UASSERT(!image.empty() && image.channels() == 1 && image.depth() == CV_8U);
+ 	cv::Mat descriptors;
++#if CV_MAJOR_VERSION < 5 || (CV_MAJOR_VERSION > 4 && defined(HAVE_OPENCV_XFEATURES2D))
+ 	brisk_->compute(image, keypoints, descriptors);
++#else
++	UWARN("RTAB-Map is not built with BRISK feature support!");
++#endif
+ 	return descriptors;
+ }
+ 
+@@ -2404,10 +2416,16 @@ void KAZE::parseParameters(const ParametersMap & parameters)
+ 	Parameters::parse(parameters, Parameters::kKAZENOctaveLayers(), nOctaveLayers_);
+ 	Parameters::parse(parameters, Parameters::kKAZEDiffusivity(), diffusivity_);
+ 
+-#if CV_MAJOR_VERSION > 3
+-	kaze_ = cv::KAZE::create(extended_, upright_, threshold_, nOctaves_, nOctaveLayers_, (cv::KAZE::DiffusivityType)diffusivity_);
++#if CV_MAJOR_VERSION > 4
++#ifdef HAVE_OPENCV_XFEATURES2D
++	kaze_ = CV_KAZE::create(extended_, upright_, threshold_, nOctaves_, nOctaveLayers_, (CV_KAZE::DiffusivityType)diffusivity_);
++#else
++	UWARN("RTAB-Map is not built with OpenCV xfeatures2d module so KAZE cannot be used!");
++#endif
++#elif CV_MAJOR_VERSION > 3
++	kaze_ = CV_KAZE::create(extended_, upright_, threshold_, nOctaves_, nOctaveLayers_, (CV_KAZE::DiffusivityType)diffusivity_);
+ #elif CV_MAJOR_VERSION > 2
+-	kaze_ = cv::KAZE::create(extended_, upright_, threshold_, nOctaves_, nOctaveLayers_, diffusivity_);
++	kaze_ = CV_KAZE::create(extended_, upright_, threshold_, nOctaves_, nOctaveLayers_, diffusivity_);
+ #else
+ 	UWARN("RTAB-Map is not built with OpenCV3 so Kaze feature cannot be used!");
+ #endif
+@@ -2417,7 +2435,7 @@ std::vector<cv::KeyPoint> KAZE::generateKeypointsImpl(const cv::Mat & image, con
+ {
+ 	UASSERT(!image.empty() && image.channels() == 1 && image.depth() == CV_8U);
+ 	std::vector<cv::KeyPoint> keypoints;
+-#if CV_MAJOR_VERSION > 2
++#if (CV_MAJOR_VERSION > 2 && CV_MAJOR_VERSION < 5) || (CV_MAJOR_VERSION > 4 && defined(HAVE_OPENCV_XFEATURES2D))
+ 	cv::Mat imgRoi(image, roi);
+ 	cv::Mat maskRoi;
+ 	if (!mask.empty())
+@@ -2426,7 +2444,7 @@ std::vector<cv::KeyPoint> KAZE::generateKeypointsImpl(const cv::Mat & image, con
+ 	}
+ 	kaze_->detect(imgRoi, keypoints, maskRoi); // Opencv keypoints
+ #else
+-	UWARN("RTAB-Map is not built with OpenCV3 so Kaze feature cannot be used!");
++	UWARN("RTAB-Map is not built with Kaze feature support!");
+ #endif
+ 	return keypoints;
+ }
+@@ -2435,10 +2453,10 @@ cv::Mat KAZE::generateDescriptorsImpl(const cv::Mat & image, std::vector<cv::Key
+ {
+ 	UASSERT(!image.empty() && image.channels() == 1 && image.depth() == CV_8U);
+ 	cv::Mat descriptors;
+-#if CV_MAJOR_VERSION > 2
++#if (CV_MAJOR_VERSION > 2 && CV_MAJOR_VERSION < 5) || (CV_MAJOR_VERSION > 4 && defined(HAVE_OPENCV_XFEATURES2D))
+ 	kaze_->compute(image, keypoints, descriptors);
+ #else
+-	UWARN("RTAB-Map is not built with OpenCV3 so Kaze feature cannot be used!");
++	UWARN("RTAB-Map is not built with Kaze feature support!");
+ #endif
+ 	return descriptors;
+ }
+diff --git a/corelib/src/MarkerDetector.cpp b/corelib/src/MarkerDetector.cpp
+index 9ff9f694..1b043c10 100644
+--- a/corelib/src/MarkerDetector.cpp
++++ b/corelib/src/MarkerDetector.cpp
+@@ -28,12 +28,15 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <rtabmap/core/MarkerDetector.h>
+ #include <rtabmap/core/util2d.h>
+ #include <rtabmap/utilite/ULogger.h>
++#ifdef RTABMAP_ARUCO_OBJDETECT
++#include <opencv2/calib3d.hpp>
++#endif
+ 
+ namespace rtabmap {
+ 
+ MarkerDetector::MarkerDetector(const ParametersMap & parameters)
+ {
+-#ifdef HAVE_OPENCV_ARUCO
++#ifdef RTABMAP_HAVE_ARUCO
+ 	markerLength_ = Parameters::defaultMarkerLength();
+ 	maxDepthError_ = Parameters::defaultMarkerMaxDepthError();
+ 	maxRange_ = Parameters::defaultMarkerMaxRange();
+@@ -63,7 +66,7 @@ MarkerDetector::~MarkerDetector() {
+ 
+ void MarkerDetector::parseParameters(const ParametersMap & parameters)
+ {
+-#ifdef HAVE_OPENCV_ARUCO
++#ifdef RTABMAP_HAVE_ARUCO
+ 	detectorParams_->adaptiveThreshWinSizeMin = 3;
+ 	detectorParams_->adaptiveThreshWinSizeMax = 23;
+ 	detectorParams_->adaptiveThreshWinSizeStep = 10;
+@@ -207,14 +210,17 @@ std::map<int, MarkerInfo> MarkerDetector::detect(const cv::Mat & image,
+ 
+     std::map<int, MarkerInfo> detections;
+ 
+-#ifdef HAVE_OPENCV_ARUCO
++#ifdef RTABMAP_HAVE_ARUCO
+ 
+ 	std::vector< int > ids;
+ 	std::vector< std::vector< cv::Point2f > > corners, rejected;
+ 	std::vector< cv::Vec3d > rvecs, tvecs;
+ 
+ 	// detect markers and estimate pose
+-#if CV_MAJOR_VERSION > 3 || (CV_MAJOR_VERSION == 3 && CV_MINOR_VERSION >=2)
++#ifdef RTABMAP_ARUCO_OBJDETECT
++	cv::aruco::ArucoDetector arucoDetector(*dictionary_, *detectorParams_);
++	arucoDetector.detectMarkers(image, corners, ids, rejected);
++#elif CV_MAJOR_VERSION > 3 || (CV_MAJOR_VERSION == 3 && CV_MINOR_VERSION >=2)
+ 	cv::aruco::detectMarkers(image, dictionary_, corners, ids, detectorParams_, rejected);
+ #else
+ 	cv::aruco::detectMarkers(image, *dictionary_, corners, ids, *detectorParams_, rejected);
+@@ -238,7 +244,25 @@ std::map<int, MarkerInfo> MarkerDetector::detect(const cv::Mat & image,
+             }
+         }
+ 
++#ifdef RTABMAP_ARUCO_OBJDETECT
++		{
++			// Equivalent of the removed cv::aruco::estimatePoseSingleMarkers()
++			const float halfLength = (markerLength_<=0.0?1.0f:markerLength_)/2.0f;
++			std::vector<cv::Point3f> objPoints(4);
++			objPoints[0] = cv::Point3f(-halfLength,  halfLength, 0);
++			objPoints[1] = cv::Point3f( halfLength,  halfLength, 0);
++			objPoints[2] = cv::Point3f( halfLength, -halfLength, 0);
++			objPoints[3] = cv::Point3f(-halfLength, -halfLength, 0);
++			rvecs.resize(corners.size());
++			tvecs.resize(corners.size());
++			for(size_t i=0; i<corners.size(); ++i)
++			{
++				cv::solvePnP(objPoints, corners[i], model.K(), model.D(), rvecs[i], tvecs[i], false, cv::SOLVEPNP_IPPE_SQUARE);
++			}
++		}
++#else
+ 		cv::aruco::estimatePoseSingleMarkers(corners, markerLength_<=0.0?1.0f:markerLength_, model.K(), model.D(), rvecs, tvecs);
++#endif
+ 		std::vector<float> scales;
+ 		for(size_t i=0; i<ids.size(); ++i)
+ 		{
+diff --git a/corelib/src/Memory.cpp b/corelib/src/Memory.cpp
+index eb9f8a08..f171a6ba 100644
+--- a/corelib/src/Memory.cpp
++++ b/corelib/src/Memory.cpp
+@@ -62,8 +62,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <pcl/io/pcd_io.h>
+ #include <pcl/common/common.h>
+ #include <rtabmap/core/MarkerDetector.h>
+-#include <opencv2/imgproc/types_c.h>
+ #include <rtabmap/core/LocalGridMaker.h>
++#if CV_MAJOR_VERSION >=5
++#include <opencv2/geometry.hpp>
++#endif
+ 
+ namespace rtabmap {
+ 
+@@ -4928,7 +4930,7 @@ Signature * Memory::createSignature(const SensorData & inputData, const Transfor
+ 			cv::Mat imageMono;
+ 			if(decimatedData.imageRaw().channels() == 3)
+ 			{
+-				cv::cvtColor(decimatedData.imageRaw(), imageMono, CV_BGR2GRAY);
++				cv::cvtColor(decimatedData.imageRaw(), imageMono, cv::COLOR_BGR2GRAY);
+ 			}
+ 			else
+ 			{
+@@ -5237,7 +5239,7 @@ Signature * Memory::createSignature(const SensorData & inputData, const Transfor
+ 			cv::Mat imageMono;
+ 			if(data.imageRaw().channels() == 3)
+ 			{
+-				cv::cvtColor(data.imageRaw(), imageMono, CV_BGR2GRAY);
++				cv::cvtColor(data.imageRaw(), imageMono, cv::COLOR_BGR2GRAY);
+ 			}
+ 			else
+ 			{
+diff --git a/corelib/src/RegistrationVis.cpp b/corelib/src/RegistrationVis.cpp
+index 84f01016..b7787e85 100644
+--- a/corelib/src/RegistrationVis.cpp
++++ b/corelib/src/RegistrationVis.cpp
+@@ -43,7 +43,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <rtabmap/utilite/UStl.h>
+ #include <rtabmap/utilite/UTimer.h>
+ #include <rtabmap/utilite/UMath.h>
+-#include <opencv2/core/core_c.h>
++#if CV_MAJOR_VERSION > 4
++#include <opencv2/geometry.hpp>
++#endif
+ 
+ #if defined(HAVE_OPENCV_XFEATURES2D) && (CV_MAJOR_VERSION > 3 || (CV_MAJOR_VERSION==3 && CV_MINOR_VERSION >=4 && CV_SUBMINOR_VERSION >= 1))
+ #include <opencv2/xfeatures2d.hpp> // For GMS matcher
+@@ -2170,7 +2172,7 @@ Transform RegistrationVis::computeTransformationImpl(
+ 			if(!transform.isNull() && !pcaData.empty())
+ 			{
+ 				cv::Mat pcaEigenVectors, pcaEigenValues;
+-				cv::PCA pca_analysis(pcaData, cv::Mat(), CV_PCA_DATA_AS_ROW);
++				cv::PCA pca_analysis(pcaData, cv::Mat(), cv::PCA::DATA_AS_ROW);
+ 				// We take the second eigen value
+ 				info.inliersDistribution = pca_analysis.eigenvalues.at<float>(0, 1);
+ 
+diff --git a/corelib/src/SensorCaptureThread.cpp b/corelib/src/SensorCaptureThread.cpp
+index 8941c3d0..7d62f70d 100644
+--- a/corelib/src/SensorCaptureThread.cpp
++++ b/corelib/src/SensorCaptureThread.cpp
+@@ -39,7 +39,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include "rtabmap/core/IMUFilter.h"
+ #include "rtabmap/core/Features2d.h"
+ #include "rtabmap/core/clams/discrete_depth_distortion_model.h"
+-#include <opencv2/imgproc/types_c.h>
+ #include <opencv2/stitching/detail/exposure_compensate.hpp>
+ #include <rtabmap/utilite/UTimer.h>
+ #include <rtabmap/utilite/ULogger.h>
+@@ -742,11 +741,11 @@ void SensorCaptureThread::postUpdate(SensorData * dataPtr, SensorCaptureInfo * i
+ 			else if(data.imageRaw().type() == CV_8UC3)
+ 			{
+ 				cv::Mat channels[3];
+-				cv::cvtColor(data.imageRaw(), image, CV_BGR2YCrCb);
++				cv::cvtColor(data.imageRaw(), image, cv::COLOR_BGR2YCrCb);
+ 				cv::split(image, channels);
+ 				cv::equalizeHist(channels[0], channels[0]);
+ 				cv::merge(channels, 3, image);
+-				cv::cvtColor(image, image, CV_YCrCb2BGR);
++				cv::cvtColor(image, image, cv::COLOR_YCrCb2BGR);
+ 			}
+ 			if(!data.depthRaw().empty())
+ 			{
+@@ -762,11 +761,11 @@ void SensorCaptureThread::postUpdate(SensorData * dataPtr, SensorCaptureInfo * i
+ 				else if(data.rightRaw().type() == CV_8UC3)
+ 				{
+ 					cv::Mat channels[3];
+-					cv::cvtColor(data.rightRaw(), right, CV_BGR2YCrCb);
++					cv::cvtColor(data.rightRaw(), right, cv::COLOR_BGR2YCrCb);
+ 					cv::split(right, channels);
+ 					cv::equalizeHist(channels[0], channels[0]);
+ 					cv::merge(channels, 3, right);
+-					cv::cvtColor(right, right, CV_YCrCb2BGR);
++					cv::cvtColor(right, right, cv::COLOR_YCrCb2BGR);
+ 				}
+ 				data.setStereoImage(image, right, data.stereoCameraModels()[0]);
+ 			}
+@@ -781,11 +780,11 @@ void SensorCaptureThread::postUpdate(SensorData * dataPtr, SensorCaptureInfo * i
+ 			else if(data.imageRaw().type() == CV_8UC3)
+ 			{
+ 				cv::Mat channels[3];
+-				cv::cvtColor(data.imageRaw(), image, CV_BGR2YCrCb);
++				cv::cvtColor(data.imageRaw(), image, cv::COLOR_BGR2YCrCb);
+ 				cv::split(image, channels);
+ 				clahe->apply(channels[0], channels[0]);
+ 				cv::merge(channels, 3, image);
+-				cv::cvtColor(image, image, CV_YCrCb2BGR);
++				cv::cvtColor(image, image, cv::COLOR_YCrCb2BGR);
+ 			}
+ 			if(!data.depthRaw().empty())
+ 			{
+@@ -801,11 +800,11 @@ void SensorCaptureThread::postUpdate(SensorData * dataPtr, SensorCaptureInfo * i
+ 				else if(data.rightRaw().type() == CV_8UC3)
+ 				{
+ 					cv::Mat channels[3];
+-					cv::cvtColor(data.rightRaw(), right, CV_BGR2YCrCb);
++					cv::cvtColor(data.rightRaw(), right, cv::COLOR_BGR2YCrCb);
+ 					cv::split(right, channels);
+ 					clahe->apply(channels[0], channels[0]);
+ 					cv::merge(channels, 3, right);
+-					cv::cvtColor(right, right, CV_YCrCb2BGR);
++					cv::cvtColor(right, right, cv::COLOR_YCrCb2BGR);
+ 				}
+ 				data.setStereoImage(image, right, data.stereoCameraModels()[0]);
+ 			}
+diff --git a/corelib/src/StereoCameraModel.cpp b/corelib/src/StereoCameraModel.cpp
+index 421d3f4c..8830c37b 100644
+--- a/corelib/src/StereoCameraModel.cpp
++++ b/corelib/src/StereoCameraModel.cpp
+@@ -33,7 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <rtabmap/utilite/UConversion.h>
+ #include <opencv2/imgproc/imgproc.hpp>
+ 
+-#if CV_MAJOR_VERSION > 2 or (CV_MAJOR_VERSION == 2 and (CV_MINOR_VERSION >4 or (CV_MINOR_VERSION == 4 and CV_SUBMINOR_VERSION >=10)))
++#if (CV_MAJOR_VERSION > 2 and CV_MAJOR_VERSION < 5) or (CV_MAJOR_VERSION == 2 and (CV_MINOR_VERSION >4 or (CV_MINOR_VERSION == 4 and CV_SUBMINOR_VERSION >=10)))
+ #include <rtabmap/core/stereo/stereoRectifyFisheye.h>
+ #endif
+ 
+@@ -179,12 +179,20 @@ void StereoCameraModel::updateStereoRectification()
+ 	{
+ 		cv::Vec4d D_left(left_.D_raw().at<double>(0,0), left_.D_raw().at<double>(0,1), left_.D_raw().at<double>(0,4), left_.D_raw().at<double>(0,5));
+ 		cv::Vec4d D_right(right_.D_raw().at<double>(0,0), right_.D_raw().at<double>(0,1), right_.D_raw().at<double>(0,4), right_.D_raw().at<double>(0,5));
+-
++#if CV_MAJOR_VERSION < 5
+ 		stereoRectifyFisheye(
+ 				left_.K_raw(), D_left,
+ 				right_.K_raw(), D_right,
+ 				left_.imageSize(), R_, T_, R1, R2, P1, P2, Q,
+ 				cv::CALIB_ZERO_DISPARITY, 0, left_.imageSize());
++#else
++		double balance = 0.0, fov_scale = 1.0;
++		cv::fisheye::stereoRectify(
++				left_.K_raw(), D_left,
++				right_.K_raw(), D_right,
++				left_.imageSize(), R_, T_, R1, R2, P1, P2, Q,
++				cv::CALIB_ZERO_DISPARITY, left_.imageSize(), balance, fov_scale);
++#endif
+ 
+ 		// Re-zoom to original focal distance
+ 		if(P1.at<double>(0,0) < 0)
+diff --git a/corelib/src/camera/CameraDepthAI.cpp b/corelib/src/camera/CameraDepthAI.cpp
+index 9eb01791..a0d4699f 100644
+--- a/corelib/src/camera/CameraDepthAI.cpp
++++ b/corelib/src/camera/CameraDepthAI.cpp
+@@ -32,7 +32,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <rtabmap/utilite/UEventsManager.h>
+ #include <rtabmap/utilite/UConversion.h>
+ #include <rtabmap/utilite/UFile.h>
+-
++#if CV_MAJOR_VERSION < 5
++#include <opencv2/calib3d/calib3d.hpp>
++#else
++#include <opencv2/geometry.hpp>
++#endif
+ 
+ namespace rtabmap {
+ 
+diff --git a/corelib/src/camera/CameraFreenect.cpp b/corelib/src/camera/CameraFreenect.cpp
+index 9d48215f..a402c7b7 100644
+--- a/corelib/src/camera/CameraFreenect.cpp
++++ b/corelib/src/camera/CameraFreenect.cpp
+@@ -28,7 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <rtabmap/utilite/UThread.h>
+ #include <rtabmap/utilite/UTimer.h>
+ #include <rtabmap/core/util2d.h>
+-#include <opencv2/imgproc/types_c.h>
+ 
+ #ifdef RTABMAP_FREENECT
+ #include <libfreenect.h>
+@@ -183,7 +182,7 @@ private:
+ 
+ 		if(color_)
+ 		{
+-			cv::cvtColor(rgbIrBuffer_, rgbIrLastFrame_, CV_RGB2BGR);
++			cv::cvtColor(rgbIrBuffer_, rgbIrLastFrame_, cv::COLOR_RGB2BGR);
+ 		}
+ 		else // IrDepth
+ 		{
+diff --git a/corelib/src/camera/CameraFreenect2.cpp b/corelib/src/camera/CameraFreenect2.cpp
+index 85f7bdf0..1514311e 100644
+--- a/corelib/src/camera/CameraFreenect2.cpp
++++ b/corelib/src/camera/CameraFreenect2.cpp
+@@ -29,7 +29,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <rtabmap/utilite/UMath.h>
+ #include <rtabmap/utilite/UTimer.h>
+ #include <rtabmap/core/util2d.h>
+-#include <opencv2/imgproc/types_c.h>
+ 
+ #ifdef RTABMAP_FREENECT2
+ #include <libfreenect2/libfreenect2.hpp>
+@@ -430,11 +429,11 @@ SensorData CameraFreenect2::captureImage(SensorCaptureInfo * info)
+ 					cv::Mat rgbMat; // rtabmap uses 3 channels RGB
+ 					#ifdef LIBFREENECT2_WITH_TEGRAJPEG_SUPPORT 
+ 
+-					 cv::cvtColor(rgbMatC4, rgbMat, CV_RGBA2BGR);
++					 cv::cvtColor(rgbMatC4, rgbMat, cv::COLOR_RGBA2BGR);
+ 
+ 					#else 
+ 
+-					cv::cvtColor(rgbMatC4, rgbMat, CV_BGRA2BGR);
++					cv::cvtColor(rgbMatC4, rgbMat, cv::COLOR_BGRA2BGR);
+ 
+ 					#endif 
+ 					cv::flip(rgbMat, rgb, 1);
+@@ -490,11 +489,11 @@ SensorData CameraFreenect2::captureImage(SensorCaptureInfo * info)
+ 						cv::Mat rgbMat; // rtabmap uses 3 channels RGB
+ 						#ifdef LIBFREENECT2_WITH_TEGRAJPEG_SUPPORT 
+ 
+-						 cv::cvtColor(rgbMatC4, rgbMat, CV_RGB2BGR); 
++						 cv::cvtColor(rgbMatC4, rgbMat, cv::COLOR_RGB2BGR); 
+ 
+ 						#else 
+ 
+-						cv::cvtColor(rgbMatC4, rgbMat, CV_BGRA2BGR); 
++						cv::cvtColor(rgbMatC4, rgbMat, cv::COLOR_BGRA2BGR); 
+ 
+ 						#endif 
+ 						cv::flip(rgbMat, rgb, 1);
+@@ -607,11 +606,11 @@ SensorData CameraFreenect2::captureImage(SensorCaptureInfo * info)
+ 							// rtabmap uses 3 channels RGB
+ 							#ifdef LIBFREENECT2_WITH_TEGRAJPEG_SUPPORT 
+ 
+-							 cv::cvtColor(rgbMatBGRA, rgb, CV_RGBA2BGR); 
++							 cv::cvtColor(rgbMatBGRA, rgb, cv::COLOR_RGBA2BGR); 
+ 
+ 							#else 
+ 
+-							cv::cvtColor(rgbMatBGRA, rgb, CV_BGRA2BGR); 
++							cv::cvtColor(rgbMatBGRA, rgb, cv::COLOR_BGRA2BGR); 
+ 
+ 							#endif 
+ 							cv::flip(rgb, rgb, 1);
+@@ -629,11 +628,11 @@ SensorData CameraFreenect2::captureImage(SensorCaptureInfo * info)
+ 							// rtabmap uses 3 channels RGB
+ 							#ifdef LIBFREENECT2_WITH_TEGRAJPEG_SUPPORT 
+ 
+-							 cv::cvtColor(rgbMatBGRA, rgb, CV_RGBA2BGR); 
++							 cv::cvtColor(rgbMatBGRA, rgb, cv::COLOR_RGBA2BGR); 
+ 
+ 							#else 
+ 
+-							cv::cvtColor(rgbMatBGRA, rgb, CV_BGRA2BGR); 
++							cv::cvtColor(rgbMatBGRA, rgb, cv::COLOR_BGRA2BGR); 
+ 
+ 							#endif 
+ 							cv::flip(rgb, rgb, 1);	
+diff --git a/corelib/src/camera/CameraImages.cpp b/corelib/src/camera/CameraImages.cpp
+index 0591181a..9109ac4e 100644
+--- a/corelib/src/camera/CameraImages.cpp
++++ b/corelib/src/camera/CameraImages.cpp
+@@ -34,7 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <rtabmap/core/util3d.h>
+ #include <rtabmap/core/util3d_filtering.h>
+ #include <rtabmap/core/Graph.h>
+-#include <opencv2/imgproc/types_c.h>
++#include <opencv2/imgproc.hpp>
+ #include <fstream>
+ 
+ namespace rtabmap
+@@ -914,7 +914,7 @@ SensorData CameraImages::captureImage(SensorCaptureInfo * info)
+ 					{
+ 						UWARN("Conversion from 4 channels to 3 channels (file=%s)", imageFilePath.c_str());
+ 						cv::Mat out;
+-						cv::cvtColor(img, out, CV_BGRA2BGR);
++						cv::cvtColor(img, out, cv::COLOR_BGRA2BGR);
+ 						img = out;
+ 					}
+ 					else if(!img.empty() && _bayerMode >= 0 && _bayerMode <=3)
+@@ -922,7 +922,7 @@ SensorData CameraImages::captureImage(SensorCaptureInfo * info)
+ 						cv::Mat debayeredImg;
+ 						try
+ 						{
+-							cv::cvtColor(img, debayeredImg, CV_BayerBG2BGR + _bayerMode);
++							cv::cvtColor(img, debayeredImg, cv::COLOR_BayerBG2BGR + _bayerMode);
+ 							img = debayeredImg;
+ 						}
+ 						catch(const cv::Exception & e)
+diff --git a/corelib/src/camera/CameraK4A.cpp b/corelib/src/camera/CameraK4A.cpp
+index ad5714d7..caf659ba 100644
+--- a/corelib/src/camera/CameraK4A.cpp
++++ b/corelib/src/camera/CameraK4A.cpp
+@@ -29,7 +29,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <rtabmap/utilite/UThreadC.h>
+ #include <rtabmap/core/util2d.h>
+ #include <rtabmap/core/Compression.h>
+-#include <opencv2/imgproc/types_c.h>
+ 
+ #ifdef RTABMAP_K4A
+ #include <k4a/k4a.h>
+@@ -508,7 +507,7 @@ SensorData CameraK4A::captureImage(SensorCaptureInfo * info)
+ 						CV_8UC4,
+ 						(void*)k4a_image_get_buffer(rgb_image_));
+ 
+-				cv::cvtColor(bgra, bgrCV, CV_BGRA2BGR);
++				cv::cvtColor(bgra, bgrCV, cv::COLOR_BGRA2BGR);
+ 			}
+ 			bgrCV = model_.rectifyImage(bgrCV);
+ 
+diff --git a/corelib/src/camera/CameraK4W2.cpp b/corelib/src/camera/CameraK4W2.cpp
+index e289029e..9a96251f 100644
+--- a/corelib/src/camera/CameraK4W2.cpp
++++ b/corelib/src/camera/CameraK4W2.cpp
+@@ -28,7 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <rtabmap/utilite/UTimer.h>
+ #include <rtabmap/utilite/UThreadC.h>
+ #include <rtabmap/core/util2d.h>
+-#include <opencv2/imgproc/types_c.h>
+ 
+ #ifdef RTABMAP_K4W2
+ #include <Kinect.h>
+@@ -486,11 +485,11 @@ SensorData CameraK4W2::captureImage(SensorCaptureInfo * info)
+ 									{
+ 										cv::Mat tmp;
+ 										cv::resize(cv::Mat(nColorHeight, nColorWidth, CV_8UC4, pColorBuffer), tmp, cv::Size(), 0.5, 0.5, cv::INTER_AREA);
+-										cv::cvtColor(tmp, imageColor, CV_BGRA2BGR);
++										cv::cvtColor(tmp, imageColor, cv::COLOR_BGRA2BGR);
+ 									}
+ 									else
+ 									{
+-										cv::cvtColor(cv::Mat(nColorHeight, nColorWidth, CV_8UC4, pColorBuffer), imageColor, CV_BGRA2BGR);
++										cv::cvtColor(cv::Mat(nColorHeight, nColorWidth, CV_8UC4, pColorBuffer), imageColor, cv::COLOR_BGRA2BGR);
+ 									}
+ 									// loop over output pixels
+ 									for (int depthIndex = 0; depthIndex < (nDepthWidth*nDepthHeight); ++depthIndex)
+diff --git a/corelib/src/camera/CameraOpenNI2.cpp b/corelib/src/camera/CameraOpenNI2.cpp
+index 8be86b74..4d2ff1ad 100644
+--- a/corelib/src/camera/CameraOpenNI2.cpp
++++ b/corelib/src/camera/CameraOpenNI2.cpp
+@@ -29,7 +29,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <rtabmap/utilite/UFile.h>
+ #include <rtabmap/utilite/UThreadC.h>
+ #include <rtabmap/core/util2d.h>
+-#include <opencv2/imgproc/types_c.h>
+ 
+ #ifdef RTABMAP_OPENNI2
+ #include <OniVersion.h>
+@@ -514,7 +513,7 @@ SensorData CameraOpenNI2::captureImage(SensorCaptureInfo * info)
+ 				cv::Mat tmp(h, w, CV_8UC3, (void *)colorFrame.getData());
+ 				if(_type==kTypeColorDepth)
+ 				{
+-					cv::cvtColor(tmp, rgb, CV_RGB2BGR);
++					cv::cvtColor(tmp, rgb, cv::COLOR_RGB2BGR);
+ 				}
+ 				else // IR
+ 				{
+diff --git a/corelib/src/camera/CameraOpenNICV.cpp b/corelib/src/camera/CameraOpenNICV.cpp
+index 13536d6f..13595610 100644
+--- a/corelib/src/camera/CameraOpenNICV.cpp
++++ b/corelib/src/camera/CameraOpenNICV.cpp
+@@ -26,9 +26,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+ #include <rtabmap/core/camera/CameraOpenNICV.h>
+ #include <rtabmap/utilite/UTimer.h>
+-#if CV_MAJOR_VERSION > 3
+-#include <opencv2/videoio/videoio_c.h>
+-#endif
++#include <opencv2/videoio.hpp>
+ 
+ namespace rtabmap
+ {
+@@ -59,30 +57,34 @@ bool CameraOpenNICV::init(const std::string & calibrationFolder, const std::stri
+ 	}
+ 
+ 	ULOGGER_DEBUG("Camera::init()");
+-	_capture.open( _asus?CV_CAP_OPENNI_ASUS:CV_CAP_OPENNI );
++#if CV_MAJOR_VERSION < 5
++	_capture.open( _asus?cv::CAP_OPENNI_ASUS:cv::CAP_OPENNI );
++#else
++	_capture.open( _asus?cv::CAP_OPENNI2_ASUS:cv::CAP_OPENNI2 );
++#endif
+ 	if(_capture.isOpened())
+ 	{
+-		_capture.set( CV_CAP_OPENNI_IMAGE_GENERATOR_OUTPUT_MODE, CV_CAP_OPENNI_VGA_30HZ );
+-		_depthFocal = _capture.get( CV_CAP_OPENNI_DEPTH_GENERATOR_FOCAL_LENGTH );
++		_capture.set( cv::CAP_OPENNI_IMAGE_GENERATOR_OUTPUT_MODE, cv::CAP_OPENNI_VGA_30HZ );
++		_depthFocal = _capture.get( cv::CAP_OPENNI_DEPTH_GENERATOR_FOCAL_LENGTH );
+ 		// Print some avalible device settings.
+ 		UINFO("Depth generator output mode:");
+-		UINFO("FRAME_WIDTH        %f", _capture.get( CV_CAP_PROP_FRAME_WIDTH ));
+-		UINFO("FRAME_HEIGHT       %f", _capture.get( CV_CAP_PROP_FRAME_HEIGHT ));
+-		UINFO("FRAME_MAX_DEPTH    %f mm", _capture.get( CV_CAP_PROP_OPENNI_FRAME_MAX_DEPTH ));
+-		UINFO("BASELINE           %f mm", _capture.get( CV_CAP_PROP_OPENNI_BASELINE ));
+-		UINFO("FPS                %f", _capture.get( CV_CAP_PROP_FPS ));
+-		UINFO("Focal              %f", _capture.get( CV_CAP_OPENNI_DEPTH_GENERATOR_FOCAL_LENGTH ));
+-		UINFO("REGISTRATION       %f", _capture.get( CV_CAP_PROP_OPENNI_REGISTRATION ));
+-		if(_capture.get( CV_CAP_PROP_OPENNI_REGISTRATION ) == 0.0)
++		UINFO("FRAME_WIDTH        %f", _capture.get( cv::CAP_PROP_FRAME_WIDTH ));
++		UINFO("FRAME_HEIGHT       %f", _capture.get( cv::CAP_PROP_FRAME_HEIGHT ));
++		UINFO("FRAME_MAX_DEPTH    %f mm", _capture.get( cv::CAP_PROP_OPENNI_FRAME_MAX_DEPTH ));
++		UINFO("BASELINE           %f mm", _capture.get( cv::CAP_PROP_OPENNI_BASELINE ));
++		UINFO("FPS                %f", _capture.get( cv::CAP_PROP_FPS ));
++		UINFO("Focal              %f", _capture.get( cv::CAP_OPENNI_DEPTH_GENERATOR_FOCAL_LENGTH ));
++		UINFO("REGISTRATION       %f", _capture.get( cv::CAP_PROP_OPENNI_REGISTRATION ));
++		if(_capture.get( cv::CAP_PROP_OPENNI_REGISTRATION ) == 0.0)
+ 		{
+ 			UERROR("Depth registration is not activated on this device!");
+ 		}
+-		if( _capture.get( CV_CAP_OPENNI_IMAGE_GENERATOR_PRESENT ) )
++		if( _capture.get( cv::CAP_OPENNI_IMAGE_GENERATOR_PRESENT ) )
+ 		{
+ 			UINFO("Image generator output mode:");
+-			UINFO("FRAME_WIDTH    %f", _capture.get( CV_CAP_OPENNI_IMAGE_GENERATOR+CV_CAP_PROP_FRAME_WIDTH ));
+-			UINFO("FRAME_HEIGHT   %f", _capture.get( CV_CAP_OPENNI_IMAGE_GENERATOR+CV_CAP_PROP_FRAME_HEIGHT ));
+-			UINFO("FPS            %f", _capture.get( CV_CAP_OPENNI_IMAGE_GENERATOR+CV_CAP_PROP_FPS ));
++			UINFO("FRAME_WIDTH    %f", _capture.get( cv::CAP_OPENNI_IMAGE_GENERATOR+cv::CAP_PROP_FRAME_WIDTH ));
++			UINFO("FRAME_HEIGHT   %f", _capture.get( cv::CAP_OPENNI_IMAGE_GENERATOR+cv::CAP_PROP_FRAME_HEIGHT ));
++			UINFO("FPS            %f", _capture.get( cv::CAP_OPENNI_IMAGE_GENERATOR+cv::CAP_PROP_FPS ));
+ 		}
+ 		else
+ 		{
+@@ -112,8 +114,8 @@ SensorData CameraOpenNICV::captureImage(SensorCaptureInfo * info)
+ 	{
+ 		_capture.grab();
+ 		cv::Mat depth, rgb;
+-		_capture.retrieve(depth, CV_CAP_OPENNI_DEPTH_MAP );
+-		_capture.retrieve(rgb, CV_CAP_OPENNI_BGR_IMAGE );
++		_capture.retrieve(depth, cv::CAP_OPENNI_DEPTH_MAP );
++		_capture.retrieve(rgb, cv::CAP_OPENNI_BGR_IMAGE );
+ 
+ 		depth = depth.clone();
+ 		rgb = rgb.clone();
+diff --git a/corelib/src/camera/CameraOpenni.cpp b/corelib/src/camera/CameraOpenni.cpp
+index 9fb8dc73..68cba168 100644
+--- a/corelib/src/camera/CameraOpenni.cpp
++++ b/corelib/src/camera/CameraOpenni.cpp
+@@ -28,7 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <rtabmap/utilite/UFile.h>
+ #include <rtabmap/utilite/UThreadC.h>
+ #include <rtabmap/utilite/UTimer.h>
+-#include <opencv2/imgproc/types_c.h>
+ 
+ #ifdef RTABMAP_OPENNI
+ #include <pcl/io/openni_grabber.h>
+@@ -94,7 +93,7 @@ void CameraOpenni::image_cb (
+ 
+ 	cv::Mat rgbFrame(rgb->getHeight(), rgb->getWidth(), CV_8UC3);
+ 	rgb->fillRGB(rgb->getWidth(), rgb->getHeight(), rgbFrame.data);
+-	cv::cvtColor(rgbFrame, rgb_, CV_RGB2BGR);
++	cv::cvtColor(rgbFrame, rgb_, cv::COLOR_RGB2BGR);
+ 
+ 	depth_ = cv::Mat(rgb->getHeight(), rgb->getWidth(), CV_16UC1);
+ 	depth->fillDepthImageRaw(rgb->getWidth(), rgb->getHeight(), (unsigned short*)depth_.data);
+diff --git a/corelib/src/camera/CameraRealSense.cpp b/corelib/src/camera/CameraRealSense.cpp
+index 3f545bb5..01362382 100644
+--- a/corelib/src/camera/CameraRealSense.cpp
++++ b/corelib/src/camera/CameraRealSense.cpp
+@@ -29,7 +29,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <rtabmap/utilite/UMath.h>
+ #include <rtabmap/utilite/UThreadC.h>
+ #include <rtabmap/core/util2d.h>
+-#include <opencv2/imgproc/types_c.h>
+ 
+ #ifdef RTABMAP_REALSENSE
+ #include <librealsense/rs.hpp>
+@@ -938,7 +937,7 @@ SensorData CameraRealSense::captureImage(SensorCaptureInfo * info)
+ 		}
+ 		else
+ 		{
+-			cv::cvtColor(rgb, bgr, CV_RGB2BGR);
++			cv::cvtColor(rgb, bgr, cv::COLOR_RGB2BGR);
+ 		}
+ 
+ 		bool rectified = false;
+diff --git a/corelib/src/camera/CameraRealSense2.cpp b/corelib/src/camera/CameraRealSense2.cpp
+index 4ddfc775..9f5fccce 100644
+--- a/corelib/src/camera/CameraRealSense2.cpp
++++ b/corelib/src/camera/CameraRealSense2.cpp
+@@ -30,7 +30,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <rtabmap/utilite/UThreadC.h>
+ #include <rtabmap/utilite/UConversion.h>
+ #include <rtabmap/utilite/UStl.h>
+-#include <opencv2/imgproc/types_c.h>
+ 
+ #ifdef RTABMAP_REALSENSE2
+ #include <librealsense2/rsutil.h>
+@@ -1380,7 +1379,7 @@ SensorData CameraRealSense2::captureImage(SensorCaptureInfo * info)
+ 				cv::Mat bgr;
+ 				if(rgb.channels() == 3)
+ 				{
+-					cv::cvtColor(rgb, bgr, CV_RGB2BGR);
++					cv::cvtColor(rgb, bgr, cv::COLOR_RGB2BGR);
+ 				}
+ 				else
+ 				{
+diff --git a/corelib/src/camera/CameraStereoDC1394.cpp b/corelib/src/camera/CameraStereoDC1394.cpp
+index 691516b7..2c211088 100644
+--- a/corelib/src/camera/CameraStereoDC1394.cpp
++++ b/corelib/src/camera/CameraStereoDC1394.cpp
+@@ -28,7 +28,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <rtabmap/core/camera/CameraStereoDC1394.h>
+ #include <rtabmap/utilite/UTimer.h>
+ #include <rtabmap/utilite/UConversion.h>
+-#include <opencv2/imgproc/types_c.h>
+ 
+ #ifdef RTABMAP_DC1394
+ #include <dc1394/dc1394.h>
+@@ -295,8 +294,8 @@ public:
+ 
+ 			//DC1394_COLOR_CODING_RAW16:
+ 			//DC1394_COLOR_FILTER_BGGR
+-			cv::cvtColor(cv::Mat(frame->size[1], frame->size[0], CV_8UC1, capture_buffer), left, CV_BayerRG2BGR);
+-			cv::cvtColor(cv::Mat(frame->size[1], frame->size[0], CV_8UC1, capture_buffer+image.total()), right, CV_BayerRG2GRAY);
++			cv::cvtColor(cv::Mat(frame->size[1], frame->size[0], CV_8UC1, capture_buffer), left, cv::COLOR_BayerRG2BGR);
++			cv::cvtColor(cv::Mat(frame->size[1], frame->size[0], CV_8UC1, capture_buffer+image.total()), right, cv::COLOR_BayerRG2GRAY);
+ 
+ 			dc1394_capture_enqueue(camera_, frame);
+ 
+diff --git a/corelib/src/camera/CameraStereoImages.cpp b/corelib/src/camera/CameraStereoImages.cpp
+index c50a3b89..e0dd6438 100644
+--- a/corelib/src/camera/CameraStereoImages.cpp
++++ b/corelib/src/camera/CameraStereoImages.cpp
+@@ -27,7 +27,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+ #include <rtabmap/core/camera/CameraStereoImages.h>
+ #include <rtabmap/utilite/UStl.h>
+-#include <opencv2/imgproc/types_c.h>
+ 
+ namespace rtabmap
+ {
+@@ -184,7 +183,7 @@ SensorData CameraStereoImages::captureImage(SensorCaptureInfo * info)
+ 			if(rightImage.type() != CV_8UC1 && rightGrayScale_)
+ 			{
+ 				cv::Mat tmp;
+-				cv::cvtColor(rightImage, tmp, CV_BGR2GRAY);
++				cv::cvtColor(rightImage, tmp, cv::COLOR_BGR2GRAY);
+ 				rightImage = tmp;
+ 			}
+ 			if(this->isImagesRectified() && stereoModel_.isValidForRectification())
+diff --git a/corelib/src/camera/CameraStereoTara.cpp b/corelib/src/camera/CameraStereoTara.cpp
+index e4ea3cdf..f4ec60aa 100644
+--- a/corelib/src/camera/CameraStereoTara.cpp
++++ b/corelib/src/camera/CameraStereoTara.cpp
+@@ -34,9 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <rtabmap/utilite/UTimer.h>
+ #include <rtabmap/utilite/UThreadC.h>
+ #include <rtabmap/utilite/UConversion.h>
+-#if CV_MAJOR_VERSION > 3
+-#include <opencv2/videoio/videoio_c.h>
+-#endif
++#include <opencv2/videoio.hpp>
+ 
+ namespace rtabmap
+ {
+@@ -81,18 +79,18 @@ bool CameraStereoTara::init(const std::string & calibrationFolder, const std::st
+ 
+ 		capture_.open(usbDevice_);
+ 
+-		capture_.set(CV_CAP_PROP_FOURCC, CV_FOURCC('Y', '1', '6', ' '));
+-		capture_.set(CV_CAP_PROP_FPS, 60);
+-		capture_.set(CV_CAP_PROP_FRAME_WIDTH, 752);
+-		capture_.set(CV_CAP_PROP_FRAME_HEIGHT, 480);
+-		capture_.set(CV_CAP_PROP_CONVERT_RGB,false);
++		capture_.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('Y', '1', '6', ' '));
++		capture_.set(cv::CAP_PROP_FPS, 60);
++		capture_.set(cv::CAP_PROP_FRAME_WIDTH, 752);
++		capture_.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
++		capture_.set(cv::CAP_PROP_CONVERT_RGB,false);
+ 
+ 		ULOGGER_DEBUG("CameraStereoTara: Usb device initialization on device %d", usbDevice_);
+ 
+ 
+ 	if (cameraName_.empty())
+ 	{
+-		unsigned int guid = (unsigned int)capture_.get(CV_CAP_PROP_GUID);
++		unsigned int guid = (unsigned int)capture_.get(cv::CAP_PROP_GUID);
+ 		if (guid != 0 && guid != 0xffffffff)
+ 		{
+ 			cameraName_ = uFormat("%08x", guid);
+diff --git a/corelib/src/camera/CameraStereoVideo.cpp b/corelib/src/camera/CameraStereoVideo.cpp
+index f31f40b6..5de23a67 100644
+--- a/corelib/src/camera/CameraStereoVideo.cpp
++++ b/corelib/src/camera/CameraStereoVideo.cpp
+@@ -28,13 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <rtabmap/core/camera/CameraStereoVideo.h>
+ #include <rtabmap/utilite/UTimer.h>
+ #include <rtabmap/utilite/UConversion.h>
+-#include <opencv2/imgproc/types_c.h>
+-#if CV_MAJOR_VERSION > 3
+-#include <opencv2/videoio/videoio_c.h>
+-#if CV_MAJOR_VERSION > 4
+-#include <opencv2/videoio/legacy/constants_c.h>
+-#endif
+-#endif
++#include <opencv2/videoio.hpp>
+ 
+ namespace rtabmap
+ {
+@@ -172,7 +166,7 @@ bool CameraStereoVideo::init(const std::string & calibrationFolder, const std::s
+ 
+ 	if (cameraName_.empty())
+ 	{
+-		unsigned int guid = (unsigned int)capture_.get(CV_CAP_PROP_GUID);
++		unsigned int guid = (unsigned int)capture_.get(cv::CAP_PROP_GUID);
+ 		if (guid != 0 && guid != 0xffffffff)
+ 		{
+ 			cameraName_ = uFormat("%08x", guid);
+@@ -214,17 +208,17 @@ bool CameraStereoVideo::init(const std::string & calibrationFolder, const std::s
+ 			if(capture_.isOpened())
+ 			{
+ 				bool resolutionSet = false;
+-				resolutionSet = capture_.set(CV_CAP_PROP_FRAME_WIDTH, stereoModel_.left().imageWidth()*(capture2_.isOpened()?1:2));
+-				resolutionSet = resolutionSet && capture_.set(CV_CAP_PROP_FRAME_HEIGHT, stereoModel_.left().imageHeight());
++				resolutionSet = capture_.set(cv::CAP_PROP_FRAME_WIDTH, stereoModel_.left().imageWidth()*(capture2_.isOpened()?1:2));
++				resolutionSet = resolutionSet && capture_.set(cv::CAP_PROP_FRAME_HEIGHT, stereoModel_.left().imageHeight());
+ 				if(capture2_.isOpened())
+ 				{
+-					resolutionSet = resolutionSet && capture2_.set(CV_CAP_PROP_FRAME_WIDTH, stereoModel_.right().imageWidth());
+-					resolutionSet = resolutionSet && capture2_.set(CV_CAP_PROP_FRAME_HEIGHT, stereoModel_.right().imageHeight());
++					resolutionSet = resolutionSet && capture2_.set(cv::CAP_PROP_FRAME_WIDTH, stereoModel_.right().imageWidth());
++					resolutionSet = resolutionSet && capture2_.set(cv::CAP_PROP_FRAME_HEIGHT, stereoModel_.right().imageHeight());
+ 				}
+ 
+ 				// Check if the resolution was set successfully
+-				int actualWidth = int(capture_.get(CV_CAP_PROP_FRAME_WIDTH));
+-				int actualHeight = int(capture_.get(CV_CAP_PROP_FRAME_HEIGHT));
++				int actualWidth = int(capture_.get(cv::CAP_PROP_FRAME_WIDTH));
++				int actualHeight = int(capture_.get(cv::CAP_PROP_FRAME_HEIGHT));
+ 				if(!resolutionSet ||
+ 				   actualWidth != stereoModel_.left().imageWidth()*(capture2_.isOpened()?1:2) ||
+ 				   actualHeight != stereoModel_.left().imageHeight())
+@@ -244,17 +238,17 @@ bool CameraStereoVideo::init(const std::string & calibrationFolder, const std::s
+ 			if(capture_.isOpened())
+ 			{
+ 				bool resolutionSet = false;
+-				resolutionSet = capture_.set(CV_CAP_PROP_FRAME_WIDTH, _width*(capture2_.isOpened()?1:2));
+-				resolutionSet = resolutionSet && capture_.set(CV_CAP_PROP_FRAME_HEIGHT, _height);
++				resolutionSet = capture_.set(cv::CAP_PROP_FRAME_WIDTH, _width*(capture2_.isOpened()?1:2));
++				resolutionSet = resolutionSet && capture_.set(cv::CAP_PROP_FRAME_HEIGHT, _height);
+ 				if(capture2_.isOpened())
+ 				{
+-					resolutionSet = resolutionSet && capture2_.set(CV_CAP_PROP_FRAME_WIDTH, _width);
+-					resolutionSet = resolutionSet && capture2_.set(CV_CAP_PROP_FRAME_HEIGHT, _height);
++					resolutionSet = resolutionSet && capture2_.set(cv::CAP_PROP_FRAME_WIDTH, _width);
++					resolutionSet = resolutionSet && capture2_.set(cv::CAP_PROP_FRAME_HEIGHT, _height);
+ 				}
+ 
+ 				// Check if the resolution was set successfully
+-				int actualWidth = int(capture_.get(CV_CAP_PROP_FRAME_WIDTH));
+-				int actualHeight = int(capture_.get(CV_CAP_PROP_FRAME_HEIGHT));
++				int actualWidth = int(capture_.get(cv::CAP_PROP_FRAME_WIDTH));
++				int actualHeight = int(capture_.get(cv::CAP_PROP_FRAME_HEIGHT));
+ 				if(!resolutionSet ||
+ 				   actualWidth != _width*(capture2_.isOpened()?1:2) ||
+ 				   actualHeight != _height)
+@@ -273,10 +267,10 @@ bool CameraStereoVideo::init(const std::string & calibrationFolder, const std::s
+ 		if (this->getFrameRate() > 0)
+ 		{
+ 			bool fpsSupported = false;
+-			fpsSupported = capture_.set(CV_CAP_PROP_FPS, this->getFrameRate());
++			fpsSupported = capture_.set(cv::CAP_PROP_FPS, this->getFrameRate());
+ 			if (capture2_.isOpened())
+ 			{
+-				fpsSupported = fpsSupported && capture2_.set(CV_CAP_PROP_FPS, this->getFrameRate());
++				fpsSupported = fpsSupported && capture2_.set(cv::CAP_PROP_FPS, this->getFrameRate());
+ 			}
+ 			if(fpsSupported)
+ 			{
+@@ -310,14 +304,14 @@ bool CameraStereoVideo::init(const std::string & calibrationFolder, const std::s
+ 				std::string fourccUpperCase = uToUpperCase(_fourcc);
+ 				int fourcc = cv::VideoWriter::fourcc(fourccUpperCase.at(0), fourccUpperCase.at(1), fourccUpperCase.at(2), fourccUpperCase.at(3));
+ 				bool fourccSupported = false;
+-				fourccSupported = capture_.set(CV_CAP_PROP_FOURCC, fourcc);
++				fourccSupported = capture_.set(cv::CAP_PROP_FOURCC, fourcc);
+ 				if (capture2_.isOpened())
+ 				{
+-					fourccSupported = fourccSupported && capture2_.set(CV_CAP_PROP_FOURCC, fourcc);
++					fourccSupported = fourccSupported && capture2_.set(cv::CAP_PROP_FOURCC, fourcc);
+ 				}
+ 
+ 				// Check if the FOURCC was set successfully
+-				int actualFourcc = int(capture_.get(CV_CAP_PROP_FOURCC));
++				int actualFourcc = int(capture_.get(cv::CAP_PROP_FOURCC));
+ 
+ 				if(!fourccSupported || actualFourcc != fourcc)
+ 				{
+@@ -386,7 +380,7 @@ SensorData CameraStereoVideo::captureImage(SensorCaptureInfo * info)
+ 		if(rightImage.type() != CV_8UC1 && rightGrayScale_)
+ 		{
+ 			cv::Mat tmp;
+-			cv::cvtColor(rightImage, tmp, CV_BGR2GRAY);
++			cv::cvtColor(rightImage, tmp, cv::COLOR_BGR2GRAY);
+ 			rightImage = tmp;
+ 			rightCvt = true;
+ 		}
+diff --git a/corelib/src/camera/CameraStereoZedOC.cpp b/corelib/src/camera/CameraStereoZedOC.cpp
+index 014976a6..e3ba6d43 100644
+--- a/corelib/src/camera/CameraStereoZedOC.cpp
++++ b/corelib/src/camera/CameraStereoZedOC.cpp
+@@ -38,6 +38,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <zed-open-capture/sensorcapture.hpp>
+ #include "SimpleIni.h"
+ 
++#if CV_MAJOR_VERSION >= 5
++#include <opencv2/geometry.hpp>
++#endif
++
+ ///////////////////////////////////////////////////////////////////////////
+ //
+ // Copyright (c) 2018, STEREOLABS.
+diff --git a/corelib/src/camera/CameraVideo.cpp b/corelib/src/camera/CameraVideo.cpp
+index 9a0a70d0..1776bca1 100644
+--- a/corelib/src/camera/CameraVideo.cpp
++++ b/corelib/src/camera/CameraVideo.cpp
+@@ -28,12 +28,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <rtabmap/core/camera/CameraVideo.h>
+ #include <rtabmap/utilite/UTimer.h>
+ #include <rtabmap/utilite/UConversion.h>
+-#if CV_MAJOR_VERSION > 3
+-#include <opencv2/videoio/videoio_c.h>
+-#if CV_MAJOR_VERSION > 4
+-#include <opencv2/videoio/legacy/constants_c.h>
+-#endif
+-#endif
++#include <opencv2/videoio.hpp>
+ 
+ namespace rtabmap
+ {
+@@ -105,7 +100,7 @@ bool CameraVideo::init(const std::string & calibrationFolder, const std::string
+ 	{
+ 		if (_guid.empty())
+ 		{
+-			unsigned int guid = (unsigned int)_capture.get(CV_CAP_PROP_GUID);
++			unsigned int guid = (unsigned int)_capture.get(cv::CAP_PROP_GUID);
+ 			if (guid != 0 && guid != 0xffffffff)
+ 			{
+ 				_guid = uFormat("%08x", guid);
+@@ -143,12 +138,12 @@ bool CameraVideo::init(const std::string & calibrationFolder, const std::string
+ 				}
+ 
+ 				bool resolutionSet = false;
+-				resolutionSet = _capture.set(CV_CAP_PROP_FRAME_WIDTH, _model.imageWidth());
+-				resolutionSet = resolutionSet && _capture.set(CV_CAP_PROP_FRAME_HEIGHT, _model.imageHeight());
++				resolutionSet = _capture.set(cv::CAP_PROP_FRAME_WIDTH, _model.imageWidth());
++				resolutionSet = resolutionSet && _capture.set(cv::CAP_PROP_FRAME_HEIGHT, _model.imageHeight());
+ 
+ 				// Check if the resolution was set successfully
+-				int actualWidth = int(_capture.get(CV_CAP_PROP_FRAME_WIDTH));
+-				int actualHeight = int(_capture.get(CV_CAP_PROP_FRAME_HEIGHT));
++				int actualWidth = int(_capture.get(cv::CAP_PROP_FRAME_WIDTH));
++				int actualHeight = int(_capture.get(cv::CAP_PROP_FRAME_HEIGHT));
+ 				if(!resolutionSet ||
+ 				   actualWidth != _model.imageWidth() ||
+ 				   actualHeight != _model.imageHeight())
+@@ -165,12 +160,12 @@ bool CameraVideo::init(const std::string & calibrationFolder, const std::string
+ 			else if(_width > 0 && _height > 0)
+ 			{
+ 				int resolutionSet = false;
+-				resolutionSet = _capture.set(CV_CAP_PROP_FRAME_WIDTH, _width);
+-				resolutionSet = resolutionSet && _capture.set(CV_CAP_PROP_FRAME_HEIGHT, _height);
++				resolutionSet = _capture.set(cv::CAP_PROP_FRAME_WIDTH, _width);
++				resolutionSet = resolutionSet && _capture.set(cv::CAP_PROP_FRAME_HEIGHT, _height);
+ 
+ 				// Check if the resolution was set successfully
+-				int actualWidth = int(_capture.get(CV_CAP_PROP_FRAME_WIDTH));
+-				int actualHeight = int(_capture.get(CV_CAP_PROP_FRAME_HEIGHT));
++				int actualWidth = int(_capture.get(cv::CAP_PROP_FRAME_WIDTH));
++				int actualHeight = int(_capture.get(cv::CAP_PROP_FRAME_HEIGHT));
+ 				if(!resolutionSet || actualWidth != _width || actualHeight != _height)
+ 				{
+ 					UWARN("Desired resolution (%dx%d) cannot be set to camera driver, "
+@@ -182,7 +177,7 @@ bool CameraVideo::init(const std::string & calibrationFolder, const std::string
+ 			}
+ 
+ 			// Set FPS
+-			if (this->getFrameRate() > 0 && _capture.set(CV_CAP_PROP_FPS, this->getFrameRate()))
++			if (this->getFrameRate() > 0 && _capture.set(cv::CAP_PROP_FPS, this->getFrameRate()))
+ 			{
+ 				// Check if the FPS was set successfully
+ 				double actualFPS = _capture.get(cv::CAP_PROP_FPS);
+@@ -213,10 +208,10 @@ bool CameraVideo::init(const std::string & calibrationFolder, const std::string
+ 					std::string fourccUpperCase = uToUpperCase(_fourcc);
+ 					int fourcc = cv::VideoWriter::fourcc(fourccUpperCase.at(0), fourccUpperCase.at(1), fourccUpperCase.at(2), fourccUpperCase.at(3));
+ 					
+-					bool fourccSupported = _capture.set(CV_CAP_PROP_FOURCC, fourcc);
++					bool fourccSupported = _capture.set(cv::CAP_PROP_FOURCC, fourcc);
+ 
+ 					// Check if the FOURCC was set successfully
+-					int actualFourcc = int(_capture.get(CV_CAP_PROP_FOURCC));
++					int actualFourcc = int(_capture.get(cv::CAP_PROP_FOURCC));
+ 
+ 					if(!fourccSupported || actualFourcc != fourcc)
+ 					{
+diff --git a/corelib/src/odometry/OdometryDVO.cpp b/corelib/src/odometry/OdometryDVO.cpp
+index b706ebd9..137ae93d 100644
+--- a/corelib/src/odometry/OdometryDVO.cpp
++++ b/corelib/src/odometry/OdometryDVO.cpp
+@@ -31,7 +31,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include "rtabmap/utilite/ULogger.h"
+ #include "rtabmap/utilite/UTimer.h"
+ #include "rtabmap/utilite/UStl.h"
+-#include <opencv2/imgproc/types_c.h>
+ 
+ #ifdef RTABMAP_DVO
+ #include <dvo/dense_tracking.h>
+@@ -124,7 +123,7 @@ Transform OdometryDVO::computeTransform(
+ 	{
+ 		if(data.imageRaw().type() == CV_8UC3)
+ 		{
+-			cv::cvtColor(data.imageRaw(), grey, CV_BGR2GRAY);
++			cv::cvtColor(data.imageRaw(), grey, cv::COLOR_BGR2GRAY);
+ 		}
+ 		else
+ 		{
+diff --git a/corelib/src/odometry/OdometryF2M.cpp b/corelib/src/odometry/OdometryF2M.cpp
+index ba47ac15..92ac0fc4 100644
+--- a/corelib/src/odometry/OdometryF2M.cpp
++++ b/corelib/src/odometry/OdometryF2M.cpp
+@@ -42,7 +42,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include "rtabmap/utilite/UTimer.h"
+ #include "rtabmap/utilite/UMath.h"
+ #include "rtabmap/utilite/UConversion.h"
++#if CV_MAJOR_VERSION < 5
+ #include <opencv2/calib3d/calib3d.hpp>
++#else
++#include <opencv2/geometry.hpp>
++#endif
+ #include <rtabmap/core/odometry/OdometryF2M.h>
+ #include <pcl/common/io.h>
+ 
+diff --git a/corelib/src/odometry/OdometryFovis.cpp b/corelib/src/odometry/OdometryFovis.cpp
+index 673639ad..c1f5a997 100644
+--- a/corelib/src/odometry/OdometryFovis.cpp
++++ b/corelib/src/odometry/OdometryFovis.cpp
+@@ -31,7 +31,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include "rtabmap/utilite/ULogger.h"
+ #include "rtabmap/utilite/UTimer.h"
+ #include "rtabmap/utilite/UStl.h"
+-#include <opencv2/imgproc/types_c.h>
+ 
+ #ifdef RTABMAP_FOVIS
+ #include <libfovis/fovis.hpp>
+@@ -137,7 +136,7 @@ Transform OdometryFovis::computeTransform(
+ 	cv::Mat gray;
+ 	if(data.imageRaw().type() == CV_8UC3)
+ 	{
+-		cv::cvtColor(data.imageRaw(), gray, CV_BGR2GRAY);
++		cv::cvtColor(data.imageRaw(), gray, cv::COLOR_BGR2GRAY);
+ 	}
+ 	else if(data.imageRaw().type() == CV_8UC1)
+ 	{
+@@ -302,7 +301,7 @@ Transform OdometryFovis::computeTransform(
+ 		}
+ 		if(data.rightRaw().type() == CV_8UC3)
+ 		{
+-			cv::cvtColor(data.rightRaw(), right, CV_BGR2GRAY);
++			cv::cvtColor(data.rightRaw(), right, cv::COLOR_BGR2GRAY);
+ 		}
+ 		else if(data.rightRaw().type() == CV_8UC1)
+ 		{
+diff --git a/corelib/src/odometry/OdometryMSCKF.cpp b/corelib/src/odometry/OdometryMSCKF.cpp
+index ac62c251..709f9d11 100644
+--- a/corelib/src/odometry/OdometryMSCKF.cpp
++++ b/corelib/src/odometry/OdometryMSCKF.cpp
+@@ -32,7 +32,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include "rtabmap/utilite/UTimer.h"
+ #include "rtabmap/utilite/UStl.h"
+ #include "rtabmap/utilite/UThread.h"
+-#include <opencv2/imgproc/types_c.h>
+ 
+ #ifdef RTABMAP_MSCKF_VIO
+ #include <msckf_vio/image_processor.h>
+@@ -867,7 +866,7 @@ Transform OdometryMSCKF::computeTransform(
+ 
+ 			if(data.imageRaw().type() == CV_8UC3)
+ 			{
+-				cv::cvtColor(data.imageRaw(), cam0.image, CV_BGR2GRAY);
++				cv::cvtColor(data.imageRaw(), cam0.image, cv::COLOR_BGR2GRAY);
+ 			}
+ 			else
+ 			{
+@@ -875,7 +874,7 @@ Transform OdometryMSCKF::computeTransform(
+ 			}
+ 			if(data.rightRaw().type() == CV_8UC3)
+ 			{
+-				cv::cvtColor(data.rightRaw(), cam1.image, CV_BGR2GRAY);
++				cv::cvtColor(data.rightRaw(), cam1.image, cv::COLOR_BGR2GRAY);
+ 			}
+ 			else
+ 			{
+diff --git a/corelib/src/odometry/OdometryMono.cpp b/corelib/src/odometry/OdometryMono.cpp
+index 7df312e7..69af6b63 100644
+--- a/corelib/src/odometry/OdometryMono.cpp
++++ b/corelib/src/odometry/OdometryMono.cpp
+@@ -43,7 +43,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include "rtabmap/utilite/UStl.h"
+ #include "rtabmap/utilite/UMath.h"
+ #include <opencv2/imgproc/imgproc.hpp>
++#if CV_MAJOR_VERSION < 5
+ #include <opencv2/calib3d/calib3d.hpp>
++#else
++#include <opencv2/geometry.hpp>
++#endif
+ #include <opencv2/video/tracking.hpp>
+ #include <pcl/common/centroid.h>
+ 
+diff --git a/corelib/src/odometry/OdometryORBSLAM2.cpp b/corelib/src/odometry/OdometryORBSLAM2.cpp
+index 1ae10bc1..616678cf 100644
+--- a/corelib/src/odometry/OdometryORBSLAM2.cpp
++++ b/corelib/src/odometry/OdometryORBSLAM2.cpp
+@@ -33,7 +33,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include "rtabmap/utilite/UStl.h"
+ #include "rtabmap/utilite/UDirectory.h"
+ #include <pcl/common/transforms.h>
+-#include <opencv2/imgproc/types_c.h>
+ #include <rtabmap/core/odometry/OdometryORBSLAM2.h>
+ 
+ #if defined(RTABMAP_ORB_SLAM) and RTABMAP_ORB_SLAM == 2
+@@ -426,7 +425,7 @@ public:
+ 	        }
+ 	        else
+ 	        {
+-	            cvtColor(mImGray,mImGray,CV_BGR2GRAY);
++	            cvtColor(mImGray,mImGray,cv::COLOR_BGR2GRAY);
+ 	        }
+ 	    }
+ 	    else if(mImGray.channels()==4)
+@@ -437,7 +436,7 @@ public:
+ 	        }
+ 	        else
+ 	        {
+-	            cvtColor(mImGray,mImGray,CV_BGRA2GRAY);
++	            cvtColor(mImGray,mImGray,cv::COLOR_BGRA2GRAY);
+ 	        }
+ 	    }
+ 	    if(imGrayRight.channels()==3)
+@@ -448,7 +447,7 @@ public:
+ 			}
+ 			else
+ 			{
+-				cvtColor(imGrayRight,imGrayRight,CV_BGR2GRAY);
++				cvtColor(imGrayRight,imGrayRight,cv::COLOR_BGR2GRAY);
+ 			}
+ 		}
+ 		else if(imGrayRight.channels()==4)
+@@ -459,7 +458,7 @@ public:
+ 			}
+ 			else
+ 			{
+-				cvtColor(imGrayRight,imGrayRight,CV_BGRA2GRAY);
++				cvtColor(imGrayRight,imGrayRight,cv::COLOR_BGRA2GRAY);
+ 			}
+ 		}
+ 
+@@ -480,14 +479,14 @@ public:
+ 	        if(mbRGB)
+ 	            cvtColor(mImGray,mImGray,CV_RGB2GRAY);
+ 	        else
+-	            cvtColor(mImGray,mImGray,CV_BGR2GRAY);
++	            cvtColor(mImGray,mImGray,cv::COLOR_BGR2GRAY);
+ 	    }
+ 	    else if(mImGray.channels()==4)
+ 	    {
+ 	        if(mbRGB)
+ 	            cvtColor(mImGray,mImGray,CV_RGBA2GRAY);
+ 	        else
+-	            cvtColor(mImGray,mImGray,CV_BGRA2GRAY);
++	            cvtColor(mImGray,mImGray,cv::COLOR_BGRA2GRAY);
+ 	    }
+ 
+ 	    UASSERT(imDepth.type()==CV_32F);
+diff --git a/corelib/src/odometry/OdometryORBSLAM3.cpp b/corelib/src/odometry/OdometryORBSLAM3.cpp
+index 7cde70a5..ff87bce2 100644
+--- a/corelib/src/odometry/OdometryORBSLAM3.cpp
++++ b/corelib/src/odometry/OdometryORBSLAM3.cpp
+@@ -33,7 +33,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include "rtabmap/utilite/UStl.h"
+ #include "rtabmap/utilite/UDirectory.h"
+ #include <pcl/common/transforms.h>
+-#include <opencv2/imgproc/types_c.h>
+ #include <rtabmap/core/odometry/OdometryORBSLAM3.h>
+ 
+ #if defined(RTABMAP_ORB_SLAM) and RTABMAP_ORB_SLAM == 3
+@@ -450,12 +449,12 @@ Transform OdometryORBSLAM3::computeTransform(
+ 		cv::Mat leftMono = data.imageRaw();
+         if(data.imageRaw().channels() == 3) {
+ 			leftMono = cv::Mat();
+-			cv::cvtColor(data.imageRaw(), leftMono, CV_BGR2GRAY);
++			cv::cvtColor(data.imageRaw(), leftMono, cv::COLOR_BGR2GRAY);
+ 		}
+ 		cv::Mat rightMono = data.rightRaw();
+         if(data.rightRaw().channels() == 3) {
+ 			rightMono = cv::Mat();
+-			cv::cvtColor(data.imageRaw(), rightMono, CV_BGR2GRAY);
++			cv::cvtColor(data.imageRaw(), rightMono, cv::COLOR_BGR2GRAY);
+ 		}
+ 		Tcw = orbslam_->TrackStereo(leftMono, rightMono, data.stamp(), orbslamImus_);
+ 		orbslamImus_.clear();
+diff --git a/corelib/src/odometry/OdometryOkvis.cpp b/corelib/src/odometry/OdometryOkvis.cpp
+index 10497b9e..7c97e274 100644
+--- a/corelib/src/odometry/OdometryOkvis.cpp
++++ b/corelib/src/odometry/OdometryOkvis.cpp
+@@ -34,7 +34,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include "rtabmap/utilite/UThread.h"
+ #include "rtabmap/utilite/UFile.h"
+ #include "rtabmap/utilite/UDirectory.h"
+-#include <opencv2/imgproc/types_c.h>
+ 
+ #ifdef RTABMAP_OKVIS
+ #include <iostream>
+@@ -427,7 +426,7 @@ Transform OdometryOkvis::computeTransform(
+ 				cv::Mat gray;
+ 				if(images[i].type() == CV_8UC3)
+ 				{
+-					cv::cvtColor(images[i], gray, CV_BGR2GRAY);
++					cv::cvtColor(images[i], gray, cv::COLOR_BGR2GRAY);
+ 				}
+ 				else if(images[i].type() == CV_8UC1)
+ 				{
+diff --git a/corelib/src/odometry/OdometryOpenVINS.cpp b/corelib/src/odometry/OdometryOpenVINS.cpp
+index da81f7ee..a14d74c2 100644
+--- a/corelib/src/odometry/OdometryOpenVINS.cpp
++++ b/corelib/src/odometry/OdometryOpenVINS.cpp
+@@ -32,7 +32,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include "rtabmap/utilite/ULogger.h"
+ #include "rtabmap/utilite/UTimer.h"
+ #include <opencv2/core/eigen.hpp>
+-#include <opencv2/imgproc/types_c.h>
+ 
+ #ifdef RTABMAP_OPENVINS
+ #include "core/VioManager.h"
+@@ -340,7 +339,7 @@ Transform OdometryOpenVINS::computeTransform(
+ 
+ 			cv::Mat image;
+ 			if(data.imageRaw().type() == CV_8UC3)
+-				cv::cvtColor(data.imageRaw(), image, CV_BGR2GRAY);
++				cv::cvtColor(data.imageRaw(), image, cv::COLOR_BGR2GRAY);
+ 			else if(data.imageRaw().type() == CV_8UC1)
+ 				image = data.imageRaw().clone();
+ 			else
+@@ -371,7 +370,7 @@ Transform OdometryOpenVINS::computeTransform(
+ 			if(!data.rightRaw().empty())
+ 			{
+ 				if(data.rightRaw().type() == CV_8UC3)
+-					cv::cvtColor(data.rightRaw(), image, CV_BGR2GRAY);
++					cv::cvtColor(data.rightRaw(), image, cv::COLOR_BGR2GRAY);
+ 				else if(data.rightRaw().type() == CV_8UC1)
+ 					image = data.rightRaw().clone();
+ 				else
+diff --git a/corelib/src/odometry/OdometryVINS.cpp b/corelib/src/odometry/OdometryVINS.cpp
+index aa18393c..93b5ef26 100644
+--- a/corelib/src/odometry/OdometryVINS.cpp
++++ b/corelib/src/odometry/OdometryVINS.cpp
+@@ -33,7 +33,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include "rtabmap/utilite/UStl.h"
+ #include "rtabmap/utilite/UThread.h"
+ #include "rtabmap/utilite/UDirectory.h"
+-#include <opencv2/imgproc/types_c.h>
+ 
+ #ifdef RTABMAP_VINS
+ #include <estimator/estimator.h>
+@@ -388,7 +387,7 @@ Transform OdometryVINS::computeTransform(
+ 		cv::Mat right;
+ 		if(data.imageRaw().type() == CV_8UC3)
+ 		{
+-			cv::cvtColor(data.imageRaw(), left, CV_BGR2GRAY);
++			cv::cvtColor(data.imageRaw(), left, cv::COLOR_BGR2GRAY);
+ 		}
+ 		else if(data.imageRaw().type() == CV_8UC1)
+ 		{
+@@ -400,7 +399,7 @@ Transform OdometryVINS::computeTransform(
+ 		}
+ 		if(data.rightRaw().type() == CV_8UC3)
+ 		{
+-			cv::cvtColor(data.rightRaw(), right, CV_BGR2GRAY);
++			cv::cvtColor(data.rightRaw(), right, cv::COLOR_BGR2GRAY);
+ 		}
+ 		else if(data.rightRaw().type() == CV_8UC1)
+ 		{
+diff --git a/corelib/src/odometry/OdometryViso2.cpp b/corelib/src/odometry/OdometryViso2.cpp
+index 808e7637..dc6192b4 100644
+--- a/corelib/src/odometry/OdometryViso2.cpp
++++ b/corelib/src/odometry/OdometryViso2.cpp
+@@ -31,7 +31,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include "rtabmap/utilite/ULogger.h"
+ #include "rtabmap/utilite/UTimer.h"
+ #include "rtabmap/utilite/UStl.h"
+-#include <opencv2/imgproc/types_c.h>
+ 
+ #ifdef RTABMAP_VISO2
+ #include <viso_stereo.h>
+@@ -131,7 +130,7 @@ Transform OdometryViso2::computeTransform(
+ 	cv::Mat leftGray;
+ 	if(data.imageRaw().type() == CV_8UC3)
+ 	{
+-		cv::cvtColor(data.imageRaw(), leftGray, CV_BGR2GRAY);
++		cv::cvtColor(data.imageRaw(), leftGray, cv::COLOR_BGR2GRAY);
+ 	}
+ 	else if(data.imageRaw().type() == CV_8UC1)
+ 	{
+@@ -144,7 +143,7 @@ Transform OdometryViso2::computeTransform(
+ 	cv::Mat rightGray;
+ 	if(data.rightRaw().type() == CV_8UC3)
+ 	{
+-		cv::cvtColor(data.rightRaw(), rightGray, CV_BGR2GRAY);
++		cv::cvtColor(data.rightRaw(), rightGray, cv::COLOR_BGR2GRAY);
+ 	}
+ 	else if(data.rightRaw().type() == CV_8UC1)
+ 	{
+diff --git a/corelib/src/opencv/ORBextractor.cc b/corelib/src/opencv/ORBextractor.cc
+index 2d3cd7cc..542e169c 100644
+--- a/corelib/src/opencv/ORBextractor.cc
++++ b/corelib/src/opencv/ORBextractor.cc
+@@ -64,7 +64,11 @@
+ 
+ #include <opencv2/core/core.hpp>
+ #include <opencv2/highgui/highgui.hpp>
++#if CV_MAJOR_VERSION < 5
+ #include <opencv2/features2d/features2d.hpp>
++#else
++#include <opencv2/features.hpp>
++#endif
+ #include <opencv2/imgproc/imgproc.hpp>
+ #include <vector>
+ #include <algorithm>
+diff --git a/corelib/src/opencv/ORBextractor.h b/corelib/src/opencv/ORBextractor.h
+index 861ca05e..82ede5b8 100644
+--- a/corelib/src/opencv/ORBextractor.h
++++ b/corelib/src/opencv/ORBextractor.h
+@@ -31,8 +31,6 @@
+ 
+ #include <vector>
+ #include <list>
+-#include <opencv2/core/core_c.h>
+-
+ 
+ namespace rtabmap
+ {
+diff --git a/corelib/src/opencv/Orb.cpp b/corelib/src/opencv/Orb.cpp
+index f56874e7..c5034a7f 100644
+--- a/corelib/src/opencv/Orb.cpp
++++ b/corelib/src/opencv/Orb.cpp
+@@ -40,7 +40,6 @@
+ 
+ #include "opencv2/features2d/features2d.hpp"
+ #include "opencv2/imgproc/imgproc.hpp"
+-#include "opencv2/imgproc/imgproc_c.h"
+ #include <algorithm>
+ #include <iterator>
+ 
+@@ -252,7 +251,7 @@ static void computeOrbDescriptor(const KeyPoint& kpt,
+         }
+     }
+     else
+-        CV_Error( CV_StsBadSize, "Wrong WTA_K. It can be only 2, 3 or 4." );
++        CV_Error( cv::Error::StsBadSize, "Wrong WTA_K. It can be only 2, 3 or 4." );
+ 
+     #undef GET_VALUE
+ }
+@@ -752,7 +751,7 @@ void CV_ORB::operator()( InputArray _image, InputArray _mask, std::vector<KeyPoi
+ 
+     Mat image = _image.getMat(), mask = _mask.getMat();
+     if( image.type() != CV_8UC1 )
+-        cvtColor(_image, image, CV_BGR2GRAY);
++        cvtColor(_image, image, cv::COLOR_BGR2GRAY);
+ 
+     int levelsNum = this->nlevels;
+ 
+diff --git a/corelib/src/opencv/five-point.h b/corelib/src/opencv/five-point.h
+index 1a5b778a..f1aa8c7e 100644
+--- a/corelib/src/opencv/five-point.h
++++ b/corelib/src/opencv/five-point.h
+@@ -8,6 +8,10 @@
+ #ifndef CORELIB_SRC_OPENCV_FIVE_POINT_H_
+ #define CORELIB_SRC_OPENCV_FIVE_POINT_H_
+ 
++#if CV_MAJOR_VERSION > 4
++#include <opencv2/geometry.hpp>
++#endif
++
+ namespace cv3
+ {
+ 
+diff --git a/corelib/src/opencv/solvepnp.cpp b/corelib/src/opencv/solvepnp.cpp
+index f5b3a077..ecd2be9a 100644
+--- a/corelib/src/opencv/solvepnp.cpp
++++ b/corelib/src/opencv/solvepnp.cpp
+@@ -53,7 +53,7 @@ class PnPRansacCallback : public PointSetRegistrator::Callback
+ 
+ public:
+ 
+-    PnPRansacCallback(Mat _cameraMatrix=Mat(3,3,CV_64F), Mat _distCoeffs=Mat(4,1,CV_64F), int _flags=CV_ITERATIVE,
++    PnPRansacCallback(Mat _cameraMatrix=Mat(3,3,CV_64F), Mat _distCoeffs=Mat(4,1,CV_64F), int _flags=cv::SOLVEPNP_ITERATIVE,
+             bool _useExtrinsicGuess=false, Mat _rvec=Mat(), Mat _tvec=Mat() )
+         : cameraMatrix(_cameraMatrix), distCoeffs(_distCoeffs), flags(_flags), useExtrinsicGuess(_useExtrinsicGuess),
+           rvec(_rvec), tvec(_tvec) {}
+@@ -142,12 +142,12 @@ bool solvePnPRansac(InputArray _opoints, InputArray _ipoints,
+     Mat cameraMatrix = _cameraMatrix.getMat(), distCoeffs = _distCoeffs.getMat();
+ 
+     int model_points = 6;
+-    int ransac_kernel_method = CV_EPNP;
++    int ransac_kernel_method = cv::SOLVEPNP_EPNP;
+ 
+     if( npoints == 4 )
+     {
+         model_points = 4;
+-        ransac_kernel_method = CV_P3P;
++        ransac_kernel_method = cv::SOLVEPNP_P3P;
+     }
+ 
+     Ptr<PointSetRegistrator::Callback> cb; // pointer to callback
+@@ -178,7 +178,7 @@ bool solvePnPRansac(InputArray _opoints, InputArray _ipoints,
+         opoints_inliers.resize(npoints1);
+         ipoints_inliers.resize(npoints1);
+         result = solvePnP(opoints_inliers, ipoints_inliers, cameraMatrix,
+-                          distCoeffs, rvec, tvec, useExtrinsicGuess, flags == CV_P3P ? CV_EPNP : flags) ? 1 : -1;
++                          distCoeffs, rvec, tvec, useExtrinsicGuess, flags == cv::SOLVEPNP_P3P ? cv::SOLVEPNP_EPNP : flags) ? 1 : -1;
+     }
+ 
+     if( result <= 0 || _local_model.rows <= 0)
+@@ -213,7 +213,7 @@ bool solvePnPRansac(InputArray _opoints, InputArray _ipoints,
+ int RANSACUpdateNumIters( double p, double ep, int modelPoints, int maxIters )
+ {
+     if( modelPoints <= 0 )
+-        CV_Error( 0, "the number of model points should be positive" );
++        CV_Error( cv::Error::Code::StsBadArg, "the number of model points should be positive" );
+ 
+     p = MAX(p, 0.);
+     p = MIN(p, 1.);
+diff --git a/corelib/src/opencv/solvepnp.h b/corelib/src/opencv/solvepnp.h
+index e88b5700..382f9db7 100644
+--- a/corelib/src/opencv/solvepnp.h
++++ b/corelib/src/opencv/solvepnp.h
+@@ -45,9 +45,10 @@
+ #define RTABMAP_CORELIB_SRC_OPENCV_SOLVEPNP_H_
+ 
+ #include <opencv2/core/core.hpp>
++#if CV_MAJOR_VERSION >= 5
++#include <opencv2/geometry.hpp>
++#else
+ #include <opencv2/calib3d/calib3d.hpp>
+-#if CV_MAJOR_VERSION >= 3
+-#include <opencv2/calib3d/calib3d_c.h>
+ #endif
+ 
+ namespace cv3 {
+@@ -95,7 +96,7 @@ bool solvePnPRansac( cv::InputArray objectPoints, cv::InputArray imagePoints,
+ 					cv::OutputArray rvec, cv::OutputArray tvec,
+ 					bool useExtrinsicGuess = false, int iterationsCount = 100,
+ 					float reprojectionError = 8.0, double confidence = 0.99,
+-					cv::OutputArray inliers = cv::noArray(), int flags = CV_ITERATIVE );
++					cv::OutputArray inliers = cv::noArray(), int flags = cv::SOLVEPNP_ITERATIVE );
+ 
+ int RANSACUpdateNumIters( double p, double ep, int modelPoints, int maxIters );
+ 
+diff --git a/corelib/src/optimizer/OptimizerCeres.cpp b/corelib/src/optimizer/OptimizerCeres.cpp
+index 04de80b9..8668b422 100644
+--- a/corelib/src/optimizer/OptimizerCeres.cpp
++++ b/corelib/src/optimizer/OptimizerCeres.cpp
+@@ -26,6 +26,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+ #include "rtabmap/core/Graph.h"
+ 
++#if CV_MAJOR_VERSION < 5
++#include <opencv2/calib3d/calib3d.hpp>
++#else
++#include <opencv2/geometry.hpp>
++#endif
++
+ #include <rtabmap/utilite/ULogger.h>
+ #include <rtabmap/utilite/UStl.h>
+ #include <rtabmap/utilite/UMath.h>
+diff --git a/corelib/src/stereo/StereoBM.cpp b/corelib/src/stereo/StereoBM.cpp
+index 1b390c68..57f6b7d0 100644
+--- a/corelib/src/stereo/StereoBM.cpp
++++ b/corelib/src/stereo/StereoBM.cpp
+@@ -27,9 +27,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+ #include <rtabmap/core/stereo/StereoBM.h>
+ #include <rtabmap/utilite/ULogger.h>
++#if CV_MAJOR_VERSION < 5
+ #include <opencv2/calib3d/calib3d.hpp>
++#else
++#include <opencv2/stereo.hpp>
++#include <opencv2/geometry.hpp>
++#endif
+ #include <opencv2/imgproc/imgproc.hpp>
+-#include <opencv2/imgproc/types_c.h>
+ 
+ namespace rtabmap {
+ 
+@@ -88,7 +92,7 @@ cv::Mat StereoBM::computeDisparity(
+ 	cv::Mat leftMono;
+ 	if(leftImage.channels() == 3)
+ 	{
+-		cv::cvtColor(leftImage, leftMono, CV_BGR2GRAY);
++		cv::cvtColor(leftImage, leftMono, cv::COLOR_BGR2GRAY);
+ 	}
+ 	else
+ 	{
+@@ -98,7 +102,7 @@ cv::Mat StereoBM::computeDisparity(
+ 	cv::Mat rightMono;
+ 	if(rightImage.channels() == 3)
+ 	{
+-		cv::cvtColor(rightImage, rightMono, CV_BGR2GRAY);
++		cv::cvtColor(rightImage, rightMono, cv::COLOR_BGR2GRAY);
+ 	}
+ 	else
+ 	{
+diff --git a/corelib/src/stereo/StereoSGBM.cpp b/corelib/src/stereo/StereoSGBM.cpp
+index 6763aeb6..d8e651a5 100644
+--- a/corelib/src/stereo/StereoSGBM.cpp
++++ b/corelib/src/stereo/StereoSGBM.cpp
+@@ -27,9 +27,13 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+ #include <rtabmap/core/stereo/StereoSGBM.h>
+ #include <rtabmap/utilite/ULogger.h>
++#if CV_MAJOR_VERSION < 5
+ #include <opencv2/calib3d/calib3d.hpp>
++#else
++#include <opencv2/stereo.hpp>
++#include <opencv2/geometry.hpp>
++#endif
+ #include <opencv2/imgproc/imgproc.hpp>
+-#include <opencv2/imgproc/types_c.h>
+ 
+ namespace rtabmap {
+ 
+@@ -77,7 +81,7 @@ cv::Mat StereoSGBM::computeDisparity(
+ 	cv::Mat leftMono;
+ 	if(leftImage.channels() == 3)
+ 	{
+-		cv::cvtColor(leftImage, leftMono, CV_BGR2GRAY);
++		cv::cvtColor(leftImage, leftMono, cv::COLOR_BGR2GRAY);
+ 	}
+ 	else
+ 	{
+@@ -87,7 +91,7 @@ cv::Mat StereoSGBM::computeDisparity(
+ 	cv::Mat rightMono;
+ 	if(rightImage.channels() == 3)
+ 	{
+-		cv::cvtColor(rightImage, rightMono, CV_BGR2GRAY);
++		cv::cvtColor(rightImage, rightMono, cv::COLOR_BGR2GRAY);
+ 	}
+ 	else
+ 	{
+diff --git a/corelib/src/util2d.cpp b/corelib/src/util2d.cpp
+index e548c677..68e50d47 100644
+--- a/corelib/src/util2d.cpp
++++ b/corelib/src/util2d.cpp
+@@ -34,11 +34,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <rtabmap/utilite/UStl.h>
+ #include <rtabmap/core/util3d_transforms.h>
+ #include <rtabmap/core/StereoDense.h>
+-#include <opencv2/calib3d/calib3d.hpp>
+ #include <opencv2/imgproc/imgproc.hpp>
+ #include <opencv2/video/tracking.hpp>
+ #include <opencv2/highgui/highgui.hpp>
+-#include <opencv2/imgproc/types_c.h>
+ #include <map>
+ #include <Eigen/Core>
+ 
+@@ -46,6 +44,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <opencv2/photo/photo.hpp>
+ #endif
+ 
++#if CV_MAJOR_VERSION < 5
++#include <opencv2/calib3d/calib3d.hpp>
++#else
++#include <opencv2/geometry.hpp>
++#endif
++
+ namespace rtabmap
+ {
+ 
+@@ -747,7 +751,7 @@ cv::Mat disparityFromStereoImages(
+ 	cv::Mat leftMono;
+ 	if(leftImage.channels() == 3)
+ 	{
+-		cv::cvtColor(leftImage, leftMono, CV_BGR2GRAY);
++		cv::cvtColor(leftImage, leftMono, cv::COLOR_BGR2GRAY);
+ 	}
+ 	else
+ 	{
+@@ -1952,8 +1956,8 @@ cv::Mat brightnessAndContrastAuto(const cv::Mat &src, const cv::Mat & mask, floa
+     //to calculate grayscale histogram
+     cv::Mat gray;
+     if (src.type() == CV_8UC1) gray = src;
+-    else if (src.type() == CV_8UC3) cvtColor(src, gray, CV_BGR2GRAY);
+-    else if (src.type() == CV_8UC4) cvtColor(src, gray, CV_BGRA2GRAY);
++    else if (src.type() == CV_8UC3) cvtColor(src, gray, cv::COLOR_BGR2GRAY);
++    else if (src.type() == CV_8UC4) cvtColor(src, gray, cv::COLOR_BGRA2GRAY);
+     if (clipLowHistPercent == 0 && clipHighHistPercent == 0)
+     {
+         // keep full available range
+diff --git a/corelib/src/util3d.cpp b/corelib/src/util3d.cpp
+index e70e5c37..98bb9c3d 100644
+--- a/corelib/src/util3d.cpp
++++ b/corelib/src/util3d.cpp
+@@ -41,7 +41,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <pcl/common/transforms.h>
+ #include <pcl/common/common.h>
+ #include <opencv2/imgproc/imgproc.hpp>
+-#include <opencv2/imgproc/types_c.h>
+ 
+ namespace rtabmap
+ {
+@@ -834,7 +833,7 @@ pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloudFromStereoImages(
+ 	cv::Mat leftMono;
+ 	if(leftColor.channels() == 3)
+ 	{
+-		cv::cvtColor(leftColor, leftMono, CV_BGR2GRAY);
++		cv::cvtColor(leftColor, leftMono, cv::COLOR_BGR2GRAY);
+ 	}
+ 	else
+ 	{
+@@ -844,7 +843,7 @@ pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloudFromStereoImages(
+ 	cv::Mat rightMono;
+ 	if(rightColor.channels() == 3)
+ 	{
+-		cv::cvtColor(rightColor, rightMono, CV_BGR2GRAY);
++		cv::cvtColor(rightColor, rightMono, cv::COLOR_BGR2GRAY);
+ 	}
+ 	else
+ 	{
+@@ -969,7 +968,7 @@ std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> cloudsFromSensorData(
+ 		cv::Mat leftMono;
+ 		if(sensorData.imageRaw().channels() == 3)
+ 		{
+-			cv::cvtColor(sensorData.imageRaw(), leftMono, CV_BGR2GRAY);
++			cv::cvtColor(sensorData.imageRaw(), leftMono, cv::COLOR_BGR2GRAY);
+ 		}
+ 		else
+ 		{
+@@ -979,7 +978,7 @@ std::vector<pcl::PointCloud<pcl::PointXYZ>::Ptr> cloudsFromSensorData(
+ 		cv::Mat rightMono;
+ 		if(sensorData.rightRaw().channels() == 3)
+ 		{
+-			cv::cvtColor(sensorData.rightRaw(), rightMono, CV_BGR2GRAY);
++			cv::cvtColor(sensorData.rightRaw(), rightMono, cv::COLOR_BGR2GRAY);
+ 		}
+ 		else
+ 		{
+diff --git a/corelib/src/util3d_correspondences.cpp b/corelib/src/util3d_correspondences.cpp
+index 5a81869b..41cc1e65 100644
+--- a/corelib/src/util3d_correspondences.cpp
++++ b/corelib/src/util3d_correspondences.cpp
+@@ -30,7 +30,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+ #include <rtabmap/utilite/UStl.h>
+ #include <rtabmap/core/EpipolarGeometry.h>
++#if CV_MAJOR_VERSION < 5
+ #include <opencv2/calib3d/calib3d.hpp>
++#else
++#include <opencv2/geometry.hpp>
++#endif
+ #include <pcl/search/kdtree.h>
+ #include <pcl/common/point_tests.h>
+ 
+diff --git a/corelib/src/util3d_surface.cpp b/corelib/src/util3d_surface.cpp
+index 3eeeb7c1..d4f11e7b 100644
+--- a/corelib/src/util3d_surface.cpp
++++ b/corelib/src/util3d_surface.cpp
+@@ -39,8 +39,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include "rtabmap/utilite/UConversion.h"
+ #include "rtabmap/utilite/UMath.h"
+ #include "rtabmap/utilite/UTimer.h"
+-#include <opencv2/core/core_c.h>
+-#include <opencv2/imgproc/types_c.h>
+ #include <pcl/search/kdtree.h>
+ #include <pcl/surface/gp3.h>
+ #include <pcl/features/normal_3d_omp.h>
+@@ -1748,7 +1746,7 @@ cv::Mat mergeTextures(
+ 							if(resizedImage.type() == CV_8UC1)
+ 							{
+ 								cv::Mat resizedImageColor;
+-								cv::cvtColor(resizedImage, resizedImageColor, CV_GRAY2BGR);
++								cv::cvtColor(resizedImage, resizedImageColor, cv::COLOR_GRAY2BGR);
+ 								resizedImage = resizedImageColor;
+ 							}
+ 							UASSERT(resizedImage.type() == globalTextures.type());
+@@ -2612,7 +2610,7 @@ bool multiBandTexturing(
+ 				if(imageRoi.channels() == 1)
+ 				{
+ 					cv::Mat imageRoiColor;
+-					cv::cvtColor(imageRoi, imageRoiColor, CV_GRAY2BGR);
++					cv::cvtColor(imageRoi, imageRoiColor, cv::COLOR_GRAY2BGR);
+ 					imageRoi = imageRoiColor;
+ 				}
+ 
+@@ -3221,7 +3219,7 @@ float computeNormalsComplexity(
+ 		}
+ 		if(oi>1)
+ 		{
+-			cv::PCA pca_analysis(cv::Mat(data_normals, cv::Range(0, oi*2)), cv::Mat(), CV_PCA_DATA_AS_ROW);
++			cv::PCA pca_analysis(cv::Mat(data_normals, cv::Range(0, oi*2)), cv::Mat(), cv::PCA::DATA_AS_ROW);
+ 
+ 			if(pcaEigenVectors)
+ 			{
+@@ -3282,7 +3280,7 @@ float computeNormalsComplexity(
+ 	}
+ 	if(oi>1)
+ 	{
+-		cv::PCA pca_analysis(cv::Mat(data_normals, cv::Range(0, oi*2)), cv::Mat(), CV_PCA_DATA_AS_ROW);
++		cv::PCA pca_analysis(cv::Mat(data_normals, cv::Range(0, oi*2)), cv::Mat(), cv::PCA::DATA_AS_ROW);
+ 
+ 		if(pcaEigenVectors)
+ 		{
+@@ -3338,7 +3336,7 @@ float computeNormalsComplexity(
+ 	}
+ 	if(oi>1)
+ 	{
+-		cv::PCA pca_analysis(cv::Mat(data_normals, cv::Range(0, oi*2)), cv::Mat(), CV_PCA_DATA_AS_ROW);
++		cv::PCA pca_analysis(cv::Mat(data_normals, cv::Range(0, oi*2)), cv::Mat(), cv::PCA::DATA_AS_ROW);
+ 
+ 		if(pcaEigenVectors)
+ 		{
+@@ -3394,7 +3392,7 @@ float computeNormalsComplexity(
+ 	}
+ 	if(oi>1)
+ 	{
+-		cv::PCA pca_analysis(cv::Mat(data_normals, cv::Range(0, oi*2)), cv::Mat(), CV_PCA_DATA_AS_ROW);
++		cv::PCA pca_analysis(cv::Mat(data_normals, cv::Range(0, oi*2)), cv::Mat(), cv::PCA::DATA_AS_ROW);
+ 
+ 		if(pcaEigenVectors)
+ 		{
+@@ -3450,7 +3448,7 @@ float computeNormalsComplexity(
+ 	}
+ 	if(oi>1)
+ 	{
+-		cv::PCA pca_analysis(cv::Mat(data_normals, cv::Range(0, oi*2)), cv::Mat(), CV_PCA_DATA_AS_ROW);
++		cv::PCA pca_analysis(cv::Mat(data_normals, cv::Range(0, oi*2)), cv::Mat(), cv::PCA::DATA_AS_ROW);
+ 
+ 		if(pcaEigenVectors)
+ 		{
+diff --git a/guilib/include/rtabmap/gui/DatabaseViewer.h b/guilib/include/rtabmap/gui/DatabaseViewer.h
+index b209c4d9..d5509ce3 100644
+--- a/guilib/include/rtabmap/gui/DatabaseViewer.h
++++ b/guilib/include/rtabmap/gui/DatabaseViewer.h
+@@ -36,7 +36,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <QtCore/QSet>
+ #include <QtGui/QImage>
+ #include <opencv2/core/core.hpp>
++#if CV_MAJOR_VERSION < 5
+ #include <opencv2/features2d/features2d.hpp>
++#else
++#include <opencv2/features.hpp>
++#endif
+ #include <set>
+ #include <vector>
+ #include <pcl/point_cloud.h>
+diff --git a/guilib/include/rtabmap/gui/ImageView.h b/guilib/include/rtabmap/gui/ImageView.h
+index 2c09bacb..0c881656 100644
+--- a/guilib/include/rtabmap/gui/ImageView.h
++++ b/guilib/include/rtabmap/gui/ImageView.h
+@@ -34,7 +34,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <QtCore/QRectF>
+ #include <QtCore/QMultiMap>
+ #include <QtCore/QSettings>
++#include <opencv2/core/version.hpp>
++#if CV_MAJOR_VERSION < 5
+ #include <opencv2/features2d/features2d.hpp>
++#else
++#include <opencv2/features.hpp>
++#endif
+ #include <map>
+ #include "rtabmap/utilite/UCv2Qt.h"
+ #include <rtabmap/core/CameraModel.h>
+diff --git a/guilib/include/rtabmap/gui/KeypointItem.h b/guilib/include/rtabmap/gui/KeypointItem.h
+index 7f4f9f64..30db5c31 100644
+--- a/guilib/include/rtabmap/gui/KeypointItem.h
++++ b/guilib/include/rtabmap/gui/KeypointItem.h
+@@ -34,7 +34,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <QGraphicsTextItem>
+ #include <QtGui/QPen>
+ #include <QtGui/QBrush>
++#include <opencv2/core/version.hpp>
++#if CV_MAJOR_VERSION < 5
+ #include <opencv2/features2d/features2d.hpp>
++#else
++#include <opencv2/features.hpp>
++#endif
+ 
+ namespace rtabmap {
+ 
+diff --git a/guilib/src/CalibrationDialog.cpp b/guilib/src/CalibrationDialog.cpp
+index dd4a0523..b4bcf381 100644
+--- a/guilib/src/CalibrationDialog.cpp
++++ b/guilib/src/CalibrationDialog.cpp
+@@ -30,13 +30,18 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+ #include <opencv2/core/core.hpp>
+ #include <opencv2/imgproc/imgproc.hpp>
++#if CV_MAJOR_VERSION >= 5
++#include <opencv2/calib.hpp>
++#include <opencv2/geometry.hpp>
++#else
+ #include <opencv2/imgproc/imgproc_c.h>
+ #include <opencv2/calib3d/calib3d.hpp>
+ #if CV_MAJOR_VERSION >= 3
+ #include <opencv2/calib3d/calib3d_c.h>
+ #endif
++#endif
+ #include <opencv2/highgui/highgui.hpp>
+-#if CV_MAJOR_VERSION > 2 or (CV_MAJOR_VERSION == 2 and (CV_MINOR_VERSION >4 or (CV_MINOR_VERSION == 4 and CV_SUBMINOR_VERSION >=10)))
++#if (CV_MAJOR_VERSION > 2 and CV_MAJOR_VERSION < 5) or (CV_MAJOR_VERSION == 2 and (CV_MINOR_VERSION >4 or (CV_MINOR_VERSION == 4 and CV_SUBMINOR_VERSION >=10)))
+ #include <rtabmap/core/stereo/stereoRectifyFisheye.h>
+ #endif
+ 
+@@ -736,7 +741,7 @@ void CalibrationDialog::processImages(const cv::Mat & imageLeft, const cv::Mat &
+ 			cv::Size boardSize(ui_->spinBox_boardWidth->value(), ui_->spinBox_boardHeight->value());
+ 			if(!viewGray.empty())
+ 			{
+-				int flags = CV_CALIB_CB_ADAPTIVE_THRESH | CV_CALIB_CB_NORMALIZE_IMAGE;
++				int flags = cv::CALIB_CB_ADAPTIVE_THRESH | cv::CALIB_CB_NORMALIZE_IMAGE;
+ 
+ 				if(!viewGray.empty())
+ 				{
+@@ -747,7 +752,7 @@ void CalibrationDialog::processImages(const cv::Mat & imageLeft, const cv::Mat &
+ 						if( scale == 1 )
+ 							timg = viewGray;
+ 						else
+-							cv::resize(viewGray, timg, cv::Size(), scale, scale, CV_INTER_CUBIC);
++							cv::resize(viewGray, timg, cv::Size(), scale, scale, cv::INTER_CUBIC);
+ 
+ #ifdef HAVE_CHARUCO
+ 						if(ui_->comboBox_board_type->currentIndex() >= 1 )
+@@ -832,7 +837,7 @@ void CalibrationDialog::processImages(const cv::Mat & imageLeft, const cv::Mat &
+ 					float ratio = ui_->comboBox_board_type->currentIndex() >= 1 ?6.0f:2.0f;
+ 					float radius = minSquareDistance==-1.0f?5.0f:(minSquareDistance/ratio);
+ 					cv::cornerSubPix( viewGray, pointBuf[id], cv::Size(radius, radius), cv::Size(-1,-1),
+-							cv::TermCriteria( CV_TERMCRIT_EPS + CV_TERMCRIT_ITER, 30, 0.1 ));
++							cv::TermCriteria( cv::TermCriteria::EPS + cv::TermCriteria::MAX_ITER, 30, 0.1 ));
+ 					
+ 					// Filter points that drifted to far (caused by reflection or bad subpixel gradient)
+ 					float threshold = ui_->doubleSpinBox_subpixel_error->value();
+@@ -1472,7 +1477,7 @@ void CalibrationDialog::calibrate()
+ 			{
+ 				cv::projectPoints( cv::Mat(objectPoints_[id][i]), rvecs[i], tvecs[i], K, D, imagePoints2);
+ 			}
+-			err = cv::norm(cv::Mat(imagePoints_[id][i]), cv::Mat(imagePoints2), CV_L2);
++			err = cv::norm(cv::Mat(imagePoints_[id][i]), cv::Mat(imagePoints2), cv::NORM_L2);
+ 
+ 			int n = (int)objectPoints_[id][i].size();
+ 			reprojErrs[i] = (float) std::sqrt(err*err/n);
+@@ -1749,6 +1754,7 @@ StereoCameraModel CalibrationDialog::stereoCalibration(const CameraModel & left,
+ 			UINFO("Compute stereo rectification");
+ 
+ 			cv::Mat R1, R2, P1, P2, Q;
++#if CV_MAJOR_VERSION < 5
+ 			stereoRectifyFisheye(
+ 					left.K_raw(), D_left,
+ 					right.K_raw(), D_right,
+@@ -1762,6 +1768,15 @@ StereoCameraModel CalibrationDialog::stereoCalibration(const CameraModel & left,
+ 					right.K_raw(), D_right,
+ 					imageSize, R, Tvec, R1, R2, P1, P2, Q,
+ 					cv::CALIB_ZERO_DISPARITY, imageSize, balance, fov_scale);*/
++#else
++			// stereoRectifyFisheye() relies on the OpenCV C API removed in OpenCV 5
++			double balance = 0.0, fov_scale = 1.0;
++			cv::fisheye::stereoRectify(
++					left.K_raw(), D_left,
++					right.K_raw(), D_right,
++					imageSize, R, Tvec, R1, R2, P1, P2, Q,
++					cv::CALIB_ZERO_DISPARITY, imageSize, balance, fov_scale);
++#endif
+ 
+ 			std::cout << "R1 = " << R1 << std::endl;
+ 			std::cout << "R2 = " << R2 << std::endl;
+diff --git a/guilib/src/CameraViewer.cpp b/guilib/src/CameraViewer.cpp
+index 1b1ce5de..dd43c63d 100644
+--- a/guilib/src/CameraViewer.cpp
++++ b/guilib/src/CameraViewer.cpp
+@@ -82,7 +82,7 @@ CameraViewer::CameraViewer(QWidget * parent, const ParametersMap & parameters) :
+ 	showScanCheckbox_->setChecked(true);
+ 
+ 	markerCheckbox_ = new QCheckBox("Detect markers", this);
+-#ifdef HAVE_OPENCV_ARUCO
++#ifdef RTABMAP_HAVE_ARUCO
+ 	markerCheckbox_->setEnabled(true);
+ 	markerDetector_ = new MarkerDetector(parameters);
+ #else
+diff --git a/guilib/src/DatabaseViewer.cpp b/guilib/src/DatabaseViewer.cpp
+index e355b7ef..76397902 100644
+--- a/guilib/src/DatabaseViewer.cpp
++++ b/guilib/src/DatabaseViewer.cpp
+@@ -43,8 +43,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <rtabmap/utilite/ULogger.h>
+ #include <rtabmap/utilite/UDirectory.h>
+ #include <rtabmap/utilite/UConversion.h>
+-#include <opencv2/core/core_c.h>
+-#include <opencv2/imgproc/types_c.h>
+ #include <opencv2/highgui/highgui.hpp>
+ #include <rtabmap/utilite/UTimer.h>
+ #include <rtabmap/utilite/UFile.h>
+@@ -5788,7 +5786,7 @@ void DatabaseViewer::updateStereo(const SensorData * data)
+ 		cv::Mat leftMono;
+ 		if(data->imageRaw().channels() == 3)
+ 		{
+-			cv::cvtColor(data->imageRaw(), leftMono, CV_BGR2GRAY);
++			cv::cvtColor(data->imageRaw(), leftMono, cv::COLOR_BGR2GRAY);
+ 		}
+ 		else
+ 		{
+@@ -5797,7 +5795,7 @@ void DatabaseViewer::updateStereo(const SensorData * data)
+ 		cv::Mat rightMono;
+ 		if(data->rightRaw().channels() == 3)
+ 		{
+-			cv::cvtColor(data->rightRaw(), rightMono, CV_BGR2GRAY);
++			cv::cvtColor(data->rightRaw(), rightMono, cv::COLOR_BGR2GRAY);
+ 		}
+ 		else
+ 		{
+diff --git a/guilib/src/MainWindow.cpp b/guilib/src/MainWindow.cpp
+index 4f500e5f..c6e0a629 100644
+--- a/guilib/src/MainWindow.cpp
++++ b/guilib/src/MainWindow.cpp
+@@ -91,6 +91,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <QInputDialog>
+ #include <QToolButton>
+ 
++#if CV_MAJOR_VERSION >= 5
++#include <opencv2/geometry.hpp>
++#endif
++
+ //RGB-D stuff
+ #include "rtabmap/core/CameraRGBD.h"
+ #include "rtabmap/core/Odometry.h"
+@@ -123,10 +127,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <rtabmap/core/global_map/GridMap.h>
+ #endif
+ 
+-#ifdef HAVE_OPENCV_ARUCO
+-#include <opencv2/aruco.hpp>
+-#endif
+-
+ #define LOG_FILE_NAME "LogRtabmap.txt"
+ #define SHARE_SHOW_LOG_FILE "share/rtabmap/showlogs.m"
+ #define SHARE_GET_PRECISION_RECALL_FILE "share/rtabmap/getPrecisionRecall.m"
+diff --git a/guilib/src/PreferencesDialog.cpp b/guilib/src/PreferencesDialog.cpp
+index 2659d206..fcb88c45 100644
+--- a/guilib/src/PreferencesDialog.cpp
++++ b/guilib/src/PreferencesDialog.cpp
+@@ -466,7 +466,7 @@ PreferencesDialog::PreferencesDialog(QWidget * parent) :
+ 	_ui->ArucoDictionary->setItemData(19, 0, Qt::UserRole - 1);
+ 	_ui->ArucoDictionary->setItemData(20, 0, Qt::UserRole - 1);
+ #endif
+-#ifndef HAVE_OPENCV_ARUCO
++#if !defined(HAVE_OPENCV_ARUCO) && !((CV_MAJOR_VERSION > 4 || (CV_MAJOR_VERSION == 4 && CV_MINOR_VERSION >= 7)) && defined(HAVE_OPENCV_OBJDETECT))
+ 	_ui->label_markerDetection->setText(_ui->label_markerDetection->text()+" This option works only if OpenCV has been built with \"aruco\" module.");
+ #endif
+ 
+diff --git a/tools/Camera/main.cpp b/tools/Camera/main.cpp
+index e3370304..3bf320c7 100644
+--- a/tools/Camera/main.cpp
++++ b/tools/Camera/main.cpp
+@@ -32,7 +32,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include "rtabmap/utilite/UDirectory.h"
+ #include "rtabmap/utilite/UConversion.h"
+ #include <opencv2/highgui/highgui.hpp>
+-#include <opencv2/highgui/highgui_c.h>
+ #include <stdio.h>
+ 
+ void showUsage()
+@@ -178,7 +177,7 @@ int main(int argc, char * argv[])
+ 
+ 	cv::Mat rgb;
+ 	rgb = camera->takeImage().imageRaw();
+-	cv::namedWindow("Video", CV_WINDOW_AUTOSIZE); // create window
++	cv::namedWindow("Video", cv::WINDOW_AUTOSIZE); // create window
+ 	while(!rgb.empty())
+ 	{
+ 		cv::imshow("Video", rgb); // show frame
+diff --git a/tools/CameraRGBD/main.cpp b/tools/CameraRGBD/main.cpp
+index 1d562d92..fefd3b0c 100644
+--- a/tools/CameraRGBD/main.cpp
++++ b/tools/CameraRGBD/main.cpp
+@@ -37,9 +37,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include "rtabmap/utilite/UConversion.h"
+ #include <opencv2/highgui/highgui.hpp>
+ #include <opencv2/imgproc/imgproc.hpp>
+-#include <opencv2/imgproc/types_c.h>
+ #if CV_MAJOR_VERSION >= 3
+-#include <opencv2/videoio/videoio_c.h>
++#include <opencv2/videoio.hpp>
+ #endif
+ #include <pcl/visualization/cloud_viewer.h>
+ #include <stdio.h>
+@@ -399,7 +398,7 @@ int main(int argc, char * argv[])
+ 				UASSERT(fourcc.size() == 4);
+ 				videoWriter.open(
+ 						stereoSavePath,
+-						CV_FOURCC(fourcc.at(0), fourcc.at(1), fourcc.at(2), fourcc.at(3)),
++						cv::VideoWriter::fourcc(fourcc.at(0), fourcc.at(1), fourcc.at(2), fourcc.at(3)),
+ 						rate,
+ 						targetSize,
+ 						data.imageRaw().channels() == 3);
+@@ -480,7 +479,7 @@ int main(int argc, char * argv[])
+ 			{
+ 				if(right.channels() == 3)
+ 				{
+-					cv::cvtColor(right, right, CV_BGR2GRAY);
++					cv::cvtColor(right, right, cv::COLOR_BGR2GRAY);
+ 				}
+ 				pcl::PointCloud<pcl::PointXYZRGB>::Ptr cloud = rtabmap::util3d::cloudFromStereoImages(
+ 						rgb, right,
+@@ -507,14 +506,14 @@ int main(int argc, char * argv[])
+ 				if(right.type() != left.type())
+ 				{
+ 					cv::Mat tmp;
+-					cv::cvtColor(right, tmp, left.channels()==3?CV_GRAY2BGR:CV_BGR2GRAY);
++					cv::cvtColor(right, tmp, left.channels()==3?cv::COLOR_GRAY2BGR:cv::COLOR_BGR2GRAY);
+ 					right = tmp;
+ 				}
+ 				UASSERT(left.type() == right.type());
+ 
+ 				cv::Mat roiA(targetImage, cv::Rect( 0, 0, left.size().width, left.size().height ));
+ 				left.copyTo(roiA);
+-				cv::Mat roiB( targetImage, cvRect( left.size().width, 0, left.size().width, left.size().height ) );
++				cv::Mat roiB( targetImage, cv::Rect( left.size().width, 0, left.size().width, left.size().height ) );
+ 				right.copyTo(roiB);
+ 
+ 				videoWriter.write(targetImage);
+diff --git a/tools/EpipolarGeometry/main.cpp b/tools/EpipolarGeometry/main.cpp
+index aa309fa9..22e60163 100644
+--- a/tools/EpipolarGeometry/main.cpp
++++ b/tools/EpipolarGeometry/main.cpp
+@@ -26,7 +26,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+ 
+ #include <opencv2/core/core.hpp>
+-#include <opencv2/core/types_c.h>
+ #include <opencv2/highgui/highgui.hpp>
+ #include <opencv2/imgproc/imgproc.hpp>
+ #include <iostream>
+@@ -36,7 +35,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <rtabmap/utilite/UDirectory.h>
+ #include <rtabmap/utilite/UStl.h>
+ #include <rtabmap/utilite/UMath.h>
++#if CV_MAJOR_VERSION < 5
+ #include <opencv2/calib3d/calib3d.hpp>
++#else
++#include <opencv2/geometry.hpp>
++#endif
+ #include "rtabmap/core/Features2d.h"
+ #include "rtabmap/core/EpipolarGeometry.h"
+ #include "rtabmap/core/VWDictionary.h"
+diff --git a/tools/StereoEval/main.cpp b/tools/StereoEval/main.cpp
+index bd3313f8..9c15e34b 100644
+--- a/tools/StereoEval/main.cpp
++++ b/tools/StereoEval/main.cpp
+@@ -37,7 +37,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <rtabmap/utilite/UConversion.h>
+ #include <rtabmap/utilite/UTimer.h>
+ #include <rtabmap/utilite/UMath.h>
+-#include <opencv2/imgproc/types_c.h>
+ #include <fstream>
+ #include <string>
+ 
+@@ -222,7 +221,7 @@ int main(int argc, char * argv[])
+ 		cv::Mat leftMono;
+ 		if(left.channels() == 3)
+ 		{
+-			cv::cvtColor(left, leftMono, CV_BGR2GRAY);
++			cv::cvtColor(left, leftMono, cv::COLOR_BGR2GRAY);
+ 		}
+ 		else
+ 		{
+@@ -231,7 +230,7 @@ int main(int argc, char * argv[])
+ 		cv::Mat rightMono;
+ 		if(right.channels() == 3)
+ 		{
+-			cv::cvtColor(right, rightMono, CV_BGR2GRAY);
++			cv::cvtColor(right, rightMono, cv::COLOR_BGR2GRAY);
+ 		}
+ 		else
+ 		{
+@@ -266,7 +265,7 @@ int main(int argc, char * argv[])
+ 			cv::cornerSubPix(leftMono, leftCorners,
+ 				cv::Size( subPixWinSize, subPixWinSize ),
+ 				cv::Size( -1, -1 ),
+-				cv::TermCriteria( CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, subPixIterations, subPixEps ) );
++				cv::TermCriteria( cv::TermCriteria::MAX_ITER | cv::TermCriteria::EPS, subPixIterations, subPixEps ) );
+ 			UDEBUG("cv::cornerSubPix() end");
+ 		}
+ 
 diff --git a/utilite/include/rtabmap/utilite/Posix/UThreadC.h b/utilite/include/rtabmap/utilite/Posix/UThreadC.h
-index e773c55..b15a7c2 100644
+index e773c55f..b15a7c24 100644
 --- a/utilite/include/rtabmap/utilite/Posix/UThreadC.h
 +++ b/utilite/include/rtabmap/utilite/Posix/UThreadC.h
 @@ -54,9 +54,9 @@ inline void uSleepNano(unsigned int ns)

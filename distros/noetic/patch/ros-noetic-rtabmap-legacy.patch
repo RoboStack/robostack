@@ -1,0 +1,20 @@
+diff --git a/src/StereoCameraNode.cpp b/src/StereoCameraNode.cpp
+index 4befe10d5..73863332a 100644
+--- a/src/StereoCameraNode.cpp
++++ b/src/StereoCameraNode.cpp
+@@ -77,13 +77,13 @@ int main(int argc, char** argv)
+ 			imageLeft.header.frame_id = frameId;
+ 			imageLeft.header.stamp = currentTime;
+ 			imageLeft.encoding = "bgr8";
+-			cv::resize(data.imageRaw(), imageLeft.image, cv::Size(0,0), scale, scale, CV_INTER_AREA);
++			cv::resize(data.imageRaw(), imageLeft.image, cv::Size(0,0), scale, scale, cv::INTER_AREA);
+ 			imageLeftPub.publish(imageLeft.toImageMsg());
+ 
+ 			cv_bridge::CvImage imageRight;
+ 			imageRight.header = imageLeft.header;
+ 			imageRight.encoding = "mono8";
+-			cv::resize(data.rightRaw(), imageRight.image, cv::Size(0,0), scale, scale, CV_INTER_AREA);
++			cv::resize(data.rightRaw(), imageRight.image, cv::Size(0,0), scale, scale, cv::INTER_AREA);
+ 			imageRightPub.publish(imageRight.toImageMsg());
+ 
+ 			if(data.stereoCameraModels().size())
