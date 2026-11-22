@@ -1,16 +1,13 @@
 # ROS 1: noetic doesn't extend shared/vinca.yaml (its package selection, mutex and
-# per-package settings are ROS 2's); it shares the rosdep mappings (shared/robostack.yaml,
-# with noetic's own on top in robostack.yaml).
+# per-package settings are ROS 2's); it shares the rosdep mappings and the pinning.
 ros_distro: noetic
 patch_dir: patch
 rosdistro_snapshot: rosdistro_snapshot.yaml
 rosdistro_additional_recipes: rosdistro_additional_recipes.yaml
-
-# mapping for package keys
+# the shared rosdep mappings, with noetic's own on top (robostack.yaml)
 conda_index:
   - ../../shared/robostack.yaml
   - robostack.yaml
-  - packages-ignore.yaml
 
 build_number: 24
 
