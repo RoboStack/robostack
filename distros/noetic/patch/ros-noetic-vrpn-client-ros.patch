@@ -1,0 +1,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index c8eb07f..fc08743 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -11,7 +11,7 @@ catkin_package(
+   DEPENDS VRPN
+ )
+ 
+-set_directory_properties(PROPERTIES COMPILE_OPTIONS "-std=c++11;-Wall")
++set_directory_properties(PROPERTIES COMPILE_OPTIONS "-Wall")  # RoboStack: no -std=c++11 (Boost and conda-forge need C++17)
+ 
+ include_directories(
+   include

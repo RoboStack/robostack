@@ -1,0 +1,25 @@
+diff --git a/cmake/FindVRPN.cmake b/cmake/FindVRPN.cmake
+index 641b62b..7353a7a 100644
+--- a/cmake/FindVRPN.cmake
++++ b/cmake/FindVRPN.cmake
+@@ -112,7 +112,7 @@ list(APPEND _deps_check QUATLIB_FOUND)
+ if(NOT WIN32)
+ 	find_package(Threads ${_vrpn_quiet})
+ 	list(APPEND _deps_libs ${CMAKE_THREAD_LIBS_INIT})
+-	list(APPEND _deps_check CMAKE_HAVE_THREADS_LIBRARY)
++	list(APPEND _deps_check Threads_FOUND)  # RoboStack: CMAKE_HAVE_THREADS_LIBRARY is unset where threads are in libc (macOS)
+ endif()
+ 
+ if(WIN32)
+diff --git a/cmake/Findquatlib.cmake b/cmake/Findquatlib.cmake
+index efca27f..9449b82 100644
+--- a/cmake/Findquatlib.cmake
++++ b/cmake/Findquatlib.cmake
+@@ -69,6 +69,7 @@ else()
+ 		NAMES
+ 		quat.lib
+ 		libquat.a
++		quat # RoboStack: the shared library (BUILD_SHARED_LIBS)
+ 		HINTS
+ 		"${QUATLIB_ROOT_DIR}"
+ 		PATH_SUFFIXES

@@ -161,6 +161,14 @@ packages_select_by_deps:
   - plotjuggler
   - plotjuggler-ros
 
+  # Requested in RoboStack/ros-noetic#508, #354, #349
+  - ira_laser_tools
+  - moveit_chomp_optimizer_adapter
+  - roboticsgroup_upatras_gazebo_plugins
+  - spatio_temporal_voxel_layer
+  - vrpn_client_ros
+  - visp
+
   # Additional tools
   - lms1xx
   - mrt_cmake_modules

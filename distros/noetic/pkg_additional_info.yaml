@@ -78,6 +78,9 @@ image_view2:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
 imagesift:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
+joy:
+  # joy_node with SDL2 on macOS and Windows (patch; RoboStack/ros-noetic#548)
+  add_host: ["${{ 'sdl2' if not linux }}"]
 jsk_interactive_marker:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
 jsk_pcl_ros:
@@ -232,6 +235,10 @@ sick_tim:
   add_host: ["pkg-config"]
 simple_grasping:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
+spatio_temporal_voxel_layer:
+  # oneTBB's CMake config; tf2_sensor_msgs for tf2::doTransform(PointCloud2) (patch)
+  add_host: ["tbb-devel", "ros-noetic-tf2-sensor-msgs"]
+  add_run: ["ros-noetic-tf2-sensor-msgs"]
 stage:
   add_host: ["zlib", "libpng"]
 swri_image_util:
@@ -240,3 +247,13 @@ tesseract_collision:
   add_build: ["${{ 'llvm-openmp' if osx }}"]
 ur_client_library:
   add_host: ["ros-noetic-catkin"]
+visp:
+  generate_dummy_package_with_run_deps:
+    dep_name: visp
+    max_pin: 'x.x'
+    # the version on ros is older than conda-forge's
+    override_version: '3.7.0'
+vrpn:
+  # its hand-written Python 3 bindings use PyEval_CallObject, gone since Python 3.13;
+  # `register` (vrpn_Connection.C) is an error in C++17 with clang
+  additional_cmake_args: "-DVRPN_BUILD_PYTHON_HANDCODED_3X=OFF -DCMAKE_CXX_FLAGS_INIT=-Wno-register"
