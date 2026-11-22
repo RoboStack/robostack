@@ -1,5 +1,6 @@
 apriltag:
-  additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
+  # C11 (GCC 15 defaults to C23, where `void (*f)()` takes no arguments: zarray_vmap)
+  additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON -DCMAKE_C_STANDARD=11 -DCMAKE_C_EXTENSIONS=ON"
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "${{ 'winpthreads-devel' if win }}"]
   add_run: ["${{ 'winpthreads-devel' if win }}"]
 apriltag_ros:
@@ -195,6 +196,9 @@ ros_ign_gazebo:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "${{ 'libuuid' if linux }}"]
 rosbridge_library:
   add_run: ["pymongo"]
+roseus:
+  # C17 (GCC 15 defaults to C23, where `cell* (*)()` takes no arguments: defun.h)
+  additional_cmake_args: "-DCMAKE_C_STANDARD=17 -DCMAKE_C_EXTENSIONS=ON -DCMAKE_C_FLAGS_INIT=-Wno-incompatible-pointer-types"
 rosserial_python:
   add_run: ["pyserial"]
 rtabmap:
