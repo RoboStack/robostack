@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 88d0adf..3ce0d9c 100644
+index 88d0adf..cc1ddf3 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -154,22 +154,23 @@ endif(G2O_USE_OPENMP)
@@ -42,6 +42,509 @@ index 88d0adf..3ce0d9c 100644
  
  # For building the GUI
  find_package(QGLViewer)
+@@ -357,7 +358,9 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${g2o_C_FLAGS}")
+ # Find Eigen3. If it defines the target, this is used. If not,
+ # fall back to the using the module form.
+ # See https://eigen.tuxfamily.org/dox/TopicCMakeGuide.html for details
+-find_package(Eigen3 REQUIRED)
++# RoboStack: Eigen's CMake config; cmake_modules/FindEigen3.cmake can't read Eigen 5's version
++find_package(Eigen3 REQUIRED CONFIG)
++set(EIGEN3_VERSION ${Eigen3_VERSION})  # RoboStack: g2o/solvers/eigen needs it (Eigen's config doesn't set it)
+ if (TARGET Eigen3::Eigen)
+   set(G2O_EIGEN3_EIGEN_TARGET Eigen3::Eigen)
+ else()
+diff --git a/g2o/apps/g2o_hierarchical/edge_creator.cpp b/g2o/apps/g2o_hierarchical/edge_creator.cpp
+index 2553029..5b045a7 100644
+--- a/g2o/apps/g2o_hierarchical/edge_creator.cpp
++++ b/g2o/apps/g2o_hierarchical/edge_creator.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "g2o/core/factory.h"
+ #include "edge_creator.h"
+ 
+diff --git a/g2o/apps/g2o_hierarchical/edge_labeler.cpp b/g2o/apps/g2o_hierarchical/edge_labeler.cpp
+index 638552f..e9a3c66 100644
+--- a/g2o/apps/g2o_hierarchical/edge_labeler.cpp
++++ b/g2o/apps/g2o_hierarchical/edge_labeler.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include <Eigen/Dense>
+ #include "edge_labeler.h"
+ #include "g2o/stuff/unscented.h"
+diff --git a/g2o/apps/g2o_simulator/sensor_line3d.cpp b/g2o/apps/g2o_simulator/sensor_line3d.cpp
+index 4a4aab9..9a07f94 100644
+--- a/g2o/apps/g2o_simulator/sensor_line3d.cpp
++++ b/g2o/apps/g2o_simulator/sensor_line3d.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "sensor_line3d.h"
+ 
+ namespace g2o {
+diff --git a/g2o/apps/g2o_simulator/sensor_pointxy.cpp b/g2o/apps/g2o_simulator/sensor_pointxy.cpp
+index 38558fc..5a8e584 100644
+--- a/g2o/apps/g2o_simulator/sensor_pointxy.cpp
++++ b/g2o/apps/g2o_simulator/sensor_pointxy.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "sensor_pointxy.h"
+ 
+ using namespace Eigen;
+diff --git a/g2o/apps/g2o_simulator/sensor_pointxy_bearing.cpp b/g2o/apps/g2o_simulator/sensor_pointxy_bearing.cpp
+index bd21960..b977159 100644
+--- a/g2o/apps/g2o_simulator/sensor_pointxy_bearing.cpp
++++ b/g2o/apps/g2o_simulator/sensor_pointxy_bearing.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "sensor_pointxy_bearing.h"
+ 
+ using namespace Eigen;
+diff --git a/g2o/apps/g2o_simulator/sensor_pointxy_offset.cpp b/g2o/apps/g2o_simulator/sensor_pointxy_offset.cpp
+index a2937d0..7d050c9 100644
+--- a/g2o/apps/g2o_simulator/sensor_pointxy_offset.cpp
++++ b/g2o/apps/g2o_simulator/sensor_pointxy_offset.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "sensor_pointxy_offset.h"
+ #include "g2o/core/factory.h"
+ 
+diff --git a/g2o/apps/g2o_simulator/sensor_pointxyz.cpp b/g2o/apps/g2o_simulator/sensor_pointxyz.cpp
+index cc910c4..cf9a4b8 100644
+--- a/g2o/apps/g2o_simulator/sensor_pointxyz.cpp
++++ b/g2o/apps/g2o_simulator/sensor_pointxyz.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "sensor_pointxyz.h"
+ 
+ namespace g2o {
+diff --git a/g2o/apps/g2o_simulator/sensor_pointxyz_depth.cpp b/g2o/apps/g2o_simulator/sensor_pointxyz_depth.cpp
+index 8d40228..7770ed8 100644
+--- a/g2o/apps/g2o_simulator/sensor_pointxyz_depth.cpp
++++ b/g2o/apps/g2o_simulator/sensor_pointxyz_depth.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "sensor_pointxyz_depth.h"
+ 
+ namespace g2o {
+diff --git a/g2o/apps/g2o_simulator/sensor_pointxyz_disparity.cpp b/g2o/apps/g2o_simulator/sensor_pointxyz_disparity.cpp
+index c131e3c..74ed8c9 100644
+--- a/g2o/apps/g2o_simulator/sensor_pointxyz_disparity.cpp
++++ b/g2o/apps/g2o_simulator/sensor_pointxyz_disparity.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "sensor_pointxyz_disparity.h"
+ 
+ namespace g2o {
+diff --git a/g2o/apps/g2o_simulator/sensor_pose2d.cpp b/g2o/apps/g2o_simulator/sensor_pose2d.cpp
+index a489595..617a136 100644
+--- a/g2o/apps/g2o_simulator/sensor_pose2d.cpp
++++ b/g2o/apps/g2o_simulator/sensor_pose2d.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "sensor_pose2d.h"
+ 
+ using namespace Eigen;
+diff --git a/g2o/apps/g2o_simulator/sensor_pose3d.cpp b/g2o/apps/g2o_simulator/sensor_pose3d.cpp
+index d5bd1ff..f120d35 100644
+--- a/g2o/apps/g2o_simulator/sensor_pose3d.cpp
++++ b/g2o/apps/g2o_simulator/sensor_pose3d.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "sensor_pose3d.h"
+ 
+ #include "g2o/types/slam3d/isometry3d_mappings.h"
+diff --git a/g2o/apps/g2o_simulator/sensor_pose3d_offset.cpp b/g2o/apps/g2o_simulator/sensor_pose3d_offset.cpp
+index a433ea1..43aaab0 100644
+--- a/g2o/apps/g2o_simulator/sensor_pose3d_offset.cpp
++++ b/g2o/apps/g2o_simulator/sensor_pose3d_offset.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "sensor_pose3d_offset.h"
+ 
+ #include "g2o/types/slam3d/isometry3d_mappings.h"
+diff --git a/g2o/apps/g2o_simulator/sensor_se3_prior.cpp b/g2o/apps/g2o_simulator/sensor_se3_prior.cpp
+index 11f27ab..92b810c 100644
+--- a/g2o/apps/g2o_simulator/sensor_se3_prior.cpp
++++ b/g2o/apps/g2o_simulator/sensor_se3_prior.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "sensor_se3_prior.h"
+ 
+ namespace g2o {
+diff --git a/g2o/apps/g2o_simulator/sensor_segment2d.cpp b/g2o/apps/g2o_simulator/sensor_segment2d.cpp
+index 6ea0790..69e0214 100644
+--- a/g2o/apps/g2o_simulator/sensor_segment2d.cpp
++++ b/g2o/apps/g2o_simulator/sensor_segment2d.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "sensor_segment2d.h"
+ #include "g2o/apps/g2o_simulator/simutils.h"
+ #include <iostream>
+diff --git a/g2o/apps/g2o_simulator/sensor_segment2d_line.cpp b/g2o/apps/g2o_simulator/sensor_segment2d_line.cpp
+index c1e0d80..8fabf04 100644
+--- a/g2o/apps/g2o_simulator/sensor_segment2d_line.cpp
++++ b/g2o/apps/g2o_simulator/sensor_segment2d_line.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "sensor_segment2d_line.h"
+ #include "g2o/apps/g2o_simulator/simutils.h"
+ using namespace std;
+diff --git a/g2o/apps/g2o_simulator/sensor_segment2d_pointline.cpp b/g2o/apps/g2o_simulator/sensor_segment2d_pointline.cpp
+index 9768d86..4d59ca9 100644
+--- a/g2o/apps/g2o_simulator/sensor_segment2d_pointline.cpp
++++ b/g2o/apps/g2o_simulator/sensor_segment2d_pointline.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "sensor_segment2d_pointline.h"
+ #include  "g2o/apps/g2o_simulator/simutils.h"
+ using namespace std;
+diff --git a/g2o/apps/g2o_simulator/simulator.cpp b/g2o/apps/g2o_simulator/simulator.cpp
+index 4459450..b1977fa 100644
+--- a/g2o/apps/g2o_simulator/simulator.cpp
++++ b/g2o/apps/g2o_simulator/simulator.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "simulator.h"
+ #include <iostream>
+ namespace g2o{
+diff --git a/g2o/apps/g2o_viewer/g2o_qglviewer.cpp b/g2o/apps/g2o_viewer/g2o_qglviewer.cpp
+index 1094ab1..a5d1920 100644
+--- a/g2o/apps/g2o_viewer/g2o_qglviewer.cpp
++++ b/g2o/apps/g2o_viewer/g2o_qglviewer.cpp
+@@ -16,6 +16,7 @@
+ // You should have received a copy of the GNU General Public License
+ // along with g2o.  If not, see <http://www.gnu.org/licenses/>.
+ 
++#include <cassert>
+ #include "g2o_qglviewer.h"
+ #include "g2o/stuff/opengl_primitives.h"
+ #include "g2o/core/sparse_optimizer.h"
+diff --git a/g2o/core/base_vertex.h b/g2o/core/base_vertex.h
+index 50dd06e..ecf0ba6 100644
+--- a/g2o/core/base_vertex.h
++++ b/g2o/core/base_vertex.h
+@@ -27,6 +27,7 @@
+ #ifndef G2O_BASE_VERTEX_H
+ #define G2O_BASE_VERTEX_H
+ 
++#include <cassert>
+ #include "optimizable_graph.h"
+ #include "creators.h"
+ #include "g2o/stuff/macros.h"
+diff --git a/g2o/core/block_solver.hpp b/g2o/core/block_solver.hpp
+index 899675b..24848f5 100644
+--- a/g2o/core/block_solver.hpp
++++ b/g2o/core/block_solver.hpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "sparse_optimizer.h"
+ 
+ #include <Eigen/LU>
+diff --git a/g2o/core/jacobian_workspace.cpp b/g2o/core/jacobian_workspace.cpp
+index 9890a18..18b1c5d 100644
+--- a/g2o/core/jacobian_workspace.cpp
++++ b/g2o/core/jacobian_workspace.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "jacobian_workspace.h"
+ 
+ #include <cmath>
+diff --git a/g2o/core/marginal_covariance_cholesky.h b/g2o/core/marginal_covariance_cholesky.h
+index 0c20c47..78695e8 100644
+--- a/g2o/core/marginal_covariance_cholesky.h
++++ b/g2o/core/marginal_covariance_cholesky.h
+@@ -27,6 +27,7 @@
+ #ifndef G2O_MARGINAL_COVARIANCE_CHOLESKY_H
+ #define G2O_MARGINAL_COVARIANCE_CHOLESKY_H
+ 
++#include <cassert>
+ #include "sparse_block_matrix.h"
+ 
+ #include <vector>
+diff --git a/g2o/core/optimizable_graph.h b/g2o/core/optimizable_graph.h
+index 34d691a..5b7e1e8 100644
+--- a/g2o/core/optimizable_graph.h
++++ b/g2o/core/optimizable_graph.h
+@@ -27,6 +27,7 @@
+ #ifndef G2O_AIS_OPTIMIZABLE_GRAPH_HH_
+ #define G2O_AIS_OPTIMIZABLE_GRAPH_HH_
+ 
++#include <cassert>
+ #include <set>
+ #include <iostream>
+ #include <typeinfo>
+diff --git a/g2o/core/optimization_algorithm_dogleg.cpp b/g2o/core/optimization_algorithm_dogleg.cpp
+index 6bc15e8..7555eac 100644
+--- a/g2o/core/optimization_algorithm_dogleg.cpp
++++ b/g2o/core/optimization_algorithm_dogleg.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "optimization_algorithm_dogleg.h"
+ 
+ #include <iostream>
+diff --git a/g2o/core/optimization_algorithm_gauss_newton.cpp b/g2o/core/optimization_algorithm_gauss_newton.cpp
+index acb9bb1..d8b5bb9 100644
+--- a/g2o/core/optimization_algorithm_gauss_newton.cpp
++++ b/g2o/core/optimization_algorithm_gauss_newton.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "optimization_algorithm_gauss_newton.h"
+ 
+ #include <iostream>
+diff --git a/g2o/core/optimization_algorithm_levenberg.cpp b/g2o/core/optimization_algorithm_levenberg.cpp
+index dece525..1a45873 100644
+--- a/g2o/core/optimization_algorithm_levenberg.cpp
++++ b/g2o/core/optimization_algorithm_levenberg.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "optimization_algorithm_levenberg.h"
+ 
+ #include <iostream>
+diff --git a/g2o/core/optimization_algorithm_with_hessian.cpp b/g2o/core/optimization_algorithm_with_hessian.cpp
+index 6e255ee..4e01fa5 100644
+--- a/g2o/core/optimization_algorithm_with_hessian.cpp
++++ b/g2o/core/optimization_algorithm_with_hessian.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "optimization_algorithm_with_hessian.h"
+ 
+ #include "solver.h"
+diff --git a/g2o/core/parameter_container.cpp b/g2o/core/parameter_container.cpp
+index a63ff40..0113cf9 100644
+--- a/g2o/core/parameter_container.cpp
++++ b/g2o/core/parameter_container.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "parameter_container.h"
+ 
+ #include <iostream>
+diff --git a/g2o/core/sparse_optimizer_terminate_action.cpp b/g2o/core/sparse_optimizer_terminate_action.cpp
+index 914a47d..32b69d0 100644
+--- a/g2o/core/sparse_optimizer_terminate_action.cpp
++++ b/g2o/core/sparse_optimizer_terminate_action.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "sparse_optimizer_terminate_action.h"
+ 
+ #include "sparse_optimizer.h"
+diff --git a/g2o/examples/ba/ba_demo.cpp b/g2o/examples/ba/ba_demo.cpp
+index 47217f0..fc687ec 100644
+--- a/g2o/examples/ba/ba_demo.cpp
++++ b/g2o/examples/ba/ba_demo.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include <iostream>
+ #include <stdint.h>
+ 
+diff --git a/g2o/examples/ba_anchored_inverse_depth/ba_anchored_inverse_depth_demo.cpp b/g2o/examples/ba_anchored_inverse_depth/ba_anchored_inverse_depth_demo.cpp
+index 1cb3986..88df117 100644
+--- a/g2o/examples/ba_anchored_inverse_depth/ba_anchored_inverse_depth_demo.cpp
++++ b/g2o/examples/ba_anchored_inverse_depth/ba_anchored_inverse_depth_demo.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include <iostream>
+ #include <stdint.h>
+ 
+diff --git a/g2o/examples/bal/bal_example.cpp b/g2o/examples/bal/bal_example.cpp
+index b07d96c..d16731f 100644
+--- a/g2o/examples/bal/bal_example.cpp
++++ b/g2o/examples/bal/bal_example.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include <Eigen/Core>
+ #include <Eigen/Geometry>
+ #include <iostream>
+diff --git a/g2o/examples/calibration_odom_laser/gm2dl_io.cpp b/g2o/examples/calibration_odom_laser/gm2dl_io.cpp
+index e6b9df1..fd6cc79 100644
+--- a/g2o/examples/calibration_odom_laser/gm2dl_io.cpp
++++ b/g2o/examples/calibration_odom_laser/gm2dl_io.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "gm2dl_io.h"
+ 
+ #include "g2o/types/data/data_queue.h"
+diff --git a/g2o/examples/calibration_odom_laser/sclam_odom_laser.cpp b/g2o/examples/calibration_odom_laser/sclam_odom_laser.cpp
+index 18dc3fb..fb8ed38 100644
+--- a/g2o/examples/calibration_odom_laser/sclam_odom_laser.cpp
++++ b/g2o/examples/calibration_odom_laser/sclam_odom_laser.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include <iostream>
+ #include <map>
+ #include <csignal>
+diff --git a/g2o/examples/calibration_odom_laser/sclam_pure_calibration.cpp b/g2o/examples/calibration_odom_laser/sclam_pure_calibration.cpp
+index 1c10bc7..4141736 100644
+--- a/g2o/examples/calibration_odom_laser/sclam_pure_calibration.cpp
++++ b/g2o/examples/calibration_odom_laser/sclam_pure_calibration.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include <iostream>
+ #include <map>
+ #include <csignal>
+diff --git a/g2o/examples/data_convert/convert_sba_slam3d.cpp b/g2o/examples/data_convert/convert_sba_slam3d.cpp
+index 9f59adc..9bd49d0 100644
+--- a/g2o/examples/data_convert/convert_sba_slam3d.cpp
++++ b/g2o/examples/data_convert/convert_sba_slam3d.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include <iostream>
+ #include <fstream>
+ 
+diff --git a/g2o/examples/g2o_unfold/g2o-unfold.cpp b/g2o/examples/g2o_unfold/g2o-unfold.cpp
+index 87a8703..a601218 100644
+--- a/g2o/examples/g2o_unfold/g2o-unfold.cpp
++++ b/g2o/examples/g2o_unfold/g2o-unfold.cpp
+@@ -26,6 +26,7 @@
+ 
+ //  ../aisnavigation-free/bin/g2o-unfold -i 30 -solver var_cholmod -v -gnudump vic.dat ../datasets/2D/victoriaPark/victoriaPark.g2o
+ 
++#include <cassert>
+ #include <signal.h>
+ #include <iostream>
+ #include <string>
+diff --git a/g2o/examples/interactive_slam/g2o_incremental/graph_optimizer_sparse_incremental.cpp b/g2o/examples/interactive_slam/g2o_incremental/graph_optimizer_sparse_incremental.cpp
+index ffa7c56..958dd11 100644
+--- a/g2o/examples/interactive_slam/g2o_incremental/graph_optimizer_sparse_incremental.cpp
++++ b/g2o/examples/interactive_slam/g2o_incremental/graph_optimizer_sparse_incremental.cpp
+@@ -14,6 +14,7 @@
+ // You should have received a copy of the GNU General Public License
+ // along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ 
++#include <cassert>
+ #include "graph_optimizer_sparse_incremental.h"
+ 
+ #include "g2o/examples/interactive_slam/g2o_interactive/types_slam2d_online.h"
+diff --git a/g2o/examples/interactive_slam/g2o_incremental/linear_solver_cholmod_online.h b/g2o/examples/interactive_slam/g2o_incremental/linear_solver_cholmod_online.h
+index e46ca18..58e2f57 100644
+--- a/g2o/examples/interactive_slam/g2o_incremental/linear_solver_cholmod_online.h
++++ b/g2o/examples/interactive_slam/g2o_incremental/linear_solver_cholmod_online.h
+@@ -17,6 +17,7 @@
+ #ifndef G2O_LINEAR_SOLVER_CHOLMOD_ONLINE
+ #define G2O_LINEAR_SOLVER_CHOLMOD_ONLINE
+ 
++#include <cassert>
+ #include <camd.h>
+ 
+ #include "g2o_incremental_api.h"
+diff --git a/g2o/examples/interactive_slam/g2o_interactive/g2o_slam_interface.cpp b/g2o/examples/interactive_slam/g2o_interactive/g2o_slam_interface.cpp
+index 335d297..254c886 100644
+--- a/g2o/examples/interactive_slam/g2o_interactive/g2o_slam_interface.cpp
++++ b/g2o/examples/interactive_slam/g2o_interactive/g2o_slam_interface.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "g2o_slam_interface.h"
+ 
+ #include "fast_output.h"
+diff --git a/g2o/examples/interactive_slam/g2o_interactive/generate_commands.cpp b/g2o/examples/interactive_slam/g2o_interactive/generate_commands.cpp
+index 63d101d..c9c00b2 100644
+--- a/g2o/examples/interactive_slam/g2o_interactive/generate_commands.cpp
++++ b/g2o/examples/interactive_slam/g2o_interactive/generate_commands.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include <signal.h>
+ #include <iostream>
+ #include <iomanip>
 diff --git a/g2o/examples/sphere/create_sphere.cpp b/g2o/examples/sphere/create_sphere.cpp
 index 82296da..44cc358 100644
 --- a/g2o/examples/sphere/create_sphere.cpp
@@ -55,3 +558,375 @@ index 82296da..44cc358 100644
      seedSeq.generate(seeds.begin(), seeds.end());
      cerr << "using seeds:";
      for (size_t i = 0; i < seeds.size(); ++i)
+diff --git a/g2o/examples/target/targetTypes6D.hpp b/g2o/examples/target/targetTypes6D.hpp
+index 097858d..648ca32 100644
+--- a/g2o/examples/target/targetTypes6D.hpp
++++ b/g2o/examples/target/targetTypes6D.hpp
+@@ -1,6 +1,7 @@
+ #ifndef G2O_TARGET_TYPES_6D_HPP_
+ #define G2O_TARGET_TYPES_6D_HPP_
+ 
++#include <cassert>
+ #include <g2o/core/base_vertex.h>
+ #include <g2o/core/base_binary_edge.h>
+ #include <g2o/core/base_unary_edge.h>
+diff --git a/g2o/examples/tutorial_slam2d/se2.h b/g2o/examples/tutorial_slam2d/se2.h
+index 025f82b..7e44d92 100644
+--- a/g2o/examples/tutorial_slam2d/se2.h
++++ b/g2o/examples/tutorial_slam2d/se2.h
+@@ -27,6 +27,7 @@
+ #ifndef G2O_TUTORIAL_SE2_H
+ #define G2O_TUTORIAL_SE2_H
+ 
++#include <cassert>
+ #include "g2o/stuff/misc.h"
+ #include "g2o/stuff/macros.h"
+ 
+diff --git a/g2o/solvers/cholmod/linear_solver_cholmod.h b/g2o/solvers/cholmod/linear_solver_cholmod.h
+index e679724..4058b6a 100644
+--- a/g2o/solvers/cholmod/linear_solver_cholmod.h
++++ b/g2o/solvers/cholmod/linear_solver_cholmod.h
+@@ -27,6 +27,7 @@
+ #ifndef G2O_LINEAR_SOLVER_CHOLMOD
+ #define G2O_LINEAR_SOLVER_CHOLMOD
+ 
++#include <cassert>
+ #include "g2o/core/linear_solver.h"
+ #include "g2o/core/marginal_covariance_cholesky.h"
+ #include "g2o/core/batch_stats.h"
+diff --git a/g2o/solvers/csparse/csparse_extension.cpp b/g2o/solvers/csparse/csparse_extension.cpp
+index 3dab043..5b05e40 100644
+--- a/g2o/solvers/csparse/csparse_extension.cpp
++++ b/g2o/solvers/csparse/csparse_extension.cpp
+@@ -18,6 +18,7 @@
+ // License along with this Module; if not, write to the Free Software
+ // Foundation, Inc., 50 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ 
++#include <cassert>
+ #include <iostream>
+ #include "csparse_extension.h"
+ 
+diff --git a/g2o/solvers/csparse/linear_solver_csparse.h b/g2o/solvers/csparse/linear_solver_csparse.h
+index 3dc3581..89ff263 100644
+--- a/g2o/solvers/csparse/linear_solver_csparse.h
++++ b/g2o/solvers/csparse/linear_solver_csparse.h
+@@ -27,6 +27,7 @@
+ #ifndef G2O_LINEAR_SOLVERCSPARSE_H
+ #define G2O_LINEAR_SOLVERCSPARSE_H
+ 
++#include <cassert>
+ #include "csparse_helper.h"
+ 
+ #include "g2o/core/linear_solver.h"
+diff --git a/g2o/solvers/dense/linear_solver_dense.h b/g2o/solvers/dense/linear_solver_dense.h
+index 9884b53..8db775e 100644
+--- a/g2o/solvers/dense/linear_solver_dense.h
++++ b/g2o/solvers/dense/linear_solver_dense.h
+@@ -28,6 +28,7 @@
+ #ifndef G2O_LINEAR_SOLVER_DENSE_H
+ #define G2O_LINEAR_SOLVER_DENSE_H
+ 
++#include <cassert>
+ #include "g2o/core/linear_solver.h"
+ #include "g2o/core/batch_stats.h"
+ 
+diff --git a/g2o/solvers/eigen/linear_solver_eigen.h b/g2o/solvers/eigen/linear_solver_eigen.h
+index aa4de88..d56ad40 100644
+--- a/g2o/solvers/eigen/linear_solver_eigen.h
++++ b/g2o/solvers/eigen/linear_solver_eigen.h
+@@ -27,6 +27,7 @@
+ #ifndef G2O_LINEAR_SOLVER_EIGEN_H
+ #define G2O_LINEAR_SOLVER_EIGEN_H
+ 
++#include <cassert>
+ #include <Eigen/Sparse>
+ #include <Eigen/SparseCholesky>
+ 
+diff --git a/g2o/solvers/slam2d_linear/solver_slam2d_linear.cpp b/g2o/solvers/slam2d_linear/solver_slam2d_linear.cpp
+index bbc4ed3..3c3af36 100644
+--- a/g2o/solvers/slam2d_linear/solver_slam2d_linear.cpp
++++ b/g2o/solvers/slam2d_linear/solver_slam2d_linear.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "solver_slam2d_linear.h"
+ 
+ #include <Eigen/Core>
+diff --git a/g2o/solvers/structure_only/structure_only_solver.h b/g2o/solvers/structure_only/structure_only_solver.h
+index 11ef9b7..e747b45 100644
+--- a/g2o/solvers/structure_only/structure_only_solver.h
++++ b/g2o/solvers/structure_only/structure_only_solver.h
+@@ -28,6 +28,7 @@
+ #ifndef G2O_STRUCTURE_ONLY_SOLVER_H
+ #define G2O_STRUCTURE_ONLY_SOLVER_H
+ 
++#include <cassert>
+ #include "g2o/core/base_vertex.h"
+ #include "g2o/core/base_binary_edge.h"
+ #include "g2o/core/optimization_algorithm.h"
+diff --git a/g2o/stuff/unscented.h b/g2o/stuff/unscented.h
+index 015cf4f..922677b 100644
+--- a/g2o/stuff/unscented.h
++++ b/g2o/stuff/unscented.h
+@@ -27,6 +27,7 @@
+ #ifndef G2O_UNSCENTED_
+ #define G2O_UNSCENTED_
+ 
++#include <cassert>
+ #include <Eigen/Core>
+ #include <Eigen/Cholesky>
+ 
+diff --git a/g2o/types/sim3/sim3.h b/g2o/types/sim3/sim3.h
+index 6dec96a..86278b0 100644
+--- a/g2o/types/sim3/sim3.h
++++ b/g2o/types/sim3/sim3.h
+@@ -27,6 +27,7 @@
+ #ifndef G2O_SIM_3
+ #define G2O_SIM_3
+ 
++#include <cassert>
+ #include "g2o/types/slam3d/se3_ops.h"
+ #include "g2o/stuff/misc.h"
+ #include <Eigen/Geometry>
+diff --git a/g2o/types/slam2d/edge_se2_lotsofxy.cpp b/g2o/types/slam2d/edge_se2_lotsofxy.cpp
+index 148c5bd..9488253 100644
+--- a/g2o/types/slam2d/edge_se2_lotsofxy.cpp
++++ b/g2o/types/slam2d/edge_se2_lotsofxy.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "edge_se2_lotsofxy.h"
+ 
+ #ifdef G2O_HAVE_OPENGL
+diff --git a/g2o/types/slam2d/edge_se2_offset.cpp b/g2o/types/slam2d/edge_se2_offset.cpp
+index 51b5ac6..7e29e9c 100644
+--- a/g2o/types/slam2d/edge_se2_offset.cpp
++++ b/g2o/types/slam2d/edge_se2_offset.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "edge_se2_offset.h"
+ 
+ #include "parameter_se2_offset.h"
+diff --git a/g2o/types/slam2d/edge_se2_pointxy.cpp b/g2o/types/slam2d/edge_se2_pointxy.cpp
+index 6c3308d..695434f 100644
+--- a/g2o/types/slam2d/edge_se2_pointxy.cpp
++++ b/g2o/types/slam2d/edge_se2_pointxy.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "edge_se2_pointxy.h"
+ 
+ #ifdef G2O_HAVE_OPENGL
+diff --git a/g2o/types/slam2d/edge_se2_pointxy_bearing.cpp b/g2o/types/slam2d/edge_se2_pointxy_bearing.cpp
+index d2a9d89..cd7fda4 100644
+--- a/g2o/types/slam2d/edge_se2_pointxy_bearing.cpp
++++ b/g2o/types/slam2d/edge_se2_pointxy_bearing.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "edge_se2_pointxy_bearing.h"
+ 
+ #ifdef G2O_HAVE_OPENGL
+diff --git a/g2o/types/slam2d/edge_se2_pointxy_calib.cpp b/g2o/types/slam2d/edge_se2_pointxy_calib.cpp
+index 667b3cb..3c6c5d7 100644
+--- a/g2o/types/slam2d/edge_se2_pointxy_calib.cpp
++++ b/g2o/types/slam2d/edge_se2_pointxy_calib.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "edge_se2_pointxy_calib.h"
+ 
+ namespace g2o {
+diff --git a/g2o/types/slam2d/edge_se2_pointxy_offset.cpp b/g2o/types/slam2d/edge_se2_pointxy_offset.cpp
+index b1ac9af..ccfffca 100644
+--- a/g2o/types/slam2d/edge_se2_pointxy_offset.cpp
++++ b/g2o/types/slam2d/edge_se2_pointxy_offset.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "parameter_se2_offset.h"
+ #include "edge_se2_pointxy_offset.h"
+ #include <iostream>
+diff --git a/g2o/types/slam2d/edge_se2_prior.cpp b/g2o/types/slam2d/edge_se2_prior.cpp
+index f1161d7..b83e725 100644
+--- a/g2o/types/slam2d/edge_se2_prior.cpp
++++ b/g2o/types/slam2d/edge_se2_prior.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "edge_se2_prior.h"
+ 
+ namespace g2o {
+diff --git a/g2o/types/slam2d/edge_se2_twopointsxy.cpp b/g2o/types/slam2d/edge_se2_twopointsxy.cpp
+index 7517895..e12f043 100644
+--- a/g2o/types/slam2d/edge_se2_twopointsxy.cpp
++++ b/g2o/types/slam2d/edge_se2_twopointsxy.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "edge_se2_twopointsxy.h"
+ 
+ #ifdef G2O_HAVE_OPENGL
+diff --git a/g2o/types/slam2d/se2.h b/g2o/types/slam2d/se2.h
+index 3277c03..3c2bf63 100644
+--- a/g2o/types/slam2d/se2.h
++++ b/g2o/types/slam2d/se2.h
+@@ -27,6 +27,7 @@
+ #ifndef G2O_SE2_H_
+ #define G2O_SE2_H_
+ 
++#include <cassert>
+ #include "g2o/stuff/misc.h"
+ #include "g2o_types_slam2d_api.h"
+ #include <Eigen/Core>
+diff --git a/g2o/types/slam2d_addons/edge_line2d_pointxy.cpp b/g2o/types/slam2d_addons/edge_line2d_pointxy.cpp
+index 0ac4747..2dbc0b6 100644
+--- a/g2o/types/slam2d_addons/edge_line2d_pointxy.cpp
++++ b/g2o/types/slam2d_addons/edge_line2d_pointxy.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "edge_line2d_pointxy.h"
+ 
+ #ifdef WINDOWS
+diff --git a/g2o/types/slam2d_addons/edge_se2_line2d.cpp b/g2o/types/slam2d_addons/edge_se2_line2d.cpp
+index 44b1d54..cea6b97 100644
+--- a/g2o/types/slam2d_addons/edge_se2_line2d.cpp
++++ b/g2o/types/slam2d_addons/edge_se2_line2d.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "edge_se2_line2d.h"
+ 
+ #ifdef WINDOWS
+diff --git a/g2o/types/slam2d_addons/edge_se2_segment2d.cpp b/g2o/types/slam2d_addons/edge_se2_segment2d.cpp
+index d5a1727..24ee7ad 100644
+--- a/g2o/types/slam2d_addons/edge_se2_segment2d.cpp
++++ b/g2o/types/slam2d_addons/edge_se2_segment2d.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "edge_se2_segment2d.h"
+ 
+ #ifdef WINDOWS
+diff --git a/g2o/types/slam3d/edge_se3_lotsofxyz.cpp b/g2o/types/slam3d/edge_se3_lotsofxyz.cpp
+index 9d5a077..7dbbc7c 100644
+--- a/g2o/types/slam3d/edge_se3_lotsofxyz.cpp
++++ b/g2o/types/slam3d/edge_se3_lotsofxyz.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "edge_se3_lotsofxyz.h"
+ 
+ namespace g2o{
+diff --git a/g2o/types/slam3d/edge_se3_offset.cpp b/g2o/types/slam3d/edge_se3_offset.cpp
+index db73c7c..a99ed3b 100644
+--- a/g2o/types/slam3d/edge_se3_offset.cpp
++++ b/g2o/types/slam3d/edge_se3_offset.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "edge_se3_offset.h"
+ #include "isometry3d_gradients.h"
+ #include "parameter_se3_offset.h"
+diff --git a/g2o/types/slam3d/edge_se3_pointxyz.cpp b/g2o/types/slam3d/edge_se3_pointxyz.cpp
+index 5d7d44b..5484fe4 100644
+--- a/g2o/types/slam3d/edge_se3_pointxyz.cpp
++++ b/g2o/types/slam3d/edge_se3_pointxyz.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "edge_se3_pointxyz.h"
+ #include "parameter_se3_offset.h"
+ 
+diff --git a/g2o/types/slam3d/edge_se3_pointxyz_depth.cpp b/g2o/types/slam3d/edge_se3_pointxyz_depth.cpp
+index b900050..ec0bbd3 100644
+--- a/g2o/types/slam3d/edge_se3_pointxyz_depth.cpp
++++ b/g2o/types/slam3d/edge_se3_pointxyz_depth.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "edge_se3_pointxyz_depth.h"
+ 
+ namespace g2o {
+diff --git a/g2o/types/slam3d/edge_se3_pointxyz_disparity.cpp b/g2o/types/slam3d/edge_se3_pointxyz_disparity.cpp
+index bc9b677..ea1dda6 100644
+--- a/g2o/types/slam3d/edge_se3_pointxyz_disparity.cpp
++++ b/g2o/types/slam3d/edge_se3_pointxyz_disparity.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "edge_se3_pointxyz_disparity.h"
+ 
+ #include <iostream>
+diff --git a/g2o/types/slam3d/edge_se3_prior.cpp b/g2o/types/slam3d/edge_se3_prior.cpp
+index 729bb99..893ccae 100644
+--- a/g2o/types/slam3d/edge_se3_prior.cpp
++++ b/g2o/types/slam3d/edge_se3_prior.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "edge_se3_prior.h"
+ #include "isometry3d_gradients.h"
+ #include <iostream>
+diff --git a/g2o/types/slam3d/edge_se3_xyzprior.cpp b/g2o/types/slam3d/edge_se3_xyzprior.cpp
+index 27598fc..8210715 100644
+--- a/g2o/types/slam3d/edge_se3_xyzprior.cpp
++++ b/g2o/types/slam3d/edge_se3_xyzprior.cpp
+@@ -24,6 +24,7 @@
+ // NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ // SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
++#include <cassert>
+ #include "edge_se3_xyzprior.h"
+ 
+ namespace g2o {
+diff --git a/g2o/types/slam3d/se3quat.h b/g2o/types/slam3d/se3quat.h
+index 705cebf..f0fe084 100644
+--- a/g2o/types/slam3d/se3quat.h
++++ b/g2o/types/slam3d/se3quat.h
+@@ -29,6 +29,7 @@
+ 
+ #include "se3_ops.h"
+ #include "g2o/stuff/misc.h"
++#include <cassert>
+ 
+ #include <Eigen/Core>
+ #include <Eigen/Geometry>

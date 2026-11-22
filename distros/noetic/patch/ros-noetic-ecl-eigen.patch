@@ -1,0 +1,17 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index ff90724..c72ad77 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -32,7 +32,11 @@ elseif(DEFINED ECL_EIGEN_IS_INTERNAL_3_1_2)
+ else()
+     find_package(Eigen3)
+     set(ECL_EIGEN_IS_EXTERNAL 1 CACHE BOOL "Using the system's eigen3 implementation.")
+-    if(EIGEN3_FOUND)
++    # RoboStack: Eigen 5's CMake config sets Eigen3_FOUND (and no EIGEN3_INCLUDE_DIR)
++    if(EIGEN3_FOUND OR Eigen3_FOUND)
++        if(NOT EIGEN3_INCLUDE_DIR)
++          get_target_property(EIGEN3_INCLUDE_DIR Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORIES)
++        endif()
+         # On trusty, it sets EIGEN3_INCLUDE_DIR but not EIGEN3_INCLUDE_DIRS (xenial is fine), so help it
+         if(NOT EIGEN3_INCLUDE_DIRS)
+           set(EIGEN3_INCLUDE_DIRS ${EIGEN3_INCLUDE_DIR})

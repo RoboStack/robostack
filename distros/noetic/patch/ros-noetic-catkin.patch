@@ -43,10 +43,10 @@ index 0000000..9cea055
 +endif()
 +set(boost_system_FOUND TRUE)
 diff --git a/cmake/all.cmake b/cmake/all.cmake
-index 7768f96..792f2f2 100644
+index 7768f96..b857f7a 100644
 --- a/cmake/all.cmake
 +++ b/cmake/all.cmake
-@@ -224,3 +224,20 @@ endif()
+@@ -224,3 +224,24 @@ endif()
  
  # requires stamp and environment files
  include(${catkin_EXTRAS_DIR}/catkin_python_setup.cmake)
@@ -55,6 +55,10 @@ index 7768f96..792f2f2 100644
 +# RoboStack: no C++ standard below C++14 (see robostack_cxx_standard.cmake)
 +include(${catkin_EXTRAS_DIR}/robostack_cxx_standard.cmake)
 +_robostack_drop_old_cxx_standard()
++
++# RoboStack: the Eigen 3.x variables Eigen 5 no longer sets (see robostack_eigen3.cmake)
++include(${catkin_EXTRAS_DIR}/robostack_eigen3.cmake)
++_robostack_eigen3_variables()
 +
 +# RoboStack: clang >= 19 rejects `template` before a name without template arguments
 +# (-Wmissing-template-arg-list-after-template-kw), which older ROS 1 code has
@@ -146,19 +150,20 @@ index b19f4c8..5d9a24c 100644
            endforeach()
          endif()
 diff --git a/cmake/catkin_package.cmake b/cmake/catkin_package.cmake
-index df36e23..f651355 100644
+index df36e23..9b11280 100644
 --- a/cmake/catkin_package.cmake
 +++ b/cmake/catkin_package.cmake
-@@ -81,6 +81,8 @@
+@@ -81,6 +81,9 @@
  # @public
  #
  macro(catkin_package)
 +  # RoboStack: no C++ standard below C++14 (see robostack_cxx_standard.cmake)
 +  _robostack_drop_old_cxx_standard()
++  _robostack_eigen3_variables()
    debug_message(10 "catkin_package() called in file ${CMAKE_CURRENT_LIST_FILE}")
  
    # verify that project() has been called before
-@@ -254,6 +256,17 @@ function(_catkin_package)
+@@ -254,6 +257,17 @@ function(_catkin_package)
      list(APPEND _PKG_CONFIG_LIBRARIES ${PROJECT_DEPENDENCIES_LIBRARIES})
    endif()
  
@@ -267,6 +272,63 @@ index 0000000..13c5c99
 +    set_directory_properties(PROPERTIES COMPILE_OPTIONS "${_options}")
 +  endif()
 +endfunction()
+diff --git a/cmake/robostack_eigen3.cmake b/cmake/robostack_eigen3.cmake
+new file mode 100644
+index 0000000..c9cbf72
+--- /dev/null
++++ b/cmake/robostack_eigen3.cmake
+@@ -0,0 +1,51 @@
++# RoboStack: conda-forge's Eigen 5 breaks how ROS 1 packages find Eigen:
++# - its CMake config only accepts version requests of its own major version
++#   (find_package(Eigen3 3.3) fails),
++# - copies of old FindEigen3.cmake modules can't read its version,
++# - it no longer sets EIGEN3_FOUND, EIGEN3_INCLUDE_DIR(S) and EIGEN3_VERSION_STRING.
++# After find_package(catkin), find_package(Eigen3 ...) therefore uses Eigen's CMake
++# config without the version and sets those variables; they are also set by
++# find_package(catkin) and catkin_package() when the headers are in the prefix.
++macro(_robostack_eigen3_variables)
++  if(Eigen3_FOUND AND TARGET Eigen3::Eigen AND NOT EIGEN3_INCLUDE_DIR)
++    get_target_property(EIGEN3_INCLUDE_DIR Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORIES)
++  endif()
++  if(NOT EIGEN3_INCLUDE_DIR)
++    find_path(_robostack_eigen3_include_dir Eigen/Core PATH_SUFFIXES eigen3 NO_CACHE)
++    if(_robostack_eigen3_include_dir)
++      set(EIGEN3_INCLUDE_DIR "${_robostack_eigen3_include_dir}")
++    endif()
++    unset(_robostack_eigen3_include_dir)
++  endif()
++  if(EIGEN3_INCLUDE_DIR)
++    foreach(_robostack_var EIGEN3_INCLUDE_DIRS Eigen3_INCLUDE_DIR Eigen3_INCLUDE_DIRS)
++      if(NOT ${_robostack_var})
++        set(${_robostack_var} "${EIGEN3_INCLUDE_DIR}")
++      endif()
++    endforeach()
++    unset(_robostack_var)
++  endif()
++  if(Eigen3_FOUND)
++    set(EIGEN3_FOUND TRUE)
++    if(NOT EIGEN3_VERSION_STRING)
++      set(EIGEN3_VERSION_STRING "${Eigen3_VERSION}")
++      set(EIGEN3_VERSION "${Eigen3_VERSION}")
++    endif()
++  endif()
++endmacro()
++
++if(NOT COMMAND _robostack_find_package_override)
++  macro(_robostack_find_package_override)
++  endmacro()
++  macro(find_package _robostack_fp_name)
++    if("${_robostack_fp_name}" STREQUAL "Eigen3")
++      set(_robostack_fp_args ${ARGN})
++      list(FILTER _robostack_fp_args EXCLUDE REGEX "^([0-9]+(\\.[0-9]+)*(\\.\\.\\.<?[0-9.]+)?|EXACT|MODULE|NO_MODULE|CONFIG)$")
++      _find_package(Eigen3 ${_robostack_fp_args} CONFIG)
++      unset(_robostack_fp_args)
++      _robostack_eigen3_variables()
++    else()
++      _find_package(${_robostack_fp_name} ${ARGN})
++    endif()
++  endmacro()
++endif()
 diff --git a/cmake/templates/_setup_util.py.in b/cmake/templates/_setup_util.py.in
 index e73934b..b9c8c00 100755
 --- a/cmake/templates/_setup_util.py.in

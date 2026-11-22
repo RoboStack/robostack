@@ -1,0 +1,31 @@
+diff --git a/include/grid_map_core/eigen_plugins/FunctorsPlugin.hpp b/include/grid_map_core/eigen_plugins/FunctorsPlugin.hpp
+index 79dcdd6..50dba64 100644
+--- a/include/grid_map_core/eigen_plugins/FunctorsPlugin.hpp
++++ b/include/grid_map_core/eigen_plugins/FunctorsPlugin.hpp
+@@ -1,7 +1,7 @@
+ #include <math.h>
+ 
+ template<typename Scalar> struct scalar_sum_of_finites_op {
+-  EIGEN_EMPTY_STRUCT_CTOR(scalar_sum_of_finites_op)
++  scalar_sum_of_finites_op() = default;
+   EIGEN_STRONG_INLINE const Scalar operator() (const Scalar& a, const Scalar& b) const {
+     using std::isfinite;
+     if (isfinite(a) && isfinite(b)) return a + b;
+@@ -20,7 +20,7 @@ struct functor_traits<scalar_sum_of_finites_op<Scalar> > {
+ 
+ template<typename Scalar>
+ struct scalar_min_of_finites_op {
+-  EIGEN_EMPTY_STRUCT_CTOR(scalar_min_of_finites_op)
++  scalar_min_of_finites_op() = default;
+   EIGEN_STRONG_INLINE const Scalar operator() (const Scalar& a, const Scalar& b) const {
+     using std::min;
+     using std::isfinite;
+@@ -40,7 +40,7 @@ struct functor_traits<scalar_min_of_finites_op<Scalar> > {
+ 
+ template<typename Scalar>
+ struct scalar_max_of_finites_op {
+-  EIGEN_EMPTY_STRUCT_CTOR(scalar_max_of_finites_op)
++  scalar_max_of_finites_op() = default;
+   EIGEN_STRONG_INLINE const Scalar operator() (const Scalar& a, const Scalar& b) const {
+     using std::max;
+     using std::isfinite;
