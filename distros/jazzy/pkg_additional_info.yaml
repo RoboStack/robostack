@@ -156,5 +156,7 @@ zenoh_cpp_vendor:
 cartographer_ros:
   additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
   build_number: 32  # offline_node.cpp out of the shared library (duplicate gflags abort)
+class_loader:  # console_bridge outlives the class loaders (exit abort on macOS)
+  build_number: 32
 rmf_utils:  # its DLL moved from lib to bin (Windows)
   build_number: 32
