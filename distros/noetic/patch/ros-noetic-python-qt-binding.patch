@@ -1,22 +1,5 @@
-diff --git a/src/python_qt_binding/__init__.py b/src/python_qt_binding/__init__.py
-index 1e209de..c40ad0b 100644
---- a/src/python_qt_binding/__init__.py
-+++ b/src/python_qt_binding/__init__.py
-@@ -66,3 +66,11 @@
-     del module
- 
- del sys
-+
-+import os
-+from .QtGui import QIcon
-+current_theme_path = QIcon.themeSearchPaths()
-+conda_path = os.environ['CONDA_PREFIX']
-+QIcon.setThemeSearchPaths(current_theme_path + [os.path.join(conda_path, 'share/icons/')])
-+QIcon.setThemeName('Adwaita')
-+del os
-
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 8db3c7b..892d81c 100644
+index d0d9205..78ce2f1 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -10,4 +10,5 @@ install(FILES
@@ -25,228 +8,580 @@ index 8db3c7b..892d81c 100644
    cmake/sip_helper.cmake
 +  cmake/pyproject.toml.in
    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/cmake)
-diff --git a/cmake/sip_configure.py b/cmake/sip_configure.py
-index 4886059..a2b06fe 100644
---- a/cmake/sip_configure.py
-+++ b/cmake/sip_configure.py
-@@ -181,6 +181,7 @@ def split_paths(paths):
- # Force c++14
- if sys.platform == 'win32':
-     makefile.extra_cxxflags.append('/std:c++14')
-+    makefile.extra_cxxflags.append('/DROS_BUILD_SHARED_LIBS=1')
-     # The __cplusplus flag is not properly set on Windows for backwards
-     # compatibilty. This flag sets it correctly
-     makefile.CXXFLAGS.append('/Zc:__cplusplus')
-@@ -190,6 +191,22 @@ def split_paths(paths):
- # Finalise the Makefile, preparing it to be saved to disk
- makefile.finalise()
- 
-+# ---- Force C++14 and override any gnu++11 etc. ----
-+cxxflags = makefile.CXXFLAGS.as_list()
-+
-+# Remove any existing standard flags
-+cxxflags = [
-+    f for f in cxxflags
-+    if not f.startswith('-std=') and not f.startswith('/std:')
-+]
-+
-+if sys.platform == 'win32':
-+    cxxflags.append('/std:c++14')
-+else:
-+    cxxflags.append('-std=c++14')
-+
-+makefile.CXXFLAGS.set(cxxflags)
-+
- # Replace Qt variables from libraries
- libs = makefile.LIBS.as_list()
- for i in range(len(libs)):
 diff --git a/cmake/pyproject.toml.in b/cmake/pyproject.toml.in
 new file mode 100644
-index 0000000..9353bab
+index 0000000..f160331
 --- /dev/null
 +++ b/cmake/pyproject.toml.in
-@@ -0,0 +1,27 @@
-+# Specify sip v5 as the build system for the package.
+@@ -0,0 +1,23 @@
 +[build-system]
-+requires = ["PyQt-builder >=1, <2"]
++requires = ["sip >=6, <7"]
 +build-backend = "sipbuild.api"
++
++[project]
++name = "@PROJECT_NAME@"
++version = "1.0.0"
 +
 +[tool.sip]
 +project-factory = "pyqtbuild:PyQtProject"
 +
 +[tool.sip.builder]
-+qmake = "@QMAKE_EXECUTABLE@"
-+qmake-settings = ["CONFIG += c++14"]
-+[tool.sip.project]
-+sip-files-dir = "@SIP_FILES_DIR@"
-+build-dir = "@SIP_BUILD_DIR@"
-+verbose = true
-+# Specify the PEP 566 metadata for the project.
-+[tool.sip.metadata]
-+name = "lib@PROJECT_NAME@"
++qmake = "@python_qt_binding_QMAKE_EXECUTABLE@"
 +
-+[tool.sip.bindings.libqt_gui_cpp_sip]
-+sip-file = "@SIP_FILE@"
-+include-dirs = [@SIP_INCLUDE_DIRS@]
-+libraries = [@SIP_LIBARIES@]
-+library-dirs = [@SIP_LIBRARY_DIRS@]
-+qmake-QT = ["widgets"]
-+define-macros = [@SIP_EXTRA_DEFINES@]
++[tool.sip.project]
++build-dir = "@SIP_BUILD_DIR@"
++sip-files-dir = "@sip_SOURCE_DIR@"
++sip-include-dirs = ["@__PYQT_BINDINGS_DIR@"]
++abi-version = "@__QT_SIP_ABI_VERSION@"
++
++[tool.sip.bindings.@PROJECT_NAME@]
++sip-file = "@SIP_FILE_NAME@"
 +exceptions = true
 diff --git a/cmake/sip_helper.cmake b/cmake/sip_helper.cmake
-index a055cf5..8f32039 100644
+index a055cf5..2d9b4b2 100644
 --- a/cmake/sip_helper.cmake
 +++ b/cmake/sip_helper.cmake
-@@ -18,7 +18,7 @@ execute_process(
- if(PYTHON_SIP_EXECUTABLE)
-   string(STRIP ${PYTHON_SIP_EXECUTABLE} SIP_EXECUTABLE)
- else()
--  find_program(SIP_EXECUTABLE sip)
-+  find_program(SIP_EXECUTABLE NAMES sip sip-build)
- endif()
+@@ -5,34 +5,48 @@ set(__PYTHON_QT_BINDING_SIP_HELPER_INCLUDED TRUE)
  
- if(SIP_EXECUTABLE)
-@@ -29,6 +29,15 @@ else()
+ set(__PYTHON_QT_BINDING_SIP_HELPER_DIR ${CMAKE_CURRENT_LIST_DIR})
+ 
+-set(Python_ADDITIONAL_VERSIONS "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}")
+-find_package(PythonInterp "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}" REQUIRED)
+-assert(PYTHON_EXECUTABLE)
+-find_package(PythonLibs "${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}" REQUIRED)
++# RoboStack: PyQt6 and sip 6, as python_qt_binding does in ROS 2 (rolling): sip-build
++# only generates the C++ code, CMake compiles it into a Python extension module.
++
++# the Python catkin found
++if(PYTHON_EXECUTABLE AND NOT Python3_EXECUTABLE)
++  set(Python3_EXECUTABLE ${PYTHON_EXECUTABLE})
++endif()
++find_package(Python3 REQUIRED COMPONENTS Interpreter Development.Module)
+ 
+ execute_process(
+-  COMMAND ${PYTHON_EXECUTABLE} -c "import sipconfig; print(sipconfig.Configuration().sip_bin)"
+-  OUTPUT_VARIABLE PYTHON_SIP_EXECUTABLE
++  COMMAND ${Python3_EXECUTABLE} -c "import sipbuild"
++  RESULT_VARIABLE _sipbuild_res
++  ERROR_QUIET)
++execute_process(
++  COMMAND ${Python3_EXECUTABLE} -c "import PyQt6.bindings as pb; print(pb.__path__[0])"
++  OUTPUT_VARIABLE __PYQT_BINDINGS_DIR
++  OUTPUT_STRIP_TRAILING_WHITESPACE
++  RESULT_VARIABLE _bindings_res
+   ERROR_QUIET)
+ 
+-if(PYTHON_SIP_EXECUTABLE)
+-  string(STRIP ${PYTHON_SIP_EXECUTABLE} SIP_EXECUTABLE)
+-else()
+-  find_program(SIP_EXECUTABLE sip)
+-endif()
+-
+-if(SIP_EXECUTABLE)
+-  message(STATUS "SIP binding generator available at: ${SIP_EXECUTABLE}")
++if(_sipbuild_res EQUAL 0 AND _bindings_res EQUAL 0 AND IS_DIRECTORY "${__PYQT_BINDINGS_DIR}")
+   set(sip_helper_FOUND TRUE)
++  message(STATUS "SIP binding generator (sip-build) and PyQt6 bindings (${__PYQT_BINDINGS_DIR}) found")
++  # the sip ABI version PyQt6 was built with
++  set(__QT_SIP_ABI_VERSION "12")
++  if(EXISTS "${__PYQT_BINDINGS_DIR}/QtCore/QtCore.toml")
++    file(READ "${__PYQT_BINDINGS_DIR}/QtCore/QtCore.toml" _toml)
++    if(_toml MATCHES "sip-abi-version[ \t]*=[ \t]*\"([^\"]+)\"")
++      set(__QT_SIP_ABI_VERSION ${CMAKE_MATCH_1})
++    endif()
++  endif()
++  find_program(python_qt_binding_QMAKE_EXECUTABLE NAMES qmake6 qmake-qt6 qmake REQUIRED)
+ else()
+-  message(WARNING "SIP binding generator NOT available.")
++  message(STATUS "SIP binding generator or PyQt6 bindings NOT available")
    set(sip_helper_NOTFOUND TRUE)
  endif()
  
-+if(sip_helper_FOUND)
-+  execute_process(
-+    COMMAND ${SIP_EXECUTABLE} -V
-+    OUTPUT_VARIABLE SIP_VERSION
-+    ERROR_QUIET)
-+  # string(STRIP ${SIP_VERSION} SIP_VERSION)
-+  # message(STATUS "SIP binding generator version: ${SIP_VERSION}")
-+endif()
-+
  #
  # Run the SIP generator and compile the generated code into a library.
  #
-@@ -89,32 +98,107 @@ function(build_sip_binding PROJECT_NAME SIP_FILE)
-     # SIP configure doesn't handle CMake targets
-     catkin_replace_imported_library_targets(LIBRARIES ${LIBRARIES})
+-# .. note:: The target lib${PROJECT_NAME} is created.
++# .. note:: The target lib${PROJECT_NAME} is created, a Python extension module
++#   (with the Python's extension suffix) in LIBRARY_DIR.
+ #
+ # :param PROJECT_NAME: The name of the sip project
+ # :type PROJECT_NAME: string
+@@ -40,8 +54,7 @@ endif()
+ # :type SIP_FILE: string
+ #
+ # The following options can be used to override the default behavior:
+-#   SIP_CONFIGURE: the used configure script for SIP
+-#     (default: sip_configure.py in the same folder as this file)
++#   SIP_CONFIGURE: ignored (sip 4's configure script), kept for compatibility
+ #   SOURCE_DIR: the source dir (default: ${PROJECT_SOURCE_DIR}/src)
+ #   LIBRARY_DIR: the library dir (default: ${PROJECT_SOURCE_DIR}/src)
+ #   BINARY_DIR: the binary dir (default: ${PROJECT_BINARY_DIR})
+@@ -52,17 +65,15 @@ endif()
+ #   DEPENDENCIES: target dependencies
+ #     (should list the library for which SIP generates the bindings)
+ #
++# The include directories, libraries, library directories and linker flags come
++# from ${PROJECT_NAME}_INCLUDE_DIRS, _LIBRARIES, _LIBRARY_DIRS and _LDFLAGS_OTHER.
++#
+ function(build_sip_binding PROJECT_NAME SIP_FILE)
+     cmake_parse_arguments(sip "" "SIP_CONFIGURE;SOURCE_DIR;LIBRARY_DIR;BINARY_DIR" "DEPENDS;DEPENDENCIES" ${ARGN})
+     if(sip_UNPARSED_ARGUMENTS)
+         message(WARNING "build_sip_binding(${PROJECT_NAME}) called with unused arguments: ${sip_UNPARSED_ARGUMENTS}")
+     endif()
  
+-    # set default values for optional arguments
+-    if(NOT sip_SIP_CONFIGURE)
+-        # default to sip_configure.py in this directory
+-        set(sip_SIP_CONFIGURE ${__PYTHON_QT_BINDING_SIP_HELPER_DIR}/sip_configure.py)
+-    endif()
+     if(NOT sip_SOURCE_DIR)
+         set(sip_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
+     endif()
+@@ -74,50 +85,48 @@ function(build_sip_binding PROJECT_NAME SIP_FILE)
+     endif()
+ 
+     set(SIP_BUILD_DIR ${sip_BINARY_DIR}/sip/${PROJECT_NAME})
++    get_filename_component(SIP_FILE_NAME ${SIP_FILE} NAME)
+ 
+-    set(INCLUDE_DIRS ${${PROJECT_NAME}_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
+-    set(LIBRARY_DIRS ${${PROJECT_NAME}_LIBRARY_DIRS})
+-    set(LDFLAGS_OTHER ${${PROJECT_NAME}_LDFLAGS_OTHER})
+-
+-    set(EXTRA_DEFINES "")
+-    if(DEFINED BUILD_SHARED_LIBS AND BUILD_SHARED_LIBS)
+-      set(EXTRA_DEFINES "ROS_BUILD_SHARED_LIBS")
+-    endif()
+-
+-    # SIP configure doesn't handle build configuration keywords
+-    catkin_filter_libraries_for_build_configuration(LIBRARIES ${${PROJECT_NAME}_LIBRARIES})
+-    # SIP configure doesn't handle CMake targets
+-    catkin_replace_imported_library_targets(LIBRARIES ${LIBRARIES})
+-
 -    add_custom_command(
 -        OUTPUT ${SIP_BUILD_DIR}/Makefile
 -        COMMAND ${PYTHON_EXECUTABLE} ${sip_SIP_CONFIGURE} ${SIP_BUILD_DIR} ${SIP_FILE} ${sip_LIBRARY_DIR} \"${INCLUDE_DIRS}\" \"${LIBRARIES}\" \"${LIBRARY_DIRS}\" \"${LDFLAGS_OTHER}\" \"${EXTRA_DEFINES}\"
 -        DEPENDS ${sip_SIP_CONFIGURE} ${SIP_FILE} ${sip_DEPENDS}
 -        WORKING_DIRECTORY ${sip_SOURCE_DIR}
 -        COMMENT "Running SIP generator for ${PROJECT_NAME} Python bindings..."
--    )
-+    if(TRUE)
-+        # Since v5, SIP implements the backend per PEP 517, PEP 518
-+        # Here we synthesize `pyproject.toml` and run `pip install`
-+
-+        find_program(QMAKE_EXECUTABLE NAMES qmake REQUIRED)
++    file(MAKE_DIRECTORY ${SIP_BUILD_DIR})
++    configure_file(
++        "${__PYTHON_QT_BINDING_SIP_HELPER_DIR}/pyproject.toml.in"
++        "${SIP_BUILD_DIR}/pyproject.toml"
++        @ONLY
+     )
  
 -    if(NOT EXISTS "${sip_LIBRARY_DIR}")
-+        file(REMOVE_RECURSE ${SIP_BUILD_DIR})
-         file(MAKE_DIRECTORY ${sip_LIBRARY_DIR})
+-        file(MAKE_DIRECTORY ${sip_LIBRARY_DIR})
 -    endif()
- 
+-
 -    if(WIN32)
 -      set(MAKE_EXECUTABLE NMake.exe)
-+        set(SIP_FILES_DIR ${sip_SOURCE_DIR})
-+
-+        set(SIP_INCLUDE_DIRS "")
-+        foreach(_x ${INCLUDE_DIRS})
-+          set(SIP_INCLUDE_DIRS "${SIP_INCLUDE_DIRS},\"${_x}\"")
-+        endforeach()
-+        string(REGEX REPLACE "^," "" SIP_INCLUDE_DIRS ${SIP_INCLUDE_DIRS})
-+
-+        # SIP expects the libraries WITHOUT the file extension.
-+        set(SIP_LIBARIES "")
-+        set(SIP_LIBRARY_DIRS "")
-+
-+        if(APPLE)
-+          set(LIBRARIES_TO_LOOP ${LIBRARIES})
-+        else()
-+          set(LIBRARIES_TO_LOOP ${LIBRARIES} ${PYTHON_LIBRARIES})
-+        endif()
-+
-+        # message(WARNING "test LIBRARIES_TO_LOOP: ${LIBRARIES_TO_LOOP}")
-+
-+        foreach(_x ${LIBRARIES_TO_LOOP})
-+          get_filename_component(_x_NAME "${_x}" NAME_WLE)
-+          get_filename_component(_x_DIR "${_x}" DIRECTORY)
-+          get_filename_component(_x "${_x_DIR}/${_x_NAME}" ABSOLUTE)
-+          STRING(REGEX REPLACE "^lib" "" _x_NAME_NOPREFIX ${_x_NAME})
-+
-+          string(FIND "${_x_NAME_NOPREFIX}" "$<TARGET_FILE" out)
-+          string(FIND "${_x_NAME_NOPREFIX}" "::" out2)
-+          if("${out}" EQUAL 0)
-+            STRING(REGEX REPLACE "\\$<TARGET_FILE:" "" _x_NAME_NOPREFIX ${_x_NAME_NOPREFIX})
-+            STRING(REGEX REPLACE ">" "" _x_NAME_NOPREFIX ${_x_NAME_NOPREFIX})
-+            if(NOT "${out2}" EQUAL -1)
-+              message(STATUS "IGNORE: ${_x_NAME_NOPREFIX}")
-+            else()
-+              set(SIP_LIBARIES "${SIP_LIBARIES},\"${_x_NAME_NOPREFIX}\"")
-+            endif()
-+          else()
-+            set(SIP_LIBARIES "${SIP_LIBARIES},\"${_x_NAME_NOPREFIX}\"")
-+            set(SIP_LIBRARY_DIRS "${SIP_LIBRARY_DIRS},\"${_x_DIR}\"")
-+          endif()
-+        endforeach()
-+        string(REGEX REPLACE "^," "" SIP_LIBARIES ${SIP_LIBARIES})
-+        message(WARNING "test SIP_LIBARIES: ${SIP_LIBARIES}")
-+        foreach(_x ${LIBRARY_DIRS})
-+          set(SIP_LIBRARY_DIRS "${SIP_LIBRARY_DIRS},\"${_x}\"")
-+        endforeach()
-+        string(REGEX REPLACE "^," "" SIP_LIBRARY_DIRS ${SIP_LIBRARY_DIRS})
-+
-+        message(WARNING "test lib dir: ${SIP_LIBRARY_DIRS}")
-+        # TODO:
-+        #   I don't know what to do about LDFLAGS_OTHER
-+        #   what's the equivalent construct in sip5?
-+
-+        configure_file(
-+            ${__PYTHON_QT_BINDING_SIP_HELPER_DIR}/pyproject.toml.in
-+            ${sip_BINARY_DIR}/sip/pyproject.toml
-+        )
-+        add_custom_command(
-+            OUTPUT ${sip_LIBRARY_DIR}/lib${PROJECT_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}
-+            COMMAND ${PYTHON_EXECUTABLE} -m pip install . --target ${sip_LIBRARY_DIR} --no-deps -vvv --upgrade
-+            DEPENDS ${sip_SIP_CONFIGURE} ${SIP_FILE} ${sip_DEPENDS}
-+            WORKING_DIRECTORY ${sip_BINARY_DIR}/sip
-+            COMMENT "Running SIP-build generator for ${PROJECT_NAME} Python bindings..."
-+        )
-     else()
+-    else()
 -      set(MAKE_EXECUTABLE "\$(MAKE)")
-+        add_custom_command(
-+            OUTPUT ${SIP_BUILD_DIR}/Makefile
-+            COMMAND ${PYTHON_EXECUTABLE} ${sip_SIP_CONFIGURE} ${SIP_BUILD_DIR} ${SIP_FILE} ${sip_LIBRARY_DIR} \"${INCLUDE_DIRS}\" \"${LIBRARIES}\" \"${LIBRARY_DIRS}\" \"${LDFLAGS_OTHER}\" \"${EXTRA_DEFINES}\"
-+            DEPENDS ${sip_SIP_CONFIGURE} ${SIP_FILE} ${sip_DEPENDS}
-+            WORKING_DIRECTORY ${sip_SOURCE_DIR}
-+            COMMENT "Running SIP generator for ${PROJECT_NAME} Python bindings..."
-+        )
-+
-+        if(NOT EXISTS "${sip_LIBRARY_DIR}")
-+            file(MAKE_DIRECTORY ${sip_LIBRARY_DIR})
-+        endif()
-+
-+        if(WIN32)
-+          set(MAKE_EXECUTABLE NMake.exe)
-+        else()
-+          set(MAKE_EXECUTABLE make)
-+        endif()
-+
-+        add_custom_command(
-+            OUTPUT ${sip_LIBRARY_DIR}/lib${PROJECT_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}
-+            COMMAND ${MAKE_EXECUTABLE}
-+            DEPENDS ${SIP_BUILD_DIR}/Makefile
-+            WORKING_DIRECTORY ${SIP_BUILD_DIR}
-+            COMMENT "Compiling generated code for ${PROJECT_NAME} Python bindings..."
-+        )
-     endif()
- 
--    add_custom_command(
+-    endif()
+-
++    set(GENERATED_CPP "${SIP_BUILD_DIR}/lib${PROJECT_NAME}/siplib${PROJECT_NAME}part0.cpp")
+     add_custom_command(
 -        OUTPUT ${sip_LIBRARY_DIR}/lib${PROJECT_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}
 -        COMMAND ${MAKE_EXECUTABLE}
 -        DEPENDS ${SIP_BUILD_DIR}/Makefile
--        WORKING_DIRECTORY ${SIP_BUILD_DIR}
++        OUTPUT ${GENERATED_CPP}
++        COMMAND ${Python3_EXECUTABLE} -m sipbuild.tools.build --no-compile --concatenate 1
++        DEPENDS ${SIP_FILE} ${sip_DEPENDS}
+         WORKING_DIRECTORY ${SIP_BUILD_DIR}
 -        COMMENT "Compiling generated code for ${PROJECT_NAME} Python bindings..."
--    )
++        COMMENT "Generating C++ code for ${PROJECT_NAME} Python bindings using sip-build..."
+     )
 -
-     add_custom_target(lib${PROJECT_NAME} ALL
-         DEPENDS ${sip_LIBRARY_DIR}/lib${PROJECT_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}
-         COMMENT "Meta target for ${PROJECT_NAME} Python bindings..."
+-    add_custom_target(lib${PROJECT_NAME} ALL
+-        DEPENDS ${sip_LIBRARY_DIR}/lib${PROJECT_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}
+-        COMMENT "Meta target for ${PROJECT_NAME} Python bindings..."
+-    )
+-    add_dependencies(lib${PROJECT_NAME} ${sip_DEPENDENCIES})
++    add_custom_target(${PROJECT_NAME}_codegen DEPENDS ${GENERATED_CPP})
++    set_source_files_properties(${GENERATED_CPP} PROPERTIES GENERATED TRUE)
++
++    Python3_add_library(lib${PROJECT_NAME} MODULE WITH_SOABI ${GENERATED_CPP})
++    add_dependencies(lib${PROJECT_NAME} ${PROJECT_NAME}_codegen)
++    set_target_properties(lib${PROJECT_NAME} PROPERTIES
++        LIBRARY_OUTPUT_DIRECTORY ${sip_LIBRARY_DIR}
++        RUNTIME_OUTPUT_DIRECTORY ${sip_LIBRARY_DIR})
++    foreach(_config ${CMAKE_CONFIGURATION_TYPES})
++        string(TOUPPER ${_config} _config)
++        set_target_properties(lib${PROJECT_NAME} PROPERTIES
++            LIBRARY_OUTPUT_DIRECTORY_${_config} ${sip_LIBRARY_DIR}
++            RUNTIME_OUTPUT_DIRECTORY_${_config} ${sip_LIBRARY_DIR})
++    endforeach()
++
++    find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
++    target_include_directories(lib${PROJECT_NAME} PRIVATE ${${PROJECT_NAME}_INCLUDE_DIRS} ${SIP_BUILD_DIR})
++    target_link_libraries(lib${PROJECT_NAME} PRIVATE ${${PROJECT_NAME}_LIBRARIES} ${sip_DEPENDENCIES} Qt6::Core Qt6::Gui Qt6::Widgets)
++    if(${PROJECT_NAME}_LIBRARY_DIRS)
++        target_link_directories(lib${PROJECT_NAME} PRIVATE ${${PROJECT_NAME}_LIBRARY_DIRS})
++    endif()
++    if(${PROJECT_NAME}_LDFLAGS_OTHER)
++        target_link_options(lib${PROJECT_NAME} PRIVATE ${${PROJECT_NAME}_LDFLAGS_OTHER})
++    endif()
++    if(DEFINED BUILD_SHARED_LIBS AND BUILD_SHARED_LIBS)
++        target_compile_definitions(lib${PROJECT_NAME} PRIVATE ROS_BUILD_SHARED_LIBS)
++    endif()
+ endfunction()
+diff --git a/src/python_qt_binding/__init__.py b/src/python_qt_binding/__init__.py
+index 536a3f9..962db7a 100644
+--- a/src/python_qt_binding/__init__.py
++++ b/src/python_qt_binding/__init__.py
+@@ -62,3 +62,12 @@ for module_name, module in QT_BINDING_MODULES.items():
+     del module
+ 
+ del sys
++
++import os
++from .QtGui import QIcon
++current_theme_path = QIcon.themeSearchPaths()
++conda_path = os.environ.get('CONDA_PREFIX')
++if conda_path:
++    QIcon.setThemeSearchPaths(current_theme_path + [os.path.join(conda_path, 'share', 'icons')])
++    QIcon.setThemeName('Adwaita')
++del os
+diff --git a/src/python_qt_binding/binding_helper.py b/src/python_qt_binding/binding_helper.py
+index e395ae3..61cd0f2 100644
+--- a/src/python_qt_binding/binding_helper.py
++++ b/src/python_qt_binding/binding_helper.py
+@@ -90,6 +90,10 @@ def _select_qt_binding(binding_name=None, binding_order=None):
+         'QtTest',
+         'QtWebChannel',
+         'QtWebEngine',  # Qt 5.6 and higher
++        'QtOpenGLWidgets',  # Qt 6
++        'QtSvgWidgets',  # Qt 6
++        'QtWebEngineCore',  # Qt 6
++        'QtWebEngineWidgets',  # Qt 6
+         'QtWebEngineCore',
+         'QtWebEngineWidgets',
+         'QtWebKitWidgets',  # Qt 5.0 - 5.5
+@@ -146,34 +150,314 @@ def _named_optional_import(name):
+ 
+ def _load_pyqt(required_modules, optional_modules):
+     # set environment variable QT_API for matplotlib
+-    os.environ['QT_API'] = 'pyqt'
++    os.environ['QT_API'] = 'pyqt6'
+ 
+     # register required and optional PyQt modules
+     for module_name in required_modules:
+-        _named_import('PyQt5.%s' % module_name)
++        _named_import('PyQt6.%s' % module_name)
+     for module_name in optional_modules:
+-        _named_optional_import('PyQt5.%s' % module_name)
++        _named_optional_import('PyQt6.%s' % module_name)
+ 
+     # set some names for compatibility with PySide
+     sys.modules['QtCore'].Signal = sys.modules['QtCore'].pyqtSignal
+     sys.modules['QtCore'].Slot = sys.modules['QtCore'].pyqtSlot
+     sys.modules['QtCore'].Property = sys.modules['QtCore'].pyqtProperty
+ 
+-    # try to register Qwt module
+-    try:
+-        import PyQt5.Qwt5
+-        _register_binding_module('Qwt', PyQt5.Qwt5)
+-    except ImportError:
+-        pass
++    _qt5_compatibility()
+ 
+     global _loadUi
+ 
+     def _loadUi(uifile, baseinstance=None, custom_widgets_=None):
+-        from PyQt5 import uic
++        from PyQt6 import uic
+         return uic.loadUi(uifile, baseinstance=baseinstance)
+ 
+-    import PyQt5.QtCore
+-    return PyQt5.QtCore.PYQT_VERSION_STR
++    import PyQt6.QtCore
++    return PyQt6.QtCore.PYQT_VERSION_STR
++
++
++def _make_qregexp(QtCore):
++    """Qt 5's QRegExp, on QRegularExpression (the parts plugins use)."""
++    QRegularExpression = QtCore.QRegularExpression
++    CaseInsensitive = QtCore.Qt.CaseSensitivity.CaseInsensitive
++
++    class QRegExp(QRegularExpression):
++        RegExp, Wildcard, FixedString, RegExp2, WildcardUnix, W3CXmlSchema11 = range(6)
++        # QRegExp.PatternSyntax(n): the syntax values are plain ints here
++        PatternSyntax = int
++
++        def __init__(self, pattern='', cs=QtCore.Qt.CaseSensitivity.CaseSensitive, syntax=0):
++            if isinstance(pattern, QRegularExpression):
++                pattern = pattern.pattern()
++            self._source, self._syntax, self._captures = pattern, syntax, []
++            if syntax in (QRegExp.Wildcard, QRegExp.WildcardUnix):
++                pattern = QRegularExpression.wildcardToRegularExpression(pattern)
++            elif syntax == QRegExp.FixedString:
++                pattern = QRegularExpression.escape(pattern)
++            options = QRegularExpression.PatternOption.NoPatternOption
++            if cs == CaseInsensitive:
++                options = QRegularExpression.PatternOption.CaseInsensitiveOption
++            super(QRegExp, self).__init__(pattern, options)
++
++        def _keep(self, match):
++            self._captures = list(match.capturedTexts()) if match.hasMatch() else []
++            return match
++
++        def exactMatch(self, text):
++            whole = QRegularExpression(
++                QRegularExpression.anchoredPattern(self.pattern()), self.patternOptions())
++            return self._keep(whole.match(text)).hasMatch()
++
++        def indexIn(self, text, offset=0):
++            match = self._keep(self.match(text, offset))
++            return match.capturedStart(0) if match.hasMatch() else -1
++
++        def cap(self, n=0):
++            return self._captures[n] if n < len(self._captures) else ''
++
++        def capturedTexts(self):
++            return list(self._captures)
++
++        def matchedLength(self):
++            return len(self._captures[0]) if self._captures else -1
++
++        def isEmpty(self):
++            return not self._source
++
++        def setCaseSensitivity(self, cs):
++            options = self.patternOptions()
++            if cs == CaseInsensitive:
++                options |= QRegularExpression.PatternOption.CaseInsensitiveOption
++            else:
++                options &= ~QRegularExpression.PatternOption.CaseInsensitiveOption
++            self.setPatternOptions(options)
++
++        def caseSensitivity(self):
++            if self.patternOptions() & QRegularExpression.PatternOption.CaseInsensitiveOption:
++                return CaseInsensitive
++            return QtCore.Qt.CaseSensitivity.CaseSensitive
++
++    return QRegExp
++
++
++def _qt5_compatibility():
++    """Let code written for PyQt5 (noetic's plugins) run on PyQt6 (RoboStack).
++
++    - enum values also as attributes of their class (Qt.AlignLeft, not only
++      Qt.AlignmentFlag.AlignLeft), as PyQt5 had them
++    - exec_() next to exec()
++    - the classes Qt 6 moved from QtWidgets to QtGui also in QtWidgets
++    - a few Qt 5 methods Qt 6 dropped, as their replacements
++    """
++    import enum
++
++    modules = [sys.modules[name] for name in ('QtCore', 'QtGui', 'QtWidgets', 'QtSvg',
++               'QtOpenGL', 'QtOpenGLWidgets', 'QtNetwork', 'QtPrintSupport') if name in sys.modules]
++    for module in modules:
++        for class_name in dir(module):
++            if not class_name.startswith('Q'):
++                continue
++            cls = getattr(module, class_name)
++            # module-level enums (QtCore.QtMsgType: QtCore.QtCriticalMsg, ...)
++            if isinstance(cls, enum.EnumMeta):
++                for name, member in cls.__members__.items():
++                    if not hasattr(module, name):
++                        setattr(module, name, member)
++                continue
++            if not isinstance(cls, type):
++                continue
++            for attr_name in dir(cls):
++                if not attr_name[:1].isupper():
++                    continue
++                attr = getattr(cls, attr_name, None)
++                if isinstance(attr, enum.EnumMeta):
++                    # int(enum value), as with PyQt5's int-like enums
++                    if not issubclass(attr, int) and '__int__' not in attr.__dict__:
++                        try:
++                            attr.__int__ = lambda self: int(self.value)
++                            attr.__index__ = lambda self: int(self.value)
++                        except (AttributeError, TypeError):
++                            pass
++                    # __members__: also aliases and flag combinations (Qt.AllDockWidgetAreas)
++                    for name, member in attr.__members__.items():
++                        if name not in cls.__dict__:
++                            try:
++                                setattr(cls, name, member)
++                            except (AttributeError, TypeError):
++                                pass
++            if 'exec' in dir(cls) and 'exec_' not in dir(cls):
++                try:
++                    cls.exec_ = cls.exec
++                except (AttributeError, TypeError):
++                    pass
++
++    QtCore = sys.modules.get('QtCore')
++    QtGui = sys.modules.get('QtGui')
++    QtWidgets = sys.modules.get('QtWidgets')
++    if QtCore is not None:
++        if not hasattr(QtCore.Qt, 'MidButton'):
++            QtCore.Qt.MidButton = QtCore.Qt.MouseButton.MiddleButton
++        # Qt.CTRL + Qt.Key_S (Qt 5 ints): Qt 6 combines a modifier and a key into a
++        # QKeyCombination (Qt.ControlModifier | Qt.Key_S), which QKeySequence and QShortcut take
++        if hasattr(QtCore, 'QKeyCombination'):
++            Qt = QtCore.Qt
++
++            def _key_add(self, other):
++                if isinstance(other, (Qt.Modifier, Qt.KeyboardModifier)):
++                    return Qt.KeyboardModifier(int(self.value) | int(other.value))
++                if isinstance(other, Qt.Key):
++                    return QtCore.QKeyCombination(Qt.KeyboardModifier(int(self.value)), other)
++                return NotImplemented
++            for modifier_enum in (Qt.Modifier, Qt.KeyboardModifier):
++                try:
++                    modifier_enum.__add__ = _key_add
++                    modifier_enum.__radd__ = _key_add
++                except (AttributeError, TypeError):
++                    pass
++        # QMutex(QMutex.Recursive): Qt 6 has QRecursiveMutex instead
++        if not hasattr(QtCore.QMutex, 'Recursive') and hasattr(QtCore, 'QRecursiveMutex'):
++            class QMutex(QtCore.QMutex):
++                NonRecursive = 0
++                Recursive = 1
++
++                def __new__(cls, mode=0):
++                    if mode == 1:
++                        return QtCore.QRecursiveMutex()
++                    return super().__new__(cls)
++
++                def __init__(self, mode=0):
++                    super().__init__()
++            QtCore.QMutex = QMutex
++        # QRegExp (gone from Qt 6's QtCore): a QRegularExpression with QRegExp's API, so that
++        # it also works where Qt 6 takes a QRegularExpression (findChildren, validators)
++        if not hasattr(QtCore, 'QRegExp'):
++            QtCore.QRegExp = _make_qregexp(QtCore)
++        # QModelIndex.child(row, column), removed in Qt 6
++        if not hasattr(QtCore.QModelIndex, 'child'):
++            def _child(self, row, column):
++                model = self.model()
++                return model.index(row, column, self) if model is not None else QtCore.QModelIndex()
++            QtCore.QModelIndex.child = _child
++        # QSortFilterProxyModel.filterRegExp / setFilterRegExp: Qt 6 only has the
++        # QRegularExpression variants (the QRegExp above is one)
++        proxy = getattr(QtCore, 'QSortFilterProxyModel', None)
++        if proxy is not None and not hasattr(proxy, 'filterRegExp'):
++            def _filter_regexp(self):
++                regex = self.filterRegularExpression()
++                return QtCore.QRegExp(regex.pattern(), self.filterCaseSensitivity())
++
++            def _set_filter_regexp(self, regex):
++                if not isinstance(regex, QtCore.QRegularExpression):
++                    regex = QtCore.QRegExp(regex)
++                self.setFilterRegularExpression(regex)
++            proxy.filterRegExp = _filter_regexp
++            proxy.setFilterRegExp = _set_filter_regexp
++        # QSignalMapper.mapped[int / str / QObject]: Qt 6 has mappedInt, mappedString, mappedObject
++        if hasattr(QtCore, 'QSignalMapper') and not hasattr(QtCore.QSignalMapper, 'mapped'):
++            class _Mapped(object):
++                def __init__(self, mapper):
++                    self._mapper = mapper
++
++                def __getitem__(self, signal_type):
++                    if signal_type is int:
++                        return self._mapper.mappedInt
++                    if signal_type is str:
++                        return self._mapper.mappedString
++                    return self._mapper.mappedObject
++
++                def connect(self, slot):
++                    return self._mapper.mappedInt.connect(slot)
++
++                def disconnect(self, *args):
++                    return self._mapper.mappedInt.disconnect(*args)
++            QtCore.QSignalMapper.mapped = property(lambda self: _Mapped(self))
++    if QtWidgets is not None and hasattr(QtWidgets, 'QComboBox'):
++        # QComboBox.currentIndexChanged[str], activated[str], highlighted[str]: Qt 6 has
++        # currentTextChanged, textActivated, textHighlighted instead
++        def _combo_overloads(name, text_name):
++            signal = getattr(QtWidgets.QComboBox, name)
++
++            class _Overloads(object):
++                def __init__(self, combo):
++                    self._bound = signal.__get__(combo, type(combo))
++                    self._combo = combo
++
++                def __getitem__(self, signal_type):
++                    if signal_type is str:
++                        return getattr(self._combo, text_name)
++                    return self._bound
++
++                def __getattr__(self, attr):
++                    return getattr(self._bound, attr)
++            return property(lambda self: _Overloads(self))
++        for name, text_name in (('currentIndexChanged', 'currentTextChanged'),
++                                ('activated', 'textActivated'),
++                                ('highlighted', 'textHighlighted')):
++            if hasattr(QtWidgets.QComboBox, text_name):
++                setattr(QtWidgets.QComboBox, name, _combo_overloads(name, text_name))
++        # removed in Qt 6 (also used in .ui files: QComboBox::AdjustToMinimumContentsLength)
++        policy = QtWidgets.QComboBox.SizeAdjustPolicy
++        if not hasattr(QtWidgets.QComboBox, 'AdjustToMinimumContentsLength'):
++            QtWidgets.QComboBox.AdjustToMinimumContentsLength = \
++                policy.AdjustToMinimumContentsLengthWithIcon
++    if QtGui is not None and QtWidgets is not None:
++        for name in ('QAction', 'QActionGroup', 'QShortcut', 'QUndoCommand', 'QUndoGroup',
++                     'QUndoStack', 'QFileSystemModel'):
++            if hasattr(QtGui, name) and not hasattr(QtWidgets, name):
++                setattr(QtWidgets, name, getattr(QtGui, name))
++    # Qt 5's QtWebEngine module (QWebEngineView, QWebEnginePage), e.g. for rqt_web
++    if 'QtWebEngine' not in sys.modules and 'QtWebEngineWidgets' in sys.modules:
++        import types
++        web_engine = types.ModuleType('QtWebEngine')
++        for module_name in ('QtWebEngineCore', 'QtWebEngineWidgets'):
++            module = sys.modules.get(module_name)
++            if module is not None:
++                for name in dir(module):
++                    if name.startswith('Q'):
++                        setattr(web_engine, name, getattr(module, name))
++        _register_binding_module('QtWebEngine', web_engine)
++    if QtGui is not None and not hasattr(QtGui, 'QRegExpValidator') and hasattr(QtGui, 'QRegularExpressionValidator'):
++        QtGui.QRegExpValidator = QtGui.QRegularExpressionValidator
++    QtSvg, QtSvgWidgets = sys.modules.get('QtSvg'), sys.modules.get('QtSvgWidgets')
++    if QtSvg is not None and QtSvgWidgets is not None:
++        for name in ('QGraphicsSvgItem', 'QSvgWidget'):
++            if hasattr(QtSvgWidgets, name) and not hasattr(QtSvg, name):
++                setattr(QtSvg, name, getattr(QtSvgWidgets, name))
++    if QtGui is not None:
++        # icon themes: conda-forge's Adwaita (>= 41) has only the -symbolic icons (its other
++        # icons moved to AdwaitaLegacy), so fall back to them (RoboStack/ros-noetic#225)
++        if not getattr(QtGui.QIcon.fromTheme, '_robostack', False):
++            _from_theme = QtGui.QIcon.fromTheme
++
++            def from_theme(name, *fallback):
++                icon = _from_theme(name)
++                if icon.isNull() and not name.endswith('-symbolic'):
++                    icon = _from_theme(name + '-symbolic')
++                if icon.isNull() and fallback:
++                    return fallback[0]
++                return icon
++            from_theme._robostack = True
++            QtGui.QIcon.fromTheme = staticmethod(from_theme)
++        if not hasattr(QtGui.QPainter, 'HighQualityAntialiasing'):
++            QtGui.QPainter.HighQualityAntialiasing = QtGui.QPainter.RenderHint.Antialiasing
++        if not hasattr(QtGui.QFontMetrics, 'width'):
++            QtGui.QFontMetrics.width = QtGui.QFontMetrics.horizontalAdvance
++        if not hasattr(QtGui.QFontMetricsF, 'width'):
++            QtGui.QFontMetricsF.width = QtGui.QFontMetricsF.horizontalAdvance
++        for event in (QtGui.QMouseEvent, QtGui.QWheelEvent, QtGui.QDropEvent):
++            if hasattr(event, 'position'):
++                if not hasattr(event, 'pos'):
++                    event.pos = lambda self: self.position().toPoint()
++                if not hasattr(event, 'posF'):
++                    event.posF = lambda self: self.position()
++                if not hasattr(event, 'x'):
++                    event.x = lambda self: int(self.position().x())
++                if not hasattr(event, 'y'):
++                    event.y = lambda self: int(self.position().y())
++            if hasattr(event, 'globalPosition'):
++                if not hasattr(event, 'globalPos'):
++                    event.globalPos = lambda self: self.globalPosition().toPoint()
++        if not hasattr(QtGui.QWheelEvent, 'delta'):
++            QtGui.QWheelEvent.delta = lambda self: self.angleDelta().y()
+ 
+ 
+ def _load_pyside(required_modules, optional_modules):

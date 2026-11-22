@@ -184,8 +184,6 @@ pybind11_catkin:
   add_host: ["pybind11"]
   add_run: ["pybind11"]
 python_qt_binding:
-  add_build: ["pyqt-builder", "pyqt5-sip", "sip"]
-  add_host: ["sip"]
   add_run: ["adwaita-icon-theme"]
 qt_gui_cpp:
   add_build: ["pyqt-builder", "pyqt5-sip", "sip"]
