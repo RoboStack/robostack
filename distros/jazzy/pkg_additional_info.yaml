@@ -160,6 +160,8 @@ fuse_viz:  # rviz on Qt 6
   build_number: 32
 grid_map_rviz_plugin:  # rviz on Qt 6
   build_number: 32
+gz_gui_vendor:  # only qt-main now (the Qt rosdep keys map to Qt 6); was mixed qt-main + qt6-main
+  build_number: 32
 moveit_ros_visualization:  # rviz on Qt 6
   build_number: 32
 moveit_setup_app_plugins:  # rviz on Qt 6
