@@ -176,7 +176,17 @@ pinocchio:
     # the version on ros is outdated w.r.t. to the conda-forge one
     override_version: '3.9.0'
 plotjuggler:
-  add_host: ["${{ 'elfutils' if linux }}", "protobuf"]
+  # PlotJuggler (3.9 here, 3.17 too) is Qt5-only (find_package(Qt5 ...)): Qt 5, as in lyrical
+  remove_host: ["qt6-main"]
+  remove_run: ["qt6-main"]
+  add_host: ["${{ 'elfutils' if linux }}", "protobuf", "qt-main"]
+  add_run: ["qt-main"]
+plotjuggler_ros:
+  # Qt5-only like plotjuggler, which it links
+  remove_host: ["qt6-main"]
+  remove_run: ["qt6-main"]
+  add_host: ["qt-main"]
+  add_run: ["qt-main"]
 posedetection_msgs:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
 pybind11_catkin:

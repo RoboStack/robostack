@@ -1,62 +1,72 @@
-diff --git a/cmake/FindXCB.cmake b/cmake/FindXCB.cmake
-new file mode 100644
-index 00000000..a2e2757a
---- /dev/null
-+++ b/cmake/FindXCB.cmake
-@@ -0,0 +1,51 @@
-+# - FindXCB
-+#
-+# Copyright 2015 Valve Coporation
+diff --git a/3rdparty/Qt-Advanced-Docking/CMakeLists.txt b/3rdparty/Qt-Advanced-Docking/CMakeLists.txt
+index 6b650f1..67ac7a9 100644
+--- a/3rdparty/Qt-Advanced-Docking/CMakeLists.txt
++++ b/3rdparty/Qt-Advanced-Docking/CMakeLists.txt
+@@ -67,7 +67,9 @@ target_link_libraries(qt_advanced_docking PUBLIC Qt5::Core Qt5::Gui Qt5::Widgets
+ 
+ if(UNIX AND NOT APPLE)
+     target_link_libraries(qt_advanced_docking PUBLIC Qt5::X11Extras)
+-        target_link_libraries(qt_advanced_docking PRIVATE xcb)
++    find_package(XCB REQUIRED)
++    target_link_libraries(qt_advanced_docking PRIVATE ${XCB_LIBRARIES})
++    target_include_directories(qt_advanced_docking SYSTEM PUBLIC ${XCB_INCLUDE_DIRS})
+ endif()
+ 
+ set_target_properties(qt_advanced_docking PROPERTIES
+diff --git a/3rdparty/lua-5.4.3/CMakeLists.txt b/3rdparty/lua-5.4.3/CMakeLists.txt
+index ad3dc01..a3da197 100644
+--- a/3rdparty/lua-5.4.3/CMakeLists.txt
++++ b/3rdparty/lua-5.4.3/CMakeLists.txt
+@@ -1,3 +1,5 @@
++include_directories( ./src  )
 +
-+find_package(PkgConfig)
-+
-+if(NOT XCB_FIND_COMPONENTS)
-+    set(XCB_FIND_COMPONENTS xcb)
-+endif()
-+
-+include(FindPackageHandleStandardArgs)
-+set(XCB_FOUND true)
-+set(XCB_INCLUDE_DIRS "")
-+set(XCB_LIBRARIES "")
-+foreach(comp ${XCB_FIND_COMPONENTS})
-+    # component name
-+    string(TOUPPER ${comp} compname)
-+    string(REPLACE "-" "_" compname ${compname})
-+    # header name
-+    string(REPLACE "xcb-" "" headername xcb/${comp}.h)
-+    # library name
-+    set(libname ${comp})
-+
-+    pkg_check_modules(PC_${comp} QUIET ${comp})
-+
-+    find_path(${compname}_INCLUDE_DIR NAMES ${headername}
-+        HINTS
-+        ${PC_${comp}_INCLUDEDIR}
-+        ${PC_${comp}_INCLUDE_DIRS}
-+        )
-+
-+    find_library(${compname}_LIBRARY NAMES ${libname}
-+        HINTS
-+        ${PC_${comp}_LIBDIR}
-+        ${PC_${comp}_LIBRARY_DIRS}
-+        )
-+
-+    find_package_handle_standard_args(${comp}
-+        FOUND_VAR ${comp}_FOUND
-+        REQUIRED_VARS ${compname}_INCLUDE_DIR ${compname}_LIBRARY)
-+    mark_as_advanced(${compname}_INCLUDE_DIR ${compname}_LIBRARY)
-+
-+    list(APPEND XCB_INCLUDE_DIRS ${${compname}_INCLUDE_DIR})
-+    list(APPEND XCB_LIBRARIES ${${compname}_LIBRARY})
-+
-+    if(NOT ${comp}_FOUND)
-+        set(XCB_FOUND false)
-+    endif()
-+endforeach()
-+
-+list(REMOVE_DUPLICATES XCB_INCLUDE_DIRS)
+ set(LUA_LIB_SRCS 
+     ${CMAKE_CURRENT_SOURCE_DIR}/src/lapi.c 
+     ${CMAKE_CURRENT_SOURCE_DIR}/src/lcode.c 
+@@ -32,7 +34,7 @@ set(LUA_LIB_SRCS
+     ${CMAKE_CURRENT_SOURCE_DIR}/src/loadlib.c 
+     ${CMAKE_CURRENT_SOURCE_DIR}/src/linit.c
+     )
+-set(LUA_LIB_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src)
++# set(LUA_LIB_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+ 
+ if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
+     add_compile_options(-fPIC)
+@@ -42,7 +44,7 @@ add_library(lua_static STATIC
+     ${LUA_LIB_SRCS}
+     ${CMAKE_CURRENT_SOURCE_DIR}/src/lua.c
+ )
+-target_include_directories(lua_static PUBLIC ${LUA_LIB_INCLUDE})
++# target_include_directories(lua_static PUBLIC ${LUA_LIB_INCLUDE})
+ 
+ add_library(lua_objects OBJECT ${LUA_LIB_SRCS})
+ 
+@@ -55,3 +57,11 @@ if(EMSCRIPTEN)
+ endif()
+ target_compile_definitions(lua_static PUBLIC ${LUA_DEFINITIONS})
+ 
++install(
++     TARGETS
++        lua_static
++     EXPORT export_lua_static
++     LIBRARY DESTINATION lib
++     ARCHIVE DESTINATION lib
++     RUNTIME DESTINATION bin
++     INCLUDES DESTINATION include )
+diff --git a/3rdparty/mcap/types.hpp b/3rdparty/mcap/types.hpp
+index def8496..00323ce 100644
+--- a/3rdparty/mcap/types.hpp
++++ b/3rdparty/mcap/types.hpp
+@@ -7,6 +7,7 @@
+ #include <limits>
+ #include <memory>
+ #include <optional>
++#include <cstdint>  // RoboStack: GCC 15 no longer includes it transitively
+ #include <string>
+ #include <unordered_map>
+ #include <vector>
 diff --git a/3rdparty/nlohmann/json.hpp b/3rdparty/nlohmann/json.hpp
-index cb27e058..cecdb1fd 100644
+index cb27e05..cecdb1f 100644
 --- a/3rdparty/nlohmann/json.hpp
 +++ b/3rdparty/nlohmann/json.hpp
 @@ -3198,6 +3198,7 @@ template <class T> struct identity_tag {};
@@ -365,163 +375,8 @@ index cb27e058..cecdb1fd 100644
          , indent_char(ichar)
          , indent_string(512, indent_char)
          , error_handler(error_handler_)
-diff --git a/plotjuggler_plugins/ParserProtobuf/error_collectors.cpp b/plotjuggler_plugins/ParserProtobuf/error_collectors.cpp
-index 761e0b73..b7ce4129 100644
---- a/plotjuggler_plugins/ParserProtobuf/error_collectors.cpp
-+++ b/plotjuggler_plugins/ParserProtobuf/error_collectors.cpp
-@@ -2,38 +2,38 @@
- #include <QMessageBox>
- #include <QDebug>
- 
--void FileErrorCollector::AddError(const std::string& filename, int line, int,
--                                  const std::string& message)
-+void FileErrorCollector::RecordError(const absl::string_view filename, int line, int,
-+                                  const absl::string_view message)
- {
-   auto msg = QString("File: [%1] Line: [%2] Message: %3\n\n")
--                 .arg(QString::fromStdString(filename))
-+                 .arg(QString::fromStdString(std::string(filename)))
-                  .arg(line)
--                 .arg(QString::fromStdString(message));
-+                 .arg(QString::fromStdString(std::string(message)));
- 
-   _errors.push_back(msg);
- }
- 
--void FileErrorCollector::AddWarning(const std::string& filename, int line, int,
--                                    const std::string& message)
-+void FileErrorCollector::RecordWarning(const absl::string_view filename, int line, int,
-+                                    const absl::string_view message)
- {
-   auto msg = QString("Warning [%1] line %2: %3")
--                 .arg(QString::fromStdString(filename))
-+                 .arg(QString::fromStdString(std::string(filename)))
-                  .arg(line)
--                 .arg(QString::fromStdString(message));
-+                 .arg(QString::fromStdString(std::string(message)));
-   qDebug() << msg;
- }
- 
--void IoErrorCollector::AddError(int line, google::protobuf::io::ColumnNumber,
--                                const std::string& message)
-+void IoErrorCollector::RecordError(int line, google::protobuf::io::ColumnNumber,
-+                                const absl::string_view message)
- {
-   _errors.push_back(
--      QString("Line: [%1] Message: %2\n").arg(line).arg(QString::fromStdString(message)));
-+      QString("Line: [%1] Message: %2\n").arg(line).arg(QString::fromStdString(std::string(message))));
- }
- 
--void IoErrorCollector::AddWarning(int line, google::protobuf::io::ColumnNumber column,
--                                  const std::string& message)
-+void IoErrorCollector::RecordWarning(int line, google::protobuf::io::ColumnNumber column,
-+                                  const absl::string_view message)
- {
-   qDebug() << QString("Line: [%1] Message: %2\n")
-                   .arg(line)
--                  .arg(QString::fromStdString(message));
-+                  .arg(QString::fromStdString(std::string(message)));
- }
-diff --git a/plotjuggler_plugins/ParserProtobuf/error_collectors.h b/plotjuggler_plugins/ParserProtobuf/error_collectors.h
-index f70a881f..7afe1fea 100644
---- a/plotjuggler_plugins/ParserProtobuf/error_collectors.h
-+++ b/plotjuggler_plugins/ParserProtobuf/error_collectors.h
-@@ -3,17 +3,18 @@
- 
- #include <google/protobuf/io/tokenizer.h>
- #include <google/protobuf/compiler/importer.h>
-+#include <absl/strings/string_view.h>
- 
- #include <QStringList>
- 
- class IoErrorCollector : public google::protobuf::io::ErrorCollector
- {
- public:
--  void AddError(int line, google::protobuf::io::ColumnNumber column,
--                const std::string& message) override;
-+  void RecordError(int line, google::protobuf::io::ColumnNumber column,
-+                const absl::string_view message) override;
- 
--  void AddWarning(int line, google::protobuf::io::ColumnNumber column,
--                  const std::string& message) override;
-+  void RecordWarning(int line, google::protobuf::io::ColumnNumber column,
-+                  const absl::string_view message) override;
- 
-   const QStringList& errors()
-   {
-@@ -27,11 +28,11 @@ private:
- class FileErrorCollector : public google::protobuf::compiler::MultiFileErrorCollector
- {
- public:
--  void AddError(const std::string& filename, int line, int,
--                const std::string& message) override;
-+  void RecordError(const absl::string_view filename, int line, int,
-+                const absl::string_view message) override;
- 
--  void AddWarning(const std::string& filename, int line, int,
--                  const std::string& message) override;
-+  void RecordWarning(const absl::string_view filename, int line, int,
-+                  const absl::string_view message) override;
- 
-   const QStringList& errors()
-   {
-diff --git a/3rdparty/Qt-Advanced-Docking/CMakeLists.txt b/3rdparty/Qt-Advanced-Docking/CMakeLists.txt
-index 6b650f1b..82c58edb 100644
---- a/3rdparty/Qt-Advanced-Docking/CMakeLists.txt
-+++ b/3rdparty/Qt-Advanced-Docking/CMakeLists.txt
-@@ -67,7 +67,9 @@ target_link_libraries(qt_advanced_docking PUBLIC Qt5::Core Qt5::Gui Qt5::Widgets
- 
- if(UNIX AND NOT APPLE)
-     target_link_libraries(qt_advanced_docking PUBLIC Qt5::X11Extras)
--        target_link_libraries(qt_advanced_docking PRIVATE xcb)
-+    find_package(XCB REQUIRED)
-+    target_link_libraries(qt_advanced_docking PRIVATE ${XCB_LIBRARIES})
-+    target_include_directories(qt_advanced_docking SYSTEM PUBLIC ${XCB_INCLUDE_DIRS})
- endif()
- 
- set_target_properties(qt_advanced_docking PROPERTIES
-diff --git a/3rdparty/lua-5.4.3/CMakeLists.txt b/3rdparty/lua-5.4.3/CMakeLists.txt
-index ad3dc012..a3da197b 100644
---- a/3rdparty/lua-5.4.3/CMakeLists.txt
-+++ b/3rdparty/lua-5.4.3/CMakeLists.txt
-@@ -1,3 +1,5 @@
-+include_directories( ./src  )
-+
- set(LUA_LIB_SRCS 
-     ${CMAKE_CURRENT_SOURCE_DIR}/src/lapi.c 
-     ${CMAKE_CURRENT_SOURCE_DIR}/src/lcode.c 
-@@ -32,7 +34,7 @@ set(LUA_LIB_SRCS
-     ${CMAKE_CURRENT_SOURCE_DIR}/src/loadlib.c 
-     ${CMAKE_CURRENT_SOURCE_DIR}/src/linit.c
-     )
--set(LUA_LIB_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-+# set(LUA_LIB_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/src)
- 
- if(CMAKE_C_COMPILER_ID MATCHES "GNU|Clang|AppleClang")
-     add_compile_options(-fPIC)
-@@ -42,7 +44,7 @@ add_library(lua_static STATIC
-     ${LUA_LIB_SRCS}
-     ${CMAKE_CURRENT_SOURCE_DIR}/src/lua.c
- )
--target_include_directories(lua_static PUBLIC ${LUA_LIB_INCLUDE})
-+# target_include_directories(lua_static PUBLIC ${LUA_LIB_INCLUDE})
- 
- add_library(lua_objects OBJECT ${LUA_LIB_SRCS})
- 
-@@ -55,3 +57,11 @@ if(EMSCRIPTEN)
- endif()
- target_compile_definitions(lua_static PUBLIC ${LUA_DEFINITIONS})
- 
-+install(
-+     TARGETS
-+        lua_static
-+     EXPORT export_lua_static
-+     LIBRARY DESTINATION lib
-+     ARCHIVE DESTINATION lib
-+     RUNTIME DESTINATION bin
-+     INCLUDES DESTINATION include )
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 16477dd3..859f7320 100644
+index c6de4a9..d181ff4 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1,4 +1,4 @@
@@ -584,8 +439,65 @@ index 16477dd3..859f7320 100644
  #########################  INSTALL  ####################################
  
  if(COMPILING_WITH_CATKIN)
+diff --git a/cmake/FindXCB.cmake b/cmake/FindXCB.cmake
+new file mode 100644
+index 0000000..a2e2757
+--- /dev/null
++++ b/cmake/FindXCB.cmake
+@@ -0,0 +1,51 @@
++# - FindXCB
++#
++# Copyright 2015 Valve Coporation
++
++find_package(PkgConfig)
++
++if(NOT XCB_FIND_COMPONENTS)
++    set(XCB_FIND_COMPONENTS xcb)
++endif()
++
++include(FindPackageHandleStandardArgs)
++set(XCB_FOUND true)
++set(XCB_INCLUDE_DIRS "")
++set(XCB_LIBRARIES "")
++foreach(comp ${XCB_FIND_COMPONENTS})
++    # component name
++    string(TOUPPER ${comp} compname)
++    string(REPLACE "-" "_" compname ${compname})
++    # header name
++    string(REPLACE "xcb-" "" headername xcb/${comp}.h)
++    # library name
++    set(libname ${comp})
++
++    pkg_check_modules(PC_${comp} QUIET ${comp})
++
++    find_path(${compname}_INCLUDE_DIR NAMES ${headername}
++        HINTS
++        ${PC_${comp}_INCLUDEDIR}
++        ${PC_${comp}_INCLUDE_DIRS}
++        )
++
++    find_library(${compname}_LIBRARY NAMES ${libname}
++        HINTS
++        ${PC_${comp}_LIBDIR}
++        ${PC_${comp}_LIBRARY_DIRS}
++        )
++
++    find_package_handle_standard_args(${comp}
++        FOUND_VAR ${comp}_FOUND
++        REQUIRED_VARS ${compname}_INCLUDE_DIR ${compname}_LIBRARY)
++    mark_as_advanced(${compname}_INCLUDE_DIR ${compname}_LIBRARY)
++
++    list(APPEND XCB_INCLUDE_DIRS ${${compname}_INCLUDE_DIR})
++    list(APPEND XCB_LIBRARIES ${${compname}_LIBRARY})
++
++    if(NOT ${comp}_FOUND)
++        set(XCB_FOUND false)
++    endif()
++endforeach()
++
++list(REMOVE_DUPLICATES XCB_INCLUDE_DIRS)
 diff --git a/plotjuggler_plugins/ParserProtobuf/CMakeLists.txt b/plotjuggler_plugins/ParserProtobuf/CMakeLists.txt
-index f399fdad..4c89c787 100644
+index f399fda..4c89c78 100644
 --- a/plotjuggler_plugins/ParserProtobuf/CMakeLists.txt
 +++ b/plotjuggler_plugins/ParserProtobuf/CMakeLists.txt
 @@ -1,13 +1,6 @@
@@ -604,8 +516,108 @@ index f399fdad..4c89c787 100644
  
  if( Protobuf_FOUND)
  
+diff --git a/plotjuggler_plugins/ParserProtobuf/error_collectors.cpp b/plotjuggler_plugins/ParserProtobuf/error_collectors.cpp
+index 761e0b7..b7ce412 100644
+--- a/plotjuggler_plugins/ParserProtobuf/error_collectors.cpp
++++ b/plotjuggler_plugins/ParserProtobuf/error_collectors.cpp
+@@ -2,38 +2,38 @@
+ #include <QMessageBox>
+ #include <QDebug>
+ 
+-void FileErrorCollector::AddError(const std::string& filename, int line, int,
+-                                  const std::string& message)
++void FileErrorCollector::RecordError(const absl::string_view filename, int line, int,
++                                  const absl::string_view message)
+ {
+   auto msg = QString("File: [%1] Line: [%2] Message: %3\n\n")
+-                 .arg(QString::fromStdString(filename))
++                 .arg(QString::fromStdString(std::string(filename)))
+                  .arg(line)
+-                 .arg(QString::fromStdString(message));
++                 .arg(QString::fromStdString(std::string(message)));
+ 
+   _errors.push_back(msg);
+ }
+ 
+-void FileErrorCollector::AddWarning(const std::string& filename, int line, int,
+-                                    const std::string& message)
++void FileErrorCollector::RecordWarning(const absl::string_view filename, int line, int,
++                                    const absl::string_view message)
+ {
+   auto msg = QString("Warning [%1] line %2: %3")
+-                 .arg(QString::fromStdString(filename))
++                 .arg(QString::fromStdString(std::string(filename)))
+                  .arg(line)
+-                 .arg(QString::fromStdString(message));
++                 .arg(QString::fromStdString(std::string(message)));
+   qDebug() << msg;
+ }
+ 
+-void IoErrorCollector::AddError(int line, google::protobuf::io::ColumnNumber,
+-                                const std::string& message)
++void IoErrorCollector::RecordError(int line, google::protobuf::io::ColumnNumber,
++                                const absl::string_view message)
+ {
+   _errors.push_back(
+-      QString("Line: [%1] Message: %2\n").arg(line).arg(QString::fromStdString(message)));
++      QString("Line: [%1] Message: %2\n").arg(line).arg(QString::fromStdString(std::string(message))));
+ }
+ 
+-void IoErrorCollector::AddWarning(int line, google::protobuf::io::ColumnNumber column,
+-                                  const std::string& message)
++void IoErrorCollector::RecordWarning(int line, google::protobuf::io::ColumnNumber column,
++                                  const absl::string_view message)
+ {
+   qDebug() << QString("Line: [%1] Message: %2\n")
+                   .arg(line)
+-                  .arg(QString::fromStdString(message));
++                  .arg(QString::fromStdString(std::string(message)));
+ }
+diff --git a/plotjuggler_plugins/ParserProtobuf/error_collectors.h b/plotjuggler_plugins/ParserProtobuf/error_collectors.h
+index f70a881..7afe1fe 100644
+--- a/plotjuggler_plugins/ParserProtobuf/error_collectors.h
++++ b/plotjuggler_plugins/ParserProtobuf/error_collectors.h
+@@ -3,17 +3,18 @@
+ 
+ #include <google/protobuf/io/tokenizer.h>
+ #include <google/protobuf/compiler/importer.h>
++#include <absl/strings/string_view.h>
+ 
+ #include <QStringList>
+ 
+ class IoErrorCollector : public google::protobuf::io::ErrorCollector
+ {
+ public:
+-  void AddError(int line, google::protobuf::io::ColumnNumber column,
+-                const std::string& message) override;
++  void RecordError(int line, google::protobuf::io::ColumnNumber column,
++                const absl::string_view message) override;
+ 
+-  void AddWarning(int line, google::protobuf::io::ColumnNumber column,
+-                  const std::string& message) override;
++  void RecordWarning(int line, google::protobuf::io::ColumnNumber column,
++                  const absl::string_view message) override;
+ 
+   const QStringList& errors()
+   {
+@@ -27,11 +28,11 @@ private:
+ class FileErrorCollector : public google::protobuf::compiler::MultiFileErrorCollector
+ {
+ public:
+-  void AddError(const std::string& filename, int line, int,
+-                const std::string& message) override;
++  void RecordError(const absl::string_view filename, int line, int,
++                const absl::string_view message) override;
+ 
+-  void AddWarning(const std::string& filename, int line, int,
+-                  const std::string& message) override;
++  void RecordWarning(const absl::string_view filename, int line, int,
++                  const absl::string_view message) override;
+ 
+   const QStringList& errors()
+   {
 diff --git a/plotjuggler_plugins/ParserProtobuf/protobuf_factory.cpp b/plotjuggler_plugins/ParserProtobuf/protobuf_factory.cpp
-index 57fdd022..12f66e80 100644
+index f521d71..52250e9 100644
 --- a/plotjuggler_plugins/ParserProtobuf/protobuf_factory.cpp
 +++ b/plotjuggler_plugins/ParserProtobuf/protobuf_factory.cpp
 @@ -83,7 +83,8 @@ void ParserFactoryProtobuf::importFile(QString filename)
@@ -619,7 +631,7 @@ index 57fdd022..12f66e80 100644
      QString type_qname = QString::fromStdString(type_name);
      info.descriptors.insert({ type_qname, descriptor });
 diff --git a/plotjuggler_plugins/ParserProtobuf/protobuf_parser.cpp b/plotjuggler_plugins/ParserProtobuf/protobuf_parser.cpp
-index 5d2ae73a..f8fca4ff 100644
+index 251141e..f7fcbe4 100644
 --- a/plotjuggler_plugins/ParserProtobuf/protobuf_parser.cpp
 +++ b/plotjuggler_plugins/ParserProtobuf/protobuf_parser.cpp
 @@ -60,7 +60,8 @@ bool ProtobufParser::parseMessage(const MessageRef serialized_msg, double& times
@@ -632,11 +644,7 @@ index 5d2ae73a..f8fca4ff 100644
        if (is_map)
        {
          // Map messages only have 2 fields: key and value. The key will be represented in
-diff --git a/plotjuggler_plugins/ParserProtobuf/protobuf_parser.cpp b/plotjuggler_plugins/ParserProtobuf/protobuf_parser.cpp
-index f8fca4ff..2ff1367c 100644
---- a/plotjuggler_plugins/ParserProtobuf/protobuf_parser.cpp
-+++ b/plotjuggler_plugins/ParserProtobuf/protobuf_parser.cpp
-@@ -161,7 +161,7 @@ bool ProtobufParser::parseMessage(const MessageRef serialized_msg, double& times
+@@ -160,7 +161,7 @@ bool ProtobufParser::parseMessage(const MessageRef serialized_msg, double& times
                                     reflection->GetRepeatedEnum(msg, field, index);
  
              auto& series = this->getStringSeries(key + suffix);
