@@ -1,0 +1,29 @@
+diff --git a/include/tf/tf.h b/include/tf/tf.h
+index 7ecb8e1..c767c90 100644
+--- a/include/tf/tf.h
++++ b/include/tf/tf.h
+@@ -49,6 +49,12 @@
+ #include <tf2_ros/buffer.h>
+ #include <ros/macros.h>
+ 
++// Boost winapi.h includes winerror.h. Subsequently NO_ERROR gets defined
++// and which conflicts with tf::NO_ERROR.
++#if defined(_WIN32) && defined(NO_ERROR)
++  #undef NO_ERROR
++#endif
++
+ // Import/export for windows dll's and visibility for gcc shared libraries.
+ #ifdef ROS_BUILD_SHARED_LIBS // ros is being built around shared libraries
+   #ifdef tf_EXPORTS // we are building a shared lib/dll
+diff --git a/src/tf.cpp b/src/tf.cpp
+index ac9ad0d..13f027c 100644
+--- a/src/tf.cpp
++++ b/src/tf.cpp
+@@ -30,7 +30,6 @@
+ /** \author Tully Foote */
+ 
+ #include "tf/tf.h"
+-#include <sys/time.h>
+ #include "ros/assert.h"
+ #include "ros/ros.h"
+ #include <angles/angles.h>

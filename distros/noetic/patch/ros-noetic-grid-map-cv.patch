@@ -1,0 +1,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index d23798f4..5398f5b7 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,8 +1,6 @@
+ cmake_minimum_required(VERSION 3.5.1)
+ project(grid_map_cv)
+ 
+-set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
+-
+ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+ 
+ ## Find catkin macros and libraries
