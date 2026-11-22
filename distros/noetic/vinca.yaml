@@ -206,7 +206,6 @@ packages_select_by_deps:
       - socketcan-interface
       - static-transform-mux
     # - openni2-camera
-      - tf-static-publisher
       - usb-cam
 
   - if: not win
@@ -298,15 +297,8 @@ packages_select_by_deps:
       - qt-gui-cpp
       - realsense2-camera
       - robot-body-filter
-      - ros-babel-fish
-      - ros-babel-fish-test-msgs
       - ros-control
       - ros-controllers
-      - ros-ign
-      - ros-ign-bridge
-      - ros-ign-gazebo
-      - ros-ign-gazebo-demos
-      - ros-ign-image
       - rosdoc-lite
       - rosfmt
       - roslint
@@ -329,7 +321,6 @@ packages_select_by_deps:
       - sound-play
       - swri-console
       - tf-remapper-cpp
-      - tf-static-publisher
       - tf2-client
       - tf2-server
       - turtlebot3-simulations

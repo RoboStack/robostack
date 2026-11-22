@@ -11,20 +11,10 @@ audio_capture:
   add_host: ["libglib", "glib"]
 audio_play:
   add_host: ["libglib", "glib"]
-cartographer:
-  generate_dummy_package_with_run_deps:
-    dep_name: cartographer
-    max_pin: 'x.x'
-    # ROS uses a custom versioning scheme currently at 2.0.9004
-    override_version: '2.0.0'
 checkerboard_detector:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
 class_loader:
   add_host: ["${{ 'libcxx-devel 19.*' if osx }}"]
-coal:
-  generate_dummy_package_with_run_deps:
-    dep_name: coal
-    max_pin: 'x.x.x'
 cob_object_detection_visualizer:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
 draco:
@@ -51,8 +41,6 @@ fcl:
 find_object_2d:
   add_host: ["zlib"]
 gazebo_dev:
-  add_host: [tbb, tbb-devel]
-gazebo_pkgs:
   add_host: [tbb, tbb-devel]
 gazebo_plugins:
   add_host: [tbb, tbb-devel]
@@ -135,8 +123,6 @@ map_organizer:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
 mesh_client:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "cgal-cpp"]
-moveit_calibration_plugins:
-  add_host: ["libopencv"]
 moveit_setup_assistant:
   add_host: ["ompl"]
 moveit_visual_tools:
@@ -189,8 +175,6 @@ python_qt_binding:
 qt_gui_cpp:
   add_build: ["pyqt-builder", "pyqt5-sip", "sip"]
   add_host: ["sip"]
-rc_roi_manager_gui:
-  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
 resource_retriever:
   add_host: ["libcurl"]
   add_run: ["libcurl"]
@@ -227,13 +211,7 @@ swri_image_util:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
 tesseract_collision:
   add_build: ["${{ 'llvm-openmp' if osx }}"]
-toposens_markers:
-  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", libglib, glib, libxcb, pthread-stubs, xorg-libxau, xorg-libxi, xorg-libxrandr, xorg-libxcursor, xorg-libxtst, xorg-libxcomposite, xorg-libxdamage, xorg-libxinerama, xorg-xineramaproto]
 ur_client_library:
   add_host: ["ros-noetic-catkin"]
-urdfdom_headers:
-  generate_dummy_package_with_run_deps:
-    dep_name: urdfdom_headers
-    max_pin: 'x.x'
 ros_type_introspection:
   build_number: 25
