@@ -1,0 +1,172 @@
+diff --git a/example/main.cpp b/example/main.cpp
+index 049f2cf..57220bc 100644
+--- a/example/main.cpp
++++ b/example/main.cpp
+@@ -40,7 +40,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <opencv2/highgui/highgui.hpp>
+ #include <opencv2/core/version.hpp>
+ #if CV_MAJOR_VERSION < 3
+-#include <opencv2/features2d/features2d.hpp>
++#include <opencv2/features2d.hpp>
+ #elif CV_MAJOR_VERSION < 5
+ #include <opencv2/features2d.hpp>
+ #else
+@@ -48,7 +48,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #endif
+ #include <opencv2/core/version.hpp>
+ #if CV_MAJOR_VERSION < 5
+-#include <opencv2/calib3d/calib3d.hpp> // for homography
++#include <opencv2/calib3d.hpp> // for homography
+ #else
+ #include <opencv2/geometry.hpp> // for homography
+ #endif
+diff --git a/include/find_object/DetectionInfo.h b/include/find_object/DetectionInfo.h
+index b04627e..ff8dcce 100644
+--- a/include/find_object/DetectionInfo.h
++++ b/include/find_object/DetectionInfo.h
+@@ -33,7 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <QtCore/QString>
+ #include <opencv2/core/version.hpp>
+ #if CV_MAJOR_VERSION < 3
+-#include <opencv2/features2d/features2d.hpp>
++#include <opencv2/features2d.hpp>
+ #elif CV_MAJOR_VERSION < 5
+ #include <opencv2/features2d.hpp>
+ #else
+diff --git a/include/find_object/ObjWidget.h b/include/find_object/ObjWidget.h
+index da86e0a..4b68a5a 100644
+--- a/include/find_object/ObjWidget.h
++++ b/include/find_object/ObjWidget.h
+@@ -32,7 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+ #include <opencv2/core/version.hpp>
+ #if CV_MAJOR_VERSION < 3
+-#include <opencv2/features2d/features2d.hpp>
++#include <opencv2/features2d.hpp>
+ #elif CV_MAJOR_VERSION < 5
+ #include <opencv2/features2d.hpp>
+ #else
+diff --git a/include/find_object/Settings.h b/include/find_object/Settings.h
+index d6f18c0..0aa7d93 100644
+--- a/include/find_object/Settings.h
++++ b/include/find_object/Settings.h
+@@ -36,7 +36,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <QtCore/QByteArray>
+ #include <opencv2/core/version.hpp>
+ #if CV_MAJOR_VERSION < 3
+-#include <opencv2/features2d/features2d.hpp>
++#include <opencv2/features2d.hpp>
+ #elif CV_MAJOR_VERSION < 5
+ #include <opencv2/features2d.hpp>
+ #else
+diff --git a/src/AddObjectDialog.h b/src/AddObjectDialog.h
+index 9da6b15..1922f09 100644
+--- a/src/AddObjectDialog.h
++++ b/src/AddObjectDialog.h
+@@ -32,7 +32,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <QtCore/QTimer>
+ #include <opencv2/core/version.hpp>
+ #if CV_MAJOR_VERSION < 3
+-#include <opencv2/features2d/features2d.hpp>
++#include <opencv2/features2d.hpp>
+ #elif CV_MAJOR_VERSION < 5
+ #include <opencv2/features2d.hpp>
+ #else
+diff --git a/src/FindObject.cpp b/src/FindObject.cpp
+index 3ecdd7b..3d5236f 100644
+--- a/src/FindObject.cpp
++++ b/src/FindObject.cpp
+@@ -46,7 +46,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <opencv2/imgproc/imgproc.hpp>
+ #include <opencv2/core/version.hpp>
+ #if CV_MAJOR_VERSION < 5
+-#include <opencv2/calib3d/calib3d.hpp> // for homography
++#include <opencv2/calib3d.hpp> // for homography
+ #else
+ #include <opencv2/geometry.hpp> // for homography
+ #endif
+diff --git a/src/KeypointItem.h b/src/KeypointItem.h
+index 00e6b59..92d8cc1 100644
+--- a/src/KeypointItem.h
++++ b/src/KeypointItem.h
+@@ -34,7 +34,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <QtGui/QBrush>
+ #include <opencv2/core/version.hpp>
+ #if CV_MAJOR_VERSION < 3
+-#include <opencv2/features2d/features2d.hpp>
++#include <opencv2/features2d.hpp>
+ #elif CV_MAJOR_VERSION < 5
+ #include <opencv2/features2d.hpp>
+ #else
+diff --git a/src/MainWindow.cpp b/src/MainWindow.cpp
+index 9459aae..53fe87b 100644
+--- a/src/MainWindow.cpp
++++ b/src/MainWindow.cpp
+@@ -49,7 +49,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ 
+ #include <opencv2/core/version.hpp>
+ #if CV_MAJOR_VERSION < 5
+-#include <opencv2/calib3d/calib3d.hpp>
++#include <opencv2/calib3d.hpp>
+ #else
+ #include <opencv2/geometry.hpp>
+ #endif
+diff --git a/src/Settings.cpp b/src/Settings.cpp
+index 9f42a71..7a9bc59 100644
+--- a/src/Settings.cpp
++++ b/src/Settings.cpp
+@@ -35,7 +35,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <stdio.h>
+ #include <opencv2/core/version.hpp>
+ #if CV_MAJOR_VERSION < 5
+-#include <opencv2/calib3d/calib3d.hpp>
++#include <opencv2/calib3d.hpp>
+ #else
+ #include <opencv2/geometry.hpp>
+ #endif
+diff --git a/src/ros1/FindObjectROS.cpp b/src/ros1/FindObjectROS.cpp
+index d814534..0311606 100644
+--- a/src/ros1/FindObjectROS.cpp
++++ b/src/ros1/FindObjectROS.cpp
+@@ -31,6 +31,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include "find_object_2d/DetectionInfo.h"
+ 
+ #include <cmath>
++#include <opencv2/calib3d.hpp>
+ 
+ using namespace find_object;
+ 
+diff --git a/src/ros2/FindObjectROS.cpp b/src/ros2/FindObjectROS.cpp
+index 4523a53..7ae29ae 100644
+--- a/src/ros2/FindObjectROS.cpp
++++ b/src/ros2/FindObjectROS.cpp
+@@ -44,6 +44,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #endif
+ 
+ #include <cmath>
++#include <opencv2/calib3d.hpp>
+ 
+ using namespace find_object;
+ 
+diff --git a/tools/similarity/main.cpp b/tools/similarity/main.cpp
+index f248023..9a31fd3 100644
+--- a/tools/similarity/main.cpp
++++ b/tools/similarity/main.cpp
+@@ -33,7 +33,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #include <opencv2/highgui/highgui.hpp>
+ #include <opencv2/core/version.hpp>
+ #if CV_MAJOR_VERSION < 3
+-#include <opencv2/features2d/features2d.hpp>
++#include <opencv2/features2d.hpp>
+ #elif CV_MAJOR_VERSION < 5
+ #include <opencv2/features2d.hpp>
+ #else
+@@ -41,7 +41,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ #endif
+ #include <opencv2/core/version.hpp>
+ #if CV_MAJOR_VERSION < 5
+-#include <opencv2/calib3d/calib3d.hpp> // for homography
++#include <opencv2/calib3d.hpp> // for homography
+ #else
+ #include <opencv2/geometry.hpp> // for homography
+ #endif
