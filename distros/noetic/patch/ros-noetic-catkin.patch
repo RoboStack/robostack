@@ -1,3 +1,47 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a22596b..283b93c 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -22,6 +22,12 @@ install(DIRECTORY cmake
+ 
+ catkin_python_setup()
+ 
++# RoboStack: Boost >= 1.89 has no boost_system component, which ROS 1 packages ask for
++install(FILES
++  boost_system_compat/boost_system-config.cmake
++  boost_system_compat/boost_system-config-version.cmake
++  DESTINATION lib/cmake/boost_system-robostack)
++
+ if(CATKIN_ENABLE_TESTING)
+   catkin_add_nosetests(test/local_tests)
+   catkin_add_nosetests(test/unit_tests)
+diff --git a/boost_system_compat/boost_system-config-version.cmake b/boost_system_compat/boost_system-config-version.cmake
+new file mode 100644
+index 0000000..9a546ef
+--- /dev/null
++++ b/boost_system_compat/boost_system-config-version.cmake
+@@ -0,0 +1,4 @@
++# any Boost version asks for it (BoostConfig.cmake asks for its own, EXACT)
++set(PACKAGE_VERSION "${PACKAGE_FIND_VERSION}")
++set(PACKAGE_VERSION_COMPATIBLE TRUE)
++set(PACKAGE_VERSION_EXACT TRUE)
+diff --git a/boost_system_compat/boost_system-config.cmake b/boost_system_compat/boost_system-config.cmake
+new file mode 100644
+index 0000000..9cea055
+--- /dev/null
++++ b/boost_system_compat/boost_system-config.cmake
+@@ -0,0 +1,11 @@
++# RoboStack: Boost.System is header-only since Boost 1.69, and Boost 1.89 dropped its
++# CMake component (and library). ROS 1 packages still ask for it
++# (find_package(Boost REQUIRED COMPONENTS system ...)): this stands in for it, as
++# Boost::system, an interface target on the Boost headers.
++if(NOT TARGET Boost::system)
++  add_library(Boost::system INTERFACE IMPORTED)
++  if(TARGET Boost::headers)
++    set_target_properties(Boost::system PROPERTIES INTERFACE_LINK_LIBRARIES Boost::headers)
++  endif()
++endif()
++set(boost_system_FOUND TRUE)
 diff --git a/cmake/catkin_libraries.cmake b/cmake/catkin_libraries.cmake
 index b19f4c8..5d9a24c 100644
 --- a/cmake/catkin_libraries.cmake
