@@ -176,11 +176,11 @@ rtabmap:
 rtabmap_rviz_plugins:  # rviz on Qt 6
   build_number: 26
 rviz2:  # rviz on Qt 6
-  build_number: 26
+  build_number: 26  # rviz on Qt 6
 rviz_2d_overlay_plugins:  # rviz on Qt 6
   build_number: 26
 rviz_common:  # rviz on Qt 6
-  build_number: 26
+  build_number: 26  # rviz on Qt 6
 rviz_default_plugins:  # rviz on Qt 6
   build_number: 26
 rviz_imu_plugin:  # rviz on Qt 6
