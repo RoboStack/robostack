@@ -198,18 +198,12 @@ index 47c2495..cc68fea 100644
  set(qt_gui_cpp_sip_LDFLAGS_OTHER ${qt_gui_cpp_LDFLAGS_OTHER})
  
  ament_get_recursive_properties(deps_include_dirs deps_libraries ${pluginlib_TARGETS})
-@@ -51,16 +51,28 @@ cmake_minimum_required(VERSION 3.20)
+@@ -51,16 +51,22 @@ cmake_minimum_required(VERSION 3.20)
  cmake_policy(SET CMP0094 NEW)
  set(Python3_FIND_UNVERSIONED_NAMES FIRST)
  
 -find_package(Python3 REQUIRED COMPONENTS Development)
 +find_package(Python REQUIRED COMPONENTS Development)
-+# Prefer legacy libGL.so over the modular libOpenGL.so so that OpenGL::GL is
-+# an IMPORTED library with a resolvable TARGET_FILE. conda-forge's
-+# libglvnd-based libgl otherwise defaults OpenGL::GL to an INTERFACE wrapper,
-+# which makes $<TARGET_FILE:OpenGL::GL> below fail with:
-+#   Target "OpenGL::GL" is not an executable or library.
-+set(OpenGL_GL_PREFERENCE LEGACY)
 +find_package(OpenGL REQUIRED)
  
  set(_qt_gui_cpp_sip_LIBRARIES
