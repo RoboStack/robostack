@@ -9,6 +9,9 @@ audio_capture:
   add_host: ["libglib", "glib"]
 audio_play:
   add_host: ["libglib", "glib"]
+catkin:
+  # genmsg and catkin's em templates use empy 3's API (em.RAW_OPT, ...)
+  add_run: ["empy <4"]
 checkerboard_detector:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
 class_loader:
@@ -46,6 +49,9 @@ gazebo_ros:
   add_host: [tbb, tbb-devel]
 gazebo_ros_control:
   add_host: [tbb, tbb-devel]
+genmsg:
+  # its templates use empy 3's API (em.RAW_OPT, ...)
+  add_run: ["empy <4"]
 grid_map_demos:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
 grid_map_pcl:
@@ -166,6 +172,10 @@ plotjuggler:
   add_host: ["${{ 'elfutils' if linux }}", "protobuf"]
 posedetection_msgs:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
+pybind11_catkin:
+  # repackages conda-forge's pybind11 (patch); its CMake files find the headers in the prefix
+  add_host: ["pybind11"]
+  add_run: ["pybind11"]
 python_qt_binding:
   add_build: ["pyqt-builder", "pyqt5-sip", "sip"]
   add_host: ["sip"]
