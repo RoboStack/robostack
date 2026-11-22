@@ -1,0 +1,23 @@
+diff --git a/src/multi_library_class_loader.cpp b/src/multi_library_class_loader.cpp
+index d7ba907..f315001 100644
+--- a/src/multi_library_class_loader.cpp
++++ b/src/multi_library_class_loader.cpp
+@@ -29,6 +29,8 @@
+ 
+ #include "class_loader/multi_library_class_loader.hpp"
+ 
++#include "console_bridge/console.h"
++
+ #include <cstddef>
+ #include <mutex>
+ #include <string>
+@@ -55,6 +57,9 @@ protected:
+     class_loader::impl::getCurrentlyLoadingLibraryName();
+     class_loader::impl::getCurrentlyActiveClassLoader();
+     class_loader::impl::hasANonPurePluginLibraryBeenOpened();
++    // ~ClassLoader() logs through console_bridge, so its output handler (a function-local
++    // static in console_bridge) has to outlive `class_loader_ptrs_` as well
++    console_bridge::getLogLevel();
+   }
+ };
+ 

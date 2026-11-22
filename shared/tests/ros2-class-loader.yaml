@@ -1,0 +1,28 @@
+tests:
+  # Regression test (https://github.com/RoboStack/robostack/pull/243, ros/class_loader#252):
+  # a process that exits while a MultiLibraryClassLoader still holds a library must exit
+  # cleanly. When console_bridge's output handler was destroyed before class_loader's
+  # loaders, ~ClassLoader() logged through it and the process aborted ("mutex lock failed",
+  # exit code 134). Only macOS's libc++ throws on the destroyed mutex; elsewhere the test
+  # just checks that loading a plugin and exiting works.
+  - if: unix
+    then:
+      script:
+        # Python hints as in ros2-ament-cmake-gmock: ament_cmake runs Python helpers, which must
+        # not pick up the system Python
+        - >-
+          cmake -S exit_order -B build -G Ninja -DCMAKE_PREFIX_PATH="$PREFIX"
+          -DPYTHON_EXECUTABLE="$PREFIX/bin/python" -DPython_EXECUTABLE="$PREFIX/bin/python"
+          -DPython3_EXECUTABLE="$PREFIX/bin/python" -DPython3_FIND_STRATEGY=LOCATION
+        - cmake --build build
+        - ./build/exit_order
+      requirements:
+        build:
+          - cxx-compiler
+          - cmake
+          - ninja
+        run:
+          - ros2-ament-cmake  # class_loader's CMake config finds its exported dependencies with it
+      files:
+        recipe:
+          - exit_order/

@@ -1,13 +1,59 @@
-diff --git a/include/class_loader/multi_library_class_loader.hpp b/include/class_loader/multi_library_class_loader.hpp
-index 1f17e47..4117e55 100644
---- a/include/class_loader/multi_library_class_loader.hpp
-+++ b/include/class_loader/multi_library_class_loader.hpp
-@@ -296,7 +296,7 @@ public:
-   template<class Base>
-   std::vector<std::string> getAvailableClassesForLibrary(const std::string & library_path) const
-   {
--    ClassLoader * loader = getClassLoaderForLibrary(library_path);
-+    const ClassLoader * loader = getClassLoaderForLibrary(library_path);
-     if (nullptr == loader) {
-       throw class_loader::NoClassLoaderExistsException(
-               "There is no ClassLoader in MultiLibraryClassLoader bound to library " +
+diff --git a/include/class_loader/class_loader_core.hpp b/include/class_loader/class_loader_core.hpp
+index 418418b..2fb1f32 100644
+--- a/include/class_loader/class_loader_core.hpp
++++ b/include/class_loader/class_loader_core.hpp
+@@ -201,6 +201,9 @@ CLASS_LOADER_PUBLIC
+ std::recursive_mutex & getLoadedLibraryVectorMutex();
+ CLASS_LOADER_PUBLIC
+ std::recursive_mutex & getPluginBaseToFactoryMapMapMutex();
++/// Serializes loadLibrary()/unloadLibrary() so a dlopen() never overlaps a dlclose().
++CLASS_LOADER_PUBLIC
++std::recursive_mutex & getLoaderMutex();
+ 
+ /**
+  * @brief Indicates if a library containing more than just plugins has been opened by the running process
+diff --git a/src/class_loader_core.cpp b/src/class_loader_core.cpp
+index 55c475d..d7cf07e 100644
+--- a/src/class_loader_core.cpp
++++ b/src/class_loader_core.cpp
+@@ -56,15 +56,12 @@ std::recursive_mutex & getPluginBaseToFactoryMapMapMutex()
+   return m;
+ }
+ 
+-namespace
+-{
+ // Serializes loadLibrary()/unloadLibrary() so a dlopen() never overlaps a dlclose().
+ std::recursive_mutex & getLoaderMutex()
+ {
+   static std::recursive_mutex m;
+   return m;
+ }
+-}  // namespace
+ 
+ BaseToFactoryMapMap & getGlobalPluginBaseToFactoryMapMap()
+ {
+diff --git a/src/multi_library_class_loader.cpp b/src/multi_library_class_loader.cpp
+index 36f4aa0..03ee91c 100644
+--- a/src/multi_library_class_loader.cpp
++++ b/src/multi_library_class_loader.cpp
+@@ -29,6 +29,8 @@
+ 
+ #include "class_loader/multi_library_class_loader.hpp"
+ 
++#include "console_bridge/console.h"
++
+ #include <algorithm>
+ #include <cstddef>
+ #include <memory>
+@@ -57,6 +59,11 @@ protected:
+     class_loader::impl::getCurrentlyLoadingLibraryName();
+     class_loader::impl::getCurrentlyActiveClassLoader();
+     class_loader::impl::hasANonPurePluginLibraryBeenOpened();
++    // ~ClassLoader() unloads its library under the loader mutex
++    class_loader::impl::getLoaderMutex();
++    // ~ClassLoader() logs through console_bridge, so its output handler (a function-local
++    // static in console_bridge) has to outlive `class_loader_ptrs_` as well
++    console_bridge::getLogLevel();
+   }
+ };
+ 
