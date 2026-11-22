@@ -1,13 +1,161 @@
-octomap:
+apriltag:
+  additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "${{ 'winpthreads-devel' if win }}"]
+  add_run: ["${{ 'winpthreads-devel' if win }}"]
+apriltag_ros:
+  additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
+
+# Remove everything after this line on a full rebuild
+  add_host: ["${{ 'winpthreads-devel' if win }}"]
+audio_capture:
+  add_host: ["libglib", "glib"]
+audio_play:
+  add_host: ["libglib", "glib"]
+cartographer:
   generate_dummy_package_with_run_deps:
-    dep_name: octomap
+    dep_name: cartographer
     max_pin: 'x.x'
-    override_version: '1.10.0'
+    # ROS uses a custom versioning scheme currently at 2.0.9004
+    override_version: '2.0.0'
+checkerboard_detector:
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
+class_loader:
+  add_host: ["${{ 'libcxx-devel 19.*' if osx }}"]
+coal:
+  generate_dummy_package_with_run_deps:
+    dep_name: coal
+    max_pin: 'x.x.x'
+cob_object_detection_visualizer:
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
 draco:
   generate_dummy_package_with_run_deps:
     dep_name: draco
     max_pin: 'x.x.x'
     override_version: '1.5.7'
+eigenpy:
+  generate_dummy_package_with_run_deps:
+    dep_name: eigenpy
+    max_pin: 'x.x.x'
+    # the version in ros is not compatible with conda-forge's coal and hpp_fcl builds
+    override_version: '3.12.0'
+euslisp:
+  add_host: ["${{ 'xorg-libx11' if linux }}", "${{ 'libglu' if linux }}", "${{ 'libgl-devel' if linux }}", "${{ 'glew' if linux }}", "zlib", "libpng"]
+face_detector:
+  add_host: ["yaml-cpp"]
+fcl:
+  generate_dummy_package_with_run_deps:
+    dep_name: fcl
+    max_pin: 'x.x'
+    # the version on ros is outdated w.r.t. to the conda-forge one
+    override_version: '0.7.0'
+find_object_2d:
+  add_host: ["zlib"]
+gazebo_dev:
+  add_host: [tbb, tbb-devel]
+gazebo_pkgs:
+  add_host: [tbb, tbb-devel]
+gazebo_plugins:
+  add_host: [tbb, tbb-devel]
+gazebo_ros:
+  add_host: [tbb, tbb-devel]
+gazebo_ros_control:
+  add_host: [tbb, tbb-devel]
+grid_map_demos:
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
+grid_map_pcl:
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
+gtsam:
+  generate_dummy_package_with_run_deps:
+    dep_name: gtsam
+    max_pin: 'x.x'
+hpp_fcl:
+  generate_dummy_package_with_run_deps:
+    dep_name: hpp-fcl
+    max_pin: 'x.x.x'
+    # the version on ros is outdated w.r.t. to the conda-forge one
+    override_version: '3.0.2'
+ifopt:
+  add_host: ["ipopt"]
+image_view:
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
+image_view2:
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
+imagesift:
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
+jsk_interactive_marker:
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
+jsk_pcl_ros:
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
+jsk_pcl_ros_utils:
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
+jsk_perception:
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
+jsk_recognition_utils:
+  add_host: ["glew", "cython"]
+  add_run: ["glew"]
+jsk_rviz_plugins:
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
+jskeus:
+  add_host: ["zlib", "libpng"]
+lanelet2_core:
+  add_host: ["gtest"]
+lanelet2_examples:
+  add_host: ["gtest"]
+lanelet2_io:
+  add_host: ["gtest"]
+lanelet2_maps:
+  add_host: ["gtest"]
+lanelet2_matching:
+  add_host: ["gtest"]
+lanelet2_projection:
+  add_host: ["gtest"]
+lanelet2_python:
+  add_host: ["gtest"]
+lanelet2_routing:
+  add_host: ["gtest"]
+lanelet2_traffic_rules:
+  add_host: ["gtest"]
+lanelet2_validation:
+  add_host: ["gtest"]
+laser_scan_matcher:
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
+libcmt:
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
+librealsense2:
+  generate_dummy_package_with_run_deps:
+    dep_name: librealsense
+    max_pin: 'x.x'
+    override_version: '2.56.5'
+
+libuvc_camera:
+  add_host: ["pkgconfig"]
+lvr2:
+  add_host: ["libgdal", "cgal-cpp"]
+map_organizer:
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
+mesh_client:
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "cgal-cpp"]
+moveit_calibration_plugins:
+  add_host: ["libopencv"]
+moveit_setup_assistant:
+  add_host: ["ompl"]
+moveit_visual_tools:
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
+mqtt_bridge:
+  add_run: ["inject", "msgpack-python", "paho-mqtt", "pymongo"]
+mrpt2:
+  add_host: ["tinyxml2", "libboost-devel", "jsoncpp", "gtest", "libboost-python-devel", "libdc1394", "xorg-libxcomposite", "ros-noetic-octomap", "libftdi"]
+  add_run: ["tinyxml2", "libboost-devel", "jsoncpp", "gtest", "libboost-python-devel", "libdc1394", "xorg-libxcomposite", "ros-noetic-octomap", "libftdi"]
+  add_build: ["${{ 'xorg-libxcomposite' if linux }}"]
+multisense_ros:
+  add_host: ["libjpeg-turbo"]
+obj_to_pointcloud:
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
+octomap:
+  generate_dummy_package_with_run_deps:
+    dep_name: octomap
+    max_pin: 'x.x'
+    override_version: '1.10.0'
 ompl:
   generate_dummy_package_with_run_deps:
     dep_name: ompl
@@ -20,220 +168,72 @@ ompl:
 #     max_pin: 'x.x'
   add_host: ["ompl"]
   add_run: ["ompl"]
-urdfdom_headers:
-  generate_dummy_package_with_run_deps:
-    dep_name: urdfdom_headers
-    max_pin: 'x.x'
-cartographer:
-  generate_dummy_package_with_run_deps:
-    dep_name: cartographer
-    max_pin: 'x.x'
-    # ROS uses a custom versioning scheme currently at 2.0.9004
-    override_version: '2.0.0'
-hpp_fcl:
-  generate_dummy_package_with_run_deps:
-    dep_name: hpp-fcl
-    max_pin: 'x.x.x'
-    # the version on ros is outdated w.r.t. to the conda-forge one
-    override_version: '3.0.2'
-fcl:
-  generate_dummy_package_with_run_deps:
-    dep_name: fcl
-    max_pin: 'x.x'
-    # the version on ros is outdated w.r.t. to the conda-forge one
-    override_version: '0.7.0'
-coal:
-  generate_dummy_package_with_run_deps:
-    dep_name: coal
-    max_pin: 'x.x.x'
-eigenpy:
-  generate_dummy_package_with_run_deps:
-    dep_name: eigenpy
-    max_pin: 'x.x.x'
-    # the version in ros is not compatible with conda-forge's coal and hpp_fcl builds
-    override_version: '3.12.0'
+pcl_conversions:
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
+pcl_ros:
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
 pinocchio:
   generate_dummy_package_with_run_deps:
     dep_name: pinocchio
     max_pin: 'x.x.x'
     # the version on ros is outdated w.r.t. to the conda-forge one
     override_version: '3.9.0'
-gtsam:
-  generate_dummy_package_with_run_deps:
-    dep_name: gtsam
-    max_pin: 'x.x'
-librealsense2:
-  generate_dummy_package_with_run_deps:
-    dep_name: librealsense
-    max_pin: 'x.x'
-    override_version: '2.56.5'
-
-apriltag:
-  additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
-  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "${{ 'winpthreads-devel' if win }}"]
-  add_run: ["${{ 'winpthreads-devel' if win }}"]
-apriltag_ros:
-  additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
-
-# Remove everything after this line on a full rebuild
-  add_host: ["${{ 'winpthreads-devel' if win }}"]
-ros_type_introspection:
-  build_number: 25
-euslisp:
-  add_host: ["${{ 'xorg-libx11' if linux }}", "${{ 'libglu' if linux }}", "${{ 'libgl-devel' if linux }}", "${{ 'glew' if linux }}", "zlib", "libpng"]
-jskeus:
-  add_host: ["zlib", "libpng"]
-stage:
-  add_host: ["zlib", "libpng"]
-qt_gui_cpp:
-  add_build: ["pyqt-builder", "pyqt5-sip", "sip"]
-  add_host: ["sip"]
-rviz:
-  add_build: ["pyqt-builder", "pyqt5-sip", "sip"]
-  add_host: ["sip"]
+plotjuggler:
+  add_host: ["${{ 'elfutils' if linux }}", "protobuf"]
+posedetection_msgs:
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
 python_qt_binding:
   add_build: ["pyqt-builder", "pyqt5-sip", "sip"]
   add_host: ["sip"]
   add_run: ["adwaita-icon-theme"]
-find_object_2d:
-  add_host: ["zlib"]
-sick_tim:
-  add_host: ["pkg-config"]
-class_loader:
-  add_host: ["${{ 'libcxx-devel 19.*' if osx }}"]
-moveit_visual_tools:
+qt_gui_cpp:
+  add_build: ["pyqt-builder", "pyqt5-sip", "sip"]
+  add_host: ["sip"]
+rc_roi_manager_gui:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
-pcl_conversions:
+resource_retriever:
+  add_host: ["libcurl"]
+  add_run: ["libcurl"]
+robot_self_filter:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
-pcl_ros:
-  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
-grid_map_demos:
-  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
-moveit_setup_assistant:
-  add_host: ["ompl"]
-gazebo_dev:
-  add_host: [tbb, tbb-devel]
-gazebo_ros:
-  add_host: [tbb, tbb-devel]
-gazebo_plugins:
-  add_host: [tbb, tbb-devel]
-gazebo_ros_control:
-  add_host: [tbb, tbb-devel]
-gazebo_pkgs:
-  add_host: [tbb, tbb-devel]
 ros_ign_gazebo:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "${{ 'libuuid' if linux }}"]
-lvr2:
-  add_host: ["libgdal", "cgal-cpp"]
+rosbridge_library:
+  add_run: ["pymongo"]
+rosserial_python:
+  add_run: ["pyserial"]
 rtabmap:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "pybind11", "tbb-devel", "liblzma-devel"]
-rtabmap_ros:
-  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
 rtabmap_conversions:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "libnetcdf", "liblzma-devel"]
+rtabmap_ros:
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
 rtabmap_rviz_plugins:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
 rtabmap_viz:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
-image_view2:
-  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
-swri_image_util:
-  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
-posedetection_msgs:
-  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
-libcmt:
-  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
-checkerboard_detector:
-  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
-imagesift:
-  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
-jsk_rviz_plugins:
-  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
-jsk_perception:
-  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
-jsk_interactive_marker:
-  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
-jsk_pcl_ros_utils:
-  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
-jsk_pcl_ros:
-  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
-jsk_recognition_utils:
-  add_host: ["glew", "cython"]
-  add_run: ["glew"]
-robot_self_filter:
-  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
-ur_client_library:
-  add_host: ["ros-noetic-catkin"]
-mqtt_bridge:
-  add_run: ["inject", "msgpack-python", "paho-mqtt", "pymongo"]
-mrpt2:
-  add_host: ["tinyxml2", "libboost-devel", "jsoncpp", "gtest", "libboost-python-devel", "libdc1394", "xorg-libxcomposite", "ros-noetic-octomap", "libftdi"]
-  add_run: ["tinyxml2", "libboost-devel", "jsoncpp", "gtest", "libboost-python-devel", "libdc1394", "xorg-libxcomposite", "ros-noetic-octomap", "libftdi"]
-  add_build: ["${{ 'xorg-libxcomposite' if linux }}"]
-image_view:
-  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
-rosserial_python:
-  add_run: ["pyserial"]
-mesh_client:
-  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "cgal-cpp"]
-map_organizer:
-  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
-libuvc_camera:
-  add_host: ["pkgconfig"]
-toposens_markers:
-  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", libglib, glib, libxcb, pthread-stubs, xorg-libxau, xorg-libxi, xorg-libxrandr, xorg-libxcursor, xorg-libxtst, xorg-libxcomposite, xorg-libxdamage, xorg-libxinerama, xorg-xineramaproto]
-audio_capture:
-  add_host: ["libglib", "glib"]
-audio_play:
-  add_host: ["libglib", "glib"]
-cob_object_detection_visualizer:
-  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
-grid_map_pcl:
-  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
-laser_scan_matcher:
-  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
-moveit_calibration_plugins:
-  add_host: ["libopencv"]
-multisense_ros:
-  add_host: ["libjpeg-turbo"]
-obj_to_pointcloud:
-  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
-rc_roi_manager_gui:
-  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
-simple_grasping:
-  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
-face_detector:
-  add_host: ["yaml-cpp"]
+rviz:
+  add_build: ["pyqt-builder", "pyqt5-sip", "sip"]
+  add_host: ["sip"]
 safety_limiter:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
-ifopt:
-  add_host: ["ipopt"]
+sick_tim:
+  add_host: ["pkg-config"]
+simple_grasping:
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
+stage:
+  add_host: ["zlib", "libpng"]
+swri_image_util:
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
 tesseract_collision:
   add_build: ["${{ 'llvm-openmp' if osx }}"]
-rosbridge_library:
-  add_run: ["pymongo"]
-resource_retriever:
-  add_host: ["libcurl"]
-  add_run: ["libcurl"]
-plotjuggler:
-  add_host: ["${{ 'elfutils' if linux }}", "protobuf"]
-lanelet2_core:
-  add_host: ["gtest"]
-lanelet2_io:
-  add_host: ["gtest"]
-lanelet2_maps:
-  add_host: ["gtest"]
-lanelet2_matching:
-  add_host: ["gtest"]
-lanelet2_projection:
-  add_host: ["gtest"]
-lanelet2_routing:
-  add_host: ["gtest"]
-lanelet2_traffic_rules:
-  add_host: ["gtest"]
-lanelet2_examples:
-  add_host: ["gtest"]
-lanelet2_python:
-  add_host: ["gtest"]
-lanelet2_validation:
-  add_host: ["gtest"]
+toposens_markers:
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", libglib, glib, libxcb, pthread-stubs, xorg-libxau, xorg-libxi, xorg-libxrandr, xorg-libxcursor, xorg-libxtst, xorg-libxcomposite, xorg-libxdamage, xorg-libxinerama, xorg-xineramaproto]
+ur_client_library:
+  add_host: ["ros-noetic-catkin"]
+urdfdom_headers:
+  generate_dummy_package_with_run_deps:
+    dep_name: urdfdom_headers
+    max_pin: 'x.x'
+ros_type_introspection:
+  build_number: 25

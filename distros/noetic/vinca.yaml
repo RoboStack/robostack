@@ -31,6 +31,7 @@ mutex_package:
 
 
 packages_select_by_deps:
+
   # Core ROS packages
   - catkin
   - actionlib
@@ -183,119 +184,47 @@ packages_select_by_deps:
     then:
     # CRAS (CTU Robot Autonomy Stack) packages - maintainer peci1
       - cras-cpp-common
-      - cras-py-common
       - cras-docs-common
-      - cras-topic-tools
-      - cras-relative-positional-controller
       - cras-msgs
-      - magnetometer-compass
-      - electronic-io
-      - rosmsg-cpp
-      - snmp-ros
-      - static-transform-mux
-      - rosbash-params
-      - dynamic-robot-state-publisher
-      - tf-static-publisher
-      - movie-publisher
-      - socketcan-interface
-      - socketcan-bridge
-      - rosmon
-      - rosmon-core
+      - cras-py-common
+      - cras-relative-positional-controller
+      - cras-topic-tools
       - dataspeed-can-usb
       - dataspeed-ulc-can
       - dbw-mkz-can
-    # - openni2-camera
+      - dynamic-robot-state-publisher
+      - electronic-io
+      - magnetometer-compass
+      - movie-publisher
       - openni2-launch
+      - rosbash-params
+      - rosmon
+      - rosmon-core
+      - rosmsg-cpp
+      - snmp-ros
+      - socketcan-bridge
+      - socketcan-interface
+      - static-transform-mux
+    # - openni2-camera
+      - tf-static-publisher
       - usb-cam
 
   - if: not win
     then:
-      - rtabmap
-      - rtabmap-ros
+      - ackermann-steering-controller
       - apriltag
       - apriltag-ros
-      - rospack
-      - perception
-      - simulators
-      - navigation
-      - ros-control
-      - ros-controllers
-      - joint-trajectory-controller
-      - imu-sensor-controller
-      - ackermann-steering-controller
-      - force-torque-sensor-controller
-      - gripper-action-controller
-      - moveit-servo
-      - moveit-ros-move-group
-      - moveit-ros-manipulation
-      - moveit-ros-planning-interface
-      - moveit-ros-visualization
-      - panda-moveit-config
-      - slam-gmapping
-      - openslam-gmapping
-      - slam-toolbox
-      - global-planner
-      - tf2-client
-      - tf2-server
-      - tf-remapper-cpp
-      - tf-static-publisher
-      - octomap-mapping
-      - octomap-server
-      - geometric-shapes
-      - depthimage-to-laserscan
-      - laser-proc
-      - point-cloud-transport
-      - point-cloud-transport-plugins
-      - draco-point-cloud-transport
-      - point-cloud-color
-      - image-transport-codecs
-      - find-object-2d
-      - convex-decomposition
       - aruco-ros
-      - jsk-visualization
-      - rqt-gui-cpp
-      - rqt-gui-py
-      - rqt-ez-publisher
-      - rqt-rosmon
-      - python-qt-binding
-      - qt-gui
-      - qt-gui-cpp
-      - microstrain-inertial-driver
-      - microstrain-inertial-msgs
-      - sick-tim
-      - urg-node
-      - urg-c
-      - velodyne
-      - velodyne-msgs
-      - velodyne-pcl
-      - velodyne-description
-      - velodyne-gazebo-plugins
-      - librealsense2
-      - realsense2-camera
-      - webots-ros
-      - ros-ign
-      - ros-ign-bridge
-      - ros-ign-gazebo
-      - ros-ign-gazebo-demos
-      - ros-ign-image
-      - pr2-teleop
-      - turtlebot3-simulations
-      - turtlebot3-teleop
-      - husky-simulator
-      - husky-desktop
-      - husky-navigation
       - audio-common-msgs
-      - ur-msgs
-      - franka-msgs
-      - four-wheel-steering-msgs
-      - compass-msgs
-      - electronic-io-msgs
-      - cras-msgs
-      - rosmon-msgs
-      - geodesy
-      - lanelet2
+      - baldor
       - can-msgs
-      - lusb
+      - catch-ros
+      - combined-robot-hw
+      - compass-msgs
+      - convex-decomposition
+      - cras-msgs
+      - criutils
+      - cv-camera
       - dataspeed-can-msg-filters
       - dataspeed-can-tools
       - dataspeed-ulc-msgs
@@ -305,15 +234,9 @@ packages_select_by_deps:
       - dbw-mkz-msgs
       - dbw-polaris-description
       - dbw-polaris-msgs
-      - sound-play
+      - depthimage-to-laserscan
+      - draco-point-cloud-transport
       - dynamixel-sdk
-      - pid
-      - rospy-message-converter
-      - rosdoc-lite
-      - rosfmt
-      - roslint
-      - roslisp
-      - cv-camera
       - ecl-command-line
       - ecl-containers
       - ecl-converters
@@ -330,34 +253,114 @@ packages_select_by_deps:
       - ecl-statistics
       - ecl-streams
       - ecl-threads
-      - sophus
-      - urdf-geometry-parser
-      - combined-robot-hw
+      - electronic-io-msgs
+      - find-object-2d
+      - force-torque-sensor-controller
+      - four-wheel-steering-msgs
+      - franka-msgs
+      - geodesy
+      - geometric-shapes
+      - global-planner
+      - gripper-action-controller
       - handeye
-      - criutils
-      - baldor
-      - catch-ros
-      - swri-console
+      - husky-desktop
+      - husky-navigation
+      - husky-simulator
+      - image-transport-codecs
+      - imu-sensor-controller
+      - joint-trajectory-controller
+      - jsk-visualization
+      - lanelet2
+      - laser-proc
+      - librealsense2
+      - lusb
+      - microstrain-inertial-driver
+      - microstrain-inertial-msgs
+      - moveit-ros-manipulation
+      - moveit-ros-move-group
+      - moveit-ros-planning-interface
+      - moveit-ros-visualization
+      - moveit-servo
+      - navigation
+      - octomap-mapping
+      - octomap-server
+      - openslam-gmapping
       - p2os-driver
+      - panda-moveit-config
+      - perception
+      - pid
+      - point-cloud-color
+      - point-cloud-transport
+      - point-cloud-transport-plugins
+      - pr2-teleop
+      - python-qt-binding
+      - qt-gui
+      - qt-gui-cpp
+      - realsense2-camera
       - robot-body-filter
-      - sensor-filters
       - ros-babel-fish
       - ros-babel-fish-test-msgs
+      - ros-control
+      - ros-controllers
+      - ros-ign
+      - ros-ign-bridge
+      - ros-ign-gazebo
+      - ros-ign-gazebo-demos
+      - ros-ign-image
+      - rosdoc-lite
+      - rosfmt
+      - roslint
+      - roslisp
+      - rosmon-msgs
+      - rospack
+      - rospy-message-converter
+      - rqt-ez-publisher
+      - rqt-gui-cpp
+      - rqt-gui-py
+      - rqt-rosmon
+      - rtabmap
+      - rtabmap-ros
+      - sensor-filters
+      - sick-tim
+      - simulators
+      - slam-gmapping
+      - slam-toolbox
+      - sophus
+      - sound-play
+      - swri-console
+      - tf-remapper-cpp
+      - tf-static-publisher
+      - tf2-client
+      - tf2-server
+      - turtlebot3-simulations
+      - turtlebot3-teleop
+      - ur-msgs
+      - urdf-geometry-parser
+      - urg-c
+      - urg-node
+      - velodyne
+      - velodyne-description
+      - velodyne-gazebo-plugins
+      - velodyne-msgs
+      - velodyne-pcl
+      - webots-ros
 
 packages_exclude:
   - libpointmatcher
   - openni2-camera
+
   - if: not linux
     then:
+      - euslisp
+      - jskeus
+      - openni2-launch
       - pendulum_control
+      - roseus
       - rttest
       - tlsf
       - tlsf_cpp
-      - euslisp
-      - jskeus
-      - roseus
       - usb-cam
-      - openni2-launch
+
   - if: win
     then:
       - stage

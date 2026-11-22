@@ -1,5 +1,5 @@
 diff --git a/cmake/catkin_libraries.cmake b/cmake/catkin_libraries.cmake
-index b19f4c8a..5d9a24c1 100644
+index b19f4c8..5d9a24c 100644
 --- a/cmake/catkin_libraries.cmake
 +++ b/cmake/catkin_libraries.cmake
 @@ -114,6 +114,40 @@ function(catkin_unpack_libraries_with_build_configuration VAR)
@@ -77,7 +77,7 @@ index b19f4c8a..5d9a24c1 100644
            endforeach()
          endif()
 diff --git a/cmake/catkin_package.cmake b/cmake/catkin_package.cmake
-index df36e236..475eb975 100644
+index df36e23..475eb97 100644
 --- a/cmake/catkin_package.cmake
 +++ b/cmake/catkin_package.cmake
 @@ -254,6 +254,17 @@ function(_catkin_package)
@@ -99,7 +99,7 @@ index df36e236..475eb975 100644
    catkin_replace_imported_library_targets(_PKG_CONFIG_LIBRARIES ${_PKG_CONFIG_LIBRARIES})
  
 diff --git a/cmake/empy.cmake b/cmake/empy.cmake
-index 3e076066..3a24c8c8 100644
+index 3e07606..3a24c8c 100644
 --- a/cmake/empy.cmake
 +++ b/cmake/empy.cmake
 @@ -22,19 +22,13 @@ function(find_python_module module)
@@ -129,7 +129,7 @@ index 3e076066..3a24c8c8 100644
  endif()
  message(STATUS "Using empy: ${EMPY_SCRIPT}")
 diff --git a/cmake/interrogate_setup_dot_py.py b/cmake/interrogate_setup_dot_py.py
-index 5e25fbf8..e8d70451 100644
+index 5e25fbf..e8d7045 100644
 --- a/cmake/interrogate_setup_dot_py.py
 +++ b/cmake/interrogate_setup_dot_py.py
 @@ -40,14 +40,14 @@ from argparse import ArgumentParser
@@ -152,7 +152,7 @@ index 5e25fbf8..e8d70451 100644
      pass
  
 diff --git a/cmake/python.cmake b/cmake/python.cmake
-index c72b8599..6b39d3a2 100644
+index c72b859..6b39d3a 100644
 --- a/cmake/python.cmake
 +++ b/cmake/python.cmake
 @@ -8,9 +8,6 @@ message(STATUS "Using PYTHON_EXECUTABLE: ${PYTHON_EXECUTABLE}")
@@ -166,7 +166,7 @@ index c72b8599..6b39d3a2 100644
  
  if(SETUPTOOLS_DEB_LAYOUT)
 diff --git a/cmake/templates/_setup_util.py.in b/cmake/templates/_setup_util.py.in
-index e73934bb..b9c8c005 100755
+index e73934b..b9c8c00 100755
 --- a/cmake/templates/_setup_util.py.in
 +++ b/cmake/templates/_setup_util.py.in
 @@ -1,4 +1,4 @@
@@ -193,7 +193,7 @@ index e73934bb..b9c8c005 100755
  def rollback_env_variables(environ, env_var_subfolders):
      """
 diff --git a/cmake/templates/pkgConfig.cmake.in b/cmake/templates/pkgConfig.cmake.in
-index 92199d4e..b1423d7f 100644
+index 92199d4..b1423d7 100644
 --- a/cmake/templates/pkgConfig.cmake.in
 +++ b/cmake/templates/pkgConfig.cmake.in
 @@ -119,10 +119,12 @@ endif()
@@ -211,7 +211,7 @@ index 92199d4e..b1423d7f 100644
      # This is a linker flag/option (like -pthread)
      # There's no standard variable for these, so create an interface library to hold it
 diff --git a/cmake/templates/setup.sh.in b/cmake/templates/setup.sh.in
-index 834b01a0..b9dca514 100644
+index 834b01a..b9dca51 100644
 --- a/cmake/templates/setup.sh.in
 +++ b/cmake/templates/setup.sh.in
 @@ -11,13 +11,29 @@
@@ -247,7 +247,7 @@ index 834b01a0..b9dca514 100644
  
  # detect if running on Darwin platform
 diff --git a/cmake/test/gtest.cmake b/cmake/test/gtest.cmake
-index a87d3a90..5ad52de9 100644
+index a87d3a9..5ad52de 100644
 --- a/cmake/test/gtest.cmake
 +++ b/cmake/test/gtest.cmake
 @@ -313,6 +313,11 @@ function(catkin_find_google_test_source gtest_path googletest_path
@@ -290,7 +290,7 @@ index a87d3a90..5ad52de9 100644
  if(NOT GMOCK_FOUND OR NOT GTEST_FOUND)
    # If we find one but not the other, see if we can get both from source
 diff --git a/cmake/tools/rt.cmake b/cmake/tools/rt.cmake
-index da5ed7db..5fb71d58 100644
+index da5ed7d..5fb71d5 100644
 --- a/cmake/tools/rt.cmake
 +++ b/cmake/tools/rt.cmake
 @@ -34,14 +34,5 @@
