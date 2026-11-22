@@ -317,6 +317,16 @@ def load_yaml(path: Path) -> dict:
 LIST_KEYS = ("packages_select_by_deps", "packages_exclude", "packages_skip")
 
 
+# ROS 1 distributions: own package selection (their vinca.yaml doesn't extend
+# shared/vinca.yaml) and the package names ros-<distro>-<pkg> (ROS 2: ros2-<pkg>)
+ROS1_DISTROS = ("noetic",)
+
+
+def package_prefix(distro: str) -> str:
+    """The prefix of the distribution's conda package names (and patch names)."""
+    return f"ros-{distro}-" if distro in ROS1_DISTROS else "ros2-"
+
+
 def work_dir(distro: str) -> Path:
     return DISTROS / distro / "work"
 
