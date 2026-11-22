@@ -157,7 +157,9 @@ rviz_ogre_vendor:
   add_run: ["assimp"]
 slam_toolbox:
   add_build: ["${{ 'qt6-main' if (build_platform != target_platform) }}"]
-  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
+  # libblas/libcblas: picks up the netlib pin; the blas-devel ceres brings in otherwise resolves
+  # to BLIS, whose libblas aborts at load (CPU detection) on some aarch64 hosts and breaks `import numpy`
+  add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "libblas", "libcblas"]
 spatio_temporal_voxel_layer:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "openvdb"]
 spdlog_vendor:
