@@ -1,0 +1,44 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index f0e28900..e0b000fd 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -31,7 +31,7 @@ find_package(rviz_common REQUIRED)
+ find_package(rviz_rendering REQUIRED)
+ find_package(rviz_default_plugins REQUIRED)
+ find_package(rmf_traffic_ros2 REQUIRED)
+-find_package(Qt5 REQUIRED COMPONENTS Widgets Test)
++find_package(Qt6 REQUIRED COMPONENTS Widgets Test)
+ 
+ if(BUILD_TESTING)
+   find_package(ament_cmake_uncrustify REQUIRED)
+@@ -66,7 +66,7 @@ target_link_libraries(${PROJECT_NAME}
+     rviz_common::rviz_common
+     ${rviz_rendering_LIBRARIES}
+     ${rviz_default_plugins_LIBRARIES}
+-    ${Qt5Widgets_LIBRARIES}
++    ${Qt6Widgets_LIBRARIES}
+     rmf_traffic_ros2::rmf_traffic_ros2
+ )
+ 
+@@ -81,7 +81,7 @@ target_include_directories(${PROJECT_NAME}
+     ${rviz_common_INCLUDE_DIRS}
+     ${rviz_rendering_INCLUDE_DIRS}
+     ${rviz_default_plugins_INCLUDE_DIRS}
+-    ${Qt5Widgets_INCLUDE_DIRS}
++    ${Qt6Widgets_INCLUDE_DIRS}
+     ${QT5_INCLUDE_DIRS}
+ )
+ 
+@@ -95,10 +95,10 @@ ament_export_include_directories(include)
+ ament_export_targets(${PROJECT_NAME} HAS_LIBRARY_TARGET)
+ 
+ ament_export_dependencies(
+-  Qt5
++  Qt6
+   rviz_common
+   rclcpp
+-  Qt5Widgets
++  Qt6Widgets
+ )
+ 
+ install(

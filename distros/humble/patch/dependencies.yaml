@@ -128,6 +128,12 @@ rclcpp_action:
 rclpy:
   add_host: ["typing_extensions"]
   add_run: ["typing_extensions"]
+rmf_traffic_editor:
+  # 1.9 is Qt5-only (find_package(Qt5 ...), QRegExp etc.; Qt6 from 1.14); the Qt rosdep keys map to Qt6
+  remove_host: ["qt6-main"]
+  remove_run: ["qt6-main"]
+  add_host: ["qt-main"]
+  add_run: ["qt-main"]
 rmw_implementation:
   add_host:
   - "ros2-yaml-cpp-vendor"
