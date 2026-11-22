@@ -96,6 +96,7 @@ py_trees:
     dep_name: py-trees
     max_pin: 'x.x.x'
     override_version: '2.6.0'
+qt_gui_cpp:  # rqt on PyQt6 / Qt 6
 roboplan:
   generate_dummy_package_with_run_deps:
     dep_name: roboplan-python
@@ -156,6 +157,8 @@ zenoh_cpp_vendor:
 cartographer_ros:
   additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
   build_number: 32  # offline_node.cpp out of the shared library (duplicate gflags abort)
+class_loader:  # console_bridge outlives the class loaders (exit abort on macOS)
+  build_number: 32
 fuse_viz:  # rviz on Qt 6
   build_number: 32
 grid_map_rviz_plugin:  # rviz on Qt 6
@@ -193,8 +196,6 @@ py_trees_ros_tutorials:  # rqt on PyQt6 / Qt 6
 python_qt_binding:  # rqt on PyQt6 / Qt 6
   build_number: 32
 qt_gui:  # rqt on PyQt6 / Qt 6
-  build_number: 32
-qt_gui_cpp:  # rqt on PyQt6 / Qt 6
   build_number: 32
 rmf_utils:  # its DLL moved from lib to bin (Windows)
   build_number: 32

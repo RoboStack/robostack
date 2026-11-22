@@ -74,6 +74,8 @@ aruco_ros:  # its recipe test stops the node for sure (package tests hung on mac
 cartographer_ros:
   additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON -DCMAKE_CXX_FLAGS=-DBOOST_ZLIB_BINARY=kernel32"
   build_number: 33  # offline_node.cpp out of the shared library (duplicate gflags abort)
+class_loader:  # console_bridge outlives the class loaders (exit abort on macOS)
+  build_number: 33
 fuse_viz:
   build_number: 33
 moveit_ros_visualization:
