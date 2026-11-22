@@ -1,0 +1,9 @@
+tests:
+  # the sip bindings (PyQt6, sip 6) load
+  - script:
+      interpreter: python
+      env:
+        QT_QPA_PLATFORM: offscreen
+      content: |
+        from qt_gui_cpp.cpp_binding_helper import qt_gui_cpp
+        assert qt_gui_cpp is not None, "no qt_gui_cpp bindings"

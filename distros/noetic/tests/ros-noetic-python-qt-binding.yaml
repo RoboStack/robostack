@@ -1,0 +1,47 @@
+tests:
+  # PyQt6 with the PyQt5 compatibility of RoboStack's python_qt_binding (patch), which
+  # noetic's (unported) rqt plugins rely on
+  - script:
+      interpreter: python
+      env:
+        QT_QPA_PLATFORM: offscreen
+      content: |
+        import os, sys
+        from python_qt_binding import QT_BINDING
+        from python_qt_binding.QtCore import Qt, QRegExp, QMutex, QtCriticalMsg, QSortFilterProxyModel, QStringListModel
+        from python_qt_binding.QtWidgets import QAction, QApplication, QComboBox, QDialog, QHeaderView
+        from python_qt_binding.QtGui import QIcon, QKeySequence, QPainter, QStandardItem, QStandardItemModel
+        assert QT_BINDING == 'pyqt', QT_BINDING
+        app = QApplication([])
+        assert int(Qt.Checked) == 2 and Qt.AllDockWidgetAreas and QHeaderView.Stretch
+        assert QDialog.exec_ and QPainter.HighQualityAntialiasing
+        assert QRegExp('ro.*stack').exactMatch('robostack')
+        mutex = QMutex(QMutex.Recursive)
+        mutex.lock()
+        mutex.unlock()
+        assert QAction('x', None).text() == 'x'
+        # rqt plugins: QRegExp.PatternSyntax, Qt.SHIFT + key, QModelIndex.child, filterRegExp
+        assert QRegExp.PatternSyntax(QRegExp.Wildcard) == QRegExp.Wildcard
+        assert QKeySequence(Qt.SHIFT + Qt.Key_W).toString() == 'Shift+W'
+        model = QStandardItemModel()
+        parent = QStandardItem('p')
+        parent.appendRow(QStandardItem('c'))
+        model.appendRow(parent)
+        assert model.index(0, 0).child(0, 0).data() == 'c'
+        proxy = QSortFilterProxyModel()
+        proxy.setSourceModel(QStringListModel(['abc', 'xyz']))
+        proxy.setFilterRegExp(QRegExp('a*', Qt.CaseInsensitive, QRegExp.Wildcard))
+        assert proxy.rowCount() == 1 and proxy.filterRegExp() is not None
+        # QComboBox's PyQt5 signal overloads and enum names
+        combo = QComboBox()
+        combo.addItems(['one', 'two'])
+        texts, indices = [], []
+        combo.currentIndexChanged[str].connect(texts.append)
+        combo.currentIndexChanged[int].connect(indices.append)
+        combo.setCurrentIndex(1)
+        assert texts == ['two'] and indices == [1], (texts, indices)
+        assert QComboBox.AdjustToMinimumContentsLength is not None
+        # rqt's title bar icons: conda-forge's Adwaita has only the -symbolic icons
+        QIcon.setThemeSearchPaths([os.path.join(sys.prefix, 'share', 'icons')])
+        QIcon.setThemeName('Adwaita')
+        assert not QIcon.fromTheme('window-close').isNull()

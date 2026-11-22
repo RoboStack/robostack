@@ -1,0 +1,12 @@
+tests:
+  # roscore, publishing and echoing a message, recording and reading a bag
+  - if: unix
+    then:
+      script:
+        - python ros_smoke_test.py
+      requirements:
+        run:
+          - ros-noetic-std-msgs
+      files:
+        recipe:
+          - ros_smoke_test.py

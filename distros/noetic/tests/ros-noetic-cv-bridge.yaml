@@ -1,0 +1,14 @@
+tests:
+  # an image through cv_bridge and back (OpenCV, numpy, boost::python module)
+  - script:
+      interpreter: python
+      content: |
+        import numpy
+        from cv_bridge import CvBridge
+        bridge = CvBridge()
+        image = numpy.arange(48, dtype=numpy.uint8).reshape(4, 4, 3)
+        message = bridge.cv2_to_imgmsg(image, 'bgr8')
+        assert message.encoding == 'bgr8' and message.width == 4
+        assert (bridge.imgmsg_to_cv2(message) == image).all()
+        gray = bridge.imgmsg_to_cv2(message, 'mono8')
+        assert gray.shape == (4, 4)

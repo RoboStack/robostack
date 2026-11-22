@@ -1,0 +1,11 @@
+# RoboStack builds noetic with Qt 6 only: a package asking for Qt 5 (after find_package(catkin))
+# gets Qt 6 through catkin's forwarding (cmake/qt5_compat), including qt5_wrap_cpp and QRegExp.
+cmake_minimum_required(VERSION 3.5)
+project(qt5_demo CXX)
+find_package(catkin REQUIRED)
+find_package(Qt5Widgets REQUIRED)
+find_package(Qt5 REQUIRED COMPONENTS Core Gui)
+qt5_wrap_cpp(MOCS widget.h)
+add_executable(qt5_demo main.cpp ${MOCS})
+target_include_directories(qt5_demo PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(qt5_demo Qt5::Widgets Qt5::Core)
