@@ -42,6 +42,31 @@ index 0000000..9cea055
 +  endif()
 +endif()
 +set(boost_system_FOUND TRUE)
+diff --git a/cmake/all.cmake b/cmake/all.cmake
+index 7768f96..792f2f2 100644
+--- a/cmake/all.cmake
++++ b/cmake/all.cmake
+@@ -224,3 +224,20 @@ endif()
+ 
+ # requires stamp and environment files
+ include(${catkin_EXTRAS_DIR}/catkin_python_setup.cmake)
++
++
++# RoboStack: no C++ standard below C++14 (see robostack_cxx_standard.cmake)
++include(${catkin_EXTRAS_DIR}/robostack_cxx_standard.cmake)
++_robostack_drop_old_cxx_standard()
++
++# RoboStack: clang >= 19 rejects `template` before a name without template arguments
++# (-Wmissing-template-arg-list-after-template-kw), which older ROS 1 code has
++if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
++  include(CheckCXXCompilerFlag)
++  check_cxx_compiler_flag(-Wno-missing-template-arg-list-after-template-kw _robostack_has_template_kw_flag)
++  if(_robostack_has_template_kw_flag)
++    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-missing-template-arg-list-after-template-kw>)
++  endif()
++  # and `register`, an error in C++17 (the standard here, see robostack_cxx_standard.cmake)
++  add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-register>)
++endif()
 diff --git a/cmake/catkin_libraries.cmake b/cmake/catkin_libraries.cmake
 index b19f4c8..5d9a24c 100644
 --- a/cmake/catkin_libraries.cmake
@@ -121,10 +146,19 @@ index b19f4c8..5d9a24c 100644
            endforeach()
          endif()
 diff --git a/cmake/catkin_package.cmake b/cmake/catkin_package.cmake
-index df36e23..475eb97 100644
+index df36e23..f651355 100644
 --- a/cmake/catkin_package.cmake
 +++ b/cmake/catkin_package.cmake
-@@ -254,6 +254,17 @@ function(_catkin_package)
+@@ -81,6 +81,8 @@
+ # @public
+ #
+ macro(catkin_package)
++  # RoboStack: no C++ standard below C++14 (see robostack_cxx_standard.cmake)
++  _robostack_drop_old_cxx_standard()
+   debug_message(10 "catkin_package() called in file ${CMAKE_CURRENT_LIST_FILE}")
+ 
+   # verify that project() has been called before
+@@ -254,6 +256,17 @@ function(_catkin_package)
      list(APPEND _PKG_CONFIG_LIBRARIES ${PROJECT_DEPENDENCIES_LIBRARIES})
    endif()
  
@@ -209,6 +243,30 @@ index c72b859..6b39d3a 100644
  option(SETUPTOOLS_DEB_LAYOUT "Enable debian style python package layout" ${enable_setuptools_deb_layout})
  
  if(SETUPTOOLS_DEB_LAYOUT)
+diff --git a/cmake/robostack_cxx_standard.cmake b/cmake/robostack_cxx_standard.cmake
+new file mode 100644
+index 0000000..13c5c99
+--- /dev/null
++++ b/cmake/robostack_cxx_standard.cmake
+@@ -0,0 +1,18 @@
++# RoboStack: conda-forge's libraries need C++17 (PCL 1.15, Sophus; Eigen 5 C++14), while
++# many ROS 1 packages ask for C++11 or C++14 (-std=c++11, CMAKE_CXX_STANDARD 14). A
++# request for a standard below C++17 is dropped, so these packages build with the
++# compiler's default (C++17, as the packages without a request do); newer requests
++# stay. Run by find_package(catkin) and catkin_package().
++function(_robostack_drop_old_cxx_standard)
++  if(DEFINED CMAKE_CXX_STANDARD AND "${CMAKE_CXX_STANDARD}" MATCHES "^(98|11|14)$")
++    set(CMAKE_CXX_STANDARD 17 PARENT_SCOPE)
++  endif()
++  set(_old "-std=(c|gnu)\\+\\+(98|03|0x|11|1y|14)")
++  string(REGEX REPLACE "(^| )${_old}( |$)" " " _flags "${CMAKE_CXX_FLAGS}")
++  set(CMAKE_CXX_FLAGS "${_flags}" PARENT_SCOPE)
++  get_directory_property(_options COMPILE_OPTIONS)
++  if(_options)
++    list(FILTER _options EXCLUDE REGEX "^${_old}$")
++    set_directory_properties(PROPERTIES COMPILE_OPTIONS "${_options}")
++  endif()
++endfunction()
 diff --git a/cmake/templates/_setup_util.py.in b/cmake/templates/_setup_util.py.in
 index e73934b..b9c8c00 100755
 --- a/cmake/templates/_setup_util.py.in

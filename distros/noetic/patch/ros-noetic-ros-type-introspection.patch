@@ -1,8 +1,8 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 32fda3d..777de2c 100644
+index 17972a5..20789b2 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -9,7 +9,13 @@ find_package(catkin REQUIRED COMPONENTS
+@@ -10,7 +10,13 @@ find_package(catkin REQUIRED COMPONENTS
  )
  
  # Build flags
@@ -17,3 +17,17 @@ index 32fda3d..777de2c 100644
  
  catkin_package(
     INCLUDE_DIRS include
+diff --git a/src/ros_message.cpp b/src/ros_message.cpp
+index 9c9e07d..3922d85 100644
+--- a/src/ros_message.cpp
++++ b/src/ros_message.cpp
+@@ -60,7 +60,8 @@ ROSMessage::ROSMessage(const std::string &msg_def)
+ 
+     // Trim start of line
+     line.erase(line.begin(), std::find_if(line.begin(), line.end(),
+-      std::not1(std::ptr_fun<int, int>(std::isspace))));
++      [](unsigned char c) { return !std::isspace(c); }  // RoboStack: no std::ptr_fun in C++17
++     ));
+ 
+     if( line.compare(0, 5, "MSG: ") == 0)
+     {

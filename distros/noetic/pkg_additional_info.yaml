@@ -23,6 +23,9 @@ draco:
     dep_name: draco
     max_pin: 'x.x.x'
     override_version: '1.5.7'
+ecl_core_apps:
+  # its benchmarks use `register`, which C++17 (the ecl packages' standard here) rejects
+  additional_cmake_args: "-DCMAKE_CXX_FLAGS_INIT=-Wno-register"
 eigenpy:
   generate_dummy_package_with_run_deps:
     dep_name: eigenpy
