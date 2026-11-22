@@ -1,0 +1,331 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 44fce4ec..0b093f87 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -30,7 +30,14 @@ find_package(ament_cmake REQUIRED)
+ # do find_package(rviz_ogre_vendor) first to make sure the custom OGRE is found
+ find_package(rviz_ogre_vendor REQUIRED)
+ 
+-find_package(Qt5 REQUIRED COMPONENTS Widgets)
++find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
++find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
++if(${QT_VERSION} VERSION_LESS 5.15.0)
++  function(qt_wrap_cpp out)
++    qt5_wrap_cpp(_sources ${ARGN})
++    set("${out}" ${_sources} PARENT_SCOPE)
++  endfunction()
++endif()
+ 
+ find_package(geometry_msgs REQUIRED)
+ find_package(pluginlib REQUIRED)
+@@ -130,7 +137,7 @@ set(rviz_common_headers_to_moc
+ )
+ 
+ foreach(header "${rviz_common_headers_to_moc}")
+-  qt5_wrap_cpp(rviz_common_moc_files "${header}")
++  qt_wrap_cpp(rviz_common_moc_files "${header}")
+ endforeach()
+ 
+ set(rviz_common_source_files
+@@ -238,7 +245,7 @@ target_link_libraries(rviz_common
+   PUBLIC
+   rviz_ogre_vendor::OgreMain
+   rviz_ogre_vendor::OgreOverlay
+-  Qt5::Widgets
++  Qt${QT_VERSION_MAJOR}::Widgets
+ )
+ 
+ ament_target_dependencies(rviz_common
+@@ -322,10 +329,10 @@ if(BUILD_TESTING)
+   find_package(ament_cmake_gmock REQUIRED)
+   find_package(ament_cmake_gtest REQUIRED)
+ 
+-  qt5_wrap_cpp(rviz_common_test_moc_files test/mock_display.hpp)
+-  qt5_wrap_cpp(rviz_common_test_moc_files test/mock_property_change_receiver.hpp)
++  qt_wrap_cpp(rviz_common_test_moc_files test/mock_display.hpp)
++  qt_wrap_cpp(rviz_common_test_moc_files test/mock_property_change_receiver.hpp)
+ 
+-  qt5_wrap_cpp(rviz_common_test_frame_manager_moc src/rviz_common/frame_manager.hpp)
++  qt_wrap_cpp(rviz_common_test_frame_manager_moc src/rviz_common/frame_manager.hpp)
+ 
+   ament_add_gmock(display_factory_test
+     test/display_factory_test.cpp
+@@ -334,7 +341,7 @@ if(BUILD_TESTING)
+   if(TARGET display_factory_test)
+     target_compile_definitions(display_factory_test PUBLIC
+       -D_TEST_PLUGIN_DESCRIPTIONS="${CMAKE_CURRENT_SOURCE_DIR}")
+-    target_link_libraries(display_factory_test rviz_common Qt5::Widgets)
++    target_link_libraries(display_factory_test rviz_common Qt${QT_VERSION_MAJOR}::Widgets)
+   endif()
+ 
+   ament_add_gmock(frame_manager_test
+@@ -443,7 +450,7 @@ if(BUILD_TESTING)
+     test/mock_property_change_receiver.cpp
+     ${SKIP_DISPLAY_TESTS})
+   if(TARGET rviz_common_display_test)
+-    target_link_libraries(rviz_common_display_test rviz_common Qt5::Widgets)
++    target_link_libraries(rviz_common_display_test rviz_common Qt${QT_VERSION_MAJOR}::Widgets)
+     ament_target_dependencies(rviz_common_display_test yaml_cpp_vendor)
+   endif()
+ endif()
+diff --git a/include/rviz_common/properties/ros_action_property.hpp b/include/rviz_common/properties/ros_action_property.hpp
+index a47d9793..39e77d77 100644
+--- a/include/rviz_common/properties/ros_action_property.hpp
++++ b/include/rviz_common/properties/ros_action_property.hpp
+@@ -30,7 +30,7 @@
+ #define RVIZ_COMMON__PROPERTIES__ROS_ACTION_PROPERTY_HPP_
+ 
+ #include <QObject>
+-#include <QRegExp>
++#include <QRegularExpression>
+ #include <QString>
+ 
+ #include <memory>
+@@ -90,20 +90,20 @@ public:
+     const QString & default_value = QString(),
+     const QString & action_type = QString(),
+     const QString & description = QString(),
+-    const QRegExp & filter = QRegExp(),
++    const QRegularExpression & filter = QRegularExpression(),
+     Property * parent = 0,
+     const char * changed_slot = 0,
+     QObject * receiver = 0);
+ 
+   void enableFilter(bool enabled);
+ 
+-  QRegExp filter() const;
++  QRegularExpression filter() const;
+ 
+ protected Q_SLOTS:
+   void fillActionList() override;
+ 
+ private:
+-  QRegExp filter_;
++  QRegularExpression filter_;
+   bool filter_enabled_;
+ };
+ 
+diff --git a/include/rviz_common/properties/ros_topic_property.hpp b/include/rviz_common/properties/ros_topic_property.hpp
+index c55303e6..76c546b9 100644
+--- a/include/rviz_common/properties/ros_topic_property.hpp
++++ b/include/rviz_common/properties/ros_topic_property.hpp
+@@ -31,6 +31,9 @@
+ 
+ #include <string>
+ 
++#include <QRegularExpression>  // NOLINT: cpplint is unable to handle the include order here
++#include <QString>  // NOLINT: cpplint is unable to handle the include order here
++
+ #include "rviz_common/properties/editable_enum_property.hpp"
+ #include "rviz_common/ros_integration/ros_node_abstraction_iface.hpp"
+ #include "rviz_common/visibility_control.hpp"
+@@ -89,20 +92,20 @@ public:
+     const QString & default_value = QString(),
+     const QString & message_type = QString(),
+     const QString & description = QString(),
+-    const QRegExp & filter = QRegExp(),
++    const QRegularExpression & filter = QRegularExpression(),
+     Property * parent = 0,
+     const char * changed_slot = 0,
+     QObject * receiver = 0);
+ 
+   void enableFilter(bool enabled);
+ 
+-  QRegExp filter() const;
++  QRegularExpression filter() const;
+ 
+ protected Q_SLOTS:
+   void fillTopicList() override;
+ 
+ private:
+-  QRegExp filter_;
++  QRegularExpression filter_;
+   bool filter_enabled_;
+ };
+ 
+diff --git a/rviz_common-extras.cmake b/rviz_common-extras.cmake
+index 5a719eda..f3c88a8d 100644
+--- a/rviz_common-extras.cmake
++++ b/rviz_common-extras.cmake
+@@ -27,4 +27,5 @@
+ 
+ # find package Qt5 because otherwise using the rviz_common::rviz_common
+ # exported target will complain that the Qt5::Widgets target does not exist
+-find_package(Qt5 REQUIRED QUIET COMPONENTS Widgets)
++find_package(QT NAMES Qt6 Qt5 QUIET COMPONENTS Widgets)
++find_package(Qt${QT_VERSION_MAJOR} QUIET COMPONENTS Widgets)
+diff --git a/src/rviz_common/add_display_dialog.cpp b/src/rviz_common/add_display_dialog.cpp
+index c8908087..423f9f3b 100644
+--- a/src/rviz_common/add_display_dialog.cpp
++++ b/src/rviz_common/add_display_dialog.cpp
+@@ -46,6 +46,8 @@
+ #include <QLabel>  // NOLINT: cpplint is unable to handle the include order here
+ #include <QLineEdit>  // NOLINT: cpplint is unable to handle the include order here
+ #include <QPushButton>  // NOLINT: cpplint is unable to handle the include order here
++#include <QRegularExpression>  // NOLINT: cpplint is unable to handle the include order here
++#include <QString>  // NOLINT: cpplint is unable to handle the include order here
+ #include <QTabWidget>  // NOLINT: cpplint is unable to handle the include order here
+ #include <QTextBrowser>  // NOLINT: cpplint is unable to handle the include order here
+ #include <QVBoxLayout>  // NOLINT: cpplint is unable to handle the include order here
+@@ -652,7 +654,7 @@ void TopicDisplayWidget::findPlugins(DisplayFactory * factory)
+       // For now, we assume that all types supported by plugins have the form
+       // "<pkg_name>/msg/<type_name>", though in the future zero or more namespaces may be
+       // permitted.
+-      QRegExp delim("/");
++      QRegularExpression delim("/");
+       QStringList topic_type_parts = topic_type.split(delim);
+       if (topic_type_parts.size() == 2) {
+         topic_type = topic_type_parts.at(0) + "/msg/" + topic_type_parts.at(1);
+diff --git a/src/rviz_common/properties/editable_enum_property.cpp b/src/rviz_common/properties/editable_enum_property.cpp
+index 85d1589f..ce81a3f2 100644
+--- a/src/rviz_common/properties/editable_enum_property.cpp
++++ b/src/rviz_common/properties/editable_enum_property.cpp
+@@ -77,9 +77,17 @@ QWidget * EditableEnumProperty::createEditor(QWidget * parent, const QStyleOptio
+   EditableComboBox * cb = new EditableComboBox(parent);
+   cb->addItems(strings_);
+   cb->setEditText(getValue().toString() );
++  #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+   QObject::connect(
+     cb, SIGNAL(currentIndexChanged(const QString&)), this,
+     SLOT(setString(const QString&)));
++  #else
++  QObject::connect(
++    cb, &QComboBox::currentIndexChanged, this,
++    [this, cb](int index) {
++      this->setString(cb->itemText(index));
++  });
++  #endif
+ 
+   // TODO(unknown): need to better handle string value which is not in list.
+   return cb;
+diff --git a/src/rviz_common/properties/enum_property.cpp b/src/rviz_common/properties/enum_property.cpp
+index 0c8dd60a..abc2407f 100644
+--- a/src/rviz_common/properties/enum_property.cpp
++++ b/src/rviz_common/properties/enum_property.cpp
+@@ -86,9 +86,17 @@ QWidget * EnumProperty::createEditor(QWidget * parent, const QStyleOptionViewIte
+   ComboBox * cb = new ComboBox(parent);
+   cb->addItems(strings_);
+   cb->setCurrentIndex(strings_.indexOf(getValue().toString() ));
++  #if (QT_VERSION < QT_VERSION_CHECK(6, 0, 0))
+   QObject::connect(
+     cb, SIGNAL(currentIndexChanged(const QString&)), this,
+     SLOT(setString(const QString&)));
++  #else
++  QObject::connect(
++    cb, &QComboBox::currentIndexChanged, this,
++    [this, cb](int index) {
++      this->setString(cb->itemText(index));
++  });
++  #endif
+ 
+   // TODO(anyone): need to better handle string value which is not in list.
+   return cb;
+diff --git a/src/rviz_common/properties/property_tree_model.cpp b/src/rviz_common/properties/property_tree_model.cpp
+index da7b04ff..76172141 100644
+--- a/src/rviz_common/properties/property_tree_model.cpp
++++ b/src/rviz_common/properties/property_tree_model.cpp
+@@ -32,6 +32,7 @@
+ 
+ #include <cstdio>
+ 
++#include <QIODevice>  // NOLINT: cpplint is unable to handle the include order here
+ #include <QMimeData>  // NOLINT: cpplint is unable to handle the include order here
+ #include <QStringList>  // NOLINT: cpplint is unable to handle the include order here
+ 
+diff --git a/src/rviz_common/properties/ros_action_property.cpp b/src/rviz_common/properties/ros_action_property.cpp
+index c187eb4b..91f1ec6a 100644
+--- a/src/rviz_common/properties/ros_action_property.cpp
++++ b/src/rviz_common/properties/ros_action_property.cpp
+@@ -34,7 +34,7 @@
+ 
+ #include <QApplication>  // NOLINT: cpplint can't handle Qt imports
+ #include <QObject>  // NOLINT: cpplint can't handle Qt imports
+-#include <QRegExp>  // NOLINT: cpplint can't handle Qt imports
++#include <QRegularExpression>  // NOLINT: cpplint can't handle Qt imports
+ #include <QString>  // NOLINT: cpplint can't handle Qt imports
+ #include <QStringList>  // NOLINT: cpplint can't handle Qt imports
+ 
+@@ -121,7 +121,7 @@ RosFilteredActionProperty::RosFilteredActionProperty(
+   const QString & default_value,
+   const QString & action_type,
+   const QString & description,
+-  const QRegExp & filter,
++  const QRegularExpression & filter,
+   Property * parent,
+   const char * changed_slot,
+   QObject * receiver)
+@@ -137,7 +137,7 @@ void RosFilteredActionProperty::enableFilter(bool enabled)
+   fillActionList();
+ }
+ 
+-QRegExp RosFilteredActionProperty::filter() const
++QRegularExpression RosFilteredActionProperty::filter() const
+ {
+   return filter_;
+ }
+diff --git a/src/rviz_common/properties/ros_topic_property.cpp b/src/rviz_common/properties/ros_topic_property.cpp
+index 6a1fab39..a3b56cdc 100644
+--- a/src/rviz_common/properties/ros_topic_property.cpp
++++ b/src/rviz_common/properties/ros_topic_property.cpp
+@@ -94,7 +94,7 @@ RosFilteredTopicProperty::RosFilteredTopicProperty(
+   const QString & default_value,
+   const QString & message_type,
+   const QString & description,
+-  const QRegExp & filter,
++  const QRegularExpression & filter,
+   Property * parent,
+   const char * changed_slot,
+   QObject * receiver)
+@@ -110,7 +110,7 @@ void RosFilteredTopicProperty::enableFilter(bool enabled)
+   fillTopicList();
+ }
+ 
+-QRegExp RosFilteredTopicProperty::filter() const
++QRegularExpression RosFilteredTopicProperty::filter() const
+ {
+   return filter_;
+ }
+diff --git a/src/rviz_common/tool_manager.cpp b/src/rviz_common/tool_manager.cpp
+index 500b2a3b..6d432c6b 100644
+--- a/src/rviz_common/tool_manager.cpp
++++ b/src/rviz_common/tool_manager.cpp
+@@ -35,7 +35,8 @@
+ 
+ #include <QKeyEvent>  // NOLINT: cpplint is unable to handle the include order here
+ #include <QKeySequence>  // NOLINT: cpplint is unable to handle the include order here
+-#include <QRegExp>  // NOLINT: cpplint is unable to handle the include order here
++#include <QRegularExpression>  // NOLINT: cpplint is unable to handle the include order here
++#include <QString>  // NOLINT: cpplint is unable to handle the include order here
+ 
+ #include "rviz_common/logging.hpp"
+ 
+@@ -52,7 +53,7 @@ using rviz_common::properties::PropertyTreeModel;
+ 
+ QString addSpaceToCamelCase(QString input)
+ {
+-  QRegExp re = QRegExp("([A-Z])([a-z]*)");
++  QRegularExpression re = QRegularExpression("([A-Z])([a-z]*)");
+   input.replace(re, " \\1\\2");
+   return input.trimmed();
+ }
+diff --git a/src/rviz_common/visualization_frame.cpp b/src/rviz_common/visualization_frame.cpp
+index a4eae85e..07c09363 100644
+--- a/src/rviz_common/visualization_frame.cpp
++++ b/src/rviz_common/visualization_frame.cpp
+@@ -41,6 +41,7 @@
+ #include <OgreMeshManager.h>
+ #include <OgreMaterialManager.h>
+ 
++#include <QActionGroup>  // NOLINT cpplint cannot handle include order here
+ #include <QApplication>  // NOLINT cpplint cannot handle include order here
+ #include <QCloseEvent>  // NOLINT cpplint cannot handle include order here
+ #include <QDesktopServices>  // NOLINT cpplint cannot handle include order here
+@@ -274,7 +275,7 @@ void VisualizationFrame::initialize(
+   QWidget * central_widget = new QWidget(this);
+   QHBoxLayout * central_layout = new QHBoxLayout;
+   central_layout->setSpacing(0);
+-  central_layout->setMargin(0);
++  central_layout->setContentsMargins(0, 0, 0, 0);
+ 
+   render_panel_ = new RenderPanel(central_widget);
+ 

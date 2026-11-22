@@ -7,7 +7,8 @@ upload_to: [anaconda]
 read_from: anaconda
 pinning_overrides:
   # wxwidgets >= 3.3.2 (and the newest 3.3.1 builds) need gst-plugins-base 1.28 on Linux,
-  # which no qt-main 5.15 accepts; mrpt_gui links both
+  # which no qt-main 5.15 accepts; keeps wxWidgets users (mrpt_gui) installable next to the
+  # packages still on Qt5 (plotjuggler)
   wxwidgets: [3.3.1]
   # nav2_mppi_controller lists xsimd before xtensor: unpinned, the solver takes the newest
   # xsimd (14), which no xtensor >= 0.25 accepts, and falls back to xtensor 0.23.9, whose

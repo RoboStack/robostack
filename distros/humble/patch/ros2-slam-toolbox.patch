@@ -10,9 +10,27 @@ index 053c4e7..369f9fa 100644
    /usr/include/suitesparse
    /usr/include
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index b0e2bbe..68178a2 100644
+index b0e2bbe..6a04448 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
+@@ -30,7 +30,7 @@ find_package(rviz_default_plugins REQUIRED)
+ find_package(rviz_ogre_vendor REQUIRED)
+ find_package(rviz_rendering REQUIRED)
+ find_package(interactive_markers REQUIRED)
+-find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets Test Concurrent)
++find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Test Concurrent)
+ find_package(rclcpp_components REQUIRED)
+ 
+ #karto_sdk lib
+@@ -58,7 +58,7 @@ set(dependencies
+   rviz_ogre_vendor
+   rviz_rendering
+   interactive_markers
+-  Qt5
++  Qt6
+   rclcpp_components
+ )
+ 
 @@ -83,7 +83,10 @@ find_package(Ceres REQUIRED COMPONENTS SuiteSparse)
  
  set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -25,6 +43,24 @@ index b0e2bbe..68178a2 100644
  
  include_directories(include lib/karto_sdk/include
                              ${EIGEN3_INCLUDE_DIRS}
+@@ -110,7 +113,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
+ )
+ 
+ #### rviz Plugin
+-qt5_wrap_cpp(MOC_FILES rviz_plugin/slam_toolbox_rviz_plugin.hpp)
++qt6_wrap_cpp(MOC_FILES rviz_plugin/slam_toolbox_rviz_plugin.hpp)
+ add_library(SlamToolboxPlugin SHARED
+   rviz_plugin/slam_toolbox_rviz_plugin.cpp
+   ${MOC_FILES})
+@@ -118,7 +121,7 @@ ament_target_dependencies(SlamToolboxPlugin
+  ${dependencies}
+ )
+ target_include_directories(SlamToolboxPlugin PUBLIC
+-  ${Qt5Widgets_INCLUDE_DIRS}
++  ${Qt6Widgets_INCLUDE_DIRS}
+   ${OGRE_INCLUDE_DIRS}
+ )
+ target_link_libraries(SlamToolboxPlugin ${QT_LIBRARIES} rviz_common::rviz_common)
 diff --git a/lib/karto_sdk/CMakeLists.txt b/lib/karto_sdk/CMakeLists.txt
 index cd07927..2e3ec90 100644
 --- a/lib/karto_sdk/CMakeLists.txt
@@ -113,7 +149,7 @@ index 42c2fad..470ca4c 100644
      const T * theta_radians, const T * delta_theta_radians,
      T * theta_radians_plus_delta) const
    {
-@@ -47,8 +48,17 @@ public:
+@@ -47,9 +48,18 @@ public:
      return true;
    }
  
@@ -133,3 +169,4 @@ index 42c2fad..470ca4c 100644
 +    return new ceres::AutoDiffManifold<AngleLocalParameterization, 1, 1>;
    }
  };
+ 

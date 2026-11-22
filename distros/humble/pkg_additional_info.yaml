@@ -122,9 +122,35 @@ urdfdom_headers:
 # Remove build_number fields below on new full rebuild
 zenoh_cpp_vendor:
   additional_cmake_args: "-DAMENT_VENDOR_POLICY=NEVER_VENDOR_IGNORE_SATISFIED_CHECK -DUSE_SYSTEM_ZENOH=ON"
+as2_rviz_plugins:  # rviz on Qt 6
+  build_number: 26
 cartographer_ros:
   additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
   build_number: 26  # offline_node.cpp out of the shared library (duplicate gflags abort)
+grid_map_rviz_plugin:  # rviz on Qt 6
+  build_number: 26
+moveit_ros_visualization:  # rviz on Qt 6
+  build_number: 26
+moveit_setup_app_plugins:  # rviz on Qt 6
+  build_number: 26
+moveit_setup_assistant:  # rviz on Qt 6
+  build_number: 26
+moveit_setup_controllers:  # rviz on Qt 6
+  build_number: 26
+moveit_setup_core_plugins:  # rviz on Qt 6
+  build_number: 26
+moveit_setup_framework:  # rviz on Qt 6
+  build_number: 26
+moveit_setup_srdf_plugins:  # rviz on Qt 6
+  build_number: 26
+mrpt_gui:  # Qt rosdep keys on Qt 6 (MRPT's optional Qt 5 support off, as in lyrical)
+  build_number: 26
+nav2_rviz_plugins:  # rviz on Qt 6
+  build_number: 26
+navmap_rviz_plugin:  # rviz on Qt 6
+  build_number: 26
+octomap_rviz_plugins:  # rviz on Qt 6
+  build_number: 26
 plansys2_tools:  # no Qt 5 run dependency
   build_number: 26
 python_qt_binding:  # PyQt5 compatibility layer (rqt on PyQt6)
@@ -147,5 +173,31 @@ rtabmap:
     then: "-DBUILD_TOOLS=OFF -DBUILD_EXAMPLES=OFF -DWITH_GTSAM=OFF"
     else: "-DBUILD_TOOLS=OFF -DBUILD_EXAMPLES=OFF"
   build_number: 26  # built with Qt (its GUI library, for rtabmap_viz)
+rtabmap_rviz_plugins:  # rviz on Qt 6
+  build_number: 26
+rviz2:  # rviz on Qt 6
+  build_number: 26
+rviz_2d_overlay_plugins:  # rviz on Qt 6
+  build_number: 26
+rviz_common:  # rviz on Qt 6
+  build_number: 26
+rviz_default_plugins:  # rviz on Qt 6
+  build_number: 26
+rviz_imu_plugin:  # rviz on Qt 6
+  build_number: 26
+rviz_rendering:  # rviz on Qt 6
+  build_number: 26
+rviz_rendering_tests:  # rviz on Qt 6
+  build_number: 26
+rviz_satellite:  # rviz on Qt 6
+  build_number: 26
+rviz_visual_testing_framework:  # rviz on Qt 6
+  build_number: 26
+rviz_visual_tools:  # rviz on Qt 6
+  build_number: 26
+slam_toolbox:  # rviz on Qt 6
+  build_number: 26
 turtlesim:  # Qt 6
+  build_number: 26
+vision_msgs_rviz_plugins:  # rviz on Qt 6
   build_number: 26

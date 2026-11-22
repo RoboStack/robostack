@@ -178,6 +178,8 @@ moveit_setup_srdf_plugins:  # rviz on Qt 6
   build_number: 32
 moveit_task_constructor_visualization:  # rviz on Qt 6
   build_number: 32
+mrpt_gui:  # Qt rosdep keys on Qt 6 (MRPT's optional Qt 5 support off, as in lyrical)
+  build_number: 32
 nav2_rviz_plugins:  # rviz on Qt 6
   build_number: 32
 navmap_rviz_plugin:  # rviz on Qt 6
