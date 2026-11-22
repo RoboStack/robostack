@@ -1,0 +1,21 @@
+diff --git a/src/nodelets/crop_non_zero.cpp b/src/nodelets/crop_non_zero.cpp
+index 4be42feb..92e3291f 100644
+--- a/src/nodelets/crop_non_zero.cpp
++++ b/src/nodelets/crop_non_zero.cpp
+@@ -35,6 +35,7 @@
+ #include <image_transport/image_transport.h>
+ #include <boost/thread.hpp>
+ #include <cv_bridge/cv_bridge.h>
++#include <opencv2/calib3d.hpp>
+ //#include <algorithm> // for std::max_element
+ 
+ namespace image_proc {
+@@ -117,7 +118,7 @@ void CropNonZeroNodelet::imageCb(const sensor_msgs::ImageConstPtr& raw_msg)
+     cv_ptr->image.convertTo(m, CV_8U, 255./ra, -minVal*255./ra);
+   }
+ 
+-  cv::findContours(m, cnt, CV_RETR_EXTERNAL, CV_CHAIN_APPROX_NONE);
++  cv::findContours(m, cnt, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_NONE);
+ 
+   // search the largest area
+   /* // -std=c++11

@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index b7e3dc5..8015642 100644
+index cf0a0c9..b7d6a46 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -44,11 +44,11 @@ target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
@@ -16,3 +16,137 @@ index b7e3dc5..8015642 100644
  target_compile_definitions(compressed_depth_codec PRIVATE COMPRESSED_DEPTH_HAS_RVL=${compressed_depth_has_rvl})
  
  add_library(raw_codec_plugin src/plugins/raw_codec_plugin.cpp)
+diff --git a/src/codecs/compressed_codec.cpp b/src/codecs/compressed_codec.cpp
+index 275b09c..eb4356e 100644
+--- a/src/codecs/compressed_codec.cpp
++++ b/src/codecs/compressed_codec.cpp
+@@ -21,7 +21,7 @@
+ #include <opencv2/imgcodecs.hpp>
+ // If OpenCV4
+ #if CV_VERSION_MAJOR > 3
+-#include <opencv2/imgcodecs/legacy/constants_c.h>
++#include <opencv2/imgcodecs.hpp>
+ #endif
+ #include <turbojpeg.h>
+ 
+@@ -124,7 +124,7 @@ CompressedCodec::EncodeResult CompressedCodec::encode(const sensor_msgs::Image&
+         {
+           return cras::make_unexpected(cras::format(
+             "OpenCV error occurred while encoding %ix%i %s image as %s: %s (%s).",
+-            raw.width, raw.height, raw.encoding.c_str(), config.format.c_str(), cvErrorStr(e.code), e.err.c_str()));
++            raw.width, raw.height, raw.encoding.c_str(), config.format.c_str(), std::to_string(e.code).c_str(), e.err.c_str()));
+         }
+       }
+       else
+@@ -166,7 +166,7 @@ CompressedCodec::EncodeResult CompressedCodec::encode(const sensor_msgs::Image&
+         {
+           return cras::make_unexpected(cras::format(
+             "OpenCV error occurred while encoding %ix%i %s image as %s: %s (%s).",
+-            raw.width, raw.height, raw.encoding.c_str(), config.format.c_str(), cvErrorStr(e.code), e.err.c_str()));
++            raw.width, raw.height, raw.encoding.c_str(), config.format.c_str(), std::to_string(e.code).c_str(), e.err.c_str()));
+         }
+       }
+       else
+@@ -322,25 +322,25 @@ ImageTransportCodec::DecodeResult CompressedCodec::decode(const sensor_msgs::Com
+         {
+           // if necessary convert colors from bgr to rgb
+           if ((format->rawEncoding == enc::RGB8) || (format->rawEncoding == enc::RGB16))
+-            cv::cvtColor(cv_ptr->image, cv_ptr->image, CV_BGR2RGB);
++            cv::cvtColor(cv_ptr->image, cv_ptr->image, cv::COLOR_BGR2RGB);
+ 
+           if ((format->rawEncoding == enc::RGBA8) || (format->rawEncoding == enc::RGBA16))
+-            cv::cvtColor(cv_ptr->image, cv_ptr->image, CV_BGR2RGBA);
++            cv::cvtColor(cv_ptr->image, cv_ptr->image, cv::COLOR_BGR2RGBA);
+ 
+           if ((format->rawEncoding == enc::BGRA8) || (format->rawEncoding == enc::BGRA16))
+-            cv::cvtColor(cv_ptr->image, cv_ptr->image, CV_BGR2BGRA);
++            cv::cvtColor(cv_ptr->image, cv_ptr->image, cv::COLOR_BGR2BGRA);
+         }
+         else
+         {
+           // if necessary convert colors from rgb to bgr
+           if ((format->rawEncoding == enc::BGR8) || (format->rawEncoding == enc::BGR16))
+-            cv::cvtColor(cv_ptr->image, cv_ptr->image, CV_RGB2BGR);
++            cv::cvtColor(cv_ptr->image, cv_ptr->image, cv::COLOR_RGB2BGR);
+ 
+           if ((format->rawEncoding == enc::BGRA8) || (format->rawEncoding == enc::BGRA16))
+-            cv::cvtColor(cv_ptr->image, cv_ptr->image, CV_RGB2BGRA);
++            cv::cvtColor(cv_ptr->image, cv_ptr->image, cv::COLOR_RGB2BGRA);
+ 
+           if ((format->rawEncoding == enc::RGBA8) || (format->rawEncoding == enc::RGBA16))
+-            cv::cvtColor(cv_ptr->image, cv_ptr->image, CV_RGB2RGBA);
++            cv::cvtColor(cv_ptr->image, cv_ptr->image, cv::COLOR_RGB2RGBA);
+         }
+       }
+     }
+@@ -349,7 +349,7 @@ ImageTransportCodec::DecodeResult CompressedCodec::decode(const sensor_msgs::Com
+   {
+     return cras::make_unexpected(cras::format(
+       "OpenCV error occurred while decoding '%s' image: %s (%s).",
+-      compressed.format.c_str(), cvErrorStr(e.code), e.err.c_str()));
++      compressed.format.c_str(), std::to_string(e.code).c_str(), e.err.c_str()));
+   }
+ 
+   size_t rows = cv_ptr->image.rows;
+diff --git a/src/codecs/compressed_depth_codec.cpp b/src/codecs/compressed_depth_codec.cpp
+index 038d944..a6730f0 100644
+--- a/src/codecs/compressed_depth_codec.cpp
++++ b/src/codecs/compressed_depth_codec.cpp
+@@ -23,7 +23,7 @@
+ 
+ // If OpenCV4
+ #if CV_VERSION_MAJOR > 3
+-#include <opencv2/imgcodecs/legacy/constants_c.h>
++#include <opencv2/imgcodecs.hpp>
+ #endif
+ #endif
+ 
+@@ -182,7 +182,7 @@ ImageTransportCodec::DecodeResult CompressedDepthCodec::decodeCompressedDepthIma
+         {
+           return cras::make_unexpected(cras::format(
+             "OpenCV error occurred while decoding '%s' image: %s (%s).",
+-            compressed.format.c_str(), cvErrorStr(e.code), e.err.c_str()));
++            compressed.format.c_str(), std::to_string(e.code).c_str(), e.err.c_str()));
+         }
+       }
+       else if (format->format == CompressedDepthTransportCompressionFormat::RVL)
+@@ -213,7 +213,7 @@ ImageTransportCodec::DecodeResult CompressedDepthCodec::decodeCompressedDepthIma
+         {
+           return cras::make_unexpected(cras::format(
+             "OpenCV error occurred while decoding '%s' image: %s (%s).",
+-            compressed.format.c_str(), cvErrorStr(e.code), e.err.c_str()));
++            compressed.format.c_str(), std::to_string(e.code).c_str(), e.err.c_str()));
+         }
+       }
+       else if (format->format == CompressedDepthTransportCompressionFormat::RVL)
+@@ -295,7 +295,7 @@ CompressedDepthCodec::EncodeResult CompressedDepthCodec::encodeCompressedDepthIm
+           return cras::make_unexpected(cras::format(
+             "OpenCV error occurred while encoding %ix%i %s image as %s: %s (%s).",
+             raw.width, raw.height, raw.encoding.c_str(), compression_format.c_str(),
+-            cvErrorStr(e.code), e.err.c_str()));
++            std::to_string(e.code).c_str(), e.err.c_str()));
+         }
+       }
+       else if (format->format == CompressedDepthTransportCompressionFormat::RVL)
+@@ -341,7 +341,7 @@ CompressedDepthCodec::EncodeResult CompressedDepthCodec::encodeCompressedDepthIm
+           return cras::make_unexpected(cras::format(
+             "OpenCV error occurred while encoding %ix%i %s image as %s: %s (%s).",
+             raw.width, raw.height, raw.encoding.c_str(), compression_format.c_str(),
+-            cvErrorStr(e.code), e.err.c_str()));
++            std::to_string(e.code).c_str(), e.err.c_str()));
+         }
+       }
+       else if (format->format == CompressedDepthTransportCompressionFormat::RVL)
+diff --git a/test/test_codecs.cpp b/test/test_codecs.cpp
+index 810bafa..320743f 100644
+--- a/test/test_codecs.cpp
++++ b/test/test_codecs.cpp
+@@ -16,7 +16,7 @@
+ #include <opencv2/imgcodecs.hpp>
+ // If OpenCV4
+ #if CV_VERSION_MAJOR > 3
+-#include <opencv2/imgcodecs/legacy/constants_c.h>
++#include <opencv2/imgcodecs.hpp>
+ #endif
+ 
+ #include <compressed_image_transport/CompressedPublisherConfig.h>

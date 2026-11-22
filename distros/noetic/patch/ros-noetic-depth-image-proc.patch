@@ -1,0 +1,61 @@
+diff --git a/src/nodelets/crop_foremost.cpp b/src/nodelets/crop_foremost.cpp
+index f4cbac8c..6260984a 100755
+--- a/src/nodelets/crop_foremost.cpp
++++ b/src/nodelets/crop_foremost.cpp
+@@ -118,7 +118,7 @@ void CropForemostNodelet::depthCb(const sensor_msgs::ImageConstPtr& raw_msg)
+     case CV_8UC1:
+     case CV_8SC1:
+     case CV_32F:
+-      cv::threshold(cv_ptr->image, cv_ptr->image, minVal + distance_, 0, CV_THRESH_TOZERO_INV);
++      cv::threshold(cv_ptr->image, cv_ptr->image, minVal + distance_, 0, cv::THRESH_TOZERO_INV);
+       break;
+     case CV_16UC1:
+     case CV_16SC1:
+@@ -126,7 +126,7 @@ void CropForemostNodelet::depthCb(const sensor_msgs::ImageConstPtr& raw_msg)
+     case CV_64F:
+       // 8 bit or 32 bit floating array is required to use cv::threshold
+       cv_ptr->image.convertTo(cv_ptr->image, CV_32F);
+-      cv::threshold(cv_ptr->image, cv_ptr->image, minVal + distance_, 1, CV_THRESH_TOZERO_INV);
++      cv::threshold(cv_ptr->image, cv_ptr->image, minVal + distance_, 1, cv::THRESH_TOZERO_INV);
+ 
+       cv_ptr->image.convertTo(cv_ptr->image, imtype);
+       break;
+diff --git a/src/nodelets/point_cloud_xyz_radial.cpp b/src/nodelets/point_cloud_xyz_radial.cpp
+index 88bc5624..eda06ba8 100644
+--- a/src/nodelets/point_cloud_xyz_radial.cpp
++++ b/src/nodelets/point_cloud_xyz_radial.cpp
+@@ -36,7 +36,7 @@
+ #include <image_transport/image_transport.h>
+ #include <sensor_msgs/image_encodings.h>
+ #include <image_geometry/pinhole_camera_model.h>
+-#include <opencv2/calib3d/calib3d.hpp>
++#include <opencv2/calib3d.hpp>
+ #include <boost/thread.hpp>
+ #include <depth_image_proc/depth_traits.h>
+ 
+diff --git a/src/nodelets/point_cloud_xyzi_radial.cpp b/src/nodelets/point_cloud_xyzi_radial.cpp
+index 46a264b6..4931b528 100644
+--- a/src/nodelets/point_cloud_xyzi_radial.cpp
++++ b/src/nodelets/point_cloud_xyzi_radial.cpp
+@@ -40,7 +40,7 @@
+ #include <message_filters/synchronizer.h>
+ #include <message_filters/sync_policies/exact_time.h>
+ #include <image_geometry/pinhole_camera_model.h>
+-#include <opencv2/calib3d/calib3d.hpp>
++#include <opencv2/calib3d.hpp>
+ #include <boost/thread.hpp>
+ #include <depth_image_proc/depth_traits.h>
+ 
+diff --git a/src/nodelets/point_cloud_xyzrgb_radial.cpp b/src/nodelets/point_cloud_xyzrgb_radial.cpp
+index 0495b678..97fef8f3 100644
+--- a/src/nodelets/point_cloud_xyzrgb_radial.cpp
++++ b/src/nodelets/point_cloud_xyzrgb_radial.cpp
+@@ -42,7 +42,7 @@
+ #include <message_filters/sync_policies/exact_time.h>
+ #include <message_filters/sync_policies/approximate_time.h>
+ #include <image_geometry/pinhole_camera_model.h>
+-#include <opencv2/calib3d/calib3d.hpp>
++#include <opencv2/calib3d.hpp>
+ #include <boost/thread.hpp>
+ #include <depth_image_proc/depth_traits.h>
+ 

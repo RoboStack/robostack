@@ -1,0 +1,22 @@
+diff --git a/src/codec.cpp b/src/codec.cpp
+index f1dd2929..87f3e004 100644
+--- a/src/codec.cpp
++++ b/src/codec.cpp
+@@ -51,7 +51,7 @@
+ 
+ // If OpenCV4
+ #if CV_VERSION_MAJOR > 3
+-#include <opencv2/imgcodecs/legacy/constants_c.h>
++#include <opencv2/imgcodecs.hpp>
+ #endif
+ #endif
+ 
+@@ -172,7 +172,7 @@ sensor_msgs::Image::Ptr decodeCompressedDepthImage(const sensor_msgs::Compressed
+       if (compression_format == "png") {
+         try
+         {
+-          cv_ptr->image = cv::imdecode(imageData, CV_LOAD_IMAGE_UNCHANGED);
++          cv_ptr->image = cv::imdecode(imageData, cv::IMREAD_UNCHANGED);
+         }
+         catch (cv::Exception& e)
+         {
