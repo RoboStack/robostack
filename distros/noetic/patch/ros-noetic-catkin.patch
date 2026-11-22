@@ -737,10 +737,10 @@ index 0000000..70853f6
 +endfunction()
 diff --git a/cmake/robostack_eigen3.cmake b/cmake/robostack_eigen3.cmake
 new file mode 100644
-index 0000000..c9cbf72
+index 0000000..2a8539b
 --- /dev/null
 +++ b/cmake/robostack_eigen3.cmake
-@@ -0,0 +1,51 @@
+@@ -0,0 +1,76 @@
 +# RoboStack: conda-forge's Eigen 5 breaks how ROS 1 packages find Eigen:
 +# - its CMake config only accepts version requests of its own major version
 +#   (find_package(Eigen3 3.3) fails),
@@ -777,6 +777,29 @@ index 0000000..c9cbf72
 +  endif()
 +endmacro()
 +
++# RoboStack: OpenCV 5 splits calib3d into calib, geometry and stereo, moves parts of imgproc
++# into geometry, renames features2d to features, and its CMake config rejects requests for
++# OpenCV 3 or 4. With OpenCV >= 5, find_package(OpenCV ...) therefore drops the version and
++# maps the old component names.
++macro(_robostack_find_opencv)
++  if(NOT DEFINED _robostack_opencv_major)
++    _find_package(OpenCV QUIET CONFIG)
++    set(_robostack_opencv_major "${OpenCV_VERSION_MAJOR}")
++    # the probe must not leak all modules into OpenCV_LIBS of the real request
++    unset(OpenCV_LIBS)
++  endif()
++  set(_robostack_fp_args ${ARGN})
++  if(_robostack_opencv_major GREATER_EQUAL 5)
++    list(FILTER _robostack_fp_args EXCLUDE REGEX "^([2-4](\\.[0-9]+)*|EXACT)$")
++    list(TRANSFORM _robostack_fp_args REPLACE "^(opencv_)?calib3d$" "\\1calib;\\1geometry;\\1stereo")
++    list(TRANSFORM _robostack_fp_args REPLACE "^(opencv_)?features2d$" "\\1features")
++    # parts of OpenCV 4's imgproc (getRotationMatrix2D, boundingRect, ...) moved to geometry
++    list(TRANSFORM _robostack_fp_args REPLACE "^(opencv_)?imgproc$" "\\1imgproc;\\1geometry")
++  endif()
++  _find_package(OpenCV ${_robostack_fp_args})
++  unset(_robostack_fp_args)
++endmacro()
++
 +if(NOT COMMAND _robostack_find_package_override)
 +  macro(_robostack_find_package_override)
 +  endmacro()
@@ -787,6 +810,8 @@ index 0000000..c9cbf72
 +      _find_package(Eigen3 ${_robostack_fp_args} CONFIG)
 +      unset(_robostack_fp_args)
 +      _robostack_eigen3_variables()
++    elseif("${_robostack_fp_name}" STREQUAL "OpenCV")
++      _robostack_find_opencv(${ARGN})
 +    else()
 +      _find_package(${_robostack_fp_name} ${ARGN})
 +    endif()
