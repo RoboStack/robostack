@@ -7,3 +7,6 @@ rosdistro_sync: manual
 pinning_overrides:
   # rviz 1.14 (and Gazebo 11) use Ogre 1.10's API (SceneManagerEnumerator, ...)
   ogre: [1.10.12]
+  # OpenCV 5 drops the C API (CV_BGR2GRAY, opencv2/imgproc/types_c.h, ...) and moves calib3d,
+  # which ROS 1 code uses throughout; 4.13 is the newest OpenCV 4 and solves with the rest
+  libopencv: [4.13.0]

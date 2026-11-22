@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index ef804b91..4ef849c4 100644
+index ef804b9..50ee338 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -3,28 +3,8 @@ project(cv_bridge)
@@ -41,8 +41,23 @@ index ef804b91..4ef849c4 100644
  
  if(NOT ANDROID)
  add_subdirectory(python)
+diff --git a/include/cv_bridge/cv_bridge.h b/include/cv_bridge/cv_bridge.h
+index 3e7b9aa..7a564af 100644
+--- a/include/cv_bridge/cv_bridge.h
++++ b/include/cv_bridge/cv_bridge.h
+@@ -42,7 +42,10 @@
+ #include <ros/static_assert.h>
+ #include <opencv2/core/core.hpp>
+ #include <opencv2/imgproc/imgproc.hpp>
++// RoboStack: OpenCV 5 has no C API headers; users rely on the CV_* constants it brings
++#if CV_VERSION_MAJOR < 5
+ #include <opencv2/imgproc/types_c.h>
++#endif
+ #include <stdexcept>
+ 
+ namespace cv_bridge {
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index d1046922c..57ec2a26c 100644
+index d104692..57ec2a2 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
 @@ -1,8 +1,7 @@
@@ -99,7 +114,7 @@ index d1046922c..57ec2a26c 100644
  
  set_target_properties(${PROJECT_NAME}_boost PROPERTIES
 diff --git a/src/cv_bridge.cpp b/src/cv_bridge.cpp
-index 44f23a32..8de258f7 100644
+index 44f23a3..8de258f 100644
 --- a/src/cv_bridge.cpp
 +++ b/src/cv_bridge.cpp
 @@ -33,7 +33,9 @@
@@ -112,4 +127,17 @@ index 44f23a32..8de258f7 100644
 +#include <boost/endian/conversion.hpp>
  
  #include <map>
+ 
+diff --git a/src/module_opencv4.cpp b/src/module_opencv4.cpp
+index c4ec5a2..9c9c88b 100644
+--- a/src/module_opencv4.cpp
++++ b/src/module_opencv4.cpp
+@@ -2,7 +2,7 @@
+ 
+ #include "module.hpp"
+ 
+-#include "opencv2/core/types_c.h"
++#include "opencv2/core.hpp"
+ 
+ #include "opencv2/opencv_modules.hpp"
  
