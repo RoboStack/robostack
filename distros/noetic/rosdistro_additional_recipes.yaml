@@ -1,7 +1,37 @@
 # Additional bloom recipes for this ROS 1 distribution, not contained in the
 # upstream rosdistro. Differently from rosdistro_snapshot.yaml, this file is not
 # automatically generated, but manually maintained.
+ackermann_msgs:
+  override: the release repository (ros-drivers-gbp/ackermann_msgs-release) is gone; ros2-gbp mirrors it
+  tag: release/noetic/ackermann_msgs/1.0.2-1
+  url: https://github.com/ros2-gbp/ackermann_msgs-release.git
+  version: 1.0.2
+graph_msgs:
+  override: the release repository (PickNikRobotics/graph_msgs-release) is gone; ros2-gbp mirrors it
+  tag: release/noetic/graph_msgs/0.1.0-2
+  url: https://github.com/ros2-gbp/graph_msgs-release.git
+  version: 0.1.0
 jackal_base:
   tag: release/noetic/jackal_base/0.7.11-1
   url: https://github.com/clearpath-gbp/jackal_robot-release.git
   version: 0.7.11
+rosparam_shortcuts:
+  override: the release repository (PickNikRobotics/rosparam_shortcuts-release) is gone; upstream's tag
+  tag: 0.4.0
+  url: https://github.com/PickNikRobotics/rosparam_shortcuts.git
+  version: 0.4.0
+rqt_shell:
+  override: the release repository (ros-gbp/rqt_shell-release) is gone; upstream's tag
+  tag: 0.4.13
+  url: https://github.com/ros-visualization/rqt_shell.git
+  version: 0.4.13
+ruckig:
+  override: the release repository (pantor/ruckig-release) is gone and no mirror has 0.9.2 for noetic; upstream's tag (with the same package.xml)
+  tag: v0.9.2
+  url: https://github.com/pantor/ruckig.git
+  version: 0.9.2
+rviz_visual_tools:
+  override: the release repository (PickNikRobotics/rviz_visual_tools-release) is gone; upstream's tag
+  tag: 3.9.3
+  url: https://github.com/PickNikRobotics/rviz_visual_tools.git
+  version: 3.9.3
