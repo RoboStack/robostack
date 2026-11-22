@@ -177,29 +177,17 @@ packages_select_by_deps:
 
   - if: linux
     then:
-    # CRAS (CTU Robot Autonomy Stack) packages - maintainer peci1
-      - cras-cpp-common
-      - cras-docs-common
-      - cras-msgs
-      - cras-py-common
-      - cras-relative-positional-controller
-      - cras-topic-tools
       - dataspeed-can-usb
       - dataspeed-ulc-can
       - dbw-mkz-can
-      - dynamic-robot-state-publisher
       - electronic-io
-      - magnetometer-compass
-      - movie-publisher
       - openni2-launch
-      - rosbash-params
+      # rosmon uses prctl and pty.h (Linux only upstream)
       - rosmon
       - rosmon-core
-      - rosmsg-cpp
       - snmp-ros
       - socketcan-bridge
       - socketcan-interface
-      - static-transform-mux
     # - openni2-camera
       - usb-cam
 
@@ -216,7 +204,12 @@ packages_select_by_deps:
       - combined-robot-hw
       - compass-msgs
       - convex-decomposition
+      - cras-cpp-common
+      - cras-docs-common
       - cras-msgs
+      - cras-py-common
+      - cras-relative-positional-controller
+      - cras-topic-tools
       - criutils
       - cv-camera
       - dataspeed-can-msg-filters
@@ -230,6 +223,7 @@ packages_select_by_deps:
       - dbw-polaris-msgs
       - depthimage-to-laserscan
       - draco-point-cloud-transport
+      - dynamic-robot-state-publisher
       - dynamixel-sdk
       - ecl-command-line
       - ecl-containers
@@ -268,6 +262,7 @@ packages_select_by_deps:
       - laser-proc
       - librealsense2
       - lusb
+      - magnetometer-compass
       - microstrain-inertial-driver
       - microstrain-inertial-msgs
       - moveit-ros-manipulation
@@ -275,6 +270,7 @@ packages_select_by_deps:
       - moveit-ros-planning-interface
       - moveit-ros-visualization
       - moveit-servo
+      - movie-publisher
       - navigation
       - octomap-mapping
       - octomap-server
@@ -294,11 +290,13 @@ packages_select_by_deps:
       - robot-body-filter
       - ros-control
       - ros-controllers
+      - rosbash-params
       - rosdoc-lite
       - rosfmt
       - roslint
       - roslisp
       - rosmon-msgs
+      - rosmsg-cpp
       - rospack
       - rospy-message-converter
       - rqt-ez-publisher
@@ -314,6 +312,7 @@ packages_select_by_deps:
       - slam-toolbox
       - sophus
       - sound-play
+      - static-transform-mux
       - swri-console
       - tf-remapper-cpp
       - tf2-client
