@@ -117,6 +117,9 @@ laser_scan_matcher:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
 libcmt:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
+libg2o:
+  # the apps and examples (g2o_viewer) need Qt 5 and libQGLViewer; the libraries don't
+  additional_cmake_args: "-DG2O_BUILD_APPS=OFF -DG2O_BUILD_EXAMPLES=OFF"
 librealsense2:
   generate_dummy_package_with_run_deps:
     dep_name: librealsense
