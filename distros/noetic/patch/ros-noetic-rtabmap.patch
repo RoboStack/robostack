@@ -135,6 +135,29 @@ index 155ef3ef..713359b4 100644
  
  if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/RTABMap_guiTargets.cmake")
      find_dependency(PCL 1.7 COMPONENTS common io kdtree search surface filters registration sample_consensus segmentation visualization)
+diff --git a/app/android/jni/RTABMapApp.cpp b/app/android/jni/RTABMapApp.cpp
+index 685bf62f..3edf33fd 100644
+--- a/app/android/jni/RTABMapApp.cpp
++++ b/app/android/jni/RTABMapApp.cpp
+@@ -4618,14 +4618,14 @@ void RTABMapApp::postOdometryEvent(
+ 						}
+ 						rtabmap::Transform rgbToDepth = motion*rgbFrame.inverse()*depthFrame;
+ 						float scale = (float)outputDepth.cols/(float)outputRGB.cols;
+-						cv::Mat colorK = (cv::Mat_<double>(3,3) <<
++						cv::Mat colorK = cv::Mat_<double>({3,3}, {
+ 								rgb_fx*scale, 0, rgb_cx*scale,
+ 								0, rgb_fy*scale, rgb_cy*scale,
+-								0, 0, 1);
+-						cv::Mat depthK = (cv::Mat_<double>(3,3) <<
++								0, 0, 1});
++						cv::Mat depthK = cv::Mat_<double>({3,3}, {
+ 								depth_fx, 0, depth_cx,
+ 								0, depth_fy, depth_cy,
+-								0, 0, 1);
++								0, 0, 1});
+ 						outputDepth = rtabmap::util2d::registerDepth(outputDepth, depthK, outputDepth.size(), colorK, rgbToDepth);
+ #ifndef DISABLE_LOG
+ 						UDEBUG("Depth registration time: %fs", time.elapsed());
 diff --git a/cmake_modules/FindEigen3.cmake b/cmake_modules/FindEigen3.cmake
 index 0b36805e..515d0563 100644
 --- a/cmake_modules/FindEigen3.cmake
@@ -512,7 +535,7 @@ index 5f9fb46c..b346817e 100644
  }
  std::string compressedDepthFormat(const std::vector<unsigned char> & bytes)
 diff --git a/corelib/src/EpipolarGeometry.cpp b/corelib/src/EpipolarGeometry.cpp
-index 38f15844..758a14af 100644
+index 38f15844..0584c711 100644
 --- a/corelib/src/EpipolarGeometry.cpp
 +++ b/corelib/src/EpipolarGeometry.cpp
 @@ -33,8 +33,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
@@ -528,6 +551,69 @@ index 38f15844..758a14af 100644
  #include <iostream>
  
  namespace rtabmap
+@@ -397,15 +400,15 @@ cv::Mat EpipolarGeometry::findFFromCalibratedStereoCameras(double fx, double fy,
+ 	double Bx = Tx/-fx;
+ 	double By = Ty/-fy;
+ 
+-	cv::Mat tx = (cv::Mat_<double>(3,3) <<
++	cv::Mat tx = cv::Mat_<double>({3,3}, {
+ 			0, 0, By,
+ 			0, 0, -Bx,
+-			-By, Bx, 0);
++			-By, Bx, 0});
+ 
+-	cv::Mat K = (cv::Mat_<double>(3,3) <<
++	cv::Mat K = cv::Mat_<double>({3,3}, {
+ 			fx, 0, cx,
+ 			0, fy, cy,
+-			0, 0, 1);
++			0, 0, 1});
+ 
+ 	cv::Mat E = tx*R;
+ 
+@@ -428,17 +431,17 @@ cv::Mat EpipolarGeometry::linearLSTriangulation(
+     //build matrix A for homogenous equation system Ax = 0
+     //assume X = (x,y,z,1), for Linear-LS method
+     //which turns it into a AX = B system, where A is 4x3, X is 3x1 and B is 4x1
+-    cv::Mat A = (cv::Mat_<double>(4,3) <<
++    cv::Mat A = cv::Mat_<double>({4,3}, {
+     		u.x*P(2,0)-P(0,0),    u.x*P(2,1)-P(0,1),      u.x*P(2,2)-P(0,2),
+ 			u.y*P(2,0)-P(1,0),    u.y*P(2,1)-P(1,1),      u.y*P(2,2)-P(1,2),
+ 			u1.x*P1(2,0)-P1(0,0), u1.x*P1(2,1)-P1(0,1),   u1.x*P1(2,2)-P1(0,2),
+ 			u1.y*P1(2,0)-P1(1,0), u1.y*P1(2,1)-P1(1,1),   u1.y*P1(2,2)-P1(1,2)
+-              );
+-    cv::Mat B = (cv::Mat_<double>(4,1) <<
++              });
++    cv::Mat B = cv::Mat_<double>({4,1}, {
+ 			-(u.x*P(2,3)    -P(0,3)),
+ 			-(u.y*P(2,3)  -P(1,3)),
+ 			-(u1.x*P1(2,3)    -P1(0,3)),
+-			-(u1.y*P1(2,3)    -P1(1,3)));
++			-(u1.y*P1(2,3)    -P1(1,3))});
+ 
+     cv::Mat X;
+     solve(A,B,X,cv::DECOMP_SVD);
+@@ -479,16 +482,16 @@ cv::Mat EpipolarGeometry::iterativeLinearLSTriangulation(
+         wi1 = p2x1;
+ 
+         //reweight equations and solve
+-        cv::Mat A = (cv::Mat_<double>(4,3) <<
++        cv::Mat A = cv::Mat_<double>({4,3}, {
+         		(u.x*P(2,0)-P(0,0))/wi,       (u.x*P(2,1)-P(0,1))/wi,         (u.x*P(2,2)-P(0,2))/wi,
+ 				(u.y*P(2,0)-P(1,0))/wi,       (u.y*P(2,1)-P(1,1))/wi,         (u.y*P(2,2)-P(1,2))/wi,
+ 				(u1.x*P1(2,0)-P1(0,0))/wi1,   (u1.x*P1(2,1)-P1(0,1))/wi1,     (u1.x*P1(2,2)-P1(0,2))/wi1,
+-				(u1.y*P1(2,0)-P1(1,0))/wi1,   (u1.y*P1(2,1)-P1(1,1))/wi1,     (u1.y*P1(2,2)-P1(1,2))/wi1);
+-        cv::Mat B = (cv::Mat_<double>(4,1) <<
++				(u1.y*P1(2,0)-P1(1,0))/wi1,   (u1.y*P1(2,1)-P1(1,1))/wi1,     (u1.y*P1(2,2)-P1(1,2))/wi1});
++        cv::Mat B = cv::Mat_<double>({4,1}, {
+         		-(u.x*P(2,3)    -P(0,3))/wi,
+ 				-(u.y*P(2,3)  -P(1,3))/wi,
+ 				-(u1.x*P1(2,3)    -P1(0,3))/wi1,
+-				-(u1.y*P1(2,3)    -P1(1,3))/wi1);
++				-(u1.y*P1(2,3)    -P1(1,3))/wi1});
+ 
+         solve(A,B,X_,cv::DECOMP_SVD);
+         X.at<double>(0) = X_.at<double>(0);
 diff --git a/corelib/src/Features2d.cpp b/corelib/src/Features2d.cpp
 index 5e674ee0..abf64c67 100644
 --- a/corelib/src/Features2d.cpp
@@ -757,7 +843,7 @@ index eb9f8a08..f171a6ba 100644
  			else
  			{
 diff --git a/corelib/src/RegistrationVis.cpp b/corelib/src/RegistrationVis.cpp
-index 84f01016..b7787e85 100644
+index 84f01016..27efe3e5 100644
 --- a/corelib/src/RegistrationVis.cpp
 +++ b/corelib/src/RegistrationVis.cpp
 @@ -43,7 +43,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
@@ -771,6 +857,40 @@ index 84f01016..b7787e85 100644
  
  #if defined(HAVE_OPENCV_XFEATURES2D) && (CV_MAJOR_VERSION > 3 || (CV_MAJOR_VERSION==3 && CV_MINOR_VERSION >=4 && CV_SUBMINOR_VERSION >= 1))
  #include <opencv2/xfeatures2d.hpp> // For GMS matcher
+@@ -582,13 +584,13 @@ Transform RegistrationVis::computeTransformationImpl(
+ 					{
+ 						Transform localTransform = toSignature.sensorData().cameraModels().size()?toSignature.sensorData().cameraModels()[0].localTransform():toSignature.sensorData().stereoCameraModels()[0].left().localTransform();
+ 						Transform guessCameraRef = (guess * localTransform).inverse();
+-						cv::Mat R = (cv::Mat_<double>(3,3) <<
++						cv::Mat R = cv::Mat_<double>({3,3}, {
+ 								(double)guessCameraRef.r11(), (double)guessCameraRef.r12(), (double)guessCameraRef.r13(),
+ 								(double)guessCameraRef.r21(), (double)guessCameraRef.r22(), (double)guessCameraRef.r23(),
+-								(double)guessCameraRef.r31(), (double)guessCameraRef.r32(), (double)guessCameraRef.r33());
++								(double)guessCameraRef.r31(), (double)guessCameraRef.r32(), (double)guessCameraRef.r33()});
+ 						cv::Mat rvec(1,3, CV_64FC1);
+ 						cv::Rodrigues(R, rvec);
+-						cv::Mat tvec = (cv::Mat_<double>(1,3) << (double)guessCameraRef.x(), (double)guessCameraRef.y(), (double)guessCameraRef.z());
++						cv::Mat tvec = cv::Mat_<double>({1,3}, {(double)guessCameraRef.x(), (double)guessCameraRef.y(), (double)guessCameraRef.z()});
+ 						cv::Mat K = toSignature.sensorData().cameraModels().size()?toSignature.sensorData().cameraModels()[0].K():toSignature.sensorData().stereoCameraModels()[0].left().K();
+ 						cv::projectPoints(kptsFrom3D, rvec, tvec, K, cv::Mat(), cornersTo);
+ 					}
+@@ -1027,13 +1029,13 @@ Transform RegistrationVis::computeTransformationImpl(
+ 					for(size_t m=0; m<models.size(); ++m)
+ 					{
+ 						Transform guessCameraRef = (guess * models[m].localTransform()).inverse();
+-						cv::Mat R = (cv::Mat_<double>(3,3) <<
++						cv::Mat R = cv::Mat_<double>({3,3}, {
+ 								(double)guessCameraRef.r11(), (double)guessCameraRef.r12(), (double)guessCameraRef.r13(),
+ 								(double)guessCameraRef.r21(), (double)guessCameraRef.r22(), (double)guessCameraRef.r23(),
+-								(double)guessCameraRef.r31(), (double)guessCameraRef.r32(), (double)guessCameraRef.r33());
++								(double)guessCameraRef.r31(), (double)guessCameraRef.r32(), (double)guessCameraRef.r33()});
+ 						cv::Mat rvec(1,3, CV_64FC1);
+ 						cv::Rodrigues(R, rvec);
+-						cv::Mat tvec = (cv::Mat_<double>(1,3) << (double)guessCameraRef.x(), (double)guessCameraRef.y(), (double)guessCameraRef.z());
++						cv::Mat tvec = cv::Mat_<double>({1,3}, {(double)guessCameraRef.x(), (double)guessCameraRef.y(), (double)guessCameraRef.z()});
+ 						cv::Mat K = models[m].K();
+ 						std::vector<cv::Point2f> projected;
+ 						cv::projectPoints(kptsFrom3D, rvec, tvec, K, cv::Mat(), projected);
 @@ -2170,7 +2172,7 @@ Transform RegistrationVis::computeTransformationImpl(
  			if(!transform.isNull() && !pcaData.empty())
  			{
@@ -883,8 +1003,25 @@ index 421d3f4c..8830c37b 100644
  
  		// Re-zoom to original focal distance
  		if(P1.at<double>(0,0) < 0)
+diff --git a/corelib/src/Transform.cpp b/corelib/src/Transform.cpp
+index 1157b627..24baf21f 100644
+--- a/corelib/src/Transform.cpp
++++ b/corelib/src/Transform.cpp
+@@ -48,10 +48,10 @@ Transform::Transform(
+ 		float r21, float r22, float r23, float o24,
+ 		float r31, float r32, float r33, float o34)
+ {
+-	data_ = (cv::Mat_<float>(3,4) <<
++	data_ = cv::Mat_<float>({3,4}, {
+ 			r11, r12, r13, o14,
+ 			r21, r22, r23, o24,
+-			r31, r32, r33, o34);
++			r31, r32, r33, o34});
+ }
+ 
+ Transform::Transform(const cv::Mat & transformationMatrix)
 diff --git a/corelib/src/camera/CameraDepthAI.cpp b/corelib/src/camera/CameraDepthAI.cpp
-index 9eb01791..a0d4699f 100644
+index 9eb01791..156f2bfb 100644
 --- a/corelib/src/camera/CameraDepthAI.cpp
 +++ b/corelib/src/camera/CameraDepthAI.cpp
 @@ -32,7 +32,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
@@ -900,6 +1037,24 @@ index 9eb01791..a0d4699f 100644
  
  namespace rtabmap {
  
+@@ -364,14 +368,14 @@ bool CameraDepthAI::init(const std::string & calibrationFolder, const std::strin
+ 	cv::Mat cameraMatrix, distCoeffs, newCameraMatrix;
+ 
+ 	std::vector<std::vector<float> > matrix = calibHandler.getCameraIntrinsics(cameraId, targetSize_.width, targetSize_.height);
+-	cameraMatrix = (cv::Mat_<double>(3,3) <<
++	cameraMatrix = cv::Mat_<double>({3,3}, {
+ 		matrix[0][0], matrix[0][1], matrix[0][2],
+ 		matrix[1][0], matrix[1][1], matrix[1][2],
+-		matrix[2][0], matrix[2][1], matrix[2][2]);
++		matrix[2][0], matrix[2][1], matrix[2][2]});
+ 
+ 	std::vector<float> coeffs = calibHandler.getDistortionCoefficients(cameraId);
+ 	if(calibHandler.getDistortionModel(cameraId) == dai::CameraModel::Perspective)
+-		distCoeffs = (cv::Mat_<double>(1,8) << coeffs[0], coeffs[1], coeffs[2], coeffs[3], coeffs[4], coeffs[5], coeffs[6], coeffs[7]);
++		distCoeffs = cv::Mat_<double>({1,8}, {coeffs[0], coeffs[1], coeffs[2], coeffs[3], coeffs[4], coeffs[5], coeffs[6], coeffs[7]});
+ 
+ 	if(alphaScaling_>-1.0f)
+ 		newCameraMatrix = cv::getOptimalNewCameraMatrix(cameraMatrix, distCoeffs, targetSize_, alphaScaling_);
 diff --git a/corelib/src/camera/CameraFreenect.cpp b/corelib/src/camera/CameraFreenect.cpp
 index 9d48215f..a402c7b7 100644
 --- a/corelib/src/camera/CameraFreenect.cpp
@@ -1067,6 +1222,37 @@ index e289029e..9a96251f 100644
  									}
  									// loop over output pixels
  									for (int depthIndex = 0; depthIndex < (nDepthWidth*nDepthHeight); ++depthIndex)
+diff --git a/corelib/src/camera/CameraMyntEye.cpp b/corelib/src/camera/CameraMyntEye.cpp
+index 01f6d12f..59e25ee3 100644
+--- a/corelib/src/camera/CameraMyntEye.cpp
++++ b/corelib/src/camera/CameraMyntEye.cpp
+@@ -250,8 +250,8 @@ bool CameraMyntEye::init(const std::string & calibrationFolder, const std::strin
+ 		auto in_left = *std::dynamic_pointer_cast<mynteye::IntrinsicsPinhole>(in_left_base);
+ 		auto in_right = *std::dynamic_pointer_cast<mynteye::IntrinsicsPinhole>(in_right_base);
+ 
+-		K1 = (cv::Mat_<double>(3, 3) << in_left.fx, 0, in_left.cx, 0, in_left.fy, in_left.cy, 0, 0, 1);
+-		K2 = (cv::Mat_<double>(3, 3) << in_right.fx, 0, in_right.cx, 0, in_right.fy, in_right.cy, 0, 0, 1);
++		K1 = cv::Mat_<double>({3, 3}, {in_left.fx, 0, in_left.cx, 0, in_left.fy, in_left.cy, 0, 0, 1});
++		K2 = cv::Mat_<double>({3, 3}, {in_right.fx, 0, in_right.cx, 0, in_right.fy, in_right.cy, 0, 0, 1});
+ 		D1 = cv::Mat(1, 5, CV_64F, in_left.coeffs).clone();
+ 		D2 = cv::Mat(1, 5, CV_64F, in_right.coeffs).clone();
+ 	}
+@@ -270,11 +270,11 @@ bool CameraMyntEye::init(const std::string & calibrationFolder, const std::strin
+ 				in_left.coeffs[0], in_left.coeffs[1], in_left.coeffs[2], in_left.coeffs[3],
+ 				in_left.coeffs[4], in_left.coeffs[5], in_left.coeffs[6], in_left.coeffs[7]);
+ 
+-		K1 = (cv::Mat_<double>(3, 3) << in_left.coeffs[4], 0, in_left.coeffs[6], 0, in_left.coeffs[5], in_left.coeffs[7], 0, 0, 1);
+-		K2 = (cv::Mat_<double>(3, 3) << in_right.coeffs[4], 0, in_right.coeffs[6], 0, in_right.coeffs[5], in_right.coeffs[7], 0, 0, 1);
++		K1 = cv::Mat_<double>({3, 3}, {in_left.coeffs[4], 0, in_left.coeffs[6], 0, in_left.coeffs[5], in_left.coeffs[7], 0, 0, 1});
++		K2 = cv::Mat_<double>({3, 3}, {in_right.coeffs[4], 0, in_right.coeffs[6], 0, in_right.coeffs[5], in_right.coeffs[7], 0, 0, 1});
+ 		// convert to (k1,k2,p1,p2,k3,k4)
+-		D1 = (cv::Mat_<double>(1, 6) << in_left.coeffs[0], in_left.coeffs[1], 0, 0, in_left.coeffs[2], in_left.coeffs[3]);
+-		D2 = (cv::Mat_<double>(1, 6) << in_right.coeffs[0], in_right.coeffs[1], 0, 0, in_right.coeffs[2], in_right.coeffs[3]);
++		D1 = cv::Mat_<double>({1, 6}, {in_left.coeffs[0], in_left.coeffs[1], 0, 0, in_left.coeffs[2], in_left.coeffs[3]});
++		D2 = cv::Mat_<double>({1, 6}, {in_right.coeffs[0], in_right.coeffs[1], 0, 0, in_right.coeffs[2], in_right.coeffs[3]});
+ 	}
+ 
+ 	bool is_data_use_mm_instead_of_m =
 diff --git a/corelib/src/camera/CameraOpenNI2.cpp b/corelib/src/camera/CameraOpenNI2.cpp
 index 8be86b74..4d2ff1ad 100644
 --- a/corelib/src/camera/CameraOpenNI2.cpp
@@ -1427,8 +1613,62 @@ index f31f40b6..5de23a67 100644
  			rightImage = tmp;
  			rightCvt = true;
  		}
+diff --git a/corelib/src/camera/CameraStereoZed.cpp b/corelib/src/camera/CameraStereoZed.cpp
+index 2fc57a26..ebc5c01a 100644
+--- a/corelib/src/camera/CameraStereoZed.cpp
++++ b/corelib/src/camera/CameraStereoZed.cpp
+@@ -99,18 +99,18 @@ IMU zedIMUtoIMU(const sl::IMUData & imuData, const Transform & imuLocalTransform
+ 	Eigen::Vector4d accT = Eigen::Vector4d(imuData.linear_acceleration.v[0], imuData.linear_acceleration.v[1], imuData.linear_acceleration.v[2], 1);
+ 	Eigen::Vector4d gyrT = Eigen::Vector4d(imuData.angular_velocity.v[0]*deg2rad, imuData.angular_velocity.v[1]*deg2rad, imuData.angular_velocity.v[2]*deg2rad, 1);
+ 
+-	cv::Mat orientationCov = (cv::Mat_<double>(3,3)<<
++	cv::Mat orientationCov = cv::Mat_<double>({3,3}, {
+ 			imuData.pose_covariance[21], imuData.pose_covariance[22], imuData.pose_covariance[23],
+ 			imuData.pose_covariance[27], imuData.pose_covariance[28], imuData.pose_covariance[29],
+-			imuData.pose_covariance[33], imuData.pose_covariance[34], imuData.pose_covariance[35]);
+-	cv::Mat angCov = (cv::Mat_<double>(3,3)<<
++			imuData.pose_covariance[33], imuData.pose_covariance[34], imuData.pose_covariance[35]});
++	cv::Mat angCov = cv::Mat_<double>({3,3}, {
+ 			imuData.angular_velocity_convariance.r[0], imuData.angular_velocity_convariance.r[1], imuData.angular_velocity_convariance.r[2],
+ 			imuData.angular_velocity_convariance.r[3], imuData.angular_velocity_convariance.r[4], imuData.angular_velocity_convariance.r[5],
+-			imuData.angular_velocity_convariance.r[6], imuData.angular_velocity_convariance.r[7], imuData.angular_velocity_convariance.r[8]);
+-	cv::Mat accCov = (cv::Mat_<double>(3,3)<<
++			imuData.angular_velocity_convariance.r[6], imuData.angular_velocity_convariance.r[7], imuData.angular_velocity_convariance.r[8]});
++	cv::Mat accCov = cv::Mat_<double>({3,3}, {
+ 			imuData.linear_acceleration_convariance.r[0], imuData.linear_acceleration_convariance.r[1], imuData.linear_acceleration_convariance.r[2],
+ 			imuData.linear_acceleration_convariance.r[3], imuData.linear_acceleration_convariance.r[4], imuData.linear_acceleration_convariance.r[5],
+-			imuData.linear_acceleration_convariance.r[6], imuData.linear_acceleration_convariance.r[7], imuData.linear_acceleration_convariance.r[8]);
++			imuData.linear_acceleration_convariance.r[6], imuData.linear_acceleration_convariance.r[7], imuData.linear_acceleration_convariance.r[8]});
+ 
+ 	Eigen::Quaternionf quat = orientationT.getQuaternionf();
+ 
+@@ -137,18 +137,18 @@ IMU zedIMUtoIMU(const sl::SensorsData & sensorData, const Transform & imuLocalTr
+     Eigen::Vector4d accT = Eigen::Vector4d(sensorData.imu.linear_acceleration.v[0], sensorData.imu.linear_acceleration.v[1], sensorData.imu.linear_acceleration.v[2], 1);
+     Eigen::Vector4d gyrT = Eigen::Vector4d(sensorData.imu.angular_velocity.v[0]*deg2rad, sensorData.imu.angular_velocity.v[1]*deg2rad, sensorData.imu.angular_velocity.v[2]*deg2rad, 1);
+ 
+-    cv::Mat orientationCov = (cv::Mat_<double>(3,3)<<
++    cv::Mat orientationCov = cv::Mat_<double>({3,3}, {
+             sensorData.imu.pose_covariance.r[0], sensorData.imu.pose_covariance.r[1], sensorData.imu.pose_covariance.r[2],
+             sensorData.imu.pose_covariance.r[3], sensorData.imu.pose_covariance.r[4], sensorData.imu.pose_covariance.r[5],
+-            sensorData.imu.pose_covariance.r[6], sensorData.imu.pose_covariance.r[7], sensorData.imu.pose_covariance.r[8]);
+-    cv::Mat angCov = (cv::Mat_<double>(3,3)<<
++            sensorData.imu.pose_covariance.r[6], sensorData.imu.pose_covariance.r[7], sensorData.imu.pose_covariance.r[8]});
++    cv::Mat angCov = cv::Mat_<double>({3,3}, {
+             sensorData.imu.angular_velocity_covariance.r[0], sensorData.imu.angular_velocity_covariance.r[1], sensorData.imu.angular_velocity_covariance.r[2],
+             sensorData.imu.angular_velocity_covariance.r[3], sensorData.imu.angular_velocity_covariance.r[4], sensorData.imu.angular_velocity_covariance.r[5],
+-            sensorData.imu.angular_velocity_covariance.r[6], sensorData.imu.angular_velocity_covariance.r[7], sensorData.imu.angular_velocity_covariance.r[8]);
+-    cv::Mat accCov = (cv::Mat_<double>(3,3)<<
++            sensorData.imu.angular_velocity_covariance.r[6], sensorData.imu.angular_velocity_covariance.r[7], sensorData.imu.angular_velocity_covariance.r[8]});
++    cv::Mat accCov = cv::Mat_<double>({3,3}, {
+             sensorData.imu.linear_acceleration_covariance.r[0], sensorData.imu.linear_acceleration_covariance.r[1], sensorData.imu.linear_acceleration_covariance.r[2],
+             sensorData.imu.linear_acceleration_covariance.r[3], sensorData.imu.linear_acceleration_covariance.r[4], sensorData.imu.linear_acceleration_covariance.r[5],
+-            sensorData.imu.linear_acceleration_covariance.r[6], sensorData.imu.linear_acceleration_covariance.r[7], sensorData.imu.linear_acceleration_covariance.r[8]);
++            sensorData.imu.linear_acceleration_covariance.r[6], sensorData.imu.linear_acceleration_covariance.r[7], sensorData.imu.linear_acceleration_covariance.r[8]});
+ 
+     Eigen::Quaternionf quat = orientationT.getQuaternionf();
+ 
 diff --git a/corelib/src/camera/CameraStereoZedOC.cpp b/corelib/src/camera/CameraStereoZedOC.cpp
-index 014976a6..e3ba6d43 100644
+index 014976a6..d2aee20b 100644
 --- a/corelib/src/camera/CameraStereoZedOC.cpp
 +++ b/corelib/src/camera/CameraStereoZedOC.cpp
 @@ -38,6 +38,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
@@ -1442,6 +1682,36 @@ index 014976a6..e3ba6d43 100644
  ///////////////////////////////////////////////////////////////////////////
  //
  // Copyright (c) 2018, STEREOLABS.
+@@ -320,7 +324,7 @@ bool initCalibration(std::string calibration_file, cv::Size image_size, rtabmap:
+ #endif
+ 
+     // Get rotations
+-    cv::Mat R_zed = (cv::Mat_<double>(1, 3) << camerareader.getValue("stereo:rx_" + resolution_str, 0.f), camerareader.getValue("stereo:cv_" + resolution_str, 0.f), camerareader.getValue("stereo:rz_" + resolution_str, 0.f));
++    cv::Mat R_zed = cv::Mat_<double>({1, 3}, {camerareader.getValue("stereo:rx_" + resolution_str, 0.f), camerareader.getValue("stereo:cv_" + resolution_str, 0.f), camerareader.getValue("stereo:rz_" + resolution_str, 0.f)});
+     //R_zed *= -1.f; // FIXME: we had to invert T below, do we need to do this with R? I don't see much difference looking at the disparity image
+     cv::Mat R;
+ 
+@@ -329,15 +333,15 @@ bool initCalibration(std::string calibration_file, cv::Size image_size, rtabmap:
+     cv::Mat distCoeffs_left, distCoeffs_right;
+ 
+     // Left
+-    cv::Mat cameraMatrix_left = (cv::Mat_<double>(3, 3) << left_cam_fx, 0, left_cam_cx, 0, left_cam_fy, left_cam_cy, 0, 0, 1);
+-    distCoeffs_left = (cv::Mat_<double>(1, 5) << left_cam_k1, left_cam_k2, left_cam_p1, left_cam_p2, left_cam_k3);
++    cv::Mat cameraMatrix_left = cv::Mat_<double>({3, 3}, {left_cam_fx, 0, left_cam_cx, 0, left_cam_fy, left_cam_cy, 0, 0, 1});
++    distCoeffs_left = cv::Mat_<double>({1, 5}, {left_cam_k1, left_cam_k2, left_cam_p1, left_cam_p2, left_cam_k3});
+ 
+     // Right
+-    cv::Mat cameraMatrix_right = (cv::Mat_<double>(3, 3) << right_cam_fx, 0, right_cam_cx, 0, right_cam_fy, right_cam_cy, 0, 0, 1);
+-    distCoeffs_right = (cv::Mat_<double>(1, 5) << right_cam_k1, right_cam_k2, right_cam_p1, right_cam_p2, right_cam_k3);
++    cv::Mat cameraMatrix_right = cv::Mat_<double>({3, 3}, {right_cam_fx, 0, right_cam_cx, 0, right_cam_fy, right_cam_cy, 0, 0, 1});
++    distCoeffs_right = cv::Mat_<double>({1, 5}, {right_cam_k1, right_cam_k2, right_cam_p1, right_cam_p2, right_cam_k3});
+ 
+     // Stereo
+-    cv::Mat T = (cv::Mat_<double>(3, 1) << T_[0], T_[1], T_[2]);
++    cv::Mat T = cv::Mat_<double>({3, 1}, {T_[0], T_[1], T_[2]});
+     T /= -1000.f; // convert in meters, inverted to get positive baseline
+     //std::cout << " Camera Matrix L: \n" << cameraMatrix_left << std::endl << std::endl;
+     //std::cout << " Camera Matrix R: \n" << cameraMatrix_right << std::endl << std::endl;
 diff --git a/corelib/src/camera/CameraVideo.cpp b/corelib/src/camera/CameraVideo.cpp
 index 9a0a70d0..1776bca1 100644
 --- a/corelib/src/camera/CameraVideo.cpp
@@ -1623,7 +1893,7 @@ index ac62c251..709f9d11 100644
  			else
  			{
 diff --git a/corelib/src/odometry/OdometryMono.cpp b/corelib/src/odometry/OdometryMono.cpp
-index 7df312e7..69af6b63 100644
+index 7df312e7..9d3922d6 100644
 --- a/corelib/src/odometry/OdometryMono.cpp
 +++ b/corelib/src/odometry/OdometryMono.cpp
 @@ -43,7 +43,11 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
@@ -1638,6 +1908,40 @@ index 7df312e7..69af6b63 100644
  #include <opencv2/video/tracking.hpp>
  #include <pcl/common/centroid.h>
  
+@@ -246,13 +250,13 @@ Transform OdometryMono::computeTransform(SensorData & data, const Transform & gu
+ 			{
+ 				cv::Mat K = cameraModel.K();
+ 				Transform pnpGuess = ((this->getPose() * (guess.isNull()?Transform::getIdentity():guess)) * cameraModel.localTransform()).inverse();
+-				cv::Mat R = (cv::Mat_<double>(3,3) <<
++				cv::Mat R = cv::Mat_<double>({3,3}, {
+ 						(double)pnpGuess.r11(), (double)pnpGuess.r12(), (double)pnpGuess.r13(),
+ 						(double)pnpGuess.r21(), (double)pnpGuess.r22(), (double)pnpGuess.r23(),
+-						(double)pnpGuess.r31(), (double)pnpGuess.r32(), (double)pnpGuess.r33());
++						(double)pnpGuess.r31(), (double)pnpGuess.r32(), (double)pnpGuess.r33()});
+ 				cv::Mat rvec(1,3, CV_64FC1);
+ 				cv::Rodrigues(R, rvec);
+-				cv::Mat tvec = (cv::Mat_<double>(1,3) << (double)pnpGuess.x(), (double)pnpGuess.y(), (double)pnpGuess.z());
++				cv::Mat tvec = cv::Mat_<double>({1,3}, {(double)pnpGuess.x(), (double)pnpGuess.y(), (double)pnpGuess.z()});
+ 
+ 				std::vector<cv::Point3f> objectPoints;
+ 				std::vector<cv::Point2f> imagePoints;
+@@ -268,13 +272,13 @@ Transform OdometryMono::computeTransform(SensorData & data, const Transform & gu
+ 				std::vector<cv::Point2f> prevImagePoints;
+ 				const Signature * prevS = memory_->getSignature(*(++memory_->getStMem().rbegin()));
+ 				Transform prevGuess = (keyFramePoses_.at(prevS->id()) * cameraModel.localTransform()).inverse();
+-				cv::Mat prevR = (cv::Mat_<double>(3,3) <<
++				cv::Mat prevR = cv::Mat_<double>({3,3}, {
+ 						(double)prevGuess.r11(), (double)prevGuess.r12(), (double)prevGuess.r13(),
+ 						(double)prevGuess.r21(), (double)prevGuess.r22(), (double)prevGuess.r23(),
+-						(double)prevGuess.r31(), (double)prevGuess.r32(), (double)prevGuess.r33());
++						(double)prevGuess.r31(), (double)prevGuess.r32(), (double)prevGuess.r33()});
+ 				cv::Mat prevRvec(1,3, CV_64FC1);
+ 				cv::Rodrigues(prevR, prevRvec);
+-				cv::Mat prevTvec = (cv::Mat_<double>(1,3) << (double)prevGuess.x(), (double)prevGuess.y(), (double)prevGuess.z());
++				cv::Mat prevTvec = cv::Mat_<double>({1,3}, {(double)prevGuess.x(), (double)prevGuess.y(), (double)prevGuess.z()});
+ 				cv::projectPoints(objectPoints, prevRvec, prevTvec, K, cv::Mat(), prevImagePoints);
+ 
+ 				// compute current projection
 diff --git a/corelib/src/odometry/OdometryORBSLAM2.cpp b/corelib/src/odometry/OdometryORBSLAM2.cpp
 index 1ae10bc1..616678cf 100644
 --- a/corelib/src/odometry/OdometryORBSLAM2.cpp
@@ -1900,6 +2204,19 @@ index f56874e7..c5034a7f 100644
  
      int levelsNum = this->nlevels;
  
+diff --git a/corelib/src/opencv/five-point.cpp b/corelib/src/opencv/five-point.cpp
+index 7e5c2c59..9362f010 100644
+--- a/corelib/src/opencv/five-point.cpp
++++ b/corelib/src/opencv/five-point.cpp
+@@ -461,7 +461,7 @@ void decomposeEssentialMat( InputArray _E, OutputArray _R1, OutputArray _R2, Out
+     if (determinant(U) < 0) U *= -1.;
+     if (determinant(Vt) < 0) Vt *= -1.;
+ 
+-    Mat W = (Mat_<double>(3, 3) << 0, 1, 0, -1, 0, 0, 0, 0, 1);
++    Mat W = Mat_<double>({3, 3}, {0, 1, 0, -1, 0, 0, 0, 0, 1});
+     W.convertTo(W, E.type());
+ 
+     Mat R1, R2, t;
 diff --git a/corelib/src/opencv/five-point.h b/corelib/src/opencv/five-point.h
 index 1a5b778a..f1aa8c7e 100644
 --- a/corelib/src/opencv/five-point.h
@@ -1987,8 +2304,27 @@ index e88b5700..382f9db7 100644
  
  int RANSACUpdateNumIters( double p, double ep, int modelPoints, int maxIters );
  
+diff --git a/corelib/src/optimizer/OptimizerCVSBA.cpp b/corelib/src/optimizer/OptimizerCVSBA.cpp
+index 6f0dcf32..53991aec 100644
+--- a/corelib/src/optimizer/OptimizerCVSBA.cpp
++++ b/corelib/src/optimizer/OptimizerCVSBA.cpp
+@@ -111,11 +111,11 @@ std::map<int, Transform> OptimizerCVSBA::optimizeBA(
+ 
+ 		Transform t = (iter->second * iterModel->second[0].localTransform()).inverse();
+ 
+-		R[oi] = (cv::Mat_<double>(3,3) <<
++		R[oi] = cv::Mat_<double>({3,3}, {
+ 				(double)t.r11(), (double)t.r12(), (double)t.r13(),
+ 				(double)t.r21(), (double)t.r22(), (double)t.r23(),
+-				(double)t.r31(), (double)t.r32(), (double)t.r33());
+-		T[oi] = (cv::Mat_<double>(1,3) << (double)t.x(), (double)t.y(), (double)t.z());
++				(double)t.r31(), (double)t.r32(), (double)t.r33()});
++		T[oi] = cv::Mat_<double>({1,3}, {(double)t.x(), (double)t.y(), (double)t.z()});
+ 		++oi;
+ 
+ 		UDEBUG("Pose %d = %s", iter->first, t.prettyPrint().c_str());
 diff --git a/corelib/src/optimizer/OptimizerCeres.cpp b/corelib/src/optimizer/OptimizerCeres.cpp
-index 04de80b9..8668b422 100644
+index 04de80b9..f86e1278 100644
 --- a/corelib/src/optimizer/OptimizerCeres.cpp
 +++ b/corelib/src/optimizer/OptimizerCeres.cpp
 @@ -26,6 +26,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
@@ -2004,6 +2340,30 @@ index 04de80b9..8668b422 100644
  #include <rtabmap/utilite/ULogger.h>
  #include <rtabmap/utilite/UStl.h>
  #include <rtabmap/utilite/UMath.h>
+@@ -401,10 +407,10 @@ std::map<int, Transform> OptimizerCeres::optimizeBA(
+ 		UASSERT(iterModel->second[0].isValidForProjection());
+ 
+ 		const Transform & t = (iter->second * iterModel->second[0].localTransform()).inverse();
+-		cv::Mat R = (cv::Mat_<double>(3,3) <<
++		cv::Mat R = cv::Mat_<double>({3,3}, {
+ 				(double)t.r11(), (double)t.r12(), (double)t.r13(),
+ 				(double)t.r21(), (double)t.r22(), (double)t.r23(),
+-				(double)t.r31(), (double)t.r32(), (double)t.r33());
++				(double)t.r31(), (double)t.r32(), (double)t.r33()});
+ 
+ 		cv::Mat rvec(1,3, CV_64FC1);
+ 		cv::Rodrigues(R, rvec);
+@@ -517,8 +523,8 @@ std::map<int, Transform> OptimizerCeres::optimizeBA(
+ 	oi=0;
+ 	for(std::map<int, Transform>::iterator iter=newPoses.begin(); iter!=newPoses.end(); ++iter)
+ 	{
+-		cv::Mat rvec = (cv::Mat_<double>(1,3) <<
+-				baProblem.cameras_[oi], baProblem.cameras_[oi+1], baProblem.cameras_[oi+2]);
++		cv::Mat rvec = cv::Mat_<double>({1,3}, {
++				baProblem.cameras_[oi], baProblem.cameras_[oi+1], baProblem.cameras_[oi+2]});
+ 
+ 		cv::Mat R;
+ 		cv::Rodrigues(rvec, R);
 diff --git a/corelib/src/stereo/StereoBM.cpp b/corelib/src/stereo/StereoBM.cpp
 index 1b390c68..57f6b7d0 100644
 --- a/corelib/src/stereo/StereoBM.cpp
@@ -2191,6 +2551,45 @@ index 5a81869b..41cc1e65 100644
  #include <pcl/search/kdtree.h>
  #include <pcl/common/point_tests.h>
  
+diff --git a/corelib/src/util3d_mapping.cpp b/corelib/src/util3d_mapping.cpp
+index 9599f206..1e5b92b2 100644
+--- a/corelib/src/util3d_mapping.cpp
++++ b/corelib/src/util3d_mapping.cpp
+@@ -754,8 +754,8 @@ cv::Mat create2DMap(const std::map<int, Transform> & poses,
+ 
+ 						// As we don't know the angle_min or angle_max, ray trace between
+ 						// the first and last obstacle (counterclockwise).
+-						cv::Mat rotation = (cv::Mat_<float>(2,2) << cos(angleIncrement), -sin(angleIncrement),
+-																	 sin(angleIncrement), cos(angleIncrement));
++						cv::Mat rotation = cv::Mat_<float>({2,2}, {cos(angleIncrement), -sin(angleIncrement),
++																	 sin(angleIncrement), cos(angleIncrement)});
+ 						cv::Mat origin(2,1,CV_32F), obsFirst(2,1,CV_32F), obsLast(2,1,CV_32F);
+ 						origin.at<float>(0) = pose.x()+viewpoint.x;
+ 						origin.at<float>(1) = pose.y()+viewpoint.y;
+diff --git a/corelib/src/util3d_motion_estimation.cpp b/corelib/src/util3d_motion_estimation.cpp
+index 63ed9aca..d8b7f6e6 100644
+--- a/corelib/src/util3d_motion_estimation.cpp
++++ b/corelib/src/util3d_motion_estimation.cpp
+@@ -119,15 +119,15 @@ Transform estimateMotion3DTo2D(
+ 		cv::Mat K = cameraModel.K();
+ 		cv::Mat D = cameraModel.D();
+ 		Transform guessCameraFrame = (guess * cameraModel.localTransform()).inverse();
+-		cv::Mat R = (cv::Mat_<double>(3,3) <<
++		cv::Mat R = cv::Mat_<double>({3,3}, {
+ 				(double)guessCameraFrame.r11(), (double)guessCameraFrame.r12(), (double)guessCameraFrame.r13(),
+ 				(double)guessCameraFrame.r21(), (double)guessCameraFrame.r22(), (double)guessCameraFrame.r23(),
+-				(double)guessCameraFrame.r31(), (double)guessCameraFrame.r32(), (double)guessCameraFrame.r33());
++				(double)guessCameraFrame.r31(), (double)guessCameraFrame.r32(), (double)guessCameraFrame.r33()});
+ 
+ 		cv::Mat rvec(3,1, CV_64FC1);
+ 		cv::Rodrigues(R, rvec);
+-		cv::Mat tvec = (cv::Mat_<double>(3,1) <<
+-				(double)guessCameraFrame.x(), (double)guessCameraFrame.y(), (double)guessCameraFrame.z());
++		cv::Mat tvec = cv::Mat_<double>({3,1}, {
++				(double)guessCameraFrame.x(), (double)guessCameraFrame.y(), (double)guessCameraFrame.z()});
+ 
+ 		util3d::solvePnPRansac(
+ 				objectPoints,
 diff --git a/corelib/src/util3d_surface.cpp b/corelib/src/util3d_surface.cpp
 index 3eeeb7c1..d4f11e7b 100644
 --- a/corelib/src/util3d_surface.cpp
