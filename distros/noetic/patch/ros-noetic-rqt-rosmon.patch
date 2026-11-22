@@ -11,3 +11,16 @@ index 95bf11a..60b668c 100644
  
  if(${pluginlib_VERSION} VERSION_GREATER 1.11.1)
  	message(STATUS "using new pluginlib headers with .hpp extensions")
+diff --git a/src/node_model.cpp b/src/node_model.cpp
+index d166b25..6d58a34 100644
+--- a/src/node_model.cpp
++++ b/src/node_model.cpp
+@@ -173,7 +173,7 @@ QVariant NodeModel::data(const QModelIndex& index, int role) const
+ 					return int(Qt::AlignRight | Qt::AlignVCenter);
+ 			}
+ 			break;
+-		case Qt::BackgroundColorRole:
++		case Qt::BackgroundRole:
+ 			switch(entry.state)
+ 			{
+ 				case rosmon_msgs::NodeState::RUNNING:

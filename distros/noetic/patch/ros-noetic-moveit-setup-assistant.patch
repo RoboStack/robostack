@@ -1,0 +1,68 @@
+diff --git a/src/tools/collision_linear_model.cpp b/src/tools/collision_linear_model.cpp
+index 5e1115f6..018cd4c5 100644
+--- a/src/tools/collision_linear_model.cpp
++++ b/src/tools/collision_linear_model.cpp
+@@ -34,6 +34,7 @@
+ 
+ /* Author: Robert Haschke */
+ 
++#include <QRegularExpression>
+ #include "collision_linear_model.h"
+ #include "collision_matrix_model.h"
+ 
+@@ -235,8 +236,9 @@ bool SortFilterProxyModel::filterAcceptsRow(int source_row, const QModelIndex& s
+   if (!(show_all_ || m->data(m->index(source_row, 2), Qt::CheckStateRole) == Qt::Checked))
+     return false;  // not accepted due to check state
+ 
+-  const QRegExp regexp = this->filterRegExp();
+-  if (regexp.isEmpty())
++  // RoboStack: Qt 6 has no QSortFilterProxyModel::filterRegExp()
++  const QRegularExpression regexp = this->filterRegularExpression();
++  if (regexp.pattern().isEmpty())
+     return true;
+ 
+   return m->data(m->index(source_row, 0, source_parent), Qt::DisplayRole).toString().contains(regexp) ||
+diff --git a/src/tools/collision_matrix_model.cpp b/src/tools/collision_matrix_model.cpp
+index 9e44dfd1..adc77b12 100644
+--- a/src/tools/collision_matrix_model.cpp
++++ b/src/tools/collision_matrix_model.cpp
+@@ -34,6 +34,7 @@
+ 
+ /* Author: Robert Haschke */
+ 
++#include <QRegularExpression>
+ #include "collision_matrix_model.h"
+ #include <boost/unordered_map.hpp>
+ #include <boost/assign.hpp>
+@@ -246,7 +247,7 @@ void CollisionMatrixModel::setEnabled(const QModelIndexList& indexes, bool value
+ void CollisionMatrixModel::setFilterRegExp(const QString& filter)
+ {
+   beginResetModel();
+-  QRegExp regexp(filter);
++  QRegularExpression regexp(filter);  // RoboStack: QString::contains() takes no QRegExp in Qt 6
+   visual_to_index.clear();
+   for (int idx = 0, end = q_names.size(); idx != end; ++idx)
+   {
+diff --git a/src/tools/xml_syntax_highlighter.h b/src/tools/xml_syntax_highlighter.h
+index cd48b702..ea699862 100644
+--- a/src/tools/xml_syntax_highlighter.h
++++ b/src/tools/xml_syntax_highlighter.h
+@@ -36,6 +36,7 @@
+ 
+ #pragma once
+ 
++#include <QStringRef>  // RoboStack: Qt 6 has it in Core5Compat
+ #include <QtGui/QSyntaxHighlighter>
+ #include <QRegularExpression>
+ #include <map>
+diff --git a/src/widgets/robot_poses_widget.h b/src/widgets/robot_poses_widget.h
+index dcc8377b..2ac2bd7f 100644
+--- a/src/widgets/robot_poses_widget.h
++++ b/src/widgets/robot_poses_widget.h
+@@ -282,4 +282,6 @@ private:
+ }  // namespace moveit_setup_assistant
+ 
+ // Declare std::string as metatype so we can use it in a signal
++#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)  // RoboStack: Qt 6 declares std::string itself
+ Q_DECLARE_METATYPE(std::string)
++#endif

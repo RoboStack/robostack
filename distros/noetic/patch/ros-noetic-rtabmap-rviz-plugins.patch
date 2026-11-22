@@ -1,6 +1,8 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a32c45f..bf837cd 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1,14 +1,10 @@
+@@ -1,13 +1,9 @@
 -cmake_minimum_required(VERSION 3.5)
 +cmake_minimum_required(VERSION 3.20)
  project(rtabmap_rviz_plugins)
@@ -11,24 +13,20 @@
 -    FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui REQUIRED)
 -    INCLUDE(${QT_USE_FILE})
 -ENDIF(NOT Qt5_FOUND)
+-
 +# For rviz plugins, prefer Qt5.
-+find_package(QT NAMES Qt5 QUIET COMPONENTS Widgets Core Gui)
++find_package(QT NAMES Qt6 Qt5 QUIET COMPONENTS Widgets Core Gui)  # RoboStack: Qt 6 (rtabmap, rviz)
 +find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Core Gui)
  
--
  find_package(catkin REQUIRED COMPONENTS
               roscpp sensor_msgs std_msgs pcl_conversions pluginlib rviz tf rtabmap_conversions rtabmap_msgs)
- 
-@@ -22,9 +18,16 @@
+@@ -22,9 +18,13 @@ catkin_package(
  ## Build ##
  ###########
  
 +set(_catkin_include_dirs ${catkin_INCLUDE_DIRS})
 +set(_catkin_libraries ${catkin_LIBRARIES})
 +# rviz/catkin may leak Qt6 include paths/targets; force Qt5 toolchain consistency.
-+list(FILTER _catkin_include_dirs EXCLUDE REGEX "/qt6($|/)")
-+list(FILTER _catkin_libraries EXCLUDE REGEX "^Qt6::")
-+list(FILTER _catkin_libraries EXCLUDE REGEX "/qt6/")
 +
  include_directories(
    ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -37,7 +35,7 @@
  )
  
  ## We also use Ogre for rviz plugins
-@@ -35,7 +38,7 @@
+@@ -35,7 +35,7 @@ include_directories( ${OGRE_INCLUDE_DIRS} )
  link_directories( ${OGRE_LIBRARY_DIRS} )
  
  SET(Libraries
@@ -46,13 +44,29 @@
    ${rviz_DEFAULT_PLUGIN_LIBRARIES}
  )
  
-@@ -101,10 +104,10 @@
+@@ -57,13 +57,13 @@ IF(QT4_FOUND)
+   ENDIF()
+ ELSE()
+   IF(WIN32)
+-    qt5_wrap_cpp(MOC_FILES
++    qt_wrap_cpp(MOC_FILES
+       include/${PROJECT_NAME}/MapCloudDisplay.h
+       include/${PROJECT_NAME}/MapGraphDisplay.h
+       include/${PROJECT_NAME}/InfoDisplay.h
+     )
+   ELSE()
+-    qt5_wrap_cpp(MOC_FILES
++    qt_wrap_cpp(MOC_FILES
+       include/${PROJECT_NAME}/MapCloudDisplay.h
+       include/${PROJECT_NAME}/MapGraphDisplay.h
+       include/${PROJECT_NAME}/InfoDisplay.h
+@@ -101,10 +101,10 @@ add_library(rtabmap_rviz_plugins
  )
  target_link_libraries(rtabmap_rviz_plugins
    ${Libraries}
-+  Qt5::Core
-+  Qt5::Widgets
-+  Qt5::Gui
++  Qt${QT_VERSION_MAJOR}::Core
++  Qt${QT_VERSION_MAJOR}::Widgets
++  Qt${QT_VERSION_MAJOR}::Gui
  )
 -IF(Qt5_FOUND)
 -    QT5_USE_MODULES(rtabmap_rviz_plugins Widgets Core Gui)
@@ -60,3 +74,31 @@
  
  #############
  ## Install ##
+diff --git a/include/rtabmap_rviz_plugins/MapCloudDisplay.h b/include/rtabmap_rviz_plugins/MapCloudDisplay.h
+index d41d31a..4128650 100644
+--- a/include/rtabmap_rviz_plugins/MapCloudDisplay.h
++++ b/include/rtabmap_rviz_plugins/MapCloudDisplay.h
+@@ -58,6 +58,9 @@ typedef boost::shared_ptr<PointCloudTransformer> PointCloudTransformerPtr;
+ typedef std::vector<std::string> V_string;
+ }
+ 
++// RoboStack: Qt 6 headers before `using namespace rviz` (X11 Display vs rviz::Display)
++#include <QGuiApplication>
++
+ using namespace rviz;
+ 
+ namespace rtabmap_rviz_plugins
+diff --git a/include/rtabmap_rviz_plugins/MapGraphDisplay.h b/include/rtabmap_rviz_plugins/MapGraphDisplay.h
+index 5e9305a..2d1ab85 100644
+--- a/include/rtabmap_rviz_plugins/MapGraphDisplay.h
++++ b/include/rtabmap_rviz_plugins/MapGraphDisplay.h
+@@ -44,6 +44,9 @@ class ColorProperty;
+ class FloatProperty;
+ }
+ 
++// RoboStack: Qt 6 headers before `using namespace rviz` (X11 Display vs rviz::Display)
++#include <QGuiApplication>
++
+ using namespace rviz;
+ 
+ namespace rtabmap_rviz_plugins

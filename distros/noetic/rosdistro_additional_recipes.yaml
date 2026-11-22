@@ -6,6 +6,11 @@ ackermann_msgs:
   tag: release/noetic/ackermann_msgs/1.0.2-1
   url: https://github.com/ros2-gbp/ackermann_msgs-release.git
   version: 1.0.2
+find_object_2d:
+  override: noetic's release 0.7.0 is Qt 5 code; upstream 0.7.5 builds with Qt 6 and still supports ROS 1 (catkin)
+  tag: 0.7.5-lyrical
+  url: https://github.com/introlab/find-object.git
+  version: 0.7.5
 graph_msgs:
   override: the release repository (PickNikRobotics/graph_msgs-release) is gone; ros2-gbp mirrors it
   tag: release/noetic/graph_msgs/0.1.0-2
