@@ -185,9 +185,10 @@ pybind11_catkin:
   add_run: ["pybind11"]
 python_qt_binding:
   add_run: ["adwaita-icon-theme"]
+# sip bindings: python_qt_binding's sip_helper.cmake runs sip-build (sip, pyqt-builder)
+# against PyQt6's .sip files in the host Python
 qt_gui_cpp:
-  add_build: ["pyqt-builder", "pyqt5-sip", "sip"]
-  add_host: ["sip"]
+  add_host: ["sip", "pyqt-builder", "pyqt6"]
 resource_retriever:
   add_host: ["libcurl"]
   add_run: ["libcurl"]
@@ -214,8 +215,7 @@ rtabmap_rviz_plugins:
 rtabmap_viz:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
 rviz:
-  add_build: ["pyqt-builder", "pyqt5-sip", "sip"]
-  add_host: ["sip"]
+  add_host: ["sip", "pyqt-builder", "pyqt6"]
 safety_limiter:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}"]
 sick_tim:
