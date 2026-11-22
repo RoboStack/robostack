@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index d23798f4..5398f5b7 100644
+index d23798f4..f885e842 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1,8 +1,6 @@
@@ -11,3 +11,40 @@ index d23798f4..5398f5b7 100644
  set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
  
  ## Find catkin macros and libraries
+diff --git a/include/grid_map_cv/GridMapCvConverter.hpp b/include/grid_map_cv/GridMapCvConverter.hpp
+index 540f77ec..e2757425 100644
+--- a/include/grid_map_cv/GridMapCvConverter.hpp
++++ b/include/grid_map_cv/GridMapCvConverter.hpp
+@@ -72,9 +72,9 @@ class GridMapCvConverter
+ 
+     cv::Mat imageMono;
+     if (isColor && !hasAlpha) {
+-      cv::cvtColor(image, imageMono, CV_BGR2GRAY);
++      cv::cvtColor(image, imageMono, cv::COLOR_BGR2GRAY);
+     } else if (isColor && hasAlpha) {
+-      cv::cvtColor(image, imageMono, CV_BGRA2GRAY);
++      cv::cvtColor(image, imageMono, cv::COLOR_BGRA2GRAY);
+     } else if (!isColor && !hasAlpha){
+       imageMono = image;
+     } else {
+@@ -139,7 +139,7 @@ class GridMapCvConverter
+ 
+     cv::Mat imageRGB;
+     if (hasAlpha) {
+-      cv::cvtColor(image, imageRGB, CV_BGRA2RGB);
++      cv::cvtColor(image, imageRGB, cv::COLOR_BGRA2RGB);
+     } else {
+       imageRGB = image;
+     }
+diff --git a/src/GridMapCvProcessing.cpp b/src/GridMapCvProcessing.cpp
+index 1f5ea201..46d4262a 100644
+--- a/src/GridMapCvProcessing.cpp
++++ b/src/GridMapCvProcessing.cpp
+@@ -11,6 +11,7 @@
+ 
+ #include <Eigen/Geometry>
+ #include <opencv2/core/eigen.hpp>
++#include <opencv2/calib3d.hpp>
+ 
+ namespace grid_map {
+ 

@@ -1,0 +1,12 @@
+diff --git a/semantic_world/src/semantic_world.cpp b/semantic_world/src/semantic_world.cpp
+index f1eb07618..1e7ca3acd 100644
+--- a/semantic_world/src/semantic_world.cpp
++++ b/semantic_world/src/semantic_world.cpp
+@@ -45,6 +45,7 @@
+ 
+ // OpenCV
+ #include <opencv2/imgproc/imgproc.hpp>
++#include <opencv2/calib3d.hpp>
+ 
+ // Eigen
+ #include <tf2_eigen/tf2_eigen.h>
