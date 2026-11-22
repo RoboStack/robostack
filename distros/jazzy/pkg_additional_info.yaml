@@ -156,8 +156,6 @@ zenoh_cpp_vendor:
 cartographer_ros:
   additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
   build_number: 32  # offline_node.cpp out of the shared library (duplicate gflags abort)
-class_loader:  # console_bridge outlives the loaders at exit (macOS exit abort)
-  build_number: 32
 fuse_viz:  # rviz on Qt 6
   build_number: 32
 grid_map_rviz_plugin:  # rviz on Qt 6
