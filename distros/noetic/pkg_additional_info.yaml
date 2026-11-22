@@ -4,8 +4,6 @@ apriltag:
   add_run: ["${{ 'winpthreads-devel' if win }}"]
 apriltag_ros:
   additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
-
-# Remove everything after this line on a full rebuild
   add_host: ["${{ 'winpthreads-devel' if win }}"]
 audio_capture:
   add_host: ["libglib", "glib"]
@@ -213,5 +211,3 @@ tesseract_collision:
   add_build: ["${{ 'llvm-openmp' if osx }}"]
 ur_client_library:
   add_host: ["ros-noetic-catkin"]
-ros_type_introspection:
-  build_number: 25

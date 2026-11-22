@@ -4,3 +4,6 @@ channel_name: robostack-noetic
 upload_to: [anaconda]
 read_from: anaconda
 rosdistro_sync: manual
+pinning_overrides:
+  # rviz 1.14 (and Gazebo 11) use Ogre 1.10's API (SceneManagerEnumerator, ...)
+  ogre: [1.10.12]
