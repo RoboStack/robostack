@@ -3138,3 +3138,23 @@ index e773c55f..b15a7c24 100644
        if ( !R ) S_Create().acquire();
  
        M_Create().unlock();
+diff --git a/utilite/src/CMakeLists.txt b/utilite/src/CMakeLists.txt
+index dfdfad56..ae34e807 100644
+--- a/utilite/src/CMakeLists.txt
++++ b/utilite/src/CMakeLists.txt
+@@ -19,9 +19,14 @@ ADD_LIBRARY(rtabmap::utilite ALIAS rtabmap_utilite)
+ generate_export_header(rtabmap_utilite 
+   BASE_NAME utilite)
+ 
++# RoboStack: only pthreads-win32 needs its include directory; elsewhere it is the system's
++# (on macOS the SDK's usr/include, which installed configs must not point to)
++if(WIN32)
++  set(_rtabmap_pthreads_install_include ${PTHREADS_INCLUDE_DIR})
++endif()
+ target_include_directories(rtabmap_utilite PUBLIC 
+   "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include;${CMAKE_CURRENT_BINARY_DIR}/include;${PTHREADS_INCLUDE_DIR}>"
+-  "$<INSTALL_INTERFACE:${INSTALL_INCLUDE_DIR};${PTHREADS_INCLUDE_DIR}>")
++  "$<INSTALL_INTERFACE:${INSTALL_INCLUDE_DIR};${_rtabmap_pthreads_install_include}>")
+ 
+ IF(MINGW)
+     TARGET_LINK_LIBRARIES(rtabmap_utilite PRIVATE ${PTHREADS_LIBRARY} "-lpsapi")

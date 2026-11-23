@@ -4,7 +4,9 @@ tests:
   - if: unix
     then:
       script:
-        - cmake -S rtabmap_demo -B build -G Ninja -DCMAKE_PREFIX_PATH="$PREFIX"
+        # the run environment's Python (with numpy, which RTABMapConfig.cmake asks for), not one
+        # that the build tools bring along
+        - cmake -S rtabmap_demo -B build -G Ninja -DCMAKE_PREFIX_PATH="$PREFIX" -DPython3_FIND_STRATEGY=LOCATION -DPython3_ROOT_DIR="$PREFIX"
         - cmake --build build
         - ./build/rtabmap_demo
       requirements:

@@ -221,6 +221,9 @@ rosserial_python:
 rtabmap:
   # libxml2-devel: VTK's CMake config needs LibXml2
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "pybind11", "tbb-devel", "liblzma-devel", "libxml2-devel"]
+  # RTABMapConfig.cmake finds Python3 with NumPy (find_dependency), so packages building
+  # against rtabmap need numpy
+  add_run: ["numpy"]
 rtabmap_conversions:
   add_host: ["${{ 'libgl-devel' if linux }}", "${{ 'libopengl-devel' if linux }}", "libnetcdf", "liblzma-devel"]
 rtabmap_ros:
