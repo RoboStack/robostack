@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index e865b87..94b2d79 100644
+index 8d680f2..d86983d 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -22,6 +22,8 @@ find_package(catkin REQUIRED COMPONENTS
@@ -10,8 +10,8 @@ index e865b87..94b2d79 100644
 +
  find_package(Boost REQUIRED COMPONENTS system thread)
  find_package(OpenCV)
- 
-@@ -57,6 +59,7 @@ include_directories(
+ find_package(yaml-cpp REQUIRED)
+@@ -58,6 +60,7 @@ include_directories(
    ${Boost_INCLUDE_DIRS}
    ${OpenCV_INCLUDE_DIRS}
    ${catkin_INCLUDE_DIRS}
@@ -19,7 +19,7 @@ index e865b87..94b2d79 100644
  )
  
  add_executable(face_detector
-@@ -64,7 +67,7 @@ add_executable(face_detector
+@@ -65,7 +68,7 @@ add_executable(face_detector
                         src/faces.cpp)
  add_dependencies(face_detector ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
  target_link_libraries(face_detector
@@ -28,11 +28,49 @@ index e865b87..94b2d79 100644
    ${catkin_LIBRARIES}
    ${Boost_LIBRARIES}
    ${OpenCV_LIBRARIES})
+diff --git a/include/face_detector/faces.h b/include/face_detector/faces.h
+index 6b9e242..cbabfd1 100644
+--- a/include/face_detector/faces.h
++++ b/include/face_detector/faces.h
+@@ -44,8 +44,11 @@
+ #include <string>
+ #include <vector>
+ 
+-#include <opencv2/core/core_c.h>
++#include <opencv2/core.hpp>  // RoboStack: no C API headers in OpenCV 5
+ #include <opencv2/objdetect.hpp>
++#if CV_VERSION_MAJOR >= 5
++#include <opencv2/xobjdetect.hpp>  // RoboStack: CascadeClassifier moved there in OpenCV 5
++#endif
+ 
+ #include <image_geometry/stereo_camera_model.h>
+ #include <boost/thread/mutex.hpp>
 diff --git a/src/face_detection.cpp b/src/face_detection.cpp
-index 7cf7f3c0..a2132a72 100644
+index 7cf7f3c..60a9a87 100644
 --- a/src/face_detection.cpp
 +++ b/src/face_detection.cpp
-@@ -716,7 +716,9 @@ class FaceDetector
+@@ -65,9 +65,9 @@
+ #include <sensor_msgs/PointCloud.h>
+ #include <geometry_msgs/Point32.h>
+ 
+-#include <opencv2/core/core_c.h>
++#include <opencv2/core.hpp>  // RoboStack: no C API headers in OpenCV 5
+ #include <opencv2/highgui.hpp>
+-#include <opencv2/highgui/highgui_c.h>
++#include <opencv2/highgui.hpp>  // RoboStack: no C API headers in OpenCV 5
+ 
+ #include <face_detector/faces.h>
+ 
+@@ -285,7 +285,7 @@ public:
+     if (do_display_)
+     {
+       // OpenCV: pop up an OpenCV highgui window
+-      cv::namedWindow("Face detector: Face Detection", CV_WINDOW_AUTOSIZE);
++      cv::namedWindow("Face detector: Face Detection", cv::WINDOW_AUTOSIZE);
+     }
+ 
+     // Init the detector and subscribe to the images and camera parameters. One case for rgbd, one for stereo.
+@@ -716,7 +716,9 @@ private:
            else
            {
              max_id_++;
@@ -43,3 +81,43 @@ index 7cf7f3c0..a2132a72 100644
              ROS_INFO_STREAM_NAMED("face_detector", "Didn't find face to match, starting new ID " << pos.object_id);
            }
            result_.face_positions.push_back(pos);
+diff --git a/src/faces.cpp b/src/faces.cpp
+index 81e204f..0bed4ae 100644
+--- a/src/faces.cpp
++++ b/src/faces.cpp
+@@ -46,7 +46,7 @@
+ #include <ros/time.h>
+ #include <ros/console.h>
+ 
+-#include <opencv2/imgproc/imgproc_c.h>
++#include <opencv2/imgproc.hpp>  // RoboStack: no C API headers in OpenCV 5
+ #include <string>
+ #include <vector>
+ 
+@@ -118,7 +118,7 @@ std::vector<Box2D3D> Faces::detectAllFacesDisparity(const cv::Mat &image, double
+   else if (image.channels() == 3)
+   {
+     cv_image_gray_.create(image.size(), CV_8UC1);
+-    cv::cvtColor(image, cv_image_gray_, CV_BGR2GRAY);
++    cv::cvtColor(image, cv_image_gray_, cv::COLOR_BGR2GRAY);
+   }
+   else
+   {
+@@ -203,7 +203,7 @@ void Faces::faceDetectionThreadDisparity(uint i)
+       cv::Mat disp_roi = disp_roi_shallow.clone();
+       cv::Mat tmat = disp_roi.reshape(1, disp_roi.rows * disp_roi.cols);
+       cv::Mat tmat_sorted;
+-      cv::sort(tmat, tmat_sorted, CV_SORT_EVERY_COLUMN + CV_SORT_DESCENDING);
++      cv::sort(tmat, tmat_sorted, cv::SORT_EVERY_COLUMN + cv::SORT_DESCENDING);
+ 
+       // Get the middle valid disparity (-1 disparities are invalid)
+       avg_disp = tmat_sorted.at<float>(floor(cv::countNonZero(tmat_sorted >= 0.0) / 2.0));
+@@ -288,7 +288,7 @@ std::vector<Box2D3D> Faces::detectAllFacesDepth(const cv::Mat &image, double thr
+   else if (image.channels() == 3)
+   {
+     cv_image_gray_.create(image.size(), CV_8UC1);
+-    cv::cvtColor(image, cv_image_gray_, CV_BGR2GRAY);
++    cv::cvtColor(image, cv_image_gray_, cv::COLOR_BGR2GRAY);
+   }
+   else
+   {
