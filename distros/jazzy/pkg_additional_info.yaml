@@ -166,9 +166,9 @@ moveit_core:  # bullet rosdep mapped to bullet-cpp (no pybullet)
   build_number: 32
 rmf_utils:  # its DLL moved from lib to bin (Windows)
   build_number: 32
-tf2_bullet:  # bullet rosdep mapped to bullet-cpp (no pybullet)
-  build_number: 32
 ros_gz_bridge:  # libabseil/libprotobuf in host: _31 links libabseil 20260817 without depending on it
   build_number: 32
 ros_gz_image:  # same as ros_gz_bridge
+  build_number: 32
+tf2_bullet:  # bullet rosdep mapped to bullet-cpp (no pybullet)
   build_number: 32
