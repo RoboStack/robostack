@@ -43,6 +43,11 @@ fcl:
 find_object_2d:
   add_host: ["zlib"]
 gazebo_dev:
+  # TODO: Gazebo 11's Qt 6 builds (gazebo * qt6*, conda-forge/gazebo-feedstock#271; the
+  # default builds are Qt 5, which can't share a process with noetic's Qt 6 GUI packages)
+  # once the pinning has libabseil 20260817: they all need it, and the pinning is on
+  # 20260526. gazebo_dev is the only package that depends on gazebo directly;
+  # run_exports keep packages built against the Qt 6 builds on them.
   add_host: [tbb, tbb-devel]
 gazebo_plugins:
   add_host: [tbb, tbb-devel]
