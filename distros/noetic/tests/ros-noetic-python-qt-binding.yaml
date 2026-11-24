@@ -41,7 +41,7 @@ tests:
         combo.setCurrentIndex(1)
         assert texts == ['two'] and indices == [1], (texts, indices)
         assert QComboBox.AdjustToMinimumContentsLength is not None
-        # rqt's title bar icons: conda-forge's Adwaita has only the -symbolic icons
-        QIcon.setThemeSearchPaths([os.path.join(sys.prefix, 'share', 'icons')])
-        QIcon.setThemeName('Adwaita')
-        assert not QIcon.fromTheme('window-close').isNull()
+        # rqt's title bar icons: python_qt_binding selects conda-forge's Adwaita (share/icons,
+        # on Windows Library/share/icons), which has only the -symbolic icons
+        assert QIcon.themeName() == 'Adwaita', QIcon.themeName()
+        assert not QIcon.fromTheme('window-close').isNull(), QIcon.themeSearchPaths()

@@ -10,7 +10,7 @@ index d0d9205..78ce2f1 100644
    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/cmake)
 diff --git a/cmake/pyproject.toml.in b/cmake/pyproject.toml.in
 new file mode 100644
-index 0000000..f160331
+index 0000000..a28d93f
 --- /dev/null
 +++ b/cmake/pyproject.toml.in
 @@ -0,0 +1,23 @@
@@ -26,19 +26,19 @@ index 0000000..f160331
 +project-factory = "pyqtbuild:PyQtProject"
 +
 +[tool.sip.builder]
-+qmake = "@python_qt_binding_QMAKE_EXECUTABLE@"
++qmake = '@python_qt_binding_QMAKE_EXECUTABLE@'
 +
 +[tool.sip.project]
-+build-dir = "@SIP_BUILD_DIR@"
-+sip-files-dir = "@sip_SOURCE_DIR@"
-+sip-include-dirs = ["@__PYQT_BINDINGS_DIR@"]
++build-dir = '@SIP_BUILD_DIR@'
++sip-files-dir = '@sip_SOURCE_DIR@'
++sip-include-dirs = ['@__PYQT_BINDINGS_DIR@']
 +abi-version = "@__QT_SIP_ABI_VERSION@"
 +
 +[tool.sip.bindings.@PROJECT_NAME@]
 +sip-file = "@SIP_FILE_NAME@"
 +exceptions = true
 diff --git a/cmake/sip_helper.cmake b/cmake/sip_helper.cmake
-index a055cf5..2d9b4b2 100644
+index a055cf5..30e272b 100644
 --- a/cmake/sip_helper.cmake
 +++ b/cmake/sip_helper.cmake
 @@ -5,34 +5,48 @@ set(__PYTHON_QT_BINDING_SIP_HELPER_INCLUDED TRUE)
@@ -137,11 +137,21 @@ index a055cf5..2d9b4b2 100644
      if(NOT sip_SOURCE_DIR)
          set(sip_SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
      endif()
-@@ -74,50 +85,48 @@ function(build_sip_binding PROJECT_NAME SIP_FILE)
+@@ -74,50 +85,51 @@ function(build_sip_binding PROJECT_NAME SIP_FILE)
      endif()
  
      set(SIP_BUILD_DIR ${sip_BINARY_DIR}/sip/${PROJECT_NAME})
 +    get_filename_component(SIP_FILE_NAME ${SIP_FILE} NAME)
++
++    # sip-build deletes and recreates its build directory: run it from another one (Windows
++    # can't delete the current directory)
++    set(SIP_PROJECT_DIR ${sip_BINARY_DIR}/sip/${PROJECT_NAME}_project)
++    file(MAKE_DIRECTORY ${SIP_PROJECT_DIR})
++    configure_file(
++        "${__PYTHON_QT_BINDING_SIP_HELPER_DIR}/pyproject.toml.in"
++        "${SIP_PROJECT_DIR}/pyproject.toml"
++        @ONLY
++    )
  
 -    set(INCLUDE_DIRS ${${PROJECT_NAME}_INCLUDE_DIRS} ${PYTHON_INCLUDE_DIRS})
 -    set(LIBRARY_DIRS ${${PROJECT_NAME}_LIBRARY_DIRS})
@@ -157,47 +167,22 @@ index a055cf5..2d9b4b2 100644
 -    # SIP configure doesn't handle CMake targets
 -    catkin_replace_imported_library_targets(LIBRARIES ${LIBRARIES})
 -
--    add_custom_command(
++    set(GENERATED_CPP "${SIP_BUILD_DIR}/lib${PROJECT_NAME}/siplib${PROJECT_NAME}part0.cpp")
+     add_custom_command(
 -        OUTPUT ${SIP_BUILD_DIR}/Makefile
 -        COMMAND ${PYTHON_EXECUTABLE} ${sip_SIP_CONFIGURE} ${SIP_BUILD_DIR} ${SIP_FILE} ${sip_LIBRARY_DIR} \"${INCLUDE_DIRS}\" \"${LIBRARIES}\" \"${LIBRARY_DIRS}\" \"${LDFLAGS_OTHER}\" \"${EXTRA_DEFINES}\"
 -        DEPENDS ${sip_SIP_CONFIGURE} ${SIP_FILE} ${sip_DEPENDS}
 -        WORKING_DIRECTORY ${sip_SOURCE_DIR}
 -        COMMENT "Running SIP generator for ${PROJECT_NAME} Python bindings..."
-+    file(MAKE_DIRECTORY ${SIP_BUILD_DIR})
-+    configure_file(
-+        "${__PYTHON_QT_BINDING_SIP_HELPER_DIR}/pyproject.toml.in"
-+        "${SIP_BUILD_DIR}/pyproject.toml"
-+        @ONLY
-     )
- 
--    if(NOT EXISTS "${sip_LIBRARY_DIR}")
--        file(MAKE_DIRECTORY ${sip_LIBRARY_DIR})
--    endif()
--
--    if(WIN32)
--      set(MAKE_EXECUTABLE NMake.exe)
--    else()
--      set(MAKE_EXECUTABLE "\$(MAKE)")
--    endif()
--
-+    set(GENERATED_CPP "${SIP_BUILD_DIR}/lib${PROJECT_NAME}/siplib${PROJECT_NAME}part0.cpp")
-     add_custom_command(
--        OUTPUT ${sip_LIBRARY_DIR}/lib${PROJECT_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}
--        COMMAND ${MAKE_EXECUTABLE}
--        DEPENDS ${SIP_BUILD_DIR}/Makefile
 +        OUTPUT ${GENERATED_CPP}
 +        COMMAND ${Python3_EXECUTABLE} -m sipbuild.tools.build --no-compile --concatenate 1
 +        DEPENDS ${SIP_FILE} ${sip_DEPENDS}
-         WORKING_DIRECTORY ${SIP_BUILD_DIR}
--        COMMENT "Compiling generated code for ${PROJECT_NAME} Python bindings..."
++        WORKING_DIRECTORY ${SIP_PROJECT_DIR}
 +        COMMENT "Generating C++ code for ${PROJECT_NAME} Python bindings using sip-build..."
      )
 -
--    add_custom_target(lib${PROJECT_NAME} ALL
--        DEPENDS ${sip_LIBRARY_DIR}/lib${PROJECT_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}
--        COMMENT "Meta target for ${PROJECT_NAME} Python bindings..."
--    )
--    add_dependencies(lib${PROJECT_NAME} ${sip_DEPENDENCIES})
+-    if(NOT EXISTS "${sip_LIBRARY_DIR}")
+-        file(MAKE_DIRECTORY ${sip_LIBRARY_DIR})
 +    add_custom_target(${PROJECT_NAME}_codegen DEPENDS ${GENERATED_CPP})
 +    set_source_files_properties(${GENERATED_CPP} PROPERTIES GENERATED TRUE)
 +
@@ -218,31 +203,53 @@ index a055cf5..2d9b4b2 100644
 +    target_link_libraries(lib${PROJECT_NAME} PRIVATE ${${PROJECT_NAME}_LIBRARIES} ${sip_DEPENDENCIES} Qt6::Core Qt6::Gui Qt6::Widgets)
 +    if(${PROJECT_NAME}_LIBRARY_DIRS)
 +        target_link_directories(lib${PROJECT_NAME} PRIVATE ${${PROJECT_NAME}_LIBRARY_DIRS})
-+    endif()
+     endif()
+-
+-    if(WIN32)
+-      set(MAKE_EXECUTABLE NMake.exe)
+-    else()
+-      set(MAKE_EXECUTABLE "\$(MAKE)")
 +    if(${PROJECT_NAME}_LDFLAGS_OTHER)
 +        target_link_options(lib${PROJECT_NAME} PRIVATE ${${PROJECT_NAME}_LDFLAGS_OTHER})
 +    endif()
 +    if(DEFINED BUILD_SHARED_LIBS AND BUILD_SHARED_LIBS)
 +        target_compile_definitions(lib${PROJECT_NAME} PRIVATE ROS_BUILD_SHARED_LIBS)
-+    endif()
+     endif()
+-
+-    add_custom_command(
+-        OUTPUT ${sip_LIBRARY_DIR}/lib${PROJECT_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}
+-        COMMAND ${MAKE_EXECUTABLE}
+-        DEPENDS ${SIP_BUILD_DIR}/Makefile
+-        WORKING_DIRECTORY ${SIP_BUILD_DIR}
+-        COMMENT "Compiling generated code for ${PROJECT_NAME} Python bindings..."
+-    )
+-
+-    add_custom_target(lib${PROJECT_NAME} ALL
+-        DEPENDS ${sip_LIBRARY_DIR}/lib${PROJECT_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}
+-        COMMENT "Meta target for ${PROJECT_NAME} Python bindings..."
+-    )
+-    add_dependencies(lib${PROJECT_NAME} ${sip_DEPENDENCIES})
  endfunction()
 diff --git a/src/python_qt_binding/__init__.py b/src/python_qt_binding/__init__.py
-index 536a3f9..962db7a 100644
+index 536a3f9..561b04b 100644
 --- a/src/python_qt_binding/__init__.py
 +++ b/src/python_qt_binding/__init__.py
-@@ -62,3 +62,12 @@ for module_name, module in QT_BINDING_MODULES.items():
+@@ -62,3 +62,15 @@ for module_name, module in QT_BINDING_MODULES.items():
      del module
  
  del sys
 +
 +import os
++import sys
 +from .QtGui import QIcon
 +current_theme_path = QIcon.themeSearchPaths()
-+conda_path = os.environ.get('CONDA_PREFIX')
++conda_path = os.environ.get('CONDA_PREFIX') or sys.prefix
 +if conda_path:
-+    QIcon.setThemeSearchPaths(current_theme_path + [os.path.join(conda_path, 'share', 'icons')])
++    # the icon themes (Adwaita): share/icons, on Windows Library/share/icons
++    QIcon.setThemeSearchPaths(current_theme_path + [
++        os.path.join(conda_path, *sub, 'share', 'icons') for sub in ((), ('Library',))])
 +    QIcon.setThemeName('Adwaita')
-+del os
++del os, sys
 diff --git a/src/python_qt_binding/binding_helper.py b/src/python_qt_binding/binding_helper.py
 index e395ae3..61cd0f2 100644
 --- a/src/python_qt_binding/binding_helper.py
