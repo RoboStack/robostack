@@ -24,9 +24,6 @@ draco:
     dep_name: draco
     max_pin: 'x.x.x'
     override_version: '1.5.7'
-ecl_core_apps:
-  # its benchmarks use `register`, which C++17 (the ecl packages' standard here) rejects
-  additional_cmake_args: "-DCMAKE_CXX_FLAGS_INIT=-Wno-register"
 eigenpy:
   generate_dummy_package_with_run_deps:
     dep_name: eigenpy
@@ -254,6 +251,7 @@ visp:
     # the version on ros is older than conda-forge's
     override_version: '3.7.0'
 vrpn:
-  # its hand-written Python 3 bindings use PyEval_CallObject, gone since Python 3.13;
-  # `register` (vrpn_Connection.C) is an error in C++17 with clang
-  additional_cmake_args: "-DVRPN_BUILD_PYTHON_HANDCODED_3X=OFF -DCMAKE_CXX_FLAGS_INIT=-Wno-register"
+  # its hand-written Python 3 bindings use PyEval_CallObject, gone since Python 3.13
+  # (clang's -Wno-register for `register` in C++17: patch; static libraries on Windows:
+  # win patch)
+  additional_cmake_args: "-DVRPN_BUILD_PYTHON_HANDCODED_3X=OFF"

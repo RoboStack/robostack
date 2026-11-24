@@ -1,3 +1,17 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 7c81eb6..a35790b 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,5 +1,9 @@
+ cmake_minimum_required(VERSION 2.8.3)
+ project(VRPN)
++# RoboStack: `register` (vrpn_Connection.C) is an error in C++17 with clang
++if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
++  add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-register>)
++endif()
+ 
+ #-----------------------------------------------------------------------------
+ # XXX Things to make better.
 diff --git a/cmake/FindVRPN.cmake b/cmake/FindVRPN.cmake
 index 641b62b..7353a7a 100644
 --- a/cmake/FindVRPN.cmake
