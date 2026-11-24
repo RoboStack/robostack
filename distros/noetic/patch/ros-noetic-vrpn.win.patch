@@ -1,0 +1,14 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a35790b..805c2d2 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -4,6 +4,9 @@ project(VRPN)
+ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+   add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-register>)
+ endif()
++# RoboStack: static libraries on Windows, as vrpn builds there by default: its DLLs would
++# export no data (vrpn_System_TextPrinter, vrpn_FILE_CONNECTIONS_*, ...), which its tools use
++set(BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+ 
+ #-----------------------------------------------------------------------------
+ # XXX Things to make better.

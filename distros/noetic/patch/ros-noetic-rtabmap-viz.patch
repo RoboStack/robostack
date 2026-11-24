@@ -1,3 +1,5 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 5c196b6..8192cfc 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1,4 +1,4 @@
@@ -6,7 +8,7 @@
  project(rtabmap_viz)
  
  find_package(catkin REQUIRED COMPONENTS
-@@ -17,27 +17,33 @@
+@@ -17,27 +17,30 @@ catkin_package(
  # catkin is not using cmake targets for dependencies,
  # so we should explcitly look for Qt to get compilation
  # flags (-fPIC missing)
@@ -15,7 +17,7 @@
 -    FIND_PACKAGE(Qt4 COMPONENTS QtCore QtGui REQUIRED)
 -    INCLUDE(${QT_USE_FILE})
 -ENDIF(NOT Qt5_FOUND)
-+find_package(QT NAMES Qt5 QUIET COMPONENTS Widgets Core Gui)
++find_package(QT NAMES Qt6 Qt5 QUIET COMPONENTS Widgets Core Gui)  # RoboStack: Qt 6 (rtabmap, rviz)
 +find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Core Gui)
  
  ###########
@@ -25,9 +27,6 @@
 +set(_catkin_include_dirs ${catkin_INCLUDE_DIRS})
 +set(_catkin_libraries ${catkin_LIBRARIES})
 +# Some transitive catkin deps may leak Qt6 include paths/targets.
-+list(FILTER _catkin_include_dirs EXCLUDE REGEX "/qt6($|/)")
-+list(FILTER _catkin_libraries EXCLUDE REGEX "^Qt6::")
-+list(FILTER _catkin_libraries EXCLUDE REGEX "/qt6/")
 +
  # include_directories(include)
  include_directories(
@@ -43,14 +42,14 @@
 -target_link_libraries(rtabmap_viz ${catkin_LIBRARIES})
 +target_link_libraries(rtabmap_viz
 +  ${_catkin_libraries}
-+  Qt5::Core
-+  Qt5::Widgets
-+  Qt5::Gui
++  Qt${QT_VERSION_MAJOR}::Core
++  Qt${QT_VERSION_MAJOR}::Widgets
++  Qt${QT_VERSION_MAJOR}::Gui
 +)
  SET_TARGET_PROPERTIES(
    rtabmap_viz
     PROPERTIES
-@@ -63,4 +69,3 @@
+@@ -63,4 +66,3 @@ install(DIRECTORY include/${PROJECT_NAME}/
     DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
     FILES_MATCHING PATTERN "*.h"
  )

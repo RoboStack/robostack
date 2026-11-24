@@ -34,7 +34,7 @@ index e12ed082..52232f17 100644
          $(DEBUG) $(CPU_OPTIMIZE) $(THREAD) -D$(XVERSION) \
  	-DGCC $(GCC3) \
 -	        -I/usr/include -I/usr/X11R6/include -I$(EUSDIR)/include
-+	        -I$(PREFIX)/include -I$(PREFIX)/X11R6/include -I$(EUSDIR)/include
++	        -I$(PREFIX)/include -I$(PREFIX)/X11R6/include -I$(EUSDIR)/include -std=gnu17
  
 -CC=gcc
 +CC=$(BUILD_PREFIX)/bin/$(BUILD)-gcc
@@ -78,7 +78,7 @@ index e49262b3..5ecd5aa0 100644
          $(DEBUG) $(CPU_OPTIMIZE) $(THREAD) -D$(XVERSION) \
  	-DGCC $(GCC3) \
 -	        -I/usr/include -I/usr/X11R6/include -I$(EUSDIR)/include
-+	        -I$(PREFIX)/include -I$(PREFIX)/X11R6/include -I$(EUSDIR)/include
++	        -I$(PREFIX)/include -I$(PREFIX)/X11R6/include -I$(EUSDIR)/include -std=gnu17
  
  # Use gcc for C-compiling on SunOS4. Sun's cc is ok on Solaris.
  # /usr/ucb/cc cannot compile because of its incapability of recognizing
@@ -115,7 +115,7 @@ index dfb72595..5cdec7a8 100644
 -(defparameter *cc* 
 -  (cond ((member :sh4 *features*)
 +(defparameter *cc*
-+  (or (unix:getenv "CC")
++  (or (and (unix:getenv "CC") (concatenate string (unix:getenv "CC") " -std=gnu17"))
 +      (cond ((member :sh4 *features*)
  	 "sh4-linux-gcc -g")
  	((member :ia32 *features*) 

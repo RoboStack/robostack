@@ -1,0 +1,23 @@
+diff --git a/src/pinhole_camera_model.cpp b/src/pinhole_camera_model.cpp
+index f24bb4d..d71e239 100644
+--- a/src/pinhole_camera_model.cpp
++++ b/src/pinhole_camera_model.cpp
+@@ -1,6 +1,6 @@
+ #include "image_geometry/pinhole_camera_model.h"
+ #include <sensor_msgs/distortion_models.h>
+-#include <opencv2/calib3d/calib3d.hpp>
++#include <opencv2/calib3d.hpp>
+ #ifdef BOOST_SHARED_PTR_HPP_INCLUDED
+ #include <boost/make_shared.hpp>
+ #endif
+diff --git a/src/stereo_camera_model.cpp b/src/stereo_camera_model.cpp
+index e66fdc0..cec4030 100644
+--- a/src/stereo_camera_model.cpp
++++ b/src/stereo_camera_model.cpp
+@@ -1,5 +1,5 @@
+ #include "image_geometry/stereo_camera_model.h"
+-#include <opencv2/calib3d/calib3d.hpp>
++#include <opencv2/calib3d.hpp>
+ 
+ namespace image_geometry {
+ 

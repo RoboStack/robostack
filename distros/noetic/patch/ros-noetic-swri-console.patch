@@ -1,0 +1,75 @@
+diff --git a/src/bag_reader.cpp b/src/bag_reader.cpp
+index a518104..5fdee01 100644
+--- a/src/bag_reader.cpp
++++ b/src/bag_reader.cpp
+@@ -83,7 +83,7 @@ void BagReader::promptForBagFile()
+                                                   QDir::homePath(),
+                                                   tr("Bag Files (*.bag)"));
+ 
+-  if (filename != NULL)
++  if (!filename.isEmpty())
+   {
+     readBagFile(filename);
+   }
+diff --git a/src/console_window.cpp b/src/console_window.cpp
+index 852eefd..5f48a8b 100644
+--- a/src/console_window.cpp
++++ b/src/console_window.cpp
+@@ -232,7 +232,7 @@ void ConsoleWindow::saveLogs()
+                                                   "Save Logs",
+                                                   QDir::homePath() + QDir::separator() + defaultname,
+                                                   tr("Bag Files (*.bag);;Text Files (*.txt)"));
+-  if (filename != NULL && !filename.isEmpty()) {
++  if (!filename.isEmpty()) {
+     db_proxy_->saveToFile(filename);
+   }
+ }
+@@ -269,7 +269,7 @@ void ConsoleWindow::nodeSelectionChanged()
+   db_proxy_->setNodeFilter(nodes);
+ 
+   for (int i = 0; i < node_names.size(); i++) {
+-    node_names[i] = node_names[i].split("/", QString::SkipEmptyParts).last();
++    node_names[i] = node_names[i].split("/", Qt::SkipEmptyParts).last();
+   }
+     
+   setWindowTitle(QString("SWRI Console (") + node_names.join(", ") + ")");
+@@ -388,7 +388,7 @@ void ConsoleWindow::setFollowNewest(bool follow)
+ 
+ void ConsoleWindow::includeFilterUpdated(const QString &text)
+ {
+-  QStringList items = text.split(";", QString::SkipEmptyParts);
++  QStringList items = text.split(";", Qt::SkipEmptyParts);
+   QStringList filtered;
+   
+   for (int i = 0; i < items.size(); i++) {
+@@ -406,7 +406,7 @@ void ConsoleWindow::includeFilterUpdated(const QString &text)
+ 
+ void ConsoleWindow::excludeFilterUpdated(const QString &text)
+ {
+-  QStringList items = text.split(";", QString::SkipEmptyParts);
++  QStringList items = text.split(";", Qt::SkipEmptyParts);
+   QStringList filtered;
+   
+   for (int i = 0; i < items.size(); i++) {
+diff --git a/src/rosout_log_loader.cpp b/src/rosout_log_loader.cpp
+index 66a272e..cd42af8 100644
+--- a/src/rosout_log_loader.cpp
++++ b/src/rosout_log_loader.cpp
+@@ -264,7 +264,7 @@ namespace swri_console
+                                                     QDir::homePath(),
+                                                     tr("Log Files (*.log)"));
+ 
+-    if (filename != NULL)
++    if (!filename.isEmpty())
+     {
+       loadRosLog(filename);
+     }
+@@ -276,7 +276,7 @@ namespace swri_console
+                                                     tr("Open directory containing log files"),
+                                                     QDir::homePath());
+ 
+-    if (dirname != NULL)
++    if (!dirname.isEmpty())
+     {
+       loadRosLogDirectory(dirname);
+     }

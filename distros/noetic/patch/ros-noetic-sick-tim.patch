@@ -28,10 +28,18 @@ index cde5172..c2d83aa 100644
  
  add_executable(sick_tim310s01
 diff --git a/include/sick_tim/sick_tim_common_tcp.h b/include/sick_tim/sick_tim_common_tcp.h
-index 08263a9..9a94ae7 100644
+index 08263a9..f46fff3 100644
 --- a/include/sick_tim/sick_tim_common_tcp.h
 +++ b/include/sick_tim/sick_tim_common_tcp.h
-@@ -72,7 +72,7 @@ protected:
+@@ -39,6 +39,7 @@
+ #include <stdlib.h>
+ #include <string.h>
+ #include <boost/asio.hpp>
++#include <boost/asio/deadline_timer.hpp>  // RoboStack: not in <boost/asio.hpp> any more (Boost 1.90)
+ 
+ #include "sick_tim_common.h"
+ 
+@@ -72,7 +73,7 @@ protected:
    void checkDeadline();
  
  private:
@@ -40,7 +48,7 @@ index 08263a9..9a94ae7 100644
    boost::asio::ip::tcp::socket socket_;
    boost::asio::deadline_timer deadline_;
    boost::asio::streambuf input_buffer_;
-@@ -92,4 +92,3 @@ inline void SickTimCommonTcp::handleRead(boost::system::error_code error, size_t
+@@ -92,4 +93,3 @@ inline void SickTimCommonTcp::handleRead(boost::system::error_code error, size_t
  
  } /* namespace sick_tim */
  #endif /* SICK_TIM3XX_COMMON_TCP_H */

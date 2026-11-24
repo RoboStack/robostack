@@ -1,0 +1,17 @@
+?? .ok
+?? bin/roseus
+?? defun.h
+105:execute_process (COMMAND ${CMAKE_C_COMPILER} -std=gnu17 -Wno-incompatible-pointer-types -I${euslisp_INCLUDE_DIRS} ${__CMAKE_COMPILE_DEFINITION} -c test-defun.c  # RoboStack: GCC 15 defaults to C23
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index e732689..9c543ac 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -102,7 +102,7 @@ endforeach()
+ message(STATUS "Running test file to check defun() API, see https://github.com/euslisp/EusLisp/pull/116")
+ message(STATUS "COMMAND ${CMAKE_C_COMPILER} -I${euslisp_INCLUDE_DIRS} ${__CMAKE_COMPILE_DEFINITION} -c test-defun.c")
+ 
+-execute_process (COMMAND ${CMAKE_C_COMPILER} -I${euslisp_INCLUDE_DIRS} ${__CMAKE_COMPILE_DEFINITION} -c test-defun.c
++execute_process (COMMAND ${CMAKE_C_COMPILER} -std=gnu17 -Wno-incompatible-pointer-types -I${euslisp_INCLUDE_DIRS} ${__CMAKE_COMPILE_DEFINITION} -c test-defun.c  # RoboStack: GCC 15 defaults to C23
+   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+   RESULT_VARIABLE TEST_DEFUN)
+ file(WRITE ${PROJECT_SOURCE_DIR}/defun.h "// redefine defun for update defun() API (https://github.com/euslisp/EusLisp/pull/116)\n")

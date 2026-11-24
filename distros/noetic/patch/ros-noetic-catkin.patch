@@ -1,5 +1,113 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a22596b..283b93c 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -22,6 +22,12 @@ install(DIRECTORY cmake
+ 
+ catkin_python_setup()
+ 
++# RoboStack: Boost >= 1.89 has no boost_system component, which ROS 1 packages ask for
++install(FILES
++  boost_system_compat/boost_system-config.cmake
++  boost_system_compat/boost_system-config-version.cmake
++  DESTINATION lib/cmake/boost_system-robostack)
++
+ if(CATKIN_ENABLE_TESTING)
+   catkin_add_nosetests(test/local_tests)
+   catkin_add_nosetests(test/unit_tests)
+diff --git a/boost_system_compat/boost_system-config-version.cmake b/boost_system_compat/boost_system-config-version.cmake
+new file mode 100644
+index 0000000..9a546ef
+--- /dev/null
++++ b/boost_system_compat/boost_system-config-version.cmake
+@@ -0,0 +1,4 @@
++# any Boost version asks for it (BoostConfig.cmake asks for its own, EXACT)
++set(PACKAGE_VERSION "${PACKAGE_FIND_VERSION}")
++set(PACKAGE_VERSION_COMPATIBLE TRUE)
++set(PACKAGE_VERSION_EXACT TRUE)
+diff --git a/boost_system_compat/boost_system-config.cmake b/boost_system_compat/boost_system-config.cmake
+new file mode 100644
+index 0000000..9cea055
+--- /dev/null
++++ b/boost_system_compat/boost_system-config.cmake
+@@ -0,0 +1,11 @@
++# RoboStack: Boost.System is header-only since Boost 1.69, and Boost 1.89 dropped its
++# CMake component (and library). ROS 1 packages still ask for it
++# (find_package(Boost REQUIRED COMPONENTS system ...)): this stands in for it, as
++# Boost::system, an interface target on the Boost headers.
++if(NOT TARGET Boost::system)
++  add_library(Boost::system INTERFACE IMPORTED)
++  if(TARGET Boost::headers)
++    set_target_properties(Boost::system PROPERTIES INTERFACE_LINK_LIBRARIES Boost::headers)
++  endif()
++endif()
++set(boost_system_FOUND TRUE)
+diff --git a/cmake/all.cmake b/cmake/all.cmake
+index 7768f96..26ad7e7 100644
+--- a/cmake/all.cmake
++++ b/cmake/all.cmake
+@@ -224,3 +224,40 @@ endif()
+ 
+ # requires stamp and environment files
+ include(${catkin_EXTRAS_DIR}/catkin_python_setup.cmake)
++
++# RoboStack: no C++ standard below C++14 (see robostack_cxx_standard.cmake)
++include(${catkin_EXTRAS_DIR}/robostack_cxx_standard.cmake)
++_robostack_drop_old_cxx_standard()
++
++# RoboStack: the Eigen 3.x variables Eigen 5 no longer sets (see robostack_eigen3.cmake)
++include(${catkin_EXTRAS_DIR}/robostack_eigen3.cmake)
++_robostack_eigen3_variables()
++
++# RoboStack: Qt 5 requests get Qt 6 (see robostack_qt5_compat.cmake)
++include(${catkin_EXTRAS_DIR}/robostack_qt5_compat.cmake)
++
++# RoboStack: clang >= 19 rejects `template` before a name without template arguments
++# (-Wmissing-template-arg-list-after-template-kw), which older ROS 1 code has
++if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
++  include(CheckCXXCompilerFlag)
++  check_cxx_compiler_flag(-Wno-missing-template-arg-list-after-template-kw _robostack_has_template_kw_flag)
++  if(_robostack_has_template_kw_flag)
++    add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-missing-template-arg-list-after-template-kw>)
++  endif()
++  # and `register`, an error in C++17 (the standard here, see robostack_cxx_standard.cmake)
++  add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-register>)
++endif()
++
++# RoboStack: fmt (log4cxx, spdlog, ...) needs MSVC's /utf-8 (fmt/base.h: "Unicode
++# support requires compiling with /utf-8"), and ROS 1 packages include it through them
++if(MSVC)
++  add_compile_options($<$<COMPILE_LANGUAGE:CXX>:/utf-8>)
++endif()
++
++# RoboStack: conda-forge's Boost is shared only on Windows; its data (program_options'
++# arg, ...) needs __declspec(dllimport), which the Boost:: targets get through
++# BOOST_<lib>_DYN_LINK but packages linking ${Boost_LIBRARIES} don't. BOOST_ALL_NO_LIB, as
++# the targets set it too: no auto-linking (decorated names conda-forge doesn't install)
++if(WIN32)
++  add_compile_definitions(BOOST_ALL_DYN_LINK BOOST_ALL_NO_LIB)
++endif()
+diff --git a/cmake/catkinConfig.cmake.in b/cmake/catkinConfig.cmake.in
+index 4d014f5..1c96886 100644
+--- a/cmake/catkinConfig.cmake.in
++++ b/cmake/catkinConfig.cmake.in
+@@ -10,6 +10,14 @@
+ # :outvar <comp>_INCLUDE_DIRS/_LIBRARY_DIRS/_LIBRARIES:
+ #    contains the include dirs / library dirs / libraries of the searched component <comp>.
+ 
++# RoboStack: catkin's find_package override (robostack_eigen3.cmake) is a macro, which
++# parses its arguments again: keep the backslashes of Windows paths (CMAKE_PREFIX_PATH)
++# in them, instead of reading them as escapes (\b, ...). Config files have their own
++# policy scope, so this doesn't change the package's policies.
++if(POLICY CMP0219)
++  cmake_policy(SET CMP0219 NEW)
++endif()
++
+ if(CATKIN_TOPLEVEL_FIND_PACKAGE OR NOT CATKIN_TOPLEVEL)
+   set(catkin_EXTRAS_DIR "@PKG_CMAKE_DIR@")
+ 
 diff --git a/cmake/catkin_libraries.cmake b/cmake/catkin_libraries.cmake
-index b19f4c8a..5d9a24c1 100644
+index b19f4c8..5d9a24c 100644
 --- a/cmake/catkin_libraries.cmake
 +++ b/cmake/catkin_libraries.cmake
 @@ -114,6 +114,40 @@ function(catkin_unpack_libraries_with_build_configuration VAR)
@@ -77,10 +185,20 @@ index b19f4c8a..5d9a24c1 100644
            endforeach()
          endif()
 diff --git a/cmake/catkin_package.cmake b/cmake/catkin_package.cmake
-index df36e236..475eb975 100644
+index df36e23..9b11280 100644
 --- a/cmake/catkin_package.cmake
 +++ b/cmake/catkin_package.cmake
-@@ -254,6 +254,17 @@ function(_catkin_package)
+@@ -81,6 +81,9 @@
+ # @public
+ #
+ macro(catkin_package)
++  # RoboStack: no C++ standard below C++14 (see robostack_cxx_standard.cmake)
++  _robostack_drop_old_cxx_standard()
++  _robostack_eigen3_variables()
+   debug_message(10 "catkin_package() called in file ${CMAKE_CURRENT_LIST_FILE}")
+ 
+   # verify that project() has been called before
+@@ -254,6 +257,17 @@ function(_catkin_package)
      list(APPEND _PKG_CONFIG_LIBRARIES ${PROJECT_DEPENDENCIES_LIBRARIES})
    endif()
  
@@ -99,7 +217,7 @@ index df36e236..475eb975 100644
    catkin_replace_imported_library_targets(_PKG_CONFIG_LIBRARIES ${_PKG_CONFIG_LIBRARIES})
  
 diff --git a/cmake/empy.cmake b/cmake/empy.cmake
-index 3e076066..3a24c8c8 100644
+index 3e07606..3a24c8c 100644
 --- a/cmake/empy.cmake
 +++ b/cmake/empy.cmake
 @@ -22,19 +22,13 @@ function(find_python_module module)
@@ -129,7 +247,7 @@ index 3e076066..3a24c8c8 100644
  endif()
  message(STATUS "Using empy: ${EMPY_SCRIPT}")
 diff --git a/cmake/interrogate_setup_dot_py.py b/cmake/interrogate_setup_dot_py.py
-index 5e25fbf8..e8d70451 100644
+index 5e25fbf..e8d7045 100644
 --- a/cmake/interrogate_setup_dot_py.py
 +++ b/cmake/interrogate_setup_dot_py.py
 @@ -40,14 +40,14 @@ from argparse import ArgumentParser
@@ -152,7 +270,7 @@ index 5e25fbf8..e8d70451 100644
      pass
  
 diff --git a/cmake/python.cmake b/cmake/python.cmake
-index c72b8599..6b39d3a2 100644
+index c72b859..6b39d3a 100644
 --- a/cmake/python.cmake
 +++ b/cmake/python.cmake
 @@ -8,9 +8,6 @@ message(STATUS "Using PYTHON_EXECUTABLE: ${PYTHON_EXECUTABLE}")
@@ -165,8 +283,537 @@ index c72b8599..6b39d3a2 100644
  option(SETUPTOOLS_DEB_LAYOUT "Enable debian style python package layout" ${enable_setuptools_deb_layout})
  
  if(SETUPTOOLS_DEB_LAYOUT)
+diff --git a/cmake/qt5_compat/Qt5ConcurrentConfig.cmake b/cmake/qt5_compat/Qt5ConcurrentConfig.cmake
+new file mode 100644
+index 0000000..3cfb40c
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5ConcurrentConfig.cmake
+@@ -0,0 +1,3 @@
++# RoboStack: Qt 5 requests get Qt 6 (see robostack_qt5_common.cmake)
++include("${CMAKE_CURRENT_LIST_DIR}/robostack_qt5_common.cmake")
++_robostack_qt5_component(Concurrent)
+diff --git a/cmake/qt5_compat/Qt5ConcurrentConfigVersion.cmake b/cmake/qt5_compat/Qt5ConcurrentConfigVersion.cmake
+new file mode 100644
+index 0000000..c88334c
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5ConcurrentConfigVersion.cmake
+@@ -0,0 +1,4 @@
++# RoboStack: Qt 5 requests get Qt 6; any requested version is accepted
++set(PACKAGE_VERSION "${PACKAGE_FIND_VERSION}")
++set(PACKAGE_VERSION_COMPATIBLE TRUE)
++set(PACKAGE_VERSION_EXACT TRUE)
+diff --git a/cmake/qt5_compat/Qt5Config.cmake b/cmake/qt5_compat/Qt5Config.cmake
+new file mode 100644
+index 0000000..7882670
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5Config.cmake
+@@ -0,0 +1,11 @@
++# RoboStack: Qt 5 requests get Qt 6 (see robostack_qt5_common.cmake)
++include("${CMAKE_CURRENT_LIST_DIR}/robostack_qt5_common.cmake")
++set(Qt5_FOUND TRUE)
++foreach(_rs_c ${Qt5_FIND_COMPONENTS})
++  _robostack_qt5_component(${_rs_c})
++  if(NOT Qt5${_rs_c}_FOUND AND Qt5_FIND_REQUIRED_${_rs_c})
++    set(Qt5_FOUND FALSE)
++    set(Qt5_NOT_FOUND_MESSAGE "Qt 6 (for Qt 5's ${_rs_c}) not found")
++  endif()
++endforeach()
++unset(_rs_c)
+diff --git a/cmake/qt5_compat/Qt5ConfigVersion.cmake b/cmake/qt5_compat/Qt5ConfigVersion.cmake
+new file mode 100644
+index 0000000..c88334c
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5ConfigVersion.cmake
+@@ -0,0 +1,4 @@
++# RoboStack: Qt 5 requests get Qt 6; any requested version is accepted
++set(PACKAGE_VERSION "${PACKAGE_FIND_VERSION}")
++set(PACKAGE_VERSION_COMPATIBLE TRUE)
++set(PACKAGE_VERSION_EXACT TRUE)
+diff --git a/cmake/qt5_compat/Qt5CoreConfig.cmake b/cmake/qt5_compat/Qt5CoreConfig.cmake
+new file mode 100644
+index 0000000..377ca4e
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5CoreConfig.cmake
+@@ -0,0 +1,3 @@
++# RoboStack: Qt 5 requests get Qt 6 (see robostack_qt5_common.cmake)
++include("${CMAKE_CURRENT_LIST_DIR}/robostack_qt5_common.cmake")
++_robostack_qt5_component(Core)
+diff --git a/cmake/qt5_compat/Qt5CoreConfigVersion.cmake b/cmake/qt5_compat/Qt5CoreConfigVersion.cmake
+new file mode 100644
+index 0000000..c88334c
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5CoreConfigVersion.cmake
+@@ -0,0 +1,4 @@
++# RoboStack: Qt 5 requests get Qt 6; any requested version is accepted
++set(PACKAGE_VERSION "${PACKAGE_FIND_VERSION}")
++set(PACKAGE_VERSION_COMPATIBLE TRUE)
++set(PACKAGE_VERSION_EXACT TRUE)
+diff --git a/cmake/qt5_compat/Qt5DBusConfig.cmake b/cmake/qt5_compat/Qt5DBusConfig.cmake
+new file mode 100644
+index 0000000..5a0edf2
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5DBusConfig.cmake
+@@ -0,0 +1,3 @@
++# RoboStack: Qt 5 requests get Qt 6 (see robostack_qt5_common.cmake)
++include("${CMAKE_CURRENT_LIST_DIR}/robostack_qt5_common.cmake")
++_robostack_qt5_component(DBus)
+diff --git a/cmake/qt5_compat/Qt5DBusConfigVersion.cmake b/cmake/qt5_compat/Qt5DBusConfigVersion.cmake
+new file mode 100644
+index 0000000..c88334c
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5DBusConfigVersion.cmake
+@@ -0,0 +1,4 @@
++# RoboStack: Qt 5 requests get Qt 6; any requested version is accepted
++set(PACKAGE_VERSION "${PACKAGE_FIND_VERSION}")
++set(PACKAGE_VERSION_COMPATIBLE TRUE)
++set(PACKAGE_VERSION_EXACT TRUE)
+diff --git a/cmake/qt5_compat/Qt5GuiConfig.cmake b/cmake/qt5_compat/Qt5GuiConfig.cmake
+new file mode 100644
+index 0000000..c858fde
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5GuiConfig.cmake
+@@ -0,0 +1,3 @@
++# RoboStack: Qt 5 requests get Qt 6 (see robostack_qt5_common.cmake)
++include("${CMAKE_CURRENT_LIST_DIR}/robostack_qt5_common.cmake")
++_robostack_qt5_component(Gui)
+diff --git a/cmake/qt5_compat/Qt5GuiConfigVersion.cmake b/cmake/qt5_compat/Qt5GuiConfigVersion.cmake
+new file mode 100644
+index 0000000..c88334c
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5GuiConfigVersion.cmake
+@@ -0,0 +1,4 @@
++# RoboStack: Qt 5 requests get Qt 6; any requested version is accepted
++set(PACKAGE_VERSION "${PACKAGE_FIND_VERSION}")
++set(PACKAGE_VERSION_COMPATIBLE TRUE)
++set(PACKAGE_VERSION_EXACT TRUE)
+diff --git a/cmake/qt5_compat/Qt5MultimediaConfig.cmake b/cmake/qt5_compat/Qt5MultimediaConfig.cmake
+new file mode 100644
+index 0000000..18a409c
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5MultimediaConfig.cmake
+@@ -0,0 +1,3 @@
++# RoboStack: Qt 5 requests get Qt 6 (see robostack_qt5_common.cmake)
++include("${CMAKE_CURRENT_LIST_DIR}/robostack_qt5_common.cmake")
++_robostack_qt5_component(Multimedia)
+diff --git a/cmake/qt5_compat/Qt5MultimediaConfigVersion.cmake b/cmake/qt5_compat/Qt5MultimediaConfigVersion.cmake
+new file mode 100644
+index 0000000..c88334c
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5MultimediaConfigVersion.cmake
+@@ -0,0 +1,4 @@
++# RoboStack: Qt 5 requests get Qt 6; any requested version is accepted
++set(PACKAGE_VERSION "${PACKAGE_FIND_VERSION}")
++set(PACKAGE_VERSION_COMPATIBLE TRUE)
++set(PACKAGE_VERSION_EXACT TRUE)
+diff --git a/cmake/qt5_compat/Qt5NetworkConfig.cmake b/cmake/qt5_compat/Qt5NetworkConfig.cmake
+new file mode 100644
+index 0000000..0d2145c
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5NetworkConfig.cmake
+@@ -0,0 +1,3 @@
++# RoboStack: Qt 5 requests get Qt 6 (see robostack_qt5_common.cmake)
++include("${CMAKE_CURRENT_LIST_DIR}/robostack_qt5_common.cmake")
++_robostack_qt5_component(Network)
+diff --git a/cmake/qt5_compat/Qt5NetworkConfigVersion.cmake b/cmake/qt5_compat/Qt5NetworkConfigVersion.cmake
+new file mode 100644
+index 0000000..c88334c
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5NetworkConfigVersion.cmake
+@@ -0,0 +1,4 @@
++# RoboStack: Qt 5 requests get Qt 6; any requested version is accepted
++set(PACKAGE_VERSION "${PACKAGE_FIND_VERSION}")
++set(PACKAGE_VERSION_COMPATIBLE TRUE)
++set(PACKAGE_VERSION_EXACT TRUE)
+diff --git a/cmake/qt5_compat/Qt5OpenGLConfig.cmake b/cmake/qt5_compat/Qt5OpenGLConfig.cmake
+new file mode 100644
+index 0000000..4793404
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5OpenGLConfig.cmake
+@@ -0,0 +1,3 @@
++# RoboStack: Qt 5 requests get Qt 6 (see robostack_qt5_common.cmake)
++include("${CMAKE_CURRENT_LIST_DIR}/robostack_qt5_common.cmake")
++_robostack_qt5_component(OpenGL)
+diff --git a/cmake/qt5_compat/Qt5OpenGLConfigVersion.cmake b/cmake/qt5_compat/Qt5OpenGLConfigVersion.cmake
+new file mode 100644
+index 0000000..c88334c
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5OpenGLConfigVersion.cmake
+@@ -0,0 +1,4 @@
++# RoboStack: Qt 5 requests get Qt 6; any requested version is accepted
++set(PACKAGE_VERSION "${PACKAGE_FIND_VERSION}")
++set(PACKAGE_VERSION_COMPATIBLE TRUE)
++set(PACKAGE_VERSION_EXACT TRUE)
+diff --git a/cmake/qt5_compat/Qt5PrintSupportConfig.cmake b/cmake/qt5_compat/Qt5PrintSupportConfig.cmake
+new file mode 100644
+index 0000000..fea6ac2
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5PrintSupportConfig.cmake
+@@ -0,0 +1,3 @@
++# RoboStack: Qt 5 requests get Qt 6 (see robostack_qt5_common.cmake)
++include("${CMAKE_CURRENT_LIST_DIR}/robostack_qt5_common.cmake")
++_robostack_qt5_component(PrintSupport)
+diff --git a/cmake/qt5_compat/Qt5PrintSupportConfigVersion.cmake b/cmake/qt5_compat/Qt5PrintSupportConfigVersion.cmake
+new file mode 100644
+index 0000000..c88334c
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5PrintSupportConfigVersion.cmake
+@@ -0,0 +1,4 @@
++# RoboStack: Qt 5 requests get Qt 6; any requested version is accepted
++set(PACKAGE_VERSION "${PACKAGE_FIND_VERSION}")
++set(PACKAGE_VERSION_COMPATIBLE TRUE)
++set(PACKAGE_VERSION_EXACT TRUE)
+diff --git a/cmake/qt5_compat/Qt5SqlConfig.cmake b/cmake/qt5_compat/Qt5SqlConfig.cmake
+new file mode 100644
+index 0000000..296015d
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5SqlConfig.cmake
+@@ -0,0 +1,3 @@
++# RoboStack: Qt 5 requests get Qt 6 (see robostack_qt5_common.cmake)
++include("${CMAKE_CURRENT_LIST_DIR}/robostack_qt5_common.cmake")
++_robostack_qt5_component(Sql)
+diff --git a/cmake/qt5_compat/Qt5SqlConfigVersion.cmake b/cmake/qt5_compat/Qt5SqlConfigVersion.cmake
+new file mode 100644
+index 0000000..c88334c
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5SqlConfigVersion.cmake
+@@ -0,0 +1,4 @@
++# RoboStack: Qt 5 requests get Qt 6; any requested version is accepted
++set(PACKAGE_VERSION "${PACKAGE_FIND_VERSION}")
++set(PACKAGE_VERSION_COMPATIBLE TRUE)
++set(PACKAGE_VERSION_EXACT TRUE)
+diff --git a/cmake/qt5_compat/Qt5SvgConfig.cmake b/cmake/qt5_compat/Qt5SvgConfig.cmake
+new file mode 100644
+index 0000000..3e8c11d
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5SvgConfig.cmake
+@@ -0,0 +1,3 @@
++# RoboStack: Qt 5 requests get Qt 6 (see robostack_qt5_common.cmake)
++include("${CMAKE_CURRENT_LIST_DIR}/robostack_qt5_common.cmake")
++_robostack_qt5_component(Svg)
+diff --git a/cmake/qt5_compat/Qt5SvgConfigVersion.cmake b/cmake/qt5_compat/Qt5SvgConfigVersion.cmake
+new file mode 100644
+index 0000000..c88334c
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5SvgConfigVersion.cmake
+@@ -0,0 +1,4 @@
++# RoboStack: Qt 5 requests get Qt 6; any requested version is accepted
++set(PACKAGE_VERSION "${PACKAGE_FIND_VERSION}")
++set(PACKAGE_VERSION_COMPATIBLE TRUE)
++set(PACKAGE_VERSION_EXACT TRUE)
+diff --git a/cmake/qt5_compat/Qt5TestConfig.cmake b/cmake/qt5_compat/Qt5TestConfig.cmake
+new file mode 100644
+index 0000000..3bf8b89
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5TestConfig.cmake
+@@ -0,0 +1,3 @@
++# RoboStack: Qt 5 requests get Qt 6 (see robostack_qt5_common.cmake)
++include("${CMAKE_CURRENT_LIST_DIR}/robostack_qt5_common.cmake")
++_robostack_qt5_component(Test)
+diff --git a/cmake/qt5_compat/Qt5TestConfigVersion.cmake b/cmake/qt5_compat/Qt5TestConfigVersion.cmake
+new file mode 100644
+index 0000000..c88334c
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5TestConfigVersion.cmake
+@@ -0,0 +1,4 @@
++# RoboStack: Qt 5 requests get Qt 6; any requested version is accepted
++set(PACKAGE_VERSION "${PACKAGE_FIND_VERSION}")
++set(PACKAGE_VERSION_COMPATIBLE TRUE)
++set(PACKAGE_VERSION_EXACT TRUE)
+diff --git a/cmake/qt5_compat/Qt5WebSocketsConfig.cmake b/cmake/qt5_compat/Qt5WebSocketsConfig.cmake
+new file mode 100644
+index 0000000..1df4ba6
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5WebSocketsConfig.cmake
+@@ -0,0 +1,3 @@
++# RoboStack: Qt 5 requests get Qt 6 (see robostack_qt5_common.cmake)
++include("${CMAKE_CURRENT_LIST_DIR}/robostack_qt5_common.cmake")
++_robostack_qt5_component(WebSockets)
+diff --git a/cmake/qt5_compat/Qt5WebSocketsConfigVersion.cmake b/cmake/qt5_compat/Qt5WebSocketsConfigVersion.cmake
+new file mode 100644
+index 0000000..c88334c
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5WebSocketsConfigVersion.cmake
+@@ -0,0 +1,4 @@
++# RoboStack: Qt 5 requests get Qt 6; any requested version is accepted
++set(PACKAGE_VERSION "${PACKAGE_FIND_VERSION}")
++set(PACKAGE_VERSION_COMPATIBLE TRUE)
++set(PACKAGE_VERSION_EXACT TRUE)
+diff --git a/cmake/qt5_compat/Qt5WidgetsConfig.cmake b/cmake/qt5_compat/Qt5WidgetsConfig.cmake
+new file mode 100644
+index 0000000..82e0bb2
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5WidgetsConfig.cmake
+@@ -0,0 +1,3 @@
++# RoboStack: Qt 5 requests get Qt 6 (see robostack_qt5_common.cmake)
++include("${CMAKE_CURRENT_LIST_DIR}/robostack_qt5_common.cmake")
++_robostack_qt5_component(Widgets)
+diff --git a/cmake/qt5_compat/Qt5WidgetsConfigVersion.cmake b/cmake/qt5_compat/Qt5WidgetsConfigVersion.cmake
+new file mode 100644
+index 0000000..c88334c
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5WidgetsConfigVersion.cmake
+@@ -0,0 +1,4 @@
++# RoboStack: Qt 5 requests get Qt 6; any requested version is accepted
++set(PACKAGE_VERSION "${PACKAGE_FIND_VERSION}")
++set(PACKAGE_VERSION_COMPATIBLE TRUE)
++set(PACKAGE_VERSION_EXACT TRUE)
+diff --git a/cmake/qt5_compat/Qt5X11ExtrasConfig.cmake b/cmake/qt5_compat/Qt5X11ExtrasConfig.cmake
+new file mode 100644
+index 0000000..bfd6f87
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5X11ExtrasConfig.cmake
+@@ -0,0 +1,3 @@
++# RoboStack: Qt 5 requests get Qt 6 (see robostack_qt5_common.cmake)
++include("${CMAKE_CURRENT_LIST_DIR}/robostack_qt5_common.cmake")
++_robostack_qt5_component(X11Extras)
+diff --git a/cmake/qt5_compat/Qt5X11ExtrasConfigVersion.cmake b/cmake/qt5_compat/Qt5X11ExtrasConfigVersion.cmake
+new file mode 100644
+index 0000000..c88334c
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5X11ExtrasConfigVersion.cmake
+@@ -0,0 +1,4 @@
++# RoboStack: Qt 5 requests get Qt 6; any requested version is accepted
++set(PACKAGE_VERSION "${PACKAGE_FIND_VERSION}")
++set(PACKAGE_VERSION_COMPATIBLE TRUE)
++set(PACKAGE_VERSION_EXACT TRUE)
+diff --git a/cmake/qt5_compat/Qt5XmlConfig.cmake b/cmake/qt5_compat/Qt5XmlConfig.cmake
+new file mode 100644
+index 0000000..5c0ca6d
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5XmlConfig.cmake
+@@ -0,0 +1,3 @@
++# RoboStack: Qt 5 requests get Qt 6 (see robostack_qt5_common.cmake)
++include("${CMAKE_CURRENT_LIST_DIR}/robostack_qt5_common.cmake")
++_robostack_qt5_component(Xml)
+diff --git a/cmake/qt5_compat/Qt5XmlConfigVersion.cmake b/cmake/qt5_compat/Qt5XmlConfigVersion.cmake
+new file mode 100644
+index 0000000..c88334c
+--- /dev/null
++++ b/cmake/qt5_compat/Qt5XmlConfigVersion.cmake
+@@ -0,0 +1,4 @@
++# RoboStack: Qt 5 requests get Qt 6; any requested version is accepted
++set(PACKAGE_VERSION "${PACKAGE_FIND_VERSION}")
++set(PACKAGE_VERSION_COMPATIBLE TRUE)
++set(PACKAGE_VERSION_EXACT TRUE)
+diff --git a/cmake/qt5_compat/robostack_qt5_common.cmake b/cmake/qt5_compat/robostack_qt5_common.cmake
+new file mode 100644
+index 0000000..0b14e44
+--- /dev/null
++++ b/cmake/qt5_compat/robostack_qt5_common.cmake
+@@ -0,0 +1,106 @@
++# RoboStack: RoboStack's noetic is built with Qt 6 (there is no Qt 5); this lets
++# packages that ask for Qt 5 (find_package(Qt5 COMPONENTS Widgets), find_package(Qt5Widgets))
++# build with Qt 6: Qt5::<Component> targets, the Qt5<Component>_* variables and the
++# qt5_* macros forward to Qt 6. Used through the Qt5*_DIR variables
++# robostack_qt5_compat.cmake sets when no real Qt 5 is installed.
++macro(_robostack_qt5_component _rs_qt5_c)
++  set(_rs_qt6_c ${_rs_qt5_c})
++  if("${_rs_qt5_c}" STREQUAL "OpenGL")
++    set(_rs_qt6_c OpenGL OpenGLWidgets)
++  elseif("${_rs_qt5_c}" STREQUAL "X11Extras")
++    set(_rs_qt6_c "")
++  endif()
++  find_package(Qt6 QUIET COMPONENTS Core ${_rs_qt6_c})
++  # Qt 5 APIs Qt 6 moved to Core5Compat (QRegExp, QStringRef, QTextCodec, ...)
++  find_package(Qt6 QUIET OPTIONAL_COMPONENTS Core5Compat)
++  set(_rs_found TRUE)
++  foreach(_rs_q ${_rs_qt6_c})
++    if(NOT Qt6${_rs_q}_FOUND)
++      set(_rs_found FALSE)
++    endif()
++  endforeach()
++  if(_rs_found)
++    if(NOT TARGET Qt5::${_rs_qt5_c})
++      add_library(Qt5::${_rs_qt5_c} INTERFACE IMPORTED)
++      foreach(_rs_q ${_rs_qt6_c})
++        set_property(TARGET Qt5::${_rs_qt5_c} APPEND PROPERTY INTERFACE_LINK_LIBRARIES Qt6::${_rs_q})
++      endforeach()
++      if(TARGET Qt6::Core5Compat)
++        set_property(TARGET Qt5::${_rs_qt5_c} APPEND PROPERTY INTERFACE_LINK_LIBRARIES Qt6::Core5Compat)
++      endif()
++    endif()
++    # the Qt 5 tool targets (Qt5::qmake, ...) as Qt 6's
++    foreach(_rs_tool qmake moc rcc uic)
++      if(TARGET Qt6::${_rs_tool} AND NOT TARGET Qt5::${_rs_tool})
++        get_target_property(_rs_loc Qt6::${_rs_tool} IMPORTED_LOCATION)
++        if(NOT _rs_loc)
++          get_target_property(_rs_loc Qt6::${_rs_tool} IMPORTED_LOCATION_RELEASE)
++        endif()
++        if(_rs_loc)
++          add_executable(Qt5::${_rs_tool} IMPORTED)
++          set_target_properties(Qt5::${_rs_tool} PROPERTIES IMPORTED_LOCATION "${_rs_loc}")
++        endif()
++      endif()
++    endforeach()
++    unset(_rs_loc)
++    set(Qt5${_rs_qt5_c}_FOUND TRUE)
++    set(Qt5${_rs_qt5_c}_LIBRARIES Qt5::${_rs_qt5_c})
++    set(Qt5${_rs_qt5_c}_INCLUDE_DIRS "")
++    set(_rs_with_compat Core ${_rs_qt6_c})
++    if(TARGET Qt6::Core5Compat)
++      list(APPEND _rs_with_compat Core5Compat)
++    endif()
++    foreach(_rs_q ${_rs_with_compat})
++      get_target_property(_rs_inc Qt6::${_rs_q} INTERFACE_INCLUDE_DIRECTORIES)
++      if(_rs_inc)
++        list(APPEND Qt5${_rs_qt5_c}_INCLUDE_DIRS ${_rs_inc})
++      endif()
++    endforeach()
++    list(REMOVE_DUPLICATES Qt5${_rs_qt5_c}_INCLUDE_DIRS)
++    set(Qt5${_rs_qt5_c}_DEFINITIONS "")
++    set(Qt5${_rs_qt5_c}_COMPILE_DEFINITIONS "")
++    set(Qt5${_rs_qt5_c}_EXECUTABLE_COMPILE_FLAGS "")
++    set(Qt5${_rs_qt5_c}_VERSION "${Qt6_VERSION}")
++    set(Qt5${_rs_qt5_c}_VERSION_STRING "${Qt6_VERSION}")
++    set(Qt5_VERSION "${Qt6_VERSION}")
++    set(Qt5_VERSION_MAJOR "${Qt6_VERSION_MAJOR}")
++    set(Qt5_VERSION_MINOR "${Qt6_VERSION_MINOR}")
++    set(Qt5_VERSION_PATCH "${Qt6_VERSION_PATCH}")
++  else()
++    set(Qt5${_rs_qt5_c}_FOUND FALSE)
++  endif()
++  unset(_rs_found)
++  unset(_rs_inc)
++  unset(_rs_q)
++  unset(_rs_qt6_c)
++  # Qt 5's components bring the ones they depend on (Qt5::Widgets: Qt5::Gui, Qt5::Core)
++  if(NOT "${_rs_qt5_c}" STREQUAL "Core" AND NOT TARGET Qt5::Core)
++    _robostack_qt5_component(Core)
++  endif()
++  if(NOT "${_rs_qt5_c}" MATCHES "^(Core|Gui)$" AND NOT TARGET Qt5::Gui AND TARGET Qt6::Gui)
++    _robostack_qt5_component(Gui)
++  endif()
++endmacro()
++
++if(NOT COMMAND qt5_wrap_cpp)
++  macro(qt5_wrap_cpp)
++    qt6_wrap_cpp(${ARGV})
++  endmacro()
++  macro(qt5_wrap_ui)
++    qt6_wrap_ui(${ARGV})
++  endmacro()
++  macro(qt5_add_resources)
++    qt6_add_resources(${ARGV})
++  endmacro()
++  # Qt 5's deprecated qt5_use_modules(target [LINK_PUBLIC|LINK_PRIVATE] modules...)
++  macro(qt5_use_modules _rs_target)
++    set(_rs_modules ${ARGN})
++    list(FILTER _rs_modules EXCLUDE REGEX "^LINK_(PUBLIC|PRIVATE)$")
++    foreach(_rs_m ${_rs_modules})
++      _robostack_qt5_component(${_rs_m})
++      target_link_libraries(${_rs_target} Qt5::${_rs_m})
++    endforeach()
++    unset(_rs_modules)
++    unset(_rs_m)
++  endmacro()
++endif()
+diff --git a/cmake/robostack_cxx_standard.cmake b/cmake/robostack_cxx_standard.cmake
+new file mode 100644
+index 0000000..70853f6
+--- /dev/null
++++ b/cmake/robostack_cxx_standard.cmake
+@@ -0,0 +1,22 @@
++# RoboStack: conda-forge's libraries need C++17 (PCL 1.15, Sophus; Eigen 5 C++14), while
++# many ROS 1 packages ask for C++11 or C++14 (-std=c++11, CMAKE_CXX_STANDARD 14). A
++# request for a standard below C++17 is dropped, so these packages build with the
++# compiler's default (C++17, as the packages without a request do; with MSVC, whose
++# default is C++14, C++17 is set); newer requests stay. Run by find_package(catkin) and
++# catkin_package().
++function(_robostack_drop_old_cxx_standard)
++  if(DEFINED CMAKE_CXX_STANDARD AND "${CMAKE_CXX_STANDARD}" MATCHES "^(98|11|14)$")
++    set(CMAKE_CXX_STANDARD 17 PARENT_SCOPE)
++  elseif(MSVC AND NOT DEFINED CMAKE_CXX_STANDARD)
++    # MSVC's default is C++14, not C++17 as GCC's and clang's
++    set(CMAKE_CXX_STANDARD 17 PARENT_SCOPE)
++  endif()
++  set(_old "(-std=(c|gnu)\\+\\+(98|03|0x|11|1y|14)|/std:c\\+\\+14)")
++  string(REGEX REPLACE "(^| )${_old}( |$)" " " _flags "${CMAKE_CXX_FLAGS}")
++  set(CMAKE_CXX_FLAGS "${_flags}" PARENT_SCOPE)
++  get_directory_property(_options COMPILE_OPTIONS)
++  if(_options)
++    list(FILTER _options EXCLUDE REGEX "^${_old}$")
++    set_directory_properties(PROPERTIES COMPILE_OPTIONS "${_options}")
++  endif()
++endfunction()
+diff --git a/cmake/robostack_eigen3.cmake b/cmake/robostack_eigen3.cmake
+new file mode 100644
+index 0000000..c9cbf72
+--- /dev/null
++++ b/cmake/robostack_eigen3.cmake
+@@ -0,0 +1,51 @@
++# RoboStack: conda-forge's Eigen 5 breaks how ROS 1 packages find Eigen:
++# - its CMake config only accepts version requests of its own major version
++#   (find_package(Eigen3 3.3) fails),
++# - copies of old FindEigen3.cmake modules can't read its version,
++# - it no longer sets EIGEN3_FOUND, EIGEN3_INCLUDE_DIR(S) and EIGEN3_VERSION_STRING.
++# After find_package(catkin), find_package(Eigen3 ...) therefore uses Eigen's CMake
++# config without the version and sets those variables; they are also set by
++# find_package(catkin) and catkin_package() when the headers are in the prefix.
++macro(_robostack_eigen3_variables)
++  if(Eigen3_FOUND AND TARGET Eigen3::Eigen AND NOT EIGEN3_INCLUDE_DIR)
++    get_target_property(EIGEN3_INCLUDE_DIR Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORIES)
++  endif()
++  if(NOT EIGEN3_INCLUDE_DIR)
++    find_path(_robostack_eigen3_include_dir Eigen/Core PATH_SUFFIXES eigen3 NO_CACHE)
++    if(_robostack_eigen3_include_dir)
++      set(EIGEN3_INCLUDE_DIR "${_robostack_eigen3_include_dir}")
++    endif()
++    unset(_robostack_eigen3_include_dir)
++  endif()
++  if(EIGEN3_INCLUDE_DIR)
++    foreach(_robostack_var EIGEN3_INCLUDE_DIRS Eigen3_INCLUDE_DIR Eigen3_INCLUDE_DIRS)
++      if(NOT ${_robostack_var})
++        set(${_robostack_var} "${EIGEN3_INCLUDE_DIR}")
++      endif()
++    endforeach()
++    unset(_robostack_var)
++  endif()
++  if(Eigen3_FOUND)
++    set(EIGEN3_FOUND TRUE)
++    if(NOT EIGEN3_VERSION_STRING)
++      set(EIGEN3_VERSION_STRING "${Eigen3_VERSION}")
++      set(EIGEN3_VERSION "${Eigen3_VERSION}")
++    endif()
++  endif()
++endmacro()
++
++if(NOT COMMAND _robostack_find_package_override)
++  macro(_robostack_find_package_override)
++  endmacro()
++  macro(find_package _robostack_fp_name)
++    if("${_robostack_fp_name}" STREQUAL "Eigen3")
++      set(_robostack_fp_args ${ARGN})
++      list(FILTER _robostack_fp_args EXCLUDE REGEX "^([0-9]+(\\.[0-9]+)*(\\.\\.\\.<?[0-9.]+)?|EXACT|MODULE|NO_MODULE|CONFIG)$")
++      _find_package(Eigen3 ${_robostack_fp_args} CONFIG)
++      unset(_robostack_fp_args)
++      _robostack_eigen3_variables()
++    else()
++      _find_package(${_robostack_fp_name} ${ARGN})
++    endif()
++  endmacro()
++endif()
+diff --git a/cmake/robostack_qt5_compat.cmake b/cmake/robostack_qt5_compat.cmake
+new file mode 100644
+index 0000000..03369ef
+--- /dev/null
++++ b/cmake/robostack_qt5_compat.cmake
+@@ -0,0 +1,14 @@
++# RoboStack: when no real Qt 5 is installed, find_package(Qt5 ...) and
++# find_package(Qt5<Component>) after find_package(catkin) use the Qt 6 forwarding
++# configs in qt5_compat/ (RoboStack's noetic is built with Qt 6).
++find_file(_robostack_real_qt5 Qt5Config.cmake PATH_SUFFIXES lib/cmake/Qt5 NO_CACHE)
++if(NOT _robostack_real_qt5)
++  foreach(_robostack_c "" Core Gui Widgets OpenGL Concurrent Xml Svg Network PrintSupport Test
++                       X11Extras WebSockets Multimedia Sql DBus)
++    if(NOT Qt5${_robostack_c}_DIR)
++      set(Qt5${_robostack_c}_DIR "${catkin_EXTRAS_DIR}/qt5_compat")
++    endif()
++  endforeach()
++  unset(_robostack_c)
++endif()
++unset(_robostack_real_qt5)
 diff --git a/cmake/templates/_setup_util.py.in b/cmake/templates/_setup_util.py.in
-index e73934bb..b9c8c005 100755
+index e73934b..b9c8c00 100755
 --- a/cmake/templates/_setup_util.py.in
 +++ b/cmake/templates/_setup_util.py.in
 @@ -1,4 +1,4 @@
@@ -193,10 +840,23 @@ index e73934bb..b9c8c005 100755
  def rollback_env_variables(environ, env_var_subfolders):
      """
 diff --git a/cmake/templates/pkgConfig.cmake.in b/cmake/templates/pkgConfig.cmake.in
-index 92199d4e..b1423d7f 100644
+index 92199d4..2d4c118 100644
 --- a/cmake/templates/pkgConfig.cmake.in
 +++ b/cmake/templates/pkgConfig.cmake.in
-@@ -119,10 +119,12 @@ endif()
+@@ -1,5 +1,12 @@
+ # generated from catkin/cmake/template/pkgConfig.cmake.in
+ 
++# RoboStack: the macros here and catkin's find_package override (a macro) parse their
++# arguments again: keep the backslashes of Windows paths in them, instead of reading
++# them as escapes. Config files have their own policy scope.
++if(POLICY CMP0219)
++  cmake_policy(SET CMP0219 NEW)
++endif()
++
+ # append elements to a list and remove existing duplicates from the list
+ # copied from catkin/cmake/list_append_deduplicate.cmake to keep pkgConfig
+ # self contained
+@@ -119,10 +126,12 @@ endif()
  set(libraries "@PKG_CONFIG_LIBRARIES@")
  foreach(library ${libraries})
    # keep build configuration keywords, generator expressions, target names, and absolute libraries as-is
@@ -211,7 +871,7 @@ index 92199d4e..b1423d7f 100644
      # This is a linker flag/option (like -pthread)
      # There's no standard variable for these, so create an interface library to hold it
 diff --git a/cmake/templates/setup.sh.in b/cmake/templates/setup.sh.in
-index 834b01a0..b9dca514 100644
+index 834b01a..b9dca51 100644
 --- a/cmake/templates/setup.sh.in
 +++ b/cmake/templates/setup.sh.in
 @@ -11,13 +11,29 @@
@@ -247,7 +907,7 @@ index 834b01a0..b9dca514 100644
  
  # detect if running on Darwin platform
 diff --git a/cmake/test/gtest.cmake b/cmake/test/gtest.cmake
-index a87d3a90..5ad52de9 100644
+index a87d3a9..5ad52de 100644
 --- a/cmake/test/gtest.cmake
 +++ b/cmake/test/gtest.cmake
 @@ -313,6 +313,11 @@ function(catkin_find_google_test_source gtest_path googletest_path
@@ -290,7 +950,7 @@ index a87d3a90..5ad52de9 100644
  if(NOT GMOCK_FOUND OR NOT GTEST_FOUND)
    # If we find one but not the other, see if we can get both from source
 diff --git a/cmake/tools/rt.cmake b/cmake/tools/rt.cmake
-index da5ed7db..5fb71d58 100644
+index da5ed7d..5fb71d5 100644
 --- a/cmake/tools/rt.cmake
 +++ b/cmake/tools/rt.cmake
 @@ -34,14 +34,5 @@

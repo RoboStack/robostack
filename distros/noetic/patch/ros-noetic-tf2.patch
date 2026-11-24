@@ -1,0 +1,19 @@
+diff --git a/include/tf2/impl/convert.h b/include/tf2/impl/convert.h
+index 6b68ccd..90cb949 100644
+--- a/include/tf2/impl/convert.h
++++ b/include/tf2/impl/convert.h
+@@ -31,6 +31,14 @@
+ #define TF2_IMPL_CONVERT_H
+ 
+ namespace tf2 {
++
++// RoboStack: declared in tf2/convert.h, which includes this file before it declares
++// them; MSVC's /permissive- (two-phase lookup) needs them for the qualified calls below
++template<typename A, typename B>
++  B toMsg(const A& a);
++template<typename A, typename B>
++  void fromMsg(const A&, B& b);
++
+ namespace impl {
+ 
+ template <bool IS_MESSAGE_A, bool IS_MESSAGE_B>

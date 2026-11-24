@@ -1,0 +1,13 @@
+diff --git a/src/laserscan_multi_merger.cpp b/src/laserscan_multi_merger.cpp
+index c5428f6..1090ce5 100644
+--- a/src/laserscan_multi_merger.cpp
++++ b/src/laserscan_multi_merger.cpp
+@@ -81,7 +81,7 @@ void LaserscanMerger::laserscan_topic_parser()
+ 	{
+ 		ROS_INFO("Waiting for topics ...");
+ 		ros::master::getTopics(topics);
+-		sleep(1);
++		ros::Duration(1.0).sleep();  // RoboStack: no POSIX sleep() on Windows
+ 
+ 		for (int i = 0; i < topics.size(); i++)
+ 		{

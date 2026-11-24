@@ -1,0 +1,9 @@
+tests:
+  # rviz's Python bindings (sip, PyQt6) load
+  - script:
+      interpreter: python
+      env:
+        QT_QPA_PLATFORM: offscreen
+      content: |
+        from rviz import bindings
+        assert hasattr(bindings, 'VisualizationFrame')

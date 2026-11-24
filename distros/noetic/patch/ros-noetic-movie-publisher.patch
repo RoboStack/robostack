@@ -98,10 +98,16 @@ diff --git a/src/metadata/FileMetadataExtractor.cpp b/src/metadata/FileMetadataE
 index 46ad036..05917e4 100644
 --- a/src/metadata/FileMetadataExtractor.cpp
 +++ b/src/metadata/FileMetadataExtractor.cpp
-@@ -9,6 +9,7 @@
+@@ -9,6 +9,13 @@
  
  #include <sys/stat.h>
  
++// RoboStack: macOS names the struct stat timestamps st_ctimespec/st_mtimespec
++#ifdef __APPLE__
++#define st_ctim st_ctimespec
++#define st_mtim st_mtimespec
++#endif
++
 +#include <typeinfo>
  #include <cras_cpp_common/type_utils.hpp>
  #include <movie_publisher/metadata/FileMetadataExtractor.h>
@@ -166,7 +172,7 @@ index a5d0902..025a219 100644
  #include <libswscale/swscale.h>
  }
 diff --git a/src/movie_private.cpp b/src/movie_private.cpp
-index a1ee6ee..3bd2ae5 100644
+index a1ee6ee..dafcdea 100644
 --- a/src/movie_private.cpp
 +++ b/src/movie_private.cpp
 @@ -51,7 +51,9 @@ extern "C" {
@@ -195,7 +201,7 @@ index a1ee6ee..3bd2ae5 100644
  
    int selectedStreamIndex {0};
    if (this->config->forceStreamIndex().has_value())
-@@ -760,16 +762,17 @@ cras::expected<void, std::string> MoviePrivate::addRotationFilter()
+@@ -760,16 +762,23 @@ cras::expected<void, std::string> MoviePrivate::addRotationFilter()
      return cras::make_unexpected("Error creating filter source buffer");
    }
  
@@ -210,9 +216,15 @@ index a1ee6ee..3bd2ae5 100644
      return cras::make_unexpected("Error creating filter sink buffer");
    }
 -  av_free(buffersinkParams);
++#if LIBAVUTIL_VERSION_INT >= AV_VERSION_INT(59, 39, 100)
++  // RoboStack: FFmpeg 7.1 replaced the buffersink option pix_fmts (and av_opt_set_int_list)
++  if (av_opt_set_array(this->filterBuffersinkContext, "pixel_formats", AV_OPT_SEARCH_CHILDREN, 0, 1,
++      AV_OPT_TYPE_PIXEL_FMT, &this->targetPixelFormat) < 0)
++#else
 +  const AVPixelFormat pixFmts[] = {this->targetPixelFormat, AV_PIX_FMT_NONE};
 +  if (av_opt_set_int_list(this->filterBuffersinkContext, "pix_fmts", pixFmts, AV_PIX_FMT_NONE,
 +      AV_OPT_SEARCH_CHILDREN) < 0)
++#endif
 +  {
 +    return cras::make_unexpected("Error configuring filter sink pixel formats");
 +  }

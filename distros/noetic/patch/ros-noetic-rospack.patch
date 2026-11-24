@@ -1,0 +1,24 @@
+diff --git a/src/rospack.cpp b/src/rospack.cpp
+index 3a83fce..564a4b0 100644
+--- a/src/rospack.cpp
++++ b/src/rospack.cpp
+@@ -26,6 +26,7 @@
+  */
+ 
+ #include <Python.h>
++#include <cstring>
+ #include "rospack/rospack.h"
+ #include "utils.h"
+ #include "tinyxml2.h"
+@@ -894,7 +895,10 @@ Rosstackage::cpp_exports(const std::string& name, const std::string& type,
+           std::string errmsg = "could not call python function 'rosdep2.rospack.call_pkg_config'";
+           throw Exception(errmsg);
+         }
+-        if(pValue == Py_None)
++        // RoboStack: no Py_None: on macOS librospack takes Python's symbols from the process
++        // (-undefined dynamic_lookup), and a data symbol is bound at load time, so C++ programs
++        // linking it (rosbag record via roslib) couldn't start
++        if(std::strcmp(Py_TYPE(pValue)->tp_name, "NoneType") == 0)
+         {
+           Py_DECREF(pValue);
+           std::string errmsg = "python function 'rosdep2.rospack.call_pkg_config' could not call 'pkg-config " + type + " " + (*it)->name_ + "' without errors";

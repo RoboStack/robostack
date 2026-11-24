@@ -9,8 +9,9 @@
 if [ "$CONDA_BUILD" = "1" -a "$target_platform" != "$build_platform" ]; then
     # ignore sourcing
     echo "Not activating ROS when cross-compiling";
-else
-    source $CONDA_PREFIX/setup.sh
+elif [ -f "$CONDA_PREFIX/setup.sh" ]; then
+    # (Windows has only the batch setup scripts, under Library)
+    source "$CONDA_PREFIX/setup.sh"
 fi
 
 case "$OSTYPE" in

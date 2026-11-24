@@ -1,5 +1,18 @@
+diff --git a/cmake/ecl_cx11.cmake b/cmake/ecl_cx11.cmake
+index 3db581c..3183990 100644
+--- a/cmake/ecl_cx11.cmake
++++ b/cmake/ecl_cx11.cmake
+@@ -1,6 +1,7 @@
+ macro(ecl_enable_cxx11_compiler)
+   set(CMAKE_CXX_STANDARD_REQUIRED ON)  # aborts with an error if the requested standard is not available
+   set(CMAKE_CXX_EXTENSIONS OFF)  # if ON, it will use gnu++14 instead of std++14
+-  set(CMAKE_CXX_STANDARD 11)
++  # RoboStack: C++17 (conda-forge's Eigen 5 and Sophus need C++14/17)
++  set(CMAKE_CXX_STANDARD 17)
+ endmacro()
+ 
 diff --git a/cmake/ecl_platform_detection.cmake b/cmake/ecl_platform_detection.cmake
-index 35f93e6..7c11b90 100644
+index f1395c7..7503dbf 100644
 --- a/cmake/ecl_platform_detection.cmake
 +++ b/cmake/ecl_platform_detection.cmake
 @@ -21,21 +21,21 @@

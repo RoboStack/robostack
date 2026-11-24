@@ -1,0 +1,29 @@
+tests:
+  # catkin's compatibility settings (ros-noetic-catkin.patch): C++ standard floor, the
+  # boost_system stand-in, Eigen 5 as Eigen3 3.x; and Qt 5 requests built with Qt 6
+  - if: unix
+    then:
+      script:
+        - cmake -S compat_demo -B build_compat -G Ninja -DCMAKE_PREFIX_PATH="$PREFIX"
+        - cmake --build build_compat
+        - ./build_compat/compat_demo
+        - cmake -S qt5_demo -B build_qt5 -G Ninja -DCMAKE_PREFIX_PATH="$PREFIX"
+        - cmake --build build_qt5
+        - QT_QPA_PLATFORM=offscreen ./build_qt5/qt5_demo
+      requirements:
+        build:
+          - cxx-compiler
+          - cmake
+          - ninja
+        run:
+          - libboost-devel
+          - eigen
+          - qt6-main
+          - if: linux
+            then:
+              - libgl-devel
+              - libopengl-devel
+      files:
+        recipe:
+          - compat_demo/
+          - qt5_demo/

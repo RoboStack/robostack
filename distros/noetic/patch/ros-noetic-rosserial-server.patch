@@ -1,8 +1,16 @@
 diff --git a/include/rosserial_server/serial_session.h b/include/rosserial_server/serial_session.h
-index 2a0bc156..4b9c543d 100644
+index 2a0bc15..d3f80a2 100644
 --- a/include/rosserial_server/serial_session.h
 +++ b/include/rosserial_server/serial_session.h
-@@ -48,7 +48,7 @@ namespace rosserial_server
+@@ -37,6 +37,7 @@
+ #include <iostream>
+ #include <boost/bind.hpp>
+ #include <boost/asio.hpp>
++#include <boost/asio/deadline_timer.hpp>  // RoboStack: not in <boost/asio.hpp> any more (Boost 1.90)
+ 
+ #include <ros/ros.h>
+ 
+@@ -48,7 +49,7 @@ namespace rosserial_server
  class SerialSession : public Session<boost::asio::serial_port>
  {
  public:
@@ -12,10 +20,18 @@ index 2a0bc156..4b9c543d 100644
    {
      ROS_INFO_STREAM("rosserial_server session configured for " << port_ << " at " << baud << "bps.");
 diff --git a/include/rosserial_server/session.h b/include/rosserial_server/session.h
-index 30f97a60..1a5555f8 100644
+index 30f97a6..5e18ec0 100644
 --- a/include/rosserial_server/session.h
 +++ b/include/rosserial_server/session.h
-@@ -60,7 +60,7 @@ template<typename Socket>
+@@ -38,6 +38,7 @@
+ #include <map>
+ #include <boost/bind.hpp>
+ #include <boost/asio.hpp>
++#include <boost/asio/deadline_timer.hpp>  // RoboStack: not in <boost/asio.hpp> any more (Boost 1.90)
+ #include <boost/function.hpp>
+ 
+ #include <ros/callback_queue.h>
+@@ -60,7 +61,7 @@ template<typename Socket>
  class Session : boost::noncopyable
  {
  public:
@@ -24,7 +40,7 @@ index 30f97a60..1a5555f8 100644
      : io_service_(io_service),
        socket_(io_service),
        sync_timer_(io_service),
-@@ -500,7 +500,7 @@ private:
+@@ -500,7 +501,7 @@ private:
      set_sync_timeout(timeout_interval_);
    }
  
@@ -34,7 +50,7 @@ index 30f97a60..1a5555f8 100644
    AsyncReadBuffer<Socket> async_read_buffer_;
    enum { buffer_max = 1023 };
 diff --git a/include/rosserial_server/tcp_server.h b/include/rosserial_server/tcp_server.h
-index 1dff9c54..ff955d64 100644
+index 1dff9c5..ff955d6 100644
 --- a/include/rosserial_server/tcp_server.h
 +++ b/include/rosserial_server/tcp_server.h
 @@ -52,7 +52,7 @@ template< typename Session = rosserial_server::Session<tcp::socket> >
@@ -56,10 +72,18 @@ index 1dff9c54..ff955d64 100644
  };
  
 diff --git a/include/rosserial_server/udp_socket_session.h b/include/rosserial_server/udp_socket_session.h
-index 6e38dae0..559a1d93 100644
+index 6e38dae..d8fd3db 100644
 --- a/include/rosserial_server/udp_socket_session.h
 +++ b/include/rosserial_server/udp_socket_session.h
-@@ -52,7 +52,7 @@ using boost::asio::ip::udp;
+@@ -37,6 +37,7 @@
+ #include <iostream>
+ #include <boost/bind.hpp>
+ #include <boost/asio.hpp>
++#include <boost/asio/deadline_timer.hpp>  // RoboStack: not in <boost/asio.hpp> any more (Boost 1.90)
+ 
+ #include <ros/ros.h>
+ 
+@@ -52,7 +53,7 @@ using boost::asio::ip::udp;
  class UdpSocketSession : public Session<UdpStream>
  {
  public:
@@ -69,7 +93,7 @@ index 6e38dae0..559a1d93 100644
                     udp::endpoint client_endpoint)
      : Session(io_service), timer_(io_service),
 diff --git a/include/rosserial_server/udp_stream.h b/include/rosserial_server/udp_stream.h
-index 30034cbf..dc68605d 100644
+index 30034cb..dc68605 100644
 --- a/include/rosserial_server/udp_stream.h
 +++ b/include/rosserial_server/udp_stream.h
 @@ -56,7 +56,7 @@ using boost::asio::handler_type;
@@ -82,7 +106,7 @@ index 30034cbf..dc68605d 100644
    }
  
 diff --git a/src/serial_node.cpp b/src/serial_node.cpp
-index 8fcd8907..9b23c801 100644
+index 8fcd890..9b23c80 100644
 --- a/src/serial_node.cpp
 +++ b/src/serial_node.cpp
 @@ -49,7 +49,7 @@ int main(int argc, char* argv[])
@@ -95,7 +119,7 @@ index 8fcd8907..9b23c801 100644
    io_service.run();
    return 0;
 diff --git a/src/socket_node.cpp b/src/socket_node.cpp
-index e803b6da..2ee3f5bd 100644
+index e803b6d..2ee3f5b 100644
 --- a/src/socket_node.cpp
 +++ b/src/socket_node.cpp
 @@ -47,7 +47,7 @@ int main(int argc, char* argv[])
@@ -108,7 +132,7 @@ index e803b6da..2ee3f5bd 100644
  
    ROS_INFO_STREAM("Listening for rosserial TCP connections on port " << port);
 diff --git a/src/udp_socket_node.cpp b/src/udp_socket_node.cpp
-index 1ff7718c..dd659439 100644
+index 1ff7718..dd65943 100644
 --- a/src/udp_socket_node.cpp
 +++ b/src/udp_socket_node.cpp
 @@ -54,11 +54,11 @@ int main(int argc, char* argv[])

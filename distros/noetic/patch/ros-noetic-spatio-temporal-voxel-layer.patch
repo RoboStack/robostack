@@ -1,0 +1,85 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index c9460b1..a9c552a 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -18,6 +18,7 @@ find_package(catkin REQUIRED COMPONENTS
+   roscpp
+   tf2_ros
+   tf2_geometry_msgs
++  tf2_sensor_msgs
+   visualization_msgs
+   message_generation
+   dynamic_reconfigure
+@@ -56,7 +57,10 @@ if(NOT "${PCL_LIBRARIES}" STREQUAL "")
+ endif()
+ 
+ find_package(OpenVDB REQUIRED)
+-find_package(TBB REQUIRED)
++# RoboStack: oneTBB's config (cmake/FindTBB.cmake reads tbb/tbb_stddef.h, gone in oneTBB)
++find_package(TBB CONFIG REQUIRED)
++get_target_property(TBB_INCLUDE_DIRS TBB::tbb INTERFACE_INCLUDE_DIRECTORIES)
++set(TBB_LIBRARIES TBB::tbb)
+ remove_definitions(-DDISABLE_LIBUSB-1.0)
+ find_package(Eigen3 REQUIRED)
+ find_package(Boost REQUIRED COMPONENTS system thread)
+diff --git a/include/spatio_temporal_voxel_layer/frustum_models/frustum.hpp b/include/spatio_temporal_voxel_layer/frustum_models/frustum.hpp
+index b5657ec..5da84ef 100644
+--- a/include/spatio_temporal_voxel_layer/frustum_models/frustum.hpp
++++ b/include/spatio_temporal_voxel_layer/frustum_models/frustum.hpp
+@@ -51,6 +51,11 @@
+ #include <visualization_msgs/Marker.h>
+ #include <visualization_msgs/MarkerArray.h>
+ #include <geometry_msgs/Quaternion.h>
++
++#ifdef _WIN32
++// RoboStack: POSIX's uint, which MSVC doesn't have
++typedef unsigned int uint;
++#endif
+ #include <geometry_msgs/PointStamped.h>
+ #include <geometry_msgs/Pose.h>
+ // ROS
+diff --git a/include/spatio_temporal_voxel_layer/spatio_temporal_voxel_grid.hpp b/include/spatio_temporal_voxel_layer/spatio_temporal_voxel_grid.hpp
+index 4ec6ad9..123e945 100644
+--- a/include/spatio_temporal_voxel_layer/spatio_temporal_voxel_grid.hpp
++++ b/include/spatio_temporal_voxel_layer/spatio_temporal_voxel_grid.hpp
+@@ -59,7 +59,7 @@
+ #include <visualization_msgs/Marker.h>
+ #include <geometry_msgs/Point.h>
+ // TBB
+-#include <tbb/parallel_do.h>
++// RoboStack: oneTBB has no tbb/parallel_do.h (and the parallel_do call is commented out)
+ // OpenVDB
+ #include <openvdb/openvdb.h>
+ #include <openvdb/tools/GridTransformer.h>
+diff --git a/package.xml b/package.xml
+index 01425e1..330c10f 100644
+--- a/package.xml
++++ b/package.xml
+@@ -21,6 +21,7 @@
+   <build_depend>message_filters</build_depend>
+   <build_depend>tf2_ros</build_depend>
+   <build_depend>tf2_geometry_msgs</build_depend>
++  <build_depend>tf2_sensor_msgs</build_depend>
+   <build_depend>visualization_msgs</build_depend>
+   <build_depend>message_generation</build_depend>
+   <build_depend>libopenvdb-dev</build_depend>
+@@ -40,6 +41,7 @@
+   <run_depend>roscpp</run_depend>
+   <run_depend>tf2_ros</run_depend>
+   <run_depend>tf2_geometry_msgs</run_depend>
++  <run_depend>tf2_sensor_msgs</run_depend>
+   <run_depend>visualization_msgs</run_depend>
+   <run_depend>libopenvdb-dev</run_depend>
+   <run_depend>libopenvdb</run_depend>
+diff --git a/src/measurement_buffer.cpp b/src/measurement_buffer.cpp
+index b083a15..05c8722 100644
+--- a/src/measurement_buffer.cpp
++++ b/src/measurement_buffer.cpp
+@@ -35,6 +35,7 @@
+  * Author: Steve Macenski (steven.macenski@simberobotics.com)
+  *********************************************************************/
+ 
++#include <tf2_sensor_msgs/tf2_sensor_msgs.h>  // RoboStack: tf2::doTransform for PointCloud2 (undefined otherwise)
+ #include <spatio_temporal_voxel_layer/measurement_buffer.hpp>
+ #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+ 

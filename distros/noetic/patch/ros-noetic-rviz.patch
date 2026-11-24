@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index b1cd592..cd811e5 100644
+index b1cd592..956ceeb 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -1,6 +1,11 @@
@@ -14,7 +14,7 @@ index b1cd592..cd811e5 100644
  if (POLICY CMP0042)
    cmake_policy(SET CMP0042 NEW)
  endif()
-@@ -98,10 +103,10 @@ if(APPLE)
+@@ -98,14 +103,14 @@ if(APPLE)
  endif()
  
  # Prefer newer vendor-specific OpenGL library
@@ -29,6 +29,11 @@ index b1cd592..cd811e5 100644
  
  set(CMAKE_AUTOMOC ON)
  
+-set(RVIZ_QT_VERSIONS "5;6" CACHE STRING "List of Qt versions to consider (in order)")
++set(RVIZ_QT_VERSIONS "6;5" CACHE STRING "List of Qt versions to consider (in order)")
+ foreach(_current_version ${RVIZ_QT_VERSIONS})
+   find_package(Qt${_current_version} QUIET COMPONENTS Core Widgets OpenGL)
+   if (Qt${_current_version}_FOUND)
 @@ -226,7 +231,7 @@ catkin_package(
  
  #catkin_lint: ignore_once external_directory
@@ -56,46 +61,60 @@ index 4b3c5b8..e714db0 100644
  {
    type truetype
 diff --git a/src/python_bindings/sip/CMakeLists.txt b/src/python_bindings/sip/CMakeLists.txt
-index efbb497..0def9a6 100644
+index efbb497..d41d57f 100644
 --- a/src/python_bindings/sip/CMakeLists.txt
 +++ b/src/python_bindings/sip/CMakeLists.txt
-@@ -48,14 +48,21 @@ set(rviz_sip_INCLUDE_DIRS
+@@ -48,13 +48,10 @@ set(rviz_sip_INCLUDE_DIRS
    ${OGRE_INCLUDE_DIRS}
    ${catkin_INCLUDE_DIRS}
  )
 +
-+find_package(OpenGL REQUIRED)
-+find_package(Threads REQUIRED)
-+
++# python_qt_binding's sip_helper.cmake links the module to these (rviz is the target)
  set(rviz_sip_LIBRARIES ${rviz_LIBRARIES} ${PROJECT_NAME})
 -set(rviz_sip_LIBRARY_DIRS ${rviz_LIBRARY_DIRS} ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_LIB_DESTINATION})
-+set(rviz_sip_LIBRARY_DIRS ${rviz_LIBRARY_DIRS} ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_LIB_DESTINATION} /usr/lib/x86_64-linux-gnu/)
- if (MSVC)
-   set(rviz_sip_LDFLAGS_OTHER ${rviz_LDFLAGS_OTHER} /LIBPATH:\"${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_LIB_DESTINATION}\")
- else()
-   set(rviz_sip_LDFLAGS_OTHER ${rviz_LDFLAGS_OTHER} -Wl,-rpath,\\"${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_LIB_DESTINATION}\\")
- endif()
+-if (MSVC)
+-  set(rviz_sip_LDFLAGS_OTHER ${rviz_LDFLAGS_OTHER} /LIBPATH:\"${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_LIB_DESTINATION}\")
+-else()
+-  set(rviz_sip_LDFLAGS_OTHER ${rviz_LDFLAGS_OTHER} -Wl,-rpath,\\"${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_LIB_DESTINATION}\\")
+-endif()
++set(rviz_sip_LIBRARY_DIRS ${rviz_LIBRARY_DIRS})
  
-+message(WARNING "rviz_sip_LIBRARIES: ${rviz_sip_LIBRARIES}")
-+message(WARNING "rviz_sip_LIBRARY_DIRS: ${rviz_sip_LIBRARY_DIRS}")
-+
  if(sip_helper_FOUND)
    list(APPEND rviz_BINDINGS "sip")
-   set(rviz_BINDINGS "${rviz_BINDINGS}" PARENT_SCOPE)
-@@ -69,11 +76,11 @@ if(sip_helper_FOUND)
-   if(DEFINED PYTHON_EXTENSION_MODULE_SUFFIX)
-     set(rviz_sip_LIBRARY_FILE librviz_sip${PYTHON_EXTENSION_MODULE_SUFFIX})
-   elseif(APPLE)
+@@ -66,16 +63,8 @@ if(sip_helper_FOUND)
+     DEPENDS ${rviz_sip_DEPENDENT_FILES}
+     DEPENDENCIES rviz
+   )
+-  if(DEFINED PYTHON_EXTENSION_MODULE_SUFFIX)
+-    set(rviz_sip_LIBRARY_FILE librviz_sip${PYTHON_EXTENSION_MODULE_SUFFIX})
+-  elseif(APPLE)
 -    set(rviz_sip_LIBRARY_FILE librviz_sip.so)
-+    set(rviz_sip_LIBRARY_FILE "librviz_sip.cpython-${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}-darwin.so")
-   elseif(WIN32)
-     set(rviz_sip_LIBRARY_FILE librviz_sip.pyd)
-   else()
+-  elseif(WIN32)
+-    set(rviz_sip_LIBRARY_FILE librviz_sip.pyd)
+-  else()
 -    set(rviz_sip_LIBRARY_FILE librviz_sip${CMAKE_SHARED_LIBRARY_SUFFIX})
-+    set(rviz_sip_LIBRARY_FILE "librviz_sip.cpython-${PYTHON_VERSION_MAJOR}${PYTHON_VERSION_MINOR}-${CMAKE_HOST_SYSTEM_PROCESSOR}-linux-gnu${CMAKE_SHARED_LIBRARY_SUFFIX}")
-   endif()
-   #catkin_lint: ignore_once external_file
-   install(FILES ${CATKIN_DEVEL_PREFIX}/${PYTHON_INSTALL_DIR}/rviz/${rviz_sip_LIBRARY_FILE}
+-  endif()
+-  #catkin_lint: ignore_once external_file
+-  install(FILES ${CATKIN_DEVEL_PREFIX}/${PYTHON_INSTALL_DIR}/rviz/${rviz_sip_LIBRARY_FILE}
+-    DESTINATION ${CATKIN_PACKAGE_PYTHON_DESTINATION})
++  # a Python extension module (python_qt_binding's sip_helper.cmake)
++  install(TARGETS librviz_sip
++    LIBRARY DESTINATION ${CATKIN_PACKAGE_PYTHON_DESTINATION}
++    RUNTIME DESTINATION ${CATKIN_PACKAGE_PYTHON_DESTINATION})
+ endif()
+diff --git a/src/python_bindings/sip/rviz.sip b/src/python_bindings/sip/rviz.sip
+index 4154985..0c3e868 100644
+--- a/src/python_bindings/sip/rviz.sip
++++ b/src/python_bindings/sip/rviz.sip
+@@ -4,7 +4,7 @@
+ %Import QtGui/QtGuimod.sip
+ %Import QtWidgets/QtWidgetsmod.sip
+ 
+-%DefaultSupertype sip.simplewrapper
++%DefaultSupertype PyQt6.sip.simplewrapper
+ 
+ %Include visualization_frame.sip
+ %Include visualization_manager.sip
 diff --git a/src/rviz/ogre_helpers/render_system.cpp b/src/rviz/ogre_helpers/render_system.cpp
 index 4005f98..c0441de 100644
 --- a/src/rviz/ogre_helpers/render_system.cpp
