@@ -153,6 +153,8 @@ ros_gz_bridge:
   # but only gets them transitively via gz_msgs_vendor, so neither the pins nor
   # their run_exports apply: a build could link a newer libabseil than the one
   # installed next to it (missing libabsl_*.so.<version> at runtime).
+  # NOTE: ideally this would be resolved by adding host exports to gz_msgs_vendor
+  # instead, but that would require https://github.com/conda/ceps/issues/77.
   add_host: ["libabseil", "libprotobuf"]
 ros_gz_image:
   # Same as ros_gz_bridge.
