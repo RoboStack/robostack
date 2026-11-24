@@ -26,10 +26,10 @@ index 97fe249..ca462ef 100644
  elseif(COMPILER_SUPPORTS_CXX0X)
    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
 diff --git a/cmake_modules/FindG2O.cmake b/cmake_modules/FindG2O.cmake
-index b2670d3..2c482f5 100644
+index b2670d3..e9819fb 100644
 --- a/cmake_modules/FindG2O.cmake
 +++ b/cmake_modules/FindG2O.cmake
-@@ -1,3 +1,18 @@
+@@ -1,3 +1,20 @@
 +# RoboStack: g2o's own CMake config (libg2o installs it); the search below doesn't find
 +# the libraries in a conda prefix
 +find_package(g2o CONFIG QUIET)
@@ -42,12 +42,31 @@ index b2670d3..2c482f5 100644
 +    endif()
 +  endforeach()
 +  set(G2O_FOUND TRUE)
++  message(STATUS "Found libg2o (CMake config ${g2o_DIR}): ${G2O_LIBRARIES}")
 +  return()
 +endif()
++message(STATUS "libg2o's CMake config not found (g2o_DIR: ${g2o_DIR}); searching for the libraries")
 +
  # Locate the g2o libraries
  # A general framework for graph optimization.
  #
+@@ -9,7 +26,8 @@
+ # Niko Suenderhauf <niko@etit.tu-chemnitz.de>
+ # Adapted by Felix Endres <endres@informatik.uni-freiburg.de>
+ 
+-IF(UNIX)
++# RoboStack: also on Windows (MSVC import libraries in the prefix's lib)
++IF(UNIX OR WIN32)
+ 
+   #IF(G2O_INCLUDE_DIR AND G2O_LIBRARIES)
+     # in cache already
+@@ -93,5 +111,5 @@ IF(UNIX)
+     ENDIF(NOT G2O_INCLUDE_DIR)
+   ENDIF(G2O_LIBRARIES AND G2O_INCLUDE_DIR)
+ 
+-ENDIF(UNIX)
++ENDIF(UNIX OR WIN32)
+ 
 diff --git a/include/teb_local_planner/graph_search.h b/include/teb_local_planner/graph_search.h
 index 51d3a19..b122f84 100644
 --- a/include/teb_local_planner/graph_search.h

@@ -22,6 +22,22 @@ index c9460b1..a9c552a 100644
  remove_definitions(-DDISABLE_LIBUSB-1.0)
  find_package(Eigen3 REQUIRED)
  find_package(Boost REQUIRED COMPONENTS system thread)
+diff --git a/include/spatio_temporal_voxel_layer/frustum_models/frustum.hpp b/include/spatio_temporal_voxel_layer/frustum_models/frustum.hpp
+index b5657ec..5da84ef 100644
+--- a/include/spatio_temporal_voxel_layer/frustum_models/frustum.hpp
++++ b/include/spatio_temporal_voxel_layer/frustum_models/frustum.hpp
+@@ -51,6 +51,11 @@
+ #include <visualization_msgs/Marker.h>
+ #include <visualization_msgs/MarkerArray.h>
+ #include <geometry_msgs/Quaternion.h>
++
++#ifdef _WIN32
++// RoboStack: POSIX's uint, which MSVC doesn't have
++typedef unsigned int uint;
++#endif
+ #include <geometry_msgs/PointStamped.h>
+ #include <geometry_msgs/Pose.h>
+ // ROS
 diff --git a/include/spatio_temporal_voxel_layer/spatio_temporal_voxel_grid.hpp b/include/spatio_temporal_voxel_layer/spatio_temporal_voxel_grid.hpp
 index 4ec6ad9..123e945 100644
 --- a/include/spatio_temporal_voxel_layer/spatio_temporal_voxel_grid.hpp

@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 17972a5..20789b2 100644
+index 17972a5..5aa4964 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -10,7 +10,13 @@ find_package(catkin REQUIRED COMPONENTS
@@ -17,6 +17,15 @@ index 17972a5..20789b2 100644
  
  catkin_package(
     INCLUDE_DIRS include
+@@ -59,7 +65,7 @@ target_link_libraries(ros_type_introspection ${catkin_LIBRARIES})
+ install(TARGETS ros_type_introspection 
+    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+-   RUNTIME DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
++   RUNTIME DESTINATION ${CATKIN_GLOBAL_BIN_DESTINATION}  # RoboStack: Windows DLLs next to the others
+  )
+ 
+ ## Mark cpp header files for installation
 diff --git a/src/ros_message.cpp b/src/ros_message.cpp
 index 9c9e07d..3922d85 100644
 --- a/src/ros_message.cpp
