@@ -1,0 +1,28 @@
+diff --git a/image_view2.h b/image_view2.h
+index 702d290..b45a8f0 100644
+--- a/image_view2.h
++++ b/image_view2.h
+@@ -63,7 +63,22 @@
+ #include <image_view2/MouseEvent.h>
+ 
+ 
+-#if ( CV_MAJOR_VERSION >= 4)
++#if ( CV_MAJOR_VERSION >= 5)
++// RoboStack: OpenCV 5 has no C API; the C names this package uses, in C++
++#include <opencv2/highgui.hpp>
++#include <opencv2/imgproc.hpp>
++typedef cv::Scalar CvScalar;
++typedef cv::Rect CvRect;
++#define CV_RGB( r, g, b )  cv::Scalar( (b), (g), (r), 0 )
++#define cvScalar(...) cv::Scalar(__VA_ARGS__)
++#define cvPoint(x, y) cv::Point((x), (y))
++#define CV_FILLED cv::FILLED
++#define CV_WINDOW_AUTOSIZE cv::WINDOW_AUTOSIZE
++#define CV_EVENT_MOUSEMOVE cv::EVENT_MOUSEMOVE
++#define CV_EVENT_LBUTTONDOWN cv::EVENT_LBUTTONDOWN
++#define CV_EVENT_LBUTTONUP cv::EVENT_LBUTTONUP
++#define CV_EVENT_RBUTTONDOWN cv::EVENT_RBUTTONDOWN
++#elif ( CV_MAJOR_VERSION >= 4)
+ #include <opencv2/highgui.hpp>
+ #include <opencv2/highgui/highgui_c.h>
+ #undef CV_RGB

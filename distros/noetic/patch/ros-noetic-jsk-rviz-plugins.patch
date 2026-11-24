@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 60777df..f219f18 100644
+index 60777df5..f219f185 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -80,12 +80,8 @@ include_directories(src ${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS})
@@ -27,7 +27,7 @@ index 60777df..f219f18 100644
  add_dependencies(jsk_rviz_plugins
    jsk_footstep_msgs_generate_messages_cpp
 diff --git a/src/camera_info_display.cpp b/src/camera_info_display.cpp
-index c4904e2..b38fa56 100644
+index c4904e2a..b38fa569 100644
 --- a/src/camera_info_display.cpp
 +++ b/src/camera_info_display.cpp
 @@ -37,6 +37,7 @@
@@ -39,7 +39,7 @@ index c4904e2..b38fa56 100644
  #include <OGRE/OgreBlendMode.h>
  #include <QImage>
 diff --git a/src/facing_visualizer.cpp b/src/facing_visualizer.cpp
-index 8c0dcc5..f3a38c5 100644
+index 8c0dcc5a..f3a38c5c 100644
 --- a/src/facing_visualizer.cpp
 +++ b/src/facing_visualizer.cpp
 @@ -33,6 +33,7 @@
@@ -51,7 +51,7 @@ index 8c0dcc5..f3a38c5 100644
  #include <rviz/uniform_string_stream.h>
  #include <rviz/render_panel.h>
 diff --git a/src/overlay_diagnostic_display.cpp b/src/overlay_diagnostic_display.cpp
-index 2cc3f0a..45d4e92 100644
+index 2cc3f0ab..45d4e921 100644
 --- a/src/overlay_diagnostic_display.cpp
 +++ b/src/overlay_diagnostic_display.cpp
 @@ -390,7 +390,7 @@ namespace jsk_rviz_plugins
@@ -73,7 +73,7 @@ index 2cc3f0a..45d4e92 100644
      if (overlay_->getTextureWidth() > text_width) {
        path.addText((overlay_->getTextureWidth() - text_width) / 2.0,
 diff --git a/src/overlay_menu_display.cpp b/src/overlay_menu_display.cpp
-index b41b5b8..2d236fb 100644
+index b41b5b8b..2d236fb6 100644
 --- a/src/overlay_menu_display.cpp
 +++ b/src/overlay_menu_display.cpp
 @@ -238,12 +238,12 @@ namespace jsk_rviz_plugins
@@ -101,7 +101,7 @@ index b41b5b8..2d236fb 100644
                           w, line_height,
                           Qt::TextWordWrap | Qt::AlignLeft | Qt::AlignTop,
 diff --git a/src/overlay_text_display.cpp b/src/overlay_text_display.cpp
-index 86edc23..22ead73 100644
+index 86edc239..22ead734 100644
 --- a/src/overlay_text_display.cpp
 +++ b/src/overlay_text_display.cpp
 @@ -33,6 +33,7 @@
@@ -122,7 +122,7 @@ index 86edc23..22ead73 100644
            painter.drawStaticText(0, h - text_rect.height(), static_text);
          }
 diff --git a/src/overlay_utils.cpp b/src/overlay_utils.cpp
-index c9f2df0..99d8ca5 100644
+index c9f2df00..99d8ca59 100644
 --- a/src/overlay_utils.cpp
 +++ b/src/overlay_utils.cpp
 @@ -33,6 +33,7 @@
@@ -134,7 +134,7 @@ index c9f2df0..99d8ca5 100644
  #include <ros/ros.h>
  
 diff --git a/src/overlay_utils.h b/src/overlay_utils.h
-index 828d588..582f9c7 100644
+index 828d588f..582f9c78 100644
 --- a/src/overlay_utils.h
 +++ b/src/overlay_utils.h
 @@ -37,6 +37,7 @@
@@ -146,7 +146,7 @@ index 828d588..582f9c7 100644
  #include <OGRE/OgreTextureManager.h>
  #include <OGRE/OgreTexture.h>
 diff --git a/src/polygon_array_display.cpp b/src/polygon_array_display.cpp
-index 7fce414..69460cb 100644
+index 7fce414c..69460cb1 100644
 --- a/src/polygon_array_display.cpp
 +++ b/src/polygon_array_display.cpp
 @@ -35,6 +35,8 @@
@@ -159,7 +159,7 @@ index 7fce414..69460cb 100644
  #include "rviz/properties/parse_color.h"
  #include <rviz/validate_floats.h>
 diff --git a/src/screenshot_listener_tool.cpp b/src/screenshot_listener_tool.cpp
-index 1450e06..bd7d55e 100644
+index 1450e065..bd7d55e1 100644
 --- a/src/screenshot_listener_tool.cpp
 +++ b/src/screenshot_listener_tool.cpp
 @@ -33,6 +33,8 @@
@@ -181,7 +181,7 @@ index 1450e06..bd7d55e 100644
      QImageWriter writer(output_file);
      writer.write(screenshot.toImage());
 diff --git a/src/simple_occupancy_grid_array_display.cpp b/src/simple_occupancy_grid_array_display.cpp
-index 8486974..565db29 100644
+index 84869743..565db29e 100644
 --- a/src/simple_occupancy_grid_array_display.cpp
 +++ b/src/simple_occupancy_grid_array_display.cpp
 @@ -33,6 +33,8 @@
@@ -194,7 +194,7 @@ index 8486974..565db29 100644
  #include <Eigen/Geometry>
  #include <jsk_recognition_utils/pcl_conversion_util.h>
 diff --git a/src/string_display.cpp b/src/string_display.cpp
-index a899d51..6f5a9f8 100644
+index a899d519..6f5a9f82 100644
 --- a/src/string_display.cpp
 +++ b/src/string_display.cpp
 @@ -33,6 +33,7 @@
@@ -214,3 +214,36 @@ index a899d51..6f5a9f8 100644
            painter.drawStaticText(0, h - text_rect.height(), static_text);
          }
        }
+diff --git a/src/video_capture_display.cpp b/src/video_capture_display.cpp
+index a9dc596f..853bac6f 100644
+--- a/src/video_capture_display.cpp
++++ b/src/video_capture_display.cpp
+@@ -35,8 +35,8 @@
+ 
+ #include "video_capture_display.h"
+ #if CV_MAJOR_VERSION >= 4
+-#include <opencv2/videoio/legacy/constants_c.h>
+-#include <opencv2/imgproc/types_c.h>
++#include <opencv2/videoio.hpp>
++#include <opencv2/imgproc.hpp>
+ #endif
+ #include <rviz/display_context.h>
+ #include <rviz/view_manager.h>
+@@ -203,7 +203,7 @@ namespace jsk_rviz_plugins
+       width_ = panel->width();
+       height_ = panel->height();
+     }
+-    writer_.open(file_name_, CV_FOURCC_DEFAULT, fps_, cv::Size(width_, height_));
++    writer_.open(file_name_, cv::VideoWriter::fourcc('I', 'Y', 'U', 'V'), fps_, cv::Size(width_, height_));
+   }
+   
+   void VideoCaptureDisplay::stopCapture()
+@@ -236,7 +236,7 @@ namespace jsk_rviz_plugins
+       if (image.size().width != width_ || image.size().height != height_) {
+         cv::resize(image, image, cv::Size(width_, height_), 0, 0, cv::INTER_LINEAR);
+       }
+-      cv::cvtColor(image, image, CV_RGB2BGR);  // RGB -> BGR
++      cv::cvtColor(image, image, cv::COLOR_RGB2BGR);  // RGB -> BGR
+       writer_ << image;
+       ++frame_counter_;
+       if (frame_counter_ % 100 == 0) {

@@ -1,6 +1,7 @@
 tests:
   # catkin's compatibility settings (ros-noetic-catkin.patch): C++ standard floor, the
-  # boost_system stand-in, Eigen 5 as Eigen3 3.x; and Qt 5 requests built with Qt 6
+  # boost_system stand-in, Eigen 5 as Eigen3 3.x; Qt 5 requests built with Qt 6; and OpenCV 4
+  # requests (calib3d, features2d) built with OpenCV 5
   - if: unix
     then:
       script:
@@ -10,6 +11,9 @@ tests:
         - cmake -S qt5_demo -B build_qt5 -G Ninja -DCMAKE_PREFIX_PATH="$PREFIX"
         - cmake --build build_qt5
         - QT_QPA_PLATFORM=offscreen ./build_qt5/qt5_demo
+        - cmake -S opencv_demo -B build_opencv -G Ninja -DCMAKE_PREFIX_PATH="$PREFIX"
+        - cmake --build build_opencv
+        - ./build_opencv/opencv_demo
       requirements:
         build:
           - cxx-compiler
@@ -19,6 +23,7 @@ tests:
           - libboost-devel
           - eigen
           - qt6-main
+          - libopencv
           - if: linux
             then:
               - libgl-devel
@@ -27,3 +32,4 @@ tests:
         recipe:
           - compat_demo/
           - qt5_demo/
+          - opencv_demo/

@@ -1,0 +1,12 @@
+diff --git a/src/point_cloud_color/point_cloud2_color.cpp b/src/point_cloud_color/point_cloud2_color.cpp
+index 3ef065f..a9d2f82 100644
+--- a/src/point_cloud_color/point_cloud2_color.cpp
++++ b/src/point_cloud_color/point_cloud2_color.cpp
+@@ -29,6 +29,7 @@
+ #include <unordered_map>
+ // needs to be included after tf2_eigen
+ #include <opencv2/core/eigen.hpp>
++#include <opencv2/calib3d.hpp>
+ 
+ namespace {
+ 

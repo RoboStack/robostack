@@ -1,0 +1,79 @@
+diff --git a/src/compressed_publisher.cpp b/src/compressed_publisher.cpp
+index e0d6e2f1..aa58e346 100644
+--- a/src/compressed_publisher.cpp
++++ b/src/compressed_publisher.cpp
+@@ -46,7 +46,7 @@
+ 
+ // If OpenCV4
+ #if CV_VERSION_MAJOR > 3
+-#include <opencv2/imgcodecs/legacy/constants_c.h>
++#include <opencv2/imgcodecs.hpp>
+ #endif
+ 
+ using namespace cv;
+diff --git a/src/compressed_subscriber.cpp b/src/compressed_subscriber.cpp
+index 059f821c..259a0728 100644
+--- a/src/compressed_subscriber.cpp
++++ b/src/compressed_subscriber.cpp
+@@ -244,24 +244,24 @@ void CompressedSubscriber::internalCallback(const sensor_msgs::CompressedImageCo
+         {
+           // if necessary convert colors from bgr to rgb
+           if ((image_encoding == enc::RGB8) || (image_encoding == enc::RGB16))
+-            cv::cvtColor(cv_ptr->image, cv_ptr->image, CV_BGR2RGB);
++            cv::cvtColor(cv_ptr->image, cv_ptr->image, cv::COLOR_BGR2RGB);
+ 
+           if ((image_encoding == enc::RGBA8) || (image_encoding == enc::RGBA16))
+-            cv::cvtColor(cv_ptr->image, cv_ptr->image, CV_BGR2RGBA);
++            cv::cvtColor(cv_ptr->image, cv_ptr->image, cv::COLOR_BGR2RGBA);
+ 
+           if ((image_encoding == enc::BGRA8) || (image_encoding == enc::BGRA16))
+-            cv::cvtColor(cv_ptr->image, cv_ptr->image, CV_BGR2BGRA);
++            cv::cvtColor(cv_ptr->image, cv_ptr->image, cv::COLOR_BGR2BGRA);
+         } else
+         {
+           // if necessary convert colors from rgb to bgr
+           if ((image_encoding == enc::BGR8) || (image_encoding == enc::BGR16))
+-            cv::cvtColor(cv_ptr->image, cv_ptr->image, CV_RGB2BGR);
++            cv::cvtColor(cv_ptr->image, cv_ptr->image, cv::COLOR_RGB2BGR);
+ 
+           if ((image_encoding == enc::BGRA8) || (image_encoding == enc::BGRA16))
+-            cv::cvtColor(cv_ptr->image, cv_ptr->image, CV_RGB2BGRA);
++            cv::cvtColor(cv_ptr->image, cv_ptr->image, cv::COLOR_RGB2BGRA);
+ 
+           if ((image_encoding == enc::RGBA8) || (image_encoding == enc::RGBA16))
+-            cv::cvtColor(cv_ptr->image, cv_ptr->image, CV_RGB2RGBA);
++            cv::cvtColor(cv_ptr->image, cv_ptr->image, cv::COLOR_RGB2RGBA);
+         }
+       }
+     }
+diff --git a/test/basic.cpp b/test/basic.cpp
+index 1efbf6cb..f595576b 100644
+--- a/test/basic.cpp
++++ b/test/basic.cpp
+@@ -123,7 +123,7 @@ TEST(Basic, loop)
+   }
+   {
+     cv_bridge::CvImage cvImg;
+-    cv::cvtColor(testImage, cvImg.image, CV_BGR2RGB);
++    cv::cvtColor(testImage, cvImg.image, cv::COLOR_BGR2RGB);
+     cvImg.encoding = sensor_msgs::image_encodings::RGB8;
+ 
+     sensor_msgs::ImagePtr msg = cvImg.toImageMsg();
+@@ -135,7 +135,7 @@ TEST(Basic, loop)
+   }
+   {
+     cv_bridge::CvImage cvImg;
+-    cv::cvtColor(testImage, cvImg.image, CV_BGR2RGBA);
++    cv::cvtColor(testImage, cvImg.image, cv::COLOR_BGR2RGBA);
+     cvImg.encoding = sensor_msgs::image_encodings::RGBA8;
+ 
+     sensor_msgs::ImagePtr msg = cvImg.toImageMsg();
+@@ -147,7 +147,7 @@ TEST(Basic, loop)
+   }
+   {
+     cv_bridge::CvImage cvImg;
+-    cv::cvtColor(testImage, cvImg.image, CV_BGR2BGRA);
++    cv::cvtColor(testImage, cvImg.image, cv::COLOR_BGR2BGRA);
+     cvImg.encoding = sensor_msgs::image_encodings::BGRA8;
+ 
+     sensor_msgs::ImagePtr msg = cvImg.toImageMsg();

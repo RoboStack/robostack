@@ -1,8 +1,8 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 55c405fd0..a53d0f349 100644
+index 9cb81eb2d..63688a11e 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -39,7 +39,8 @@ configure_file(
+@@ -42,7 +42,8 @@ configure_file(
  # ------------------------------------------------------------------------------------
  
  # download and install font data
@@ -12,7 +12,7 @@ index 55c405fd0..a53d0f349 100644
  
  catkin_python_setup()
  
-@@ -62,6 +63,7 @@ add_subdirectory(python/${PROJECT_NAME})
+@@ -65,6 +66,7 @@ add_subdirectory(python/${PROJECT_NAME})
  
  find_package(OpenCV REQUIRED core imgproc)
  find_package(PCL REQUIRED)
@@ -20,7 +20,7 @@ index 55c405fd0..a53d0f349 100644
  find_package(PkgConfig)
  pkg_check_modules(yaml_cpp yaml-cpp REQUIRED)
  IF(${yaml_cpp_VERSION} VERSION_LESS "0.5.0")
-@@ -72,11 +74,10 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+@@ -75,11 +77,10 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
    set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -z defs")
  endif()
  include_directories(
@@ -34,7 +34,7 @@ index 55c405fd0..a53d0f349 100644
    src/grid_index.cpp
    src/grid_map.cpp
    src/grid_line.cpp
-@@ -102,6 +103,8 @@ add_library(jsk_recognition_utils SHARED
+@@ -105,6 +106,8 @@ add_library(jsk_recognition_utils SHARED
    src/time_util.cpp
    )
  
@@ -43,6 +43,190 @@ index 55c405fd0..a53d0f349 100644
  if (CATKIN_ENABLE_TESTING)
    find_package(rostest REQUIRED)
    if("$ENV{ROS_DISTRO}" STRGREATER "indigo") # kinetic and later uses qt5
+diff --git a/CMakeLists.txt.orig b/CMakeLists.txt.orig
+new file mode 100644
+index 000000000..9cb81eb2d
+--- /dev/null
++++ b/CMakeLists.txt.orig
+@@ -0,0 +1,178 @@
++cmake_minimum_required(VERSION 2.8.3)
++project(jsk_recognition_utils)
++
++# Use ccache if installed to make it fast to generate object files
++if (${CMAKE_VERSION} VERSION_LESS 3.4)
++  find_program(CCACHE_FOUND ccache)
++  if(CCACHE_FOUND)
++    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
++    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
++  endif()
++endif()
++
++## Find catkin macros and libraries
++## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
++## is used, also find other catkin packages
++find_package(catkin REQUIRED COMPONENTS
++  cv_bridge
++  dynamic_reconfigure
++  jsk_recognition_msgs
++  pcl_ros
++  pcl_msgs
++  eigen_conversions
++  message_generation
++  rostest
++  tf_conversions
++  tf
++  tf2_ros
++  image_geometry
++  sensor_msgs
++  geometry_msgs
++  jsk_topic_tools
++  visualization_msgs
++)
++
++configure_file(
++  ${CMAKE_CURRENT_SOURCE_DIR}/include/jsk_recognition_utils/jsk_topic_tools_version.h.in
++  ${CATKIN_DEVEL_PREFIX}/${CATKIN_GLOBAL_INCLUDE_DESTINATION}/jsk_recognition_utils/jsk_topic_tools_version.h)
++
++
++# ------------------------------------------------------------------------------------
++# Download
++# ------------------------------------------------------------------------------------
++
++# download and install font data
++add_custom_target(${PROJECT_NAME}_install_font_data ALL COMMAND python$ENV{ROS_PYTHON_VERSION} ${PROJECT_SOURCE_DIR}/scripts/install_font_data.py)
++
++catkin_python_setup()
++
++generate_dynamic_reconfigure_options(
++  cfg/PoseArrayToPose.cfg
++  cfg/PolygonArrayToBoxArray.cfg
++  cfg/PolygonArrayToPolygon.cfg
++)
++
++catkin_package(
++ INCLUDE_DIRS include
++ LIBRARIES jsk_recognition_utils
++ CATKIN_DEPENDS cv_bridge jsk_recognition_msgs pcl_ros visualization_msgs message_runtime
++)
++
++# Cythonize pyx files
++set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
++include(UseCython)
++add_subdirectory(python/${PROJECT_NAME})
++
++find_package(OpenCV REQUIRED core imgproc)
++find_package(PCL REQUIRED)
++find_package(PkgConfig)
++pkg_check_modules(yaml_cpp yaml-cpp REQUIRED)
++IF(${yaml_cpp_VERSION} VERSION_LESS "0.5.0")
++## indigo yaml-cpp : 0.5.0 /  hydro yaml-cpp : 0.3.0
++  add_definitions("-DUSE_OLD_YAML")
++ENDIF()
++if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
++  set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -z defs")
++endif()
++include_directories(
++  include ${catkin_INCLUDE_DIRS}
++)
++link_libraries(${catkin_LIBRARIES} ${OpenCV_LIBRARIES} ${PCL_LIBRARIES} yaml-cpp)
++
++add_library(jsk_recognition_utils SHARED
++  src/grid_index.cpp
++  src/grid_map.cpp
++  src/grid_line.cpp
++  src/geo_util.cpp
++  src/random_util.cpp
++  src/pcl_ros_util.cpp
++  src/pcl_conversion_util.cpp
++  src/pcl_util.cpp
++  src/tf_listener_singleton.cpp
++  src/pcl/ear_clipping_patched.cpp
++  src/sensor_model_utils.cpp
++  src/cv_utils.cpp
++  src/rgb_colors.cpp
++  src/geo/line.cpp
++  src/geo/segment.cpp
++  src/geo/polyline.cpp
++  src/geo/plane.cpp
++  src/geo/polygon.cpp
++  src/geo/convex_polygon.cpp
++  src/geo/cube.cpp
++  src/geo/cylinder.cpp
++  src/geo/grid_plane.cpp
++  src/time_util.cpp
++  )
++
++if (CATKIN_ENABLE_TESTING)
++  find_package(rostest REQUIRED)
++  if("$ENV{ROS_DISTRO}" STRGREATER "indigo") # kinetic and later uses qt5
++    find_package(Qt5Widgets REQUIRED)
++    set(QT_LIBRARIES Qt5::Widgets)
++  endif()
++  add_rostest_gtest(test_tf_listener_singleton test/tf_listener_singleton.test src/tests/test_tf_listener_singleton.cpp)
++  target_link_libraries(test_tf_listener_singleton ${PROJECT_NAME} ${catkin_LIBRARIES})
++  catkin_add_gtest(test_cv_utils src/tests/test_cv_utils.cpp)
++  target_link_libraries(test_cv_utils ${PROJECT_NAME} ${OpenCV_LIBRARIES})
++  catkin_add_gtest(test_rgb_colors src/tests/test_rgb_colors.cpp)
++  target_link_libraries(test_rgb_colors ${PROJECT_NAME} ${OpenCV_LIBRARIES})
++  if("$ENV{ROS_DISTRO}" STRGREATER "hydro")
++    # FIXME: jsk_tools/test_topic_published.py does not work on hydro travis/jenkins
++    # https://github.com/jsk-ros-pkg/jsk_common/pull/1293#issuecomment-164158260
++    add_rostest(sample/sample_add_bounding_box_array.launch ARGS gui:=false)
++    add_rostest(sample/sample_bounding_box_array_publisher.launch ARGS gui:=false)
++    add_rostest(test/add_cluster_indices.test)
++    add_rostest(test/image_16uc1_to_32fc1.test)
++    add_rostest(test/polygon_array_publisher.test)
++    add_rostest(test/polygon_array_to_box_array.test)
++    add_rostest(test/polygon_array_to_polygon.test)
++    add_rostest(test/pose_array_to_pose.test)
++    add_rostest(test/rect_array_to_polygon_array.test)
++    add_rostest(test/static_virtual_camera.test)
++  endif()
++endif()
++
++# From https://github.com/jsk-ros-pkg/jsk_recognition/pull/2345
++# Install header files directly into ${CATKIN_PACKAGE_INCLUDE_DESTINATION}.
++# If the package has setup.py and modules under src/${PROJECT_NAME}/,
++# install python executables directly into ${CATKIN_PACKAGE_BIN_DESTINATION}.
++# However, if it doesn't have setup.py, directories including python executables
++# should be installed recursively into ${CATKIN_PACKAGE_SHARE_DESTINATION}.
++# Also, other directories like 'launch' or 'sample' must be installed
++# recursively into ${CATKIN_PACKAGE_SHARE_DESTINATION}.
++# Be careful that 'launch' and 'launch/' are different: the former is directory
++# and the latter is each content.
++install(TARGETS jsk_recognition_utils
++  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
++  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
++  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION})
++
++install(DIRECTORY include/${PROJECT_NAME}/
++  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
++  FILES_MATCHING PATTERN "*.h" # Ignore *_version.h.in files
++)
++
++install(DIRECTORY sample test
++  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
++  USE_SOURCE_PERMISSIONS
++)
++if($ENV{ROS_DISTRO} STREQUAL "indigo") # on noetic it needs catkin_install_python to support Python3 and it does not work on indigo for some reason...
++install(DIRECTORY node_scripts
++  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
++  USE_SOURCE_PERMISSIONS
++  )
++else()
++install(DIRECTORY node_scripts
++  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
++  USE_SOURCE_PERMISSIONS
++  FILES_MATCHING
++  PATTERN "*"
++  PATTERN "*/*.py" EXCLUDE
++  )
++file(GLOB NODE_SCRIPT_PROGRAMS node_scripts/*.py)
++catkin_install_python(
++  PROGRAMS ${NODE_SCRIPT_PROGRAMS}
++  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/node_scripts
++)
++endif()
 diff --git a/cmake/FindCython.cmake b/cmake/FindCython.cmake
 index f44f1f707..d7fb4205f 100644
 --- a/cmake/FindCython.cmake
@@ -676,11 +860,55 @@ index f432c890c..0a11631e5 100644
 +  set(pxd_location "" CACHE INTERNAL "")
 +endfunction()
 \ No newline at end of file
+diff --git a/include/jsk_recognition_utils/cv_utils.h b/include/jsk_recognition_utils/cv_utils.h
+index 2f7f7e429..b81effa2e 100644
+--- a/include/jsk_recognition_utils/cv_utils.h
++++ b/include/jsk_recognition_utils/cv_utils.h
+@@ -38,7 +38,7 @@
+ 
+ #include <opencv2/opencv.hpp>
+ #if ( CV_MAJOR_VERSION >= 4)
+-#include <opencv2/imgproc/imgproc_c.h>
++#include <opencv2/imgproc.hpp>
+ #endif
+ #include <jsk_recognition_msgs/HistogramWithRangeBin.h>
+ 
+diff --git a/node_scripts/static_virtual_camera.py b/node_scripts/static_virtual_camera.py
+index 91528ac7e..0ac440aab 100755
+--- a/node_scripts/static_virtual_camera.py
++++ b/node_scripts/static_virtual_camera.py
+@@ -42,7 +42,7 @@ if __name__ == '__main__':
+     compmsg = CompressedImage()
+     compmsg.header = imgmsg.header
+     compmsg.format = "jpeg"
+-    compmsg.data = np.array(cv2.imencode('.jpg', cv2.cvtColor(img, cv2.COLOR_BGR2RGB))[1]).tostring()
++    compmsg.data = np.array(cv2.imencode('.jpg', cv2.cvtColor(img, cv2.COLOR_BGR2RGB))[1]).tobytes()
+ 
+     info_msg = CameraInfo()
+     info_msg.header.frame_id = imgmsg.header.frame_id
 diff --git a/python/jsk_recognition_utils/CMakeLists.txt b/python/jsk_recognition_utils/CMakeLists.txt
-index d3feba4f5..496ca09dc 100644
+index ed82fbbf9..20b48f50f 100644
 --- a/python/jsk_recognition_utils/CMakeLists.txt
 +++ b/python/jsk_recognition_utils/CMakeLists.txt
-@@ -1,16 +1,10 @@
+@@ -1,12 +1,12 @@
+ # Get NumPy and Cython versions
+ execute_process(
+-  COMMAND python$ENV{ROS_PYTHON_VERSION} -c "import numpy; print(numpy.__version__)"
++  COMMAND ${PYTHON_EXECUTABLE} -c "import numpy; print(numpy.__version__)"
+   OUTPUT_VARIABLE NUMPY_VERSION
+   OUTPUT_STRIP_TRAILING_WHITESPACE
+ )
+ 
+ execute_process(
+-  COMMAND python$ENV{ROS_PYTHON_VERSION} -c "import Cython; print(Cython.__version__)"
++  COMMAND ${PYTHON_EXECUTABLE} -c "import Cython; print(Cython.__version__)"
+   OUTPUT_VARIABLE CYTHON_VERSION
+   OUTPUT_STRIP_TRAILING_WHITESPACE
+ )
+@@ -54,19 +54,18 @@ if(SKIP_NMS)
+ else()
+   # Your normal logic here
+ 
 -if(NOT DEFINED Numpy_INCLUDE_DIRS)
 -  # Get Numpy include directories
 -  execute_process(
@@ -700,30 +928,105 @@ index d3feba4f5..496ca09dc 100644
 +include_directories(${Python_NumPy_INCLUDE_DIRS} ${Python_INCLUDE_DIRS} ${Python_SITELIB})
 +add_cython_target(nms nms.pyx)
 +add_library(nms MODULE ${nms})
++if( APPLE )
++  set_target_properties( nms PROPERTIES LINK_FLAGS "-undefined dynamic_lookup" )
++else()
++  target_link_libraries( nms ${PYTHON_LIBRARIES} )
++endif()
  set_target_properties(nms PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_PYTHON_DESTINATION})
  install(TARGETS nms
    ARCHIVE DESTINATION ${CATKIN_PACKAGE_PYTHON_DESTINATION}
-diff --git a/python/jsk_recognition_utils/CMakeLists.txt b/python/jsk_recognition_utils/CMakeLists.txt
-index 496ca09dc..8a63ef6a1 100644
---- a/python/jsk_recognition_utils/CMakeLists.txt
-+++ b/python/jsk_recognition_utils/CMakeLists.txt
-@@ -1,12 +1,12 @@
- # Get NumPy and Cython versions
- execute_process(
--  COMMAND python$ENV{ROS_PYTHON_VERSION} -c "import numpy; print(numpy.__version__)"
+diff --git a/python/jsk_recognition_utils/CMakeLists.txt.orig b/python/jsk_recognition_utils/CMakeLists.txt.orig
+new file mode 100644
+index 000000000..5f8933415
+--- /dev/null
++++ b/python/jsk_recognition_utils/CMakeLists.txt.orig
+@@ -0,0 +1,70 @@
++# Get NumPy and Cython versions
++execute_process(
 +  COMMAND ${PYTHON_EXECUTABLE} -c "import numpy; print(numpy.__version__)"
-   OUTPUT_VARIABLE NUMPY_VERSION
-   OUTPUT_STRIP_TRAILING_WHITESPACE
- )
- 
- execute_process(
--  COMMAND python$ENV{ROS_PYTHON_VERSION} -c "import Cython; print(Cython.__version__)"
++  OUTPUT_VARIABLE NUMPY_VERSION
++  OUTPUT_STRIP_TRAILING_WHITESPACE
++)
++
++execute_process(
 +  COMMAND ${PYTHON_EXECUTABLE} -c "import Cython; print(Cython.__version__)"
-   OUTPUT_VARIABLE CYTHON_VERSION
-   OUTPUT_STRIP_TRAILING_WHITESPACE
- )
++  OUTPUT_VARIABLE CYTHON_VERSION
++  OUTPUT_STRIP_TRAILING_WHITESPACE
++)
++
++message(STATUS "NumPy version: ${NUMPY_VERSION}")
++message(STATUS "Cython version: ${CYTHON_VERSION}")
++
++# --- Parse version strings safely ---
++# --- Compatibility logic (CMake 3.5+) ---
++function(version_to_number ver_str out_var)
++  string(REPLACE "." ";" _parts ${ver_str})
++  list(LENGTH _parts _len)
++  list(GET _parts 0 _major)
++  if(_len GREATER 1)
++    list(GET _parts 1 _minor)
++  else()
++    set(_minor 0)
++  endif()
++  if(_len GREATER 2)
++    list(GET _parts 2 _patch)
++  else()
++    set(_patch 0)
++  endif()
++  math(EXPR _version_num "${_major} * 10000 + ${_minor} * 100 + ${_patch}")
++  set(${out_var} ${_version_num} PARENT_SCOPE)
++endfunction()
++
++# Compare versions
++# This noexcept modifier was added in newer versions of Cython, and support for it is required when compiling with newer versions of NumPy (1.26+).
++# Update your Cython to a recent version (>= 0.29.30 or 3.0+ recommended):
++
++
++# Simulate GREATER_EQUAL using GREATER or EQUAL
++set(SKIP_NMS FALSE)
++version_to_number("${NUMPY_VERSION}" NUMPY_VER)
++if(NUMPY_VER GREATER 12600 OR NUMPY_VER EQUAL 12600)
++  version_to_number("${CYTHON_VERSION}" CYTHON_VER)
++  if(CYTHON_VER LESS 2930)
++    set(SKIP_NMS TRUE)
++  endif()
++endif()
++
++if(SKIP_NMS)
++  message(WARNING "NumPy >= 1.26.0 requires newer version of Cython >= 0.29.30, skip compile nms.pyx")
++else()
++  # Your normal logic here
++
++find_package (Python COMPONENTS Interpreter Development NumPy)
++find_package(Cython)
++
++# Compile nms.pyx
++include_directories(${Python_NumPy_INCLUDE_DIRS} ${Python_INCLUDE_DIRS} ${Python_SITELIB})
++add_cython_target(nms nms.pyx)
++add_library(nms MODULE ${nms})
++set_target_properties(nms PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_PYTHON_DESTINATION})
++install(TARGETS nms
++  ARCHIVE DESTINATION ${CATKIN_PACKAGE_PYTHON_DESTINATION}
++  LIBRARY DESTINATION ${CATKIN_PACKAGE_PYTHON_DESTINATION}
++)
++
++endif()
+diff --git a/python/jsk_recognition_utils/depth.py b/python/jsk_recognition_utils/depth.py
+index 37ca93719..09685fcfb 100644
+--- a/python/jsk_recognition_utils/depth.py
++++ b/python/jsk_recognition_utils/depth.py
+@@ -48,7 +48,7 @@ def depth_to_compressed_depth(depth, depth_max=None, depth_quantization=100,
+         compressed_msg.data = struct.pack(
+             'iff', 0, depth_quant_a, depth_quant_b)
+         compressed_msg.data += np.array(
+-            cv2.imencode('.png', inv_depth_img)[1]).tostring()
++            cv2.imencode('.png', inv_depth_img)[1]).tobytes()
+     else:
+         raise NotImplementedError("Not supported compressedDepth encoding {}"
+                                   .format(encoding))
 diff --git a/python/jsk_recognition_utils/nms.pyx b/python/jsk_recognition_utils/nms.pyx
-index 70a03f94a..0760a2d8a 100644
+index a6c99237f..580f87d4f 100644
 --- a/python/jsk_recognition_utils/nms.pyx
 +++ b/python/jsk_recognition_utils/nms.pyx
 @@ -30,11 +30,11 @@ def nms(np.ndarray[np.float32_t, ndim=2] dets, np.float thresh):
@@ -741,18 +1044,16 @@ index 70a03f94a..0760a2d8a 100644
  
      # nominal indices
      cdef int _i, _j
-diff --git a/python/jsk_recognition_utils/CMakeLists.txt b/python/jsk_recognition_utils/CMakeLists.txt
-index 8a63ef6a1..fbc89c858 100644
---- a/python/jsk_recognition_utils/CMakeLists.txt
-+++ b/python/jsk_recognition_utils/CMakeLists.txt
-@@ -61,6 +61,11 @@ include_directories(${Python_NumPy_INCLUDE_DIRS} ${Python_INCLUDE_DIRS} ${Pytho
- add_cython_target(nms nms.pyx)
- add_library(nms MODULE ${nms})
-+if( APPLE )
-+  set_target_properties( nms PROPERTIES LINK_FLAGS "-undefined dynamic_lookup" )
-+else()
-+  target_link_libraries( nms ${PYTHON_LIBRARIES} )
-+endif()
- set_target_properties(nms PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${CATKIN_DEVEL_PREFIX}/${CATKIN_PACKAGE_PYTHON_DESTINATION})
- install(TARGETS nms
-   ARCHIVE DESTINATION ${CATKIN_PACKAGE_PYTHON_DESTINATION}
+diff --git a/src/cv_utils.cpp b/src/cv_utils.cpp
+index 74ff09d72..c0541c970 100644
+--- a/src/cv_utils.cpp
++++ b/src/cv_utils.cpp
+@@ -141,7 +141,7 @@ namespace jsk_recognition_utils
+     }
+     
+     cv::rectangle(image, cv::Point(left, height), cv::Point(right, height - top),
+-                  color, CV_FILLED);
++                  color, cv::FILLED);
+   }
+ 
+   void labelToRGB(const cv::Mat src, cv::Mat& dst)

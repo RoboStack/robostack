@@ -1,0 +1,19 @@
+tests:
+  # a program built against rtabmap's CMake config with OpenCV 5 (ros-noetic-rtabmap.patch):
+  # compressed matrices keep their type, ORB features
+  - if: unix
+    then:
+      script:
+        # the run environment's Python (with numpy, which RTABMapConfig.cmake asks for), not one
+        # that the build tools bring along
+        - cmake -S rtabmap_demo -B build -G Ninja -DCMAKE_PREFIX_PATH="$PREFIX" -DPython3_FIND_STRATEGY=LOCATION -DPython3_ROOT_DIR="$PREFIX"
+        - cmake --build build
+        - ./build/rtabmap_demo
+      requirements:
+        build:
+          - cxx-compiler
+          - cmake
+          - ninja
+      files:
+        recipe:
+          - rtabmap_demo/

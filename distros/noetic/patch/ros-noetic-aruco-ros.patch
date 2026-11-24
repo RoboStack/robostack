@@ -1,8 +1,23 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 4d8b818..d313db7 100644
+index 98c2609..23726f2 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -21,7 +21,7 @@ generate_dynamic_reconfigure_options(
+@@ -1,7 +1,6 @@
+ cmake_minimum_required(VERSION 2.8.3)
+ project(aruco_ros)
+ 
+-find_package(OpenCV REQUIRED)
+ 
+ find_package(catkin REQUIRED COMPONENTS
+   cv_bridge
+@@ -16,12 +15,14 @@ find_package(catkin REQUIRED COMPONENTS
+   sensor_msgs
+   visualization_msgs
+ )
++# RoboStack: after catkin, whose find_package maps calib3d to OpenCV 5 components
++find_package(OpenCV REQUIRED COMPONENTS core imgproc calib3d)
+ 
+ generate_dynamic_reconfigure_options(
    cfg/ArucoThreshold.cfg
  )
  
@@ -11,24 +26,7 @@ index 4d8b818..d313db7 100644
  
  catkin_package(
    INCLUDE_DIRS include
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 4d8b818..e2c5e99 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -1,7 +1,7 @@
- cmake_minimum_required(VERSION 2.8.3)
- project(aruco_ros)
- 
--find_package(OpenCV REQUIRED)
-+find_package(OpenCV REQUIRED COMPONENTS core imgproc calib3d)
- 
- find_package(catkin REQUIRED COMPONENTS
-   cv_bridge
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 4d8b818..2738144 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -35,7 +35,7 @@ include_directories(
+@@ -37,7 +38,7 @@ include_directories(
    ${OpenCV_INCLUDE_DIRS}
  )
   add_library(aruco_ros_utils src/aruco_ros_utils.cpp)

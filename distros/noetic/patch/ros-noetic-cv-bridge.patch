@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index ef804b9..50ee338 100644
+index ef804b91..50ee3384 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -3,28 +3,8 @@ project(cv_bridge)
@@ -42,7 +42,7 @@ index ef804b9..50ee338 100644
  if(NOT ANDROID)
  add_subdirectory(python)
 diff --git a/include/cv_bridge/cv_bridge.h b/include/cv_bridge/cv_bridge.h
-index 3e7b9aa..7a564af 100644
+index 3e7b9aaa..300d695d 100644
 --- a/include/cv_bridge/cv_bridge.h
 +++ b/include/cv_bridge/cv_bridge.h
 @@ -42,7 +42,10 @@
@@ -56,8 +56,30 @@ index 3e7b9aa..7a564af 100644
  #include <stdexcept>
  
  namespace cv_bridge {
+diff --git a/python/cv_bridge/core.py b/python/cv_bridge/core.py
+index 423aa546..3d2514db 100644
+--- a/python/cv_bridge/core.py
++++ b/python/cv_bridge/core.py
+@@ -220,7 +220,7 @@ class CvBridge(object):
+         cmprs_img_msg.format = dst_format
+         ext_format = '.' + dst_format
+         try:
+-            cmprs_img_msg.data = np.array(cv2.imencode(ext_format, cvim)[1]).tostring()
++            cmprs_img_msg.data = np.array(cv2.imencode(ext_format, cvim)[1]).tobytes()
+         except RuntimeError as e:
+             raise CvBridgeError(e)
+ 
+@@ -267,7 +267,7 @@ class CvBridge(object):
+                 raise CvBridgeError("encoding specified as %s, but image has incompatible type %s" % (encoding, cv_type))
+         if cvim.dtype.byteorder == '>':
+             img_msg.is_bigendian = True
+-        img_msg.data = cvim.tostring()
++        img_msg.data = cvim.tobytes()
+         img_msg.step = len(img_msg.data) // img_msg.height
+ 
+         return img_msg
 diff --git a/src/CMakeLists.txt b/src/CMakeLists.txt
-index d104692..57ec2a2 100644
+index d1046922..57ec2a26 100644
 --- a/src/CMakeLists.txt
 +++ b/src/CMakeLists.txt
 @@ -1,8 +1,7 @@
@@ -114,7 +136,7 @@ index d104692..57ec2a2 100644
  
  set_target_properties(${PROJECT_NAME}_boost PROPERTIES
 diff --git a/src/cv_bridge.cpp b/src/cv_bridge.cpp
-index 44f23a3..8de258f 100644
+index 44f23a32..8de258f7 100644
 --- a/src/cv_bridge.cpp
 +++ b/src/cv_bridge.cpp
 @@ -33,7 +33,9 @@
@@ -129,7 +151,7 @@ index 44f23a3..8de258f 100644
  #include <map>
  
 diff --git a/src/module_opencv4.cpp b/src/module_opencv4.cpp
-index c4ec5a2..9c9c88b 100644
+index c4ec5a2a..9c9c88b5 100644
 --- a/src/module_opencv4.cpp
 +++ b/src/module_opencv4.cpp
 @@ -2,7 +2,7 @@
@@ -141,3 +163,25 @@ index c4ec5a2..9c9c88b 100644
  
  #include "opencv2/opencv_modules.hpp"
  
+diff --git a/test/conversions.py b/test/conversions.py
+index bddc1781..32712bab 100644
+--- a/test/conversions.py
++++ b/test/conversions.py
+@@ -42,7 +42,7 @@ class TestConversions(unittest.TestCase):
+                             self.assert_(original.shape[:2] == newimg.shape[:2])
+                         else:
+                             self.assert_(original.shape == newimg.shape)
+-                        self.assert_(len(original.tostring()) == len(newimg.tostring()))
++                        self.assert_(len(original.tobytes()) == len(newimg.tobytes()))
+ 
+     def test_encode_decode_cv2_compressed(self):
+         import numpy as np
+@@ -71,7 +71,7 @@ class TestConversions(unittest.TestCase):
+                             self.assert_(original.shape[:2] == newimg.shape[:2])
+                         else:
+                             self.assert_(original.shape == newimg.shape)
+-                        self.assert_(len(original.tostring()) == len(newimg.tostring()))
++                        self.assert_(len(original.tobytes()) == len(newimg.tobytes()))
+ 
+     def test_endianness(self):
+         br = CvBridge()
