@@ -78,6 +78,8 @@ class_loader:  # console_bridge outlives the class loaders (exit abort on macOS)
   build_number: 33
 fuse_viz:
   build_number: 33
+launch:
+  build_number: 35
 moveit_ros_visualization:
   build_number: 33
 moveit_task_constructor_visualization:
@@ -96,6 +98,12 @@ rmf_utils:  # its DLL moved to bin (Windows)
   build_number: 33
 rmf_websocket:  # its DLL moved to bin (Windows)
   build_number: 33
+nav2_common:
+  build_number: 35
+orbbec_camera:
+  build_number: 35
+plotjuggler:
+  build_number: 35
 rviz_2d_overlay_plugins:
   build_number: 33
 rviz_common:

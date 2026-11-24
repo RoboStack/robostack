@@ -11,13 +11,18 @@
 #   nothing conflicts; and a PR with the build times the week's build-branch runs
 #   recorded (shared/build_timings/, for packing the build jobs by time).
 # - monthly (the 1st): a PR upgrading the tooling's pixi dependencies (pixi.toml / pixi.lock).
+# - daily, when vars.PIXI_FORK is set: a PR on prefix-dev/pixi copying the rosdep mappings
+#   (shared/ and distros/*/robostack.yaml) to pixi-build-ros, so that `pixi build` of ROS
+#   packages maps rosdep keys as RoboStack does. It is pushed to the fork vars.PIXI_FORK
+#   (<owner>/pixi) with secrets.PIXI_SYNC_TOKEN, a token of that fork's owner: the bot's
+#   GitHub App can't open PRs on prefix-dev/pixi.
 # - on demand (owners, members and collaborators):
 #     Actions > robostack-bot > Run workflow, an issue from the "robostack-bot command"
 #     template, or a comment: @robostack-bot <command> [<distro>]
 #   commands: update-rosdistro-snapshot [<distro>...|all] | find-stale-packages [<distro>...|all] |
 #             update-conda-forge-pinning [<distro>...|all] | add-package <pkg>... [<distro>...] |
 #             rebuild <pkg>... [<distro>...|all] [--with-dependents] | update-vinca [<ref>] |
-#             dependency-report [<distro>...|all] | update-build-timings | update-pixi |
+#             dependency-report [<distro>...|all] | update-build-timings | update-pixi | sync-pixi-mappings |
 #             rebuild-dependents (a comment on a pull request: commits the rebuilds its ABI
 #             check suggests to its branch; not possible for pull requests from forks)
 # - package requests (the "Package request" issue form or `@robostack-bot add-package`,
@@ -38,7 +43,7 @@ on:
       command:
         type: choice
         options: [add-package, update-rosdistro-snapshot, find-stale-packages, update-conda-forge-pinning, rebuild,
-                  update-vinca, dependency-report, update-build-timings, update-pixi]
+                  update-vinca, dependency-report, update-build-timings, update-pixi, sync-pixi-mappings]
       distro:
         description: Distribution (for the per-distribution commands; empty = all)
         required: false
@@ -89,6 +94,7 @@ jobs:
           ASSOCIATION: ${{ github.event.comment.author_association || github.event.issue.author_association }}
           PULL_REQUEST: ${{ github.event.issue.pull_request && github.event.issue.number || '' }}
           SCHEDULE: ${{ github.event.schedule }}
+          PIXI_FORK: ${{ vars.PIXI_FORK }}
         run: |
           case "$EVENT" in
             schedule)
@@ -104,8 +110,9 @@ jobs:
                 exit 0
               fi
               # rosdistro syncs, and the conda-forge pinning: one job for all distributions
-              # (they share it; one with its own pinning is updated in the same pull request)
-              jobs=$(pixi run -q rs rosdistro-syncs | python3 -c 'import json,sys; print(json.dumps(json.load(sys.stdin) + [{"command":"update-conda-forge-pinning","distro":"","args":"","preview":False}]))') ;;
+              # (they share it; one with its own pinning is updated in the same pull request);
+              # the rosdep mappings for pixi-build-ros, once a pixi fork is set up
+              jobs=$(pixi run -q rs rosdistro-syncs | python3 -c 'import json,os,sys; print(json.dumps(json.load(sys.stdin) + [{"command":"update-conda-forge-pinning","distro":"","args":"","preview":False}] + ([{"command":"sync-pixi-mappings","distro":"","args":"","preview":False}] if os.environ.get("PIXI_FORK") else [])))') ;;
             workflow_dispatch)  # only people with write access can dispatch
               jobs=$(ROBOSTACK_BOT_BODY="@robostack-bot $COMMAND $PACKAGES $DISTRO" ROBOSTACK_BOT_ASSOCIATION=OWNER pixi run -q rs parse-command) ;;
             *)
@@ -146,6 +153,13 @@ jobs:
           locked: true  # the lock file must match pixi.toml
           pixi-version: v0.81.0
           cache-write: false  # saved from main only (pixi-cache.yaml)
+      - name: Check out prefix-dev/pixi
+        if: matrix.command == 'sync-pixi-mappings'
+        uses: actions/checkout@v6
+        with:
+          repository: prefix-dev/pixi
+          path: _pixi
+          persist-credentials: false
       - name: robostack-bot ${{ matrix.command }} ${{ matrix.distro }}
         id: bot
         env:
@@ -178,6 +192,8 @@ jobs:
               # shellcheck disable=SC2046  # the --exclude arguments, one word each
               pixi upgrade --json $(pixi run -q rs update-pixi --excludes) > "$RUNNER_TEMP/pixi-upgrade.json" &&
                 pixi run rs update-pixi --changes "$RUNNER_TEMP/pixi-upgrade.json" --summary "$RUNNER_TEMP/summary.md" ;;
+            # writes pixi-build-ros's copies of the mappings into the pixi checkout
+            sync-pixi-mappings) pixi run rs sync-pixi-mappings _pixi --summary "$RUNNER_TEMP/summary.md" ;;
             # creates / updates the distribution's dependency-report issue
             dependency-report) pixi run rs "$DISTRO" dependency-report --summary "$RUNNER_TEMP/summary.md" ;;
           esac
@@ -192,7 +208,9 @@ jobs:
           printf '\nCloses #%s\n' "$NUMBER" >> "$RUNNER_TEMP/summary.md"
       - name: Open or update the pull request
         id: pr
-        if: steps.bot.outputs.changed == 'true' && !matrix.preview && matrix.command != 'rebuild-dependents'
+        if: >-
+          steps.bot.outputs.changed == 'true' && !matrix.preview &&
+          matrix.command != 'rebuild-dependents' && matrix.command != 'sync-pixi-mappings'
         uses: peter-evans/create-pull-request@v8
         with:
           token: ${{ steps.app.outputs.token || secrets.GHA_PAT || github.token }}
@@ -206,14 +224,27 @@ jobs:
           labels: |
             robostack-bot
             ${{ steps.bot.outputs.labels }}
+      - name: Open or update the pull request on prefix-dev/pixi
+        id: pixi_pr
+        if: steps.bot.outputs.changed == 'true' && matrix.command == 'sync-pixi-mappings'
+        uses: peter-evans/create-pull-request@v8
+        with:
+          path: _pixi
+          token: ${{ secrets.PIXI_SYNC_TOKEN }}
+          push-to-fork: ${{ vars.PIXI_FORK }}
+          branch: robostack-bot/sync-mappings
+          delete-branch: true
+          commit-message: "chore(pixi-build-ros): update RoboStack's rosdep mappings"
+          title: "chore(pixi-build-ros): update RoboStack's rosdep mappings"
+          body-path: ${{ runner.temp }}/summary.md
       - name: Reply on the issue / pull request
         if: always() && (github.event_name == 'issue_comment' || github.event_name == 'issues')
         env:
           GH_TOKEN: ${{ github.token }}
           NUMBER: ${{ github.event.issue.number }}
           TITLE: ${{ steps.bot.outputs.title || 'failed' }}
-          PR_URL: ${{ steps.pr.outputs.pull-request-url }}
-          PR_OPERATION: ${{ steps.pr.outputs.pull-request-operation }}
+          PR_URL: ${{ steps.pr.outputs.pull-request-url || steps.pixi_pr.outputs.pull-request-url }}
+          PR_OPERATION: ${{ steps.pr.outputs.pull-request-operation || steps.pixi_pr.outputs.pull-request-operation }}
         run: |
           {
             echo "**robostack-bot ${{ matrix.command }} ${{ matrix.distro }}**: $TITLE"

@@ -160,3 +160,5 @@ class_loader:  # console_bridge outlives the class loaders (exit abort on macOS)
   build_number: 32
 rmf_utils:  # its DLL moved from lib to bin (Windows)
   build_number: 32
+plotjuggler:
+  build_number: 32

@@ -130,11 +130,15 @@ gz_sim_vendor:
   build_number: 33
 gz_transport_vendor:
   build_number: 33
+launch:
+  build_number: 34
 moveit_ros_visualization:
   build_number: 31
 moveit_task_constructor_visualization:
   build_number: 31
 mrpt_gui:
+  build_number: 34
+nav2_common:
   build_number: 34
 nav2_rviz_plugins:
   build_number: 31
@@ -150,6 +154,8 @@ rmf_utils:  # its DLL moved to bin (Windows)
   build_number: 31
 rmf_websocket:  # its DLL moved to bin (Windows)
   build_number: 31
+plotjuggler:
+  build_number: 34
 rqt_robot_monitor:  # Qt6 patch (upstream PR #52)
   build_number: 31
 rtabmap_rviz_plugins:
