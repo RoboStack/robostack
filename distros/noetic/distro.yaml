@@ -1,0 +1,6 @@
+# Settings of ros-noetic that differ from the other distributions
+# (everything else is shared, see the README).
+channel_name: robostack-noetic
+upload_to: [anaconda]
+read_from: anaconda
+rosdistro_sync: manual

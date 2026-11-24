@@ -1,0 +1,122 @@
+diff --git a/irteus/Makefile b/irteus/Makefile
+index d86193f..a02dbf3 100644
+--- a/irteus/Makefile
++++ b/irteus/Makefile
+@@ -153,7 +153,18 @@ IRTIMGCOBJECTS=$(INSTALLOBJDIR)/euspng.$(OSFX)
+ IRTGLCOBJECTS=$(INSTALLOBJDIR)/irtglc.$(OSFX)
+ NROBJECTS=$(INSTALLOBJDIR)/nr.$(OSFX)
+ 
+-all: defun.h $(LIBNR) $(LIBIRTEUS) $(LIBIRTEUSG) $(LIBIRTEUSX) $(LIBIRTEUSIMG) $(LIBIRTEUSGL) make-link install-irtext.l
++EUSGL_BIN=
++ifneq ($(shell [ -x "$(BINDIR)/eusgl$(ESFX)" ] && echo yes),)
++EUSGL_BIN=$(BINDIR)/eusgl$(ESFX)
++IRTEUS_GL_LIBS=$(LIBIRTEUSG) $(LIBIRTEUSGL)
++else ifneq ($(shell [ -x "$(BINDIR)/eusg$(ESFX)" ] && echo yes),)
++EUSGL_BIN=$(BINDIR)/eusg$(ESFX)
++IRTEUS_GL_LIBS=$(LIBIRTEUSG) $(LIBIRTEUSGL)
++else
++IRTEUS_GL_LIBS=
++endif
++
++all: defun.h $(LIBNR) $(LIBIRTEUS) $(IRTEUS_GL_LIBS) $(LIBIRTEUSX) $(LIBIRTEUSIMG) make-link install-irtext.l
+ 
+ .PHONY: defun.h
+ defun.h:
+@@ -187,7 +198,7 @@ $(IRTEUSOBJS) $(INSTALLOBJDIR)/compile_irt.log: $(IRTEUS_L)
+ 
+ $(IRTEUSGOBJS): $(INSTALLOBJDIR)/compile_irtg.log
+ $(IRTEUSGOBJS) $(INSTALLOBJDIR)/compile_irtg.log: $(IRTEUSG_L)
+-	$(BINDIR)/eusgl$(ESFX) "(setq *objdir* \"$(INSTALLOBJDIR)/\")" < ./compile_irtg.l > $(INSTALLOBJDIR)/compile_irtg.log
++	$(EUSGL_BIN) "(setq *objdir* \"$(INSTALLOBJDIR)/\")" < ./compile_irtg.l > $(INSTALLOBJDIR)/compile_irtg.log
+ 	-rm -f $(IRTEUSG_C) $(IRTEUSG_H)
+ 
+ $(IRTEUSXOBJS): $(INSTALLOBJDIR)/compile_irtx.log
+@@ -202,7 +213,7 @@ $(IRTEUSIMGOBJS) $(INSTALLOBJDIR)/compile_irtimg.log: $(IRTEUSIMG_L)
+ 
+ $(IRTEUSGLOBJS): $(INSTALLOBJDIR)/compile_irtgl.log
+ $(IRTEUSGLOBJS) $(INSTALLOBJDIR)/compile_irtgl.log: $(IRTEUSGL_L)
+-	$(BINDIR)/eusgl$(ESFX) "(setq *objdir* \"$(INSTALLOBJDIR)/\")" < ./compile_irtgl.l > $(INSTALLOBJDIR)/compile_irtgl.log
++	$(EUSGL_BIN) "(setq *objdir* \"$(INSTALLOBJDIR)/\")" < ./compile_irtgl.l > $(INSTALLOBJDIR)/compile_irtgl.log
+ 	-rm -f $(IRTEUSGL_C) $(IRTEUSGL_H)
+ 
+ PQP/$(ARCHDIR)/libPQP-static.a:
+diff --git a/irteus/Makefile.LinuxARM b/irteus/Makefile.LinuxARM
+index 8b04f2f..fa376c5 100644
+--- a/irteus/Makefile.LinuxARM
++++ b/irteus/Makefile.LinuxARM
+@@ -41,9 +41,9 @@
+ ### ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ ###
+ 
+-CC=gcc
+-CXX=g++
+-LD=g++ -shared
++CC=$(BUILD_PREFIX)/bin/$(BUILD)-gcc
++CXX=$(BUILD_PREFIX)/bin/$(BUILD)-g++
++LD=$(CXX) -shared
+ OBJOPT=-o
+ OUTOPT=-o 
+ OSFX=o
+@@ -54,8 +54,8 @@ ESFX=
+ #SOFLAGS=-g -falign-functions=4 -Xlinker --export-all-symbols --unresolved-symbols=ignore-all
+ SOFLAGS=-g -falign-functions=4 -Xlinker --unresolved-symbols=ignore-all
+ IMPLIB=-L$(EUSDIR)/$(ARCH)/lib -leusgeo -L$(INSTALLLIBDIR) -lnr
+-IMPLIBGL=-L$(EUSDIR)/$(ARCH)/lib -leusgl -L/usr/X11R6/lib -lGLU -lGL -lXext
+-IMPLIBIMG=-ljpeg -lpng
++IMPLIBGL=-L$(EUSDIR)/$(ARCH)/lib -leusgl -L$(PREFIX)/lib -lGLU -lGL -lXext
++IMPLIBIMG=-L$(PREFIX)/lib -ljpeg -lpng
+ EXPLIB=
+ RAPID=-LRAPID/$(ARCHDIR) -lRAPID-static
+ RAPIDLIB=RAPID/$(ARCHDIR)/$(LPFX)RAPID-static.a
+@@ -63,10 +63,10 @@ FFTW=-L/usr/local/lib -lfftw -lrfftw
+ 
+ SVNVERSION=\"$(shell git rev-parse --short HEAD)\"
+ 
+-MACHINE=$(shell uname -m | sed 's/\(armv[0-9]\).*/\1/')
++MACHINE=$(shell $(CC) -dumpmachine | sed 's/-.*//')
+ THREAD= -DTHREADED -DPTHREAD
+ 
+-CFLAGS=-O2 -D$(MACHINE) -D$(ARCH) -DLinux -DARM -D_REENTRANT -DGCC -I$(EUSDIR)/include $(THREAD) -DSVNVERSION=$(SVNVERSION) -fPIC
++CFLAGS=-O2 -D$(MACHINE) -D$(ARCH) -DLinux -DARM -D_REENTRANT -DGCC -I$(PREFIX)/include -I$(EUSDIR)/include $(THREAD) -DSVNVERSION=$(SVNVERSION) -fPIC
+ CXXFLAGS=$(CFLAGS)
+ 
+ CFLAGS+= -g -falign-functions=4
+diff --git a/irteus/Makefile.Linux64 b/irteus/Makefile.Linux64
+index e749f16..f95bfd7 100644
+--- a/irteus/Makefile.Linux64
++++ b/irteus/Makefile.Linux64
+@@ -54,8 +54,8 @@ ESFX=
+ ESFX=
+ SOFLAGS=-g -falign-functions=8 -Xlinker --unresolved-symbols=ignore-all
+ IMPLIB=-L$(EUSDIR)/$(ARCHDIR)/lib -leusgeo -L$(INSTALLLIBDIR) -lnr
+-IMPLIBGL=-L$(EUSDIR)/$(ARCHDIR)/lib -leusgl -L/usr/X11R6/lib -lGLU -lGL -lXext
+-IMPLIBIMG=-ljpeg -lpng
++IMPLIBGL=-L$(EUSDIR)/$(ARCHDIR)/lib -leusgl -L$(PREFIX)/lib -lGLU -lGL -lXext
++IMPLIBIMG=-L$(PREFIX)/lib -ljpeg -lpng
+ EXPLIB=
+ RAPID=-LRAPID/$(ARCHDIR) -lRAPID-static
+ RAPIDLIB=RAPID/$(ARCHDIR)/$(LPFX)RAPID-static.a
+@@ -64,7 +64,7 @@ SVNVERSION=\"$(shell git rev-parse --short HEAD)\"
+ ARCH=Linux
+ MACHINE=x86_64
+ THREAD= -DTHREADED -DPTHREAD
+ 
+-CFLAGS=-O2 -D$(MACHINE) -D$(ARCH) -D_REENTRANT -DGCC -I$(EUSDIR)/include $(THREAD)  -DSVNVERSION=$(SVNVERSION)
++CFLAGS=-O2 -D$(MACHINE) -D$(ARCH) -D_REENTRANT -DGCC -I$(PREFIX)/include -I$(PREFIX)/include/libpng16 -I$(EUSDIR)/include $(THREAD)  -DSVNVERSION=$(SVNVERSION)
+ CXXFLAGS=$(CFLAGS)
+ 
+ CFLAGS+= -g -falign-functions=8 -fPIC
+diff --git a/irteus/PQP/Makefile.LinuxARM b/irteus/PQP/Makefile.LinuxARM
+index 85efe19..74ecd4b 100644
+--- a/irteus/PQP/Makefile.LinuxARM
++++ b/irteus/PQP/Makefile.LinuxARM
+@@ -1,7 +1,7 @@
+-CC = c++ -O2 -fPIC
++CC = $(BUILD_PREFIX)/bin/$(BUILD)-g++ -O2 -fPIC
+ OBJOPT = -o 
+ OUTOPT = -o 
+-LD = c++
++LD = $(BUILD_PREFIX)/bin/$(BUILD)-g++
+ SOFLAGS = -shared
+ EXELD = c++
+ EXESFX = 

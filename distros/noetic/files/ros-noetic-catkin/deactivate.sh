@@ -1,0 +1,20 @@
+# ros-noetic-catkin: run on environment activation (build_catkin.sh copies it to etc/conda)
+if [ -z "${CONDA_PREFIX}" ]; then
+	exit 0
+fi
+
+unset ROS_DISTRO
+unset ROS_ETC_DIR
+unset ROS_PACKAGE_PATH
+unset ROS_PYTHON_VERSION
+unset CMAKE_PREFIX_PATH
+unset AMENT_PREFIX_PATH
+unset COLCON_PREFIX_PATH
+unset ROS_VERSION
+unset ROS_OS_OVERRIDE
+# unset PYTHONPATH
+# unset PYTHONHOME
+# unset QT_PLUGIN_PATH
+unset ROS_LOCALHOST_ONLY
+unset ament_python_executable
+unset RMW_IMPLEMENTATION

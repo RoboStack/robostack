@@ -1388,11 +1388,11 @@ def mutex_problems(vinca: dict) -> list[str]:
     return []
 
 
-PATCH_NAME = re.compile(r"^ros2-(?P<package>[a-z0-9-]+)(\.(osx|linux|win|unix|emscripten))?\.patch$")
+PATCH_NAME = re.compile(r"^(?P<prefix>ros2-|ros-[a-z]+-)(?P<package>[a-z0-9-]+)(\.(osx|linux|win|unix|emscripten))?\.patch$")
 
 
 def unmatched_patches(patches: list[str], packages: set[str]) -> list[str]:
-    """Patches named after none of `packages`: vinca only applies ros2-<package>[.<platform>].patch,
+    """Patches named after none of `packages`: vinca only applies <prefix><package>[.<platform>].patch,
     so a misnamed patch (or one for a package that left the distribution) silently does nothing."""
     names = {p.replace("_", "-") for p in packages}
     return [p for p in patches if (m := PATCH_NAME.match(p)) and m["package"] not in names]
@@ -1471,10 +1471,12 @@ def check() -> Result:
         problems += [f"{distro}: {p}" for p in mutex_problems(vinca)]
         patches = sorted(p.name for p in (d / "patch").glob("*.patch"))
         for patch in patches:
-            if not PATCH_NAME.match(patch):
-                problems.append(f"{distro}: patch {patch} should be named ros2-<package>[.<platform>].patch")
+            if not (m := PATCH_NAME.match(patch)) or m["prefix"] != rs.package_prefix(distro):
+                problems.append(f"{distro}: patch {patch} should be named "
+                                f"{rs.package_prefix(distro)}<package>[.<platform>].patch")
         packages = _available(distro)
-        all_packages |= packages
+        if distro not in rs.ROS1_DISTROS:  # shared/ is ROS 2's
+            all_packages |= packages
         for patch in unmatched_patches(patches, packages):
             problems.append(f"{distro}: patch {patch} matches no package of the distribution, so it is never applied")
         for where, name in unknown_package_entries(d, packages):
