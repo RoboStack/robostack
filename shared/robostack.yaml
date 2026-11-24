@@ -42,7 +42,7 @@ black:
 boost:
   robostack: [libboost-devel, libboost-python-devel]
 bullet:
-  robostack: [bullet]
+  robostack: [bullet-cpp]
 bzip2:
   robostack: [bzip2]
 ca-certificates:

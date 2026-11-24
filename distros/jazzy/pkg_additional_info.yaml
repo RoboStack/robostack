@@ -158,5 +158,13 @@ cartographer_ros:
   build_number: 32  # offline_node.cpp out of the shared library (duplicate gflags abort)
 class_loader:  # console_bridge outlives the class loaders (exit abort on macOS)
   build_number: 32
+gz_dartsim_vendor:  # bullet rosdep mapped to bullet-cpp (no pybullet)
+  build_number: 32
+gz_physics_vendor:  # bullet rosdep mapped to bullet-cpp (no pybullet)
+  build_number: 32
+moveit_core:  # bullet rosdep mapped to bullet-cpp (no pybullet)
+  build_number: 32
 rmf_utils:  # its DLL moved from lib to bin (Windows)
+  build_number: 32
+tf2_bullet:  # bullet rosdep mapped to bullet-cpp (no pybullet)
   build_number: 32
