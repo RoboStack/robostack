@@ -43,10 +43,10 @@ index 0000000..9cea055
 +endif()
 +set(boost_system_FOUND TRUE)
 diff --git a/cmake/all.cmake b/cmake/all.cmake
-index 7768f96..2648dfe 100644
+index 7768f96..26ad7e7 100644
 --- a/cmake/all.cmake
 +++ b/cmake/all.cmake
-@@ -224,3 +224,26 @@ endif()
+@@ -224,3 +224,40 @@ endif()
  
  # requires stamp and environment files
  include(${catkin_EXTRAS_DIR}/catkin_python_setup.cmake)
@@ -73,6 +73,39 @@ index 7768f96..2648dfe 100644
 +  # and `register`, an error in C++17 (the standard here, see robostack_cxx_standard.cmake)
 +  add_compile_options($<$<COMPILE_LANGUAGE:CXX>:-Wno-register>)
 +endif()
++
++# RoboStack: fmt (log4cxx, spdlog, ...) needs MSVC's /utf-8 (fmt/base.h: "Unicode
++# support requires compiling with /utf-8"), and ROS 1 packages include it through them
++if(MSVC)
++  add_compile_options($<$<COMPILE_LANGUAGE:CXX>:/utf-8>)
++endif()
++
++# RoboStack: conda-forge's Boost is shared only on Windows; its data (program_options'
++# arg, ...) needs __declspec(dllimport), which the Boost:: targets get through
++# BOOST_<lib>_DYN_LINK but packages linking ${Boost_LIBRARIES} don't. BOOST_ALL_NO_LIB, as
++# the targets set it too: no auto-linking (decorated names conda-forge doesn't install)
++if(WIN32)
++  add_compile_definitions(BOOST_ALL_DYN_LINK BOOST_ALL_NO_LIB)
++endif()
+diff --git a/cmake/catkinConfig.cmake.in b/cmake/catkinConfig.cmake.in
+index 4d014f5..1c96886 100644
+--- a/cmake/catkinConfig.cmake.in
++++ b/cmake/catkinConfig.cmake.in
+@@ -10,6 +10,14 @@
+ # :outvar <comp>_INCLUDE_DIRS/_LIBRARY_DIRS/_LIBRARIES:
+ #    contains the include dirs / library dirs / libraries of the searched component <comp>.
+ 
++# RoboStack: catkin's find_package override (robostack_eigen3.cmake) is a macro, which
++# parses its arguments again: keep the backslashes of Windows paths (CMAKE_PREFIX_PATH)
++# in them, instead of reading them as escapes (\b, ...). Config files have their own
++# policy scope, so this doesn't change the package's policies.
++if(POLICY CMP0219)
++  cmake_policy(SET CMP0219 NEW)
++endif()
++
+ if(CATKIN_TOPLEVEL_FIND_PACKAGE OR NOT CATKIN_TOPLEVEL)
+   set(catkin_EXTRAS_DIR "@PKG_CMAKE_DIR@")
+ 
 diff --git a/cmake/catkin_libraries.cmake b/cmake/catkin_libraries.cmake
 index b19f4c8..5d9a24c 100644
 --- a/cmake/catkin_libraries.cmake
@@ -676,20 +709,24 @@ index 0000000..0b14e44
 +endif()
 diff --git a/cmake/robostack_cxx_standard.cmake b/cmake/robostack_cxx_standard.cmake
 new file mode 100644
-index 0000000..13c5c99
+index 0000000..70853f6
 --- /dev/null
 +++ b/cmake/robostack_cxx_standard.cmake
-@@ -0,0 +1,18 @@
+@@ -0,0 +1,22 @@
 +# RoboStack: conda-forge's libraries need C++17 (PCL 1.15, Sophus; Eigen 5 C++14), while
 +# many ROS 1 packages ask for C++11 or C++14 (-std=c++11, CMAKE_CXX_STANDARD 14). A
 +# request for a standard below C++17 is dropped, so these packages build with the
-+# compiler's default (C++17, as the packages without a request do); newer requests
-+# stay. Run by find_package(catkin) and catkin_package().
++# compiler's default (C++17, as the packages without a request do; with MSVC, whose
++# default is C++14, C++17 is set); newer requests stay. Run by find_package(catkin) and
++# catkin_package().
 +function(_robostack_drop_old_cxx_standard)
 +  if(DEFINED CMAKE_CXX_STANDARD AND "${CMAKE_CXX_STANDARD}" MATCHES "^(98|11|14)$")
 +    set(CMAKE_CXX_STANDARD 17 PARENT_SCOPE)
++  elseif(MSVC AND NOT DEFINED CMAKE_CXX_STANDARD)
++    # MSVC's default is C++14, not C++17 as GCC's and clang's
++    set(CMAKE_CXX_STANDARD 17 PARENT_SCOPE)
 +  endif()
-+  set(_old "-std=(c|gnu)\\+\\+(98|03|0x|11|1y|14)")
++  set(_old "(-std=(c|gnu)\\+\\+(98|03|0x|11|1y|14)|/std:c\\+\\+14)")
 +  string(REGEX REPLACE "(^| )${_old}( |$)" " " _flags "${CMAKE_CXX_FLAGS}")
 +  set(CMAKE_CXX_FLAGS "${_flags}" PARENT_SCOPE)
 +  get_directory_property(_options COMPILE_OPTIONS)
@@ -803,10 +840,23 @@ index e73934b..b9c8c00 100755
  def rollback_env_variables(environ, env_var_subfolders):
      """
 diff --git a/cmake/templates/pkgConfig.cmake.in b/cmake/templates/pkgConfig.cmake.in
-index 92199d4..b1423d7 100644
+index 92199d4..2d4c118 100644
 --- a/cmake/templates/pkgConfig.cmake.in
 +++ b/cmake/templates/pkgConfig.cmake.in
-@@ -119,10 +119,12 @@ endif()
+@@ -1,5 +1,12 @@
+ # generated from catkin/cmake/template/pkgConfig.cmake.in
+ 
++# RoboStack: the macros here and catkin's find_package override (a macro) parse their
++# arguments again: keep the backslashes of Windows paths in them, instead of reading
++# them as escapes. Config files have their own policy scope.
++if(POLICY CMP0219)
++  cmake_policy(SET CMP0219 NEW)
++endif()
++
+ # append elements to a list and remove existing duplicates from the list
+ # copied from catkin/cmake/list_append_deduplicate.cmake to keep pkgConfig
+ # self contained
+@@ -119,10 +126,12 @@ endif()
  set(libraries "@PKG_CONFIG_LIBRARIES@")
  foreach(library ${libraries})
    # keep build configuration keywords, generator expressions, target names, and absolute libraries as-is
