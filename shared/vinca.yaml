@@ -254,6 +254,7 @@ packages_select_by_deps:
   - py_trees_ros_interfaces
   - py_trees_ros_tutorials
   - py_trees_ros_viewer
+  - pymoveit2
   - radar_msgs
   - random_numbers
   - rclc
