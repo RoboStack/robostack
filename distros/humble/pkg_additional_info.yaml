@@ -2,6 +2,8 @@ apriltag:
   generate_dummy_package_with_run_deps:
     dep_name: apriltag
     max_pin: 'x.x.x'
+cartographer_ros:
+  additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
 eigenpy:
   generate_dummy_package_with_run_deps:
     dep_name: eigenpy
@@ -104,6 +106,11 @@ py_trees:
     dep_name: py-trees
     max_pin: 'x.x.x'
     override_version: 2.6.0
+rtabmap:
+  additional_cmake_args:
+    if: win
+    then: "-DBUILD_TOOLS=OFF -DBUILD_EXAMPLES=OFF -DWITH_GTSAM=OFF"
+    else: "-DBUILD_TOOLS=OFF -DBUILD_EXAMPLES=OFF"
 turtlebot3_node:  # odometry.cpp uses M_PI
   additional_cmake_args:
     if: win
@@ -122,16 +129,3 @@ urdfdom_headers:
 # Remove build_number fields below on new full rebuild
 zenoh_cpp_vendor:
   additional_cmake_args: "-DAMENT_VENDOR_POLICY=NEVER_VENDOR_IGNORE_SATISFIED_CHECK -DUSE_SYSTEM_ZENOH=ON"
-cartographer_ros:
-  additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
-  build_number: 26  # offline_node.cpp out of the shared library (duplicate gflags abort)
-moveit_core:  # bullet rosdep mapped to bullet-cpp (no pybullet)
-  build_number: 26
-rtabmap:
-  additional_cmake_args:
-    if: win
-    then: "-DBUILD_TOOLS=OFF -DBUILD_EXAMPLES=OFF -DWITH_GTSAM=OFF"
-    else: "-DBUILD_TOOLS=OFF -DBUILD_EXAMPLES=OFF"
-  build_number: 26  # built with Qt (its GUI library, for rtabmap_viz)
-tf2_bullet:  # bullet rosdep mapped to bullet-cpp (no pybullet)
-  build_number: 26
