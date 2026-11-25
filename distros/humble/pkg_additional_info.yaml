@@ -127,6 +127,8 @@ cartographer_ros:
   build_number: 26  # offline_node.cpp out of the shared library (duplicate gflags abort)
 moveit_core:  # bullet rosdep mapped to bullet-cpp (no pybullet)
   build_number: 26
+rclcpp:  # avoid GCC 15 -Werror=uninitialized in MessageMemoryStrategy::create_default()
+  build_number: 26
 rtabmap:
   additional_cmake_args:
     if: win

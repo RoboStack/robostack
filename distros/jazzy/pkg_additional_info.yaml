@@ -164,6 +164,8 @@ gz_physics_vendor:  # bullet rosdep mapped to bullet-cpp (no pybullet)
   build_number: 32
 moveit_core:  # bullet rosdep mapped to bullet-cpp (no pybullet)
   build_number: 32
+rclcpp:  # avoid GCC 15 -Werror=uninitialized in MessageMemoryStrategy::create_default()
+  build_number: 32
 rmf_utils:  # its DLL moved from lib to bin (Windows)
   build_number: 32
 tf2_bullet:  # bullet rosdep mapped to bullet-cpp (no pybullet)

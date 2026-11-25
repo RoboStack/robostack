@@ -144,6 +144,8 @@ mrpt_gui:
   build_number: 34
 nav2_rviz_plugins:
   build_number: 31
+rclcpp:  # avoid GCC 15 -Werror=uninitialized in MessageMemoryStrategy::create_default()
+  build_number: 31
 rmf_fleet_adapter:  # its DLL moved to bin (Windows)
   build_number: 31
 rmf_fleet_adapter_python:  # rmf_adapter as a Python MODULE (shared patch)
