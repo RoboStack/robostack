@@ -7,7 +7,11 @@ tests:
       pip_check: false
   # Smoke test without a running MoveIt: the arm and gripper interfaces of the Panda preset are created on a node (action and service clients for move_group), and the arm interface receives a JointState published on the same node.
   - script:
-      - python pymoveit2_smoke_test.py
+      env:
+        ROS_LOCALHOST_ONLY: "1"
+        ROS_AUTOMATIC_DISCOVERY_RANGE: LOCALHOST
+      content:
+        - python pymoveit2_smoke_test.py
     files:
       recipe:
         - pymoveit2_smoke_test.py
