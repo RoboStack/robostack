@@ -389,6 +389,14 @@ def rattler_build(distro: str, args: list[str], skip_existing: bool = True) -> l
     cmd = ["rattler-build", "build", "-m", "./conda_build_config.yaml",
            *(["-c", extra] if extra else []),
            "-c", channel_url(distro), "-c", CONDA_FORGE, "--channel-priority", "disabled"]
+    # Windows: strict isolation sets USERPROFILE to the work directory, where
+    # Environment.GetFolderPath(LocalApplicationData) finds no AppData\Local and returns "";
+    # MSBuild 18's file tracker indexes that empty path and crashes ("The CL task failed
+    # unexpectedly", IndexOutOfRangeException in FileTracker.FileIsUnderNormalizedPath),
+    # so CMake's Visual Studio 2026 generator can't identify the compiler. conda-build's
+    # isolation keeps the real USERPROFILE.
+    if sys.platform == "win32":
+        cmd += ["--env-isolation", "conda-build"]
     return cmd + (["--skip-existing=all"] if skip_existing else []) + args
 
 

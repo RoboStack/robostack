@@ -191,11 +191,6 @@ jobs:
         # temporary files on D:, about three times as fast as C: on GitHub's runners
         "CONDA_BLD_PATH=D:\bld\", "RATTLER_CACHE_DIR=D:\rattler", "TMP=D:\tmp", "TEMP=D:\tmp" |
           Out-File -FilePath $env:GITHUB_ENV -Append
-        # MSBuild 18's file tracker crashes on the Visual Studio generator's builds
-        # (IndexOutOfRangeException in FileTracker.FileIsUnderNormalizedPath, "The CL task
-        # failed unexpectedly", so CMake can't identify the compiler); it only serves
-        # incremental builds, so turn it off (environment variables are MSBuild properties)
-        "TrackFileAccess=false" | Out-File -FilePath $env:GITHUB_ENV -Append
         New-Item -ItemType Directory -Force -Path D:\bld, D:\rattler, D:\tmp | Out-Null
         Get-PSDrive C, D | Format-Table Name, @{n="free GB"; e={[math]::Round($_.Free / 1GB)}}
         New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
@@ -296,15 +291,6 @@ jobs:
       run: |
         for f in $(find /d/bld/bld -path '*/work/*' -name CMakeConfigureLog.yaml -mmin -30 2>/dev/null | head -3); do
           echo "::group::$f"; tail -c 20000 "$f"; echo "::endgroup::"
-        done
-        # MSBuild's file tracker needs these folders (Environment.GetFolderPath) to be non-empty
-        for w in $(ls -dt /d/bld/bld/rattler-build_*/work 2>/dev/null | head -1); do
-          echo "::group::folders in the build environment of $w"
-          printf '%s\r\n' "@echo off" "call build_env.bat >nul 2>&1" "set" \
-            "powershell -NoProfile -Command \"'ApplicationData','LocalApplicationData','UserProfile','CommonApplicationData' | %% { \$_ + '=' + [Environment]::GetFolderPath(\$_) }; 'Temp=' + [IO.Path]::GetTempPath()\"" \
-            > "$w/probe_folders.bat"
-          (cd "$w" && cmd //c probe_folders.bat) | grep -iE '^(USERPROFILE|APPDATA|LOCALAPPDATA|ProgramData|ALLUSERSPROFILE|HOMEDRIVE|HOMEPATH|SystemRoot|TEMP|TMP|ApplicationData|LocalApplicationData|CommonApplicationData)='
-          echo "::endgroup::"
         done
 
     # Compare what the pull request built with the released builds, so single packages
