@@ -1,0 +1,10 @@
+ros2-rclcpp
+ros2-tf2-bullet
+ros2-pymoveit2
+ros2-ros-gz-bridge
+ros2-moveit-core
+ros-humble-tf2-bullet
+ros-humble-rclcpp
+ros-humble-pymoveit2
+ros2-ros-gz-image
+ros-humble-moveit-core
