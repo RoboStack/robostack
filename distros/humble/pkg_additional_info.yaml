@@ -63,7 +63,6 @@ librealsense2:
   generate_dummy_package_with_run_deps:
     dep_name: librealsense
     max_pin: 'x.x'
-    override_version: 2.58.3  # Until: https://github.com/conda-forge/librealsense-feedstock/pull/91
 mimick_vendor:
   # its FetchContent'd mimick has cmake_minimum_required < 3.5 (CMake 4 rejects that)
   additional_cmake_args: "-DCMAKE_POLICY_VERSION_MINIMUM=3.5"
