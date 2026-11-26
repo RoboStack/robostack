@@ -127,3 +127,21 @@ diff -ruN a/pointmatcher/IO.cpp b/pointmatcher/IO.cpp
  	if (boost::iequals(ext, ".vtk"))
  		return PointMatcherIO<T>::saveVTK(*this, fileName, binary);
  
+diff --git a/contrib/CMakeLists.txt b/contrib/CMakeLists.txt
+--- a/contrib/CMakeLists.txt
++++ b/contrib/CMakeLists.txt
+@@ -1,8 +1,11 @@
+ # External libraries packed with libpointmatcher
+ 
+-# GTest
+-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+-add_library(gtest gtest/gtest-all.cc)
++# GTest: only for the tests (RoboStack: this old copy uses std::tr1, which MSVC 19.5x
++# no longer has)
++if(BUILD_TESTS)
++  include_directories(${CMAKE_CURRENT_SOURCE_DIR})
++  add_library(gtest gtest/gtest-all.cc)
++endif()
+ 
+ # Wrapped yaml-cpp
+ if(NOT USE_SYSTEM_YAML_CPP)
