@@ -1,0 +1,20 @@
+# Avoid unnecessary std::make_shared<std::allocator<void>>() in
+# MessageMemoryStrategy::create_default(), which triggers a GCC 15
+# -Werror=uninitialized false positive in downstream packages.
+diff --git a/include/rclcpp/message_memory_strategy.hpp b/include/rclcpp/message_memory_strategy.hpp
+index 1111111..2222222 100644
+--- a/include/rclcpp/message_memory_strategy.hpp
++++ b/include/rclcpp/message_memory_strategy.hpp
+@@ -88,7 +88,11 @@ public:
+   /// Default factory method
+   static SharedPtr create_default()
+   {
+-    return std::make_shared<MessageMemoryStrategy<MessageT, Alloc>>(std::make_shared<Alloc>());
++    if constexpr (std::is_same_v<Alloc, std::allocator<void>>) {
++      return std::make_shared<MessageMemoryStrategy<MessageT, Alloc>>();
++    } else {
++      return std::make_shared<MessageMemoryStrategy<MessageT, Alloc>>(std::make_shared<Alloc>());
++    }
+   }
+ 
+   /// By default, dynamically allocate a new message.
