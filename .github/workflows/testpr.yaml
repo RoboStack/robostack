@@ -31,6 +31,7 @@ jobs:
     outputs:
       distros: ${{ steps.plan.outputs.distros }}
       targets: ${{ steps.plan.outputs.targets }}
+      win_runners: ${{ steps.plan.outputs.win_runners }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -65,6 +66,8 @@ jobs:
           echo "distros=$distros" | tee -a "$GITHUB_OUTPUT"
           # build:linux / build:osx / build:win labels limit the platforms (all without)
           echo "targets=$(pixi run python tools/robostack.py build-targets --labels "$labels")" | tee -a "$GITHUB_OUTPUT"
+          # the Windows runner follows each distribution's pinned compiler (vs2022 / vs)
+          echo "win_runners=$(pixi run python tools/robostack.py windows-runners)" | tee -a "$GITHUB_OUTPUT"
 
   check:
     runs-on: ubuntu-latest
@@ -148,7 +151,7 @@ jobs:
         distro: ${{ fromJSON(needs.plan.outputs.distros) }}
         target: ${{ fromJSON(needs.plan.outputs.targets) }}  # tools/robostack.py BUILD_TARGETS
     name: ${{ matrix.distro }} ${{ matrix.target.platform }}
-    runs-on: ${{ matrix.target.os }}
+    runs-on: ${{ matrix.target.platform == 'win-64' && fromJSON(needs.plan.outputs.win_runners)[matrix.distro] || matrix.target.os }}
     env:
       DISTRO: ${{ matrix.distro }}
       PLATFORM: ${{ matrix.target.platform }}
