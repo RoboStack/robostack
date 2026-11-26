@@ -1,0 +1,33 @@
+diff --git a/mp2p_icp_common/src/load_plugin.cpp b/mp2p_icp_common/src/load_plugin.cpp
+index fb606dd..dd3a5aa 100644
+--- a/mp2p_icp_common/src/load_plugin.cpp
++++ b/mp2p_icp_common/src/load_plugin.cpp
+@@ -72,6 +72,14 @@ void mp2p_icp::load_plugin(
+ {
+     std::string absPath;
+ 
++#if defined(__APPLE__)
++    // Plugin names are usually given as "lib<name>.so": use the macOS suffix.
++    if (fs::path(moduleToLoad).extension() == ".so")
++    {
++        return load_plugin(fs::path(moduleToLoad).replace_extension(".dylib").string(), logger);
++    }
++#endif
++
+     if (!fs::path(moduleToLoad).is_relative())
+     {
+         // already absolute:
+@@ -83,6 +91,13 @@ void mp2p_icp::load_plugin(
+         // search for it:
+         std::vector<std::string> lstPath;
+         from_env_var_to_list("LD_LIBRARY_PATH", lstPath);
++        // conda/RoboStack environments do not set LD_LIBRARY_PATH: also search
++        // <prefix>/lib for every prefix in AMENT_PREFIX_PATH.
++        {
++            std::vector<std::string> prefixes;
++            from_env_var_to_list("AMENT_PREFIX_PATH", prefixes);
++            for (const auto& prefix : prefixes) safe_add_to_list(prefix + "/lib", lstPath);
++        }
+ 
+         for (const auto& p : lstPath)
+         {
