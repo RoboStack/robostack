@@ -12,6 +12,9 @@ set VINCA_CUSTOM_CMAKE_BUILD_DIR=D:\x\
 set RATTLER_CACHE_DIR=D:\rattler
 set TMP=D:\tmp
 set TEMP=D:\tmp
+:: MSBuild 18's file tracker crashes on the Visual Studio generator's builds (see
+:: .github/workflows/testpr.yaml); it only serves incremental builds
+set TrackFileAccess=false
 mkdir D:\tmp
 powershell -NoProfile -Command "Get-PSDrive C, D | Format-Table Name, @{n='free GB'; e={[math]::Round($_.Free / 1GB)}}"
 echo "PATH is %PATH%"
