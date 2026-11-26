@@ -283,6 +283,16 @@ jobs:
         pixi run python tools/summarize_rattler_build.py --log rattler-build.log \
           --platform "$DISTRO $PLATFORM" --outcome "${{ steps.build-recipes.outcome }}" >> "$GITHUB_STEP_SUMMARY"
 
+    # CMake only prints "compiler identification is unknown"; the reason (the failed
+    # compiler-id build) is in the CMakeConfigureLog.yaml of the work directory kept on failure
+    - name: Show CMake configure logs of a failed Windows build
+      if: ${{ failure() && runner.os == 'Windows' && steps.build-recipes.outcome == 'failure' }}
+      shell: bash -l {0}
+      run: |
+        for f in $(find /d/bld/bld -path '*/work/*' -name CMakeConfigureLog.yaml -mmin -30 2>/dev/null | head -3); do
+          echo "::group::$f"; tail -c 20000 "$f"; echo "::endgroup::"
+        done
+
     # Compare what the pull request built with the released builds, so single packages
     # can be bumped without a full rebuild; it reports and never fails the build.
     - name: ABI check against the released builds
