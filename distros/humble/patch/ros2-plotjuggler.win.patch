@@ -26,10 +26,22 @@ index 51e6f08..8971eca 100644
  
  target_compile_definitions(plotjuggler_qwt PUBLIC QWT_MOC_INCLUDE)
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 9fa9dc9..a0729ec 100644
+index 9fa9dc9..1eebe65 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -132,11 +132,9 @@ find_package(
+@@ -8,6 +8,11 @@ project(
+ set(CMAKE_CXX_STANDARD 17)
+ set(CMAKE_CXX_STANDARD_REQUIRED ON)
+ 
++if(MSVC)
++  # Qt 5 headers vs. the VS 2026 STL, see cmake/msvc_stdext_compat.h
++  add_compile_options("$<$<COMPILE_LANGUAGE:CXX>:/FI${CMAKE_CURRENT_SOURCE_DIR}/cmake/msvc_stdext_compat.h>")
++endif()
++
+ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/cmake")
+ 
+ # Version definitions will be added to plotjuggler_base target later
+@@ -132,11 +137,9 @@ find_package(
  set(QT_LINK_LIBRARIES
      Qt5::Core
      Qt5::Widgets
@@ -41,7 +53,7 @@ index 9fa9dc9..a0729ec 100644
      Qt5::WebSockets)
  
  if(NOT CMAKE_BUILD_TYPE)
-@@ -243,6 +241,22 @@ else()
+@@ -243,6 +246,22 @@ else()
                                        ${PLOTJUGGLER_BASE_MOCS})
  endif()
  
@@ -64,6 +76,23 @@ index 9fa9dc9..a0729ec 100644
  set(PJ_PLUGIN_INSTALL_DIRECTORY "${CMAKE_INSTALL_PREFIX}/${PJ_PLUGINS_DIRECTORY}")
  
  target_include_directories(
+diff --git a/cmake/msvc_stdext_compat.h b/cmake/msvc_stdext_compat.h
+new file mode 100644
+index 0000000..ec763c7
+--- /dev/null
++++ b/cmake/msvc_stdext_compat.h
+@@ -0,0 +1,11 @@
++// RoboStack: Qt 5.15's qcompilerdetection.h maps QT_MAKE_(UN)CHECKED_ARRAY_ITERATOR
++// to stdext::make_(un)checked_array_iterator for every MSVC, but the MSVC STL of
++// VS 2026 (_MSC_VER 1950+) removed them (C3861 in qvector.h). Plain pointers do.
++#pragma once
++#if defined(__cplusplus) && defined(_MSC_VER) && !defined(__clang__) && _MSC_VER >= 1950
++#include <cstddef>
++namespace stdext {
++template <class T> inline T* make_checked_array_iterator(T* p, std::size_t, std::size_t = 0) { return p; }
++template <class T> inline T* make_unchecked_array_iterator(T* p) { return p; }
++}
++#endif
 diff --git a/plotjuggler_base/include/PlotJuggler/datastreamer_base.h b/plotjuggler_base/include/PlotJuggler/datastreamer_base.h
 index 04f70f5..0c3f28f 100644
 --- a/plotjuggler_base/include/PlotJuggler/datastreamer_base.h
