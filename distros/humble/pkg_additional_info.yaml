@@ -129,6 +129,8 @@ cartographer_ros:
   build_number: 26  # offline_node.cpp out of the shared library (duplicate gflags abort)
 grid_map_rviz_plugin:  # rviz on Qt 6
   build_number: 26
+moveit_core:  # bullet rosdep mapped to bullet-cpp (no pybullet)
+  build_number: 26
 moveit_ros_visualization:  # rviz on Qt 6
   build_number: 26
 moveit_setup_app_plugins:  # rviz on Qt 6
@@ -154,6 +156,8 @@ octomap_rviz_plugins:  # rviz on Qt 6
 plansys2_tools:  # no Qt 5 run dependency
   build_number: 26
 python_qt_binding:  # PyQt5 compatibility layer (rqt on PyQt6)
+  build_number: 26
+rclcpp:  # avoid GCC 15 -Werror=uninitialized in MessageMemoryStrategy::create_default()
   build_number: 26
 ros_image_to_qimage:  # no Qt 5 run dependency
   build_number: 26
@@ -196,6 +200,8 @@ rviz_visual_testing_framework:  # rviz on Qt 6
 rviz_visual_tools:  # rviz on Qt 6
   build_number: 26
 slam_toolbox:  # rviz on Qt 6
+  build_number: 26
+tf2_bullet:  # bullet rosdep mapped to bullet-cpp (no pybullet)
   build_number: 26
 turtlesim:  # Qt 6
   build_number: 26

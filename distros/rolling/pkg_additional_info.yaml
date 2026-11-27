@@ -78,12 +78,20 @@ class_loader:  # console_bridge outlives the class loaders (exit abort on macOS)
   build_number: 33
 fuse_viz:
   build_number: 33
+gz_dartsim_vendor:  # bullet rosdep mapped to bullet-cpp (no pybullet)
+  build_number: 33
+gz_physics_vendor:  # bullet rosdep mapped to bullet-cpp (no pybullet)
+  build_number: 33
+moveit_core:  # bullet rosdep mapped to bullet-cpp (no pybullet)
+  build_number: 33
 moveit_ros_visualization:
   build_number: 33
 moveit_task_constructor_visualization:
   build_number: 33
 mrpt_gui:
   build_number: 35
+rclcpp:  # avoid GCC 15 -Werror=uninitialized in MessageMemoryStrategy::create_default()
+  build_number: 33
 rmf_fleet_adapter:  # its DLL moved to bin (Windows)
   build_number: 33
 rmf_fleet_adapter_python:  # rmf_adapter as a Python MODULE (shared patch)
@@ -112,4 +120,6 @@ rviz_ogre_vendor:
 rviz_rendering:
   build_number: 33
 rviz_satellite:
+  build_number: 33
+tf2_bullet:  # bullet rosdep mapped to bullet-cpp (no pybullet)
   build_number: 33
