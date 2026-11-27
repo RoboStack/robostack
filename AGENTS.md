@@ -9,6 +9,7 @@ to read without Claude):
 | `robostack-debug-build` | a package fails to build: find the work dir, read the log, common fixes |
 | `robostack-patch` | create, refresh, place and port patches; check that they apply |
 | `robostack-versions` | snapshot and conda-forge pinning updates, build number / mutex bumps, full rebuilds, stale packages |
+| `robostack-ci-triage` | a PR check fails: job states, logs, failure-to-fix map, pushing without cancelling builds |
 | `robostack-package-selection` | add or exclude packages in `vinca.yaml`, platform conditions, gap report |
 
 ## Layout and rules
