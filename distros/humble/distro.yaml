@@ -26,8 +26,11 @@ pinning_overrides:
   # xtensor_simd.hpp doesn't build with it. 0.25 brings a matching xsimd (as in jazzy).
   xtensor: [0.25.0]
   # the newest onnxruntime-cpp (1.32) needs libabseil 20260817, which the pinning hasn't
-  # migrated to yet; 1.31.1 has builds for the pinned 20260526
-  onnxruntime_cpp: [1.31.1]
+  # migrated to yet; 1.31.1 has builds for the pinned 20260526. conda-forge stopped building
+  # osx-64 after 1.22.2 (what the published osx-64 onnxruntime_vendor already uses).
+  onnxruntime_cpp:
+    - 1.22.2  # [osx and x86_64]
+    - 1.31.1  # [not (osx and x86_64)]
   # ffmpeg 9.1 on macOS needs fontconfig/cairo built for libintl 1.0 and icu 79, which no
   # qt-main 5.15 accepts (it needs libintl 0.25 via gst-plugins-base): mrpt_hwdrivers built
   # with 9.1 couldn't be installed next to mrpt_gui (mola). 9.0 still works with Qt 5.
