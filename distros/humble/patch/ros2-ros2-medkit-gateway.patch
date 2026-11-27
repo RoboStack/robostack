@@ -1,10 +1,10 @@
-diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 64216ed..432c4ef 100644
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -114,6 +114,10 @@ target_link_libraries(gateway_core
-     jwt-cpp::jwt-cpp
+diff --git a/cmake/gateway_core.cmake b/cmake/gateway_core.cmake
+index 65f8bdc..b88b906 100644
+--- a/cmake/gateway_core.cmake
++++ b/cmake/gateway_core.cmake
+@@ -123,6 +123,10 @@ target_link_libraries(gateway_core
      SQLite::SQLite3
+     Threads::Threads
      ${CMAKE_DL_LIBS}
 +    # cpp-httplib's async client name resolution (getaddrinfo_a/gai_suspend/
 +    # gai_error/gai_cancel) is glibc-only and, on this toolchain, still needs
@@ -12,4 +12,4 @@ index 64216ed..432c4ef 100644
 +    $<$<PLATFORM_ID:Linux>:anl>
  )
  
- set_target_properties(gateway_core PROPERTIES
+ # The public headers use C++17, so every consumer compiles as C++17 or newer.

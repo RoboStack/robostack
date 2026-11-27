@@ -27,11 +27,11 @@ index 05f5ff1..41adbdf 100644
 -set(extra_test_dependencies libyaml-0.2.5)
 +# Skip building yaml if the expected version is already present in the system
 +if(yaml_FOUND)
-+  if("${yaml_VERSION}" VERSION_EQUAL 0.2.5)
++  if("${yaml_VERSION}" VERSION_GREATER_EQUAL 0.2.5)  # RoboStack: conda-forge has 0.2.7 (same ABI)
 +    set(_SKIP_YAML_BUILD 1)
 +  else()
 +    message(WARNING
-+      "A wrong version of libyaml is already present in the system: ${yaml_VERSION}."
++      "An older version of libyaml is already present in the system: ${yaml_VERSION}."
 +      "It will be ignored and the 0.2.5 version will be built.")
 +  endif()
 +endif()

@@ -23,4 +23,8 @@ full_rebuild: false
 #
 # Remember that dependents are not rebuilt automatically: evict them as well if
 # they must pick up the change.
-evict_cache: []
+evict_cache:
+  # built against ffmpeg 9.1 before ffmpeg was pinned to 9.0 on macOS
+  - mrpt_hwdrivers
+  - ffmpeg_encoder_decoder
+  - web_video_server

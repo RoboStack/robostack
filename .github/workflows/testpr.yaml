@@ -31,6 +31,7 @@ jobs:
     outputs:
       distros: ${{ steps.plan.outputs.distros }}
       targets: ${{ steps.plan.outputs.targets }}
+      win_runners: ${{ steps.plan.outputs.win_runners }}
     steps:
       - uses: actions/checkout@v6
         with:
@@ -65,6 +66,8 @@ jobs:
           echo "distros=$distros" | tee -a "$GITHUB_OUTPUT"
           # build:linux / build:osx / build:win labels limit the platforms (all without)
           echo "targets=$(pixi run python tools/robostack.py build-targets --labels "$labels")" | tee -a "$GITHUB_OUTPUT"
+          # the Windows runner follows each distribution's pinned compiler (vs2022 / vs)
+          echo "win_runners=$(pixi run python tools/robostack.py windows-runners)" | tee -a "$GITHUB_OUTPUT"
 
   check:
     runs-on: ubuntu-latest
@@ -148,7 +151,7 @@ jobs:
         distro: ${{ fromJSON(needs.plan.outputs.distros) }}
         target: ${{ fromJSON(needs.plan.outputs.targets) }}  # tools/robostack.py BUILD_TARGETS
     name: ${{ matrix.distro }} ${{ matrix.target.platform }}
-    runs-on: ${{ matrix.target.os }}
+    runs-on: ${{ matrix.target.platform == 'win-64' && fromJSON(needs.plan.outputs.win_runners)[matrix.distro] || matrix.target.os }}
     env:
       DISTRO: ${{ matrix.distro }}
       PLATFORM: ${{ matrix.target.platform }}
@@ -279,6 +282,16 @@ jobs:
       run: |
         pixi run python tools/summarize_rattler_build.py --log rattler-build.log \
           --platform "$DISTRO $PLATFORM" --outcome "${{ steps.build-recipes.outcome }}" >> "$GITHUB_STEP_SUMMARY"
+
+    # CMake only prints "compiler identification is unknown"; the reason (the failed
+    # compiler-id build) is in the CMakeConfigureLog.yaml of the work directory kept on failure
+    - name: Show CMake configure logs of a failed Windows build
+      if: ${{ failure() && runner.os == 'Windows' && steps.build-recipes.outcome == 'failure' }}
+      shell: bash -l {0}
+      run: |
+        for f in $(find /d/bld/bld -path '*/work/*' -name CMakeConfigureLog.yaml -mmin -30 2>/dev/null | head -3); do
+          echo "::group::$f"; tail -c 20000 "$f"; echo "::endgroup::"
+        done
 
     # Compare what the pull request built with the released builds, so single packages
     # can be bumped without a full rebuild; it reports and never fails the build.

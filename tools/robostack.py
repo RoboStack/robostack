@@ -389,6 +389,14 @@ def rattler_build(distro: str, args: list[str], skip_existing: bool = True) -> l
     cmd = ["rattler-build", "build", "-m", "./conda_build_config.yaml",
            *(["-c", extra] if extra else []),
            "-c", channel_url(distro), "-c", CONDA_FORGE, "--channel-priority", "disabled"]
+    # Windows: strict isolation sets USERPROFILE to the work directory, where
+    # Environment.GetFolderPath(LocalApplicationData) finds no AppData\Local and returns "";
+    # MSBuild 18's file tracker indexes that empty path and crashes ("The CL task failed
+    # unexpectedly", IndexOutOfRangeException in FileTracker.FileIsUnderNormalizedPath),
+    # so CMake's Visual Studio 2026 generator can't identify the compiler. conda-build's
+    # isolation keeps the real USERPROFILE.
+    if sys.platform == "win32":
+        cmd += ["--env-isolation", "conda-build"]
     return cmd + (["--skip-existing=all"] if skip_existing else []) + args
 
 
@@ -641,6 +649,9 @@ def generate_gha(distro: str, args: list[str]) -> int:
                  for l in lines]
         if sum("permissions:" in l for l in lines) != sum("contents: read" in l for l in lines):
             raise SystemExit(f"{wf}: a job with permissions but without contents: read")
+        if ns.platform == "win-64":  # vinca-gha always picks windows-2022
+            runner = windows_runner(distro)
+            lines = [l.replace("runs-on: windows-2022", f"runs-on: {runner}") for l in lines]
         if ns.platform == "win-64" and not any("build_win.bat" in l for l in lines):
             raise SystemExit(f"{wf}: the Windows workflow doesn't use .scripts/build_win.bat")
         if any(l.startswith("env:") for l in lines):
@@ -672,6 +683,25 @@ BUILD_TARGETS = [
     {"os": "windows-2022", "platform": "win-64"},
 ]
 PLATFORM_LABELS = {"linux": ("linux-64", "linux-aarch64"), "osx": ("osx-64", "osx-arm64"), "win": ("win-64",)}
+# the runner image with the Visual Studio a distribution's pinned Windows compiler needs:
+# conda-forge's vs2022 activation looks for VS 2022 (windows-2022), its `vs` (the newest)
+# for VS 2026, which windows-2025 has had since June 2026
+WINDOWS_RUNNERS = {"vs2022": "windows-2022", "vs": "windows-2025"}
+
+
+def windows_runner(distro: str) -> str:
+    """The Windows runner for a distribution, from the c_compiler in its rendered pinning."""
+    lines = (ROOT / "distros" / distro / "conda_build_config.yaml").read_text().splitlines()
+    start = lines.index("c_compiler:")
+    for line in lines[start + 1:]:
+        if not line.startswith((" ", "-")):
+            break
+        if re.search(r"#\s*\[win\]", line):
+            compiler = line.split("#")[0].strip().lstrip("-").strip()
+            if compiler not in WINDOWS_RUNNERS:
+                raise SystemExit(f"{distro}: no Windows runner known for c_compiler {compiler!r}")
+            return WINDOWS_RUNNERS[compiler]
+    raise SystemExit(f"{distro}: no Windows c_compiler in conda_build_config.yaml")
 
 
 def build_distros(changed: list[str], labels: list[str]) -> list[str]:
@@ -728,6 +758,9 @@ def main() -> int:
         ns = parser.parse_args(sys.argv[2:])
         changed = distros() if ns.all else changed_distros(ns.base)
         print(json.dumps(build_distros(changed, json.loads(ns.labels))))
+        return 0
+    if len(sys.argv) >= 2 and sys.argv[1] == "windows-runners":
+        print(json.dumps({d: windows_runner(d) for d in distros()}))
         return 0
     if len(sys.argv) >= 2 and sys.argv[1] == "build-targets":
         parser = argparse.ArgumentParser(prog="rs build-targets")

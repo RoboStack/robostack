@@ -5,6 +5,18 @@
 channel_name: robostack-humble
 upload_to: [anaconda]
 read_from: anaconda
+# Ahead of shared/pinning/conda_forge.yaml (#165) with this full rebuild; drop both
+# once the shared pinning has moved to this version.
+conda_forge_pinning_version: 2026.11.26.00.52.20
+conda_forge_migrations:
+  - elfutils0196
+  - go_macos
+  - gsl28
+  - gstreamer128
+  - hdf52
+  - libboost190
+  - libhwloc2150
+  - urdfdom6
 pinning_overrides:
   # wxwidgets >= 3.3.2 (and the newest 3.3.1 builds) need gst-plugins-base 1.28 on Linux,
   # which no qt-main 5.15 accepts; mrpt_gui links both
@@ -13,4 +25,16 @@ pinning_overrides:
   # xsimd (14), which no xtensor >= 0.25 accepts, and falls back to xtensor 0.23.9, whose
   # xtensor_simd.hpp doesn't build with it. 0.25 brings a matching xsimd (as in jazzy).
   xtensor: [0.25.0]
-rosdistro_sync: humble/2026-11-16
+  # the newest onnxruntime-cpp (1.32) needs libabseil 20260817, which the pinning hasn't
+  # migrated to yet; 1.31.1 has builds for the pinned 20260526. conda-forge stopped building
+  # osx-64 after 1.22.2 (what the published osx-64 onnxruntime_vendor already uses).
+  onnxruntime_cpp:
+    - 1.22.2  # [osx and x86_64]
+    - 1.31.1  # [not (osx and x86_64)]
+  # ffmpeg 9.1 on macOS needs fontconfig/cairo built for libintl 1.0 and icu 79, which no
+  # qt-main 5.15 accepts (it needs libintl 0.25 via gst-plugins-base): mrpt_hwdrivers built
+  # with 9.1 couldn't be installed next to mrpt_gui (mola). 9.0 still works with Qt 5.
+  ffmpeg:
+    - '9.0'  # [osx]
+    - '9'  # [not osx]
+rosdistro_sync: humble/2026-11-23
