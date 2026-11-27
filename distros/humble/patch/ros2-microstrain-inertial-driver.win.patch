@@ -55,7 +55,7 @@ index c8ef84e..931163c 100644
  #include <iostream>
  #include <fstream>
 diff --git a/microstrain_inertial_driver_common/src/config.cpp b/microstrain_inertial_driver_common/src/config.cpp
-index 9a931cc..d473222 100644
+index 9a931cc..213f0c5 100644
 --- a/microstrain_inertial_driver_common/src/config.cpp
 +++ b/microstrain_inertial_driver_common/src/config.cpp
 @@ -14,6 +14,8 @@
@@ -76,6 +76,33 @@ index 9a931cc..d473222 100644
      // Here, we need to send the raw configuration bytes to the receiver to enable CAR mode for the RTK algorithm.
      // First, define the UBX configuration bytes in a buffer. These are the raw bytes required to write the RTK-Conservative Ambiguity
      // Resolution mode to the receiver's flash memory.
+@@ -1385,7 +1387,7 @@ bool Config::configureSystem(RosNodeType* node)
+       MICROSTRAIN_DEBUG(node_, "Failed to write bytes to receiver");
+ 
+     // Sleep for 1 second to get the UBX bytes to send to the device correctly
+-    sleep(1);
++    std::this_thread::sleep_for(std::chrono::seconds(1));
+ 
+     mip_cmd_result = mip::commands_system::writeCommMode(*mip_device_, 0x06);
+     if (!!mip_cmd_result)
+@@ -1394,7 +1396,7 @@ bool Config::configureSystem(RosNodeType* node)
+       MICROSTRAIN_MIP_SDK_ERROR(node_, mip_cmd_result, "Failed to set receiver 2 to direct mode.");
+ 
+     // Sleep for 1 second to get the UBX bytes to send to the device correctly
+-    sleep(1);
++    std::this_thread::sleep_for(std::chrono::seconds(1));
+ 
+     // Send the raw configuration bytes to receiver 2.
+     if (mip_device_->send(data, size))
+@@ -1402,7 +1404,7 @@ bool Config::configureSystem(RosNodeType* node)
+     else
+       MICROSTRAIN_DEBUG(node_, "Failed to write bytes to receiver");
+     // Sleep for 1 second to get the UBX bytes to send to the device correctly
+-    sleep(1);
++    std::this_thread::sleep_for(std::chrono::seconds(1));
+ 
+     mip_cmd_result = mip::commands_system::writeCommMode(*mip_device_, 0x01); //put the device back into normal mode
+     if (!!mip_cmd_result)
 diff --git a/microstrain_inertial_driver_common/src/utils/mip/ros_connection.cpp b/microstrain_inertial_driver_common/src/utils/mip/ros_connection.cpp
 index e2eae44..b77e891 100644
 --- a/microstrain_inertial_driver_common/src/utils/mip/ros_connection.cpp
