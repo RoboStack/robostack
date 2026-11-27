@@ -1,0 +1,12 @@
+diff --git a/include/behaviortree_cpp/basic_types.h b/include/behaviortree_cpp/basic_types.h
+--- a/include/behaviortree_cpp/basic_types.h
++++ b/include/behaviortree_cpp/basic_types.h
+@@ -103,7 +103,8 @@ template <typename T>
+ [[nodiscard]] inline T convertFromJSON(StringView str)
+ {
+-  return convertFromJSON(str, typeid(T)).cast<T>();
++  // RoboStack: MSVC 19.5x warns C4864 without `template` (an error with the project's /WX)
++  return convertFromJSON(str, typeid(T)).template cast<T>();
+ }
+ 
+ /**
