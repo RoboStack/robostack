@@ -1,8 +1,33 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 96b399a4..7e5d3a27 100644
+index eb50f9d0..e48f5a09 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -225,12 +225,12 @@ add_library(rviz_default_plugins SHARED
+@@ -56,7 +56,14 @@ find_package(rviz_common REQUIRED)
+ find_package(rviz_rendering REQUIRED)
+ find_package(rviz_ogre_vendor REQUIRED)
+ 
+-find_package(Qt5 REQUIRED COMPONENTS Widgets Test)
++find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Test Widgets)
++find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Test Widgets)
++if(${QT_VERSION} VERSION_LESS 5.15.0)
++  function(qt_wrap_cpp out)
++    qt5_wrap_cpp(_sources ${ARGN})
++    set("${out}" ${_sources} PARENT_SCOPE)
++  endfunction()
++endif()
+ 
+ find_package(geometry_msgs REQUIRED)
+ 
+@@ -132,7 +139,7 @@ set(rviz_default_plugins_headers_to_moc
+ )
+ 
+ foreach(header "${rviz_default_plugins_headers_to_moc}")
+-  qt5_wrap_cpp(rviz_default_plugins_moc_files "${header}")
++  qt_wrap_cpp(rviz_default_plugins_moc_files "${header}")
+ endforeach()
+ 
+ set(rviz_default_plugins_source_files
+@@ -236,12 +243,12 @@ add_library(rviz_default_plugins SHARED
  target_include_directories(rviz_default_plugins PUBLIC
    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
    $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
@@ -12,7 +37,72 @@ index 96b399a4..7e5d3a27 100644
  target_link_libraries(rviz_default_plugins PUBLIC
    rviz_ogre_vendor::OgreMain
    rviz_ogre_vendor::OgreOverlay
-+  Qt5::Widgets
++  Qt${QT_VERSION_MAJOR}::Widgets
  )
  
  target_link_libraries(rviz_default_plugins PRIVATE
+@@ -334,7 +341,7 @@ if(BUILD_TESTING)
+ 
+   set(TEST_INCLUDE_DIRS
+     ${OGRE_INCLUDE_DIRS}
+-    ${Qt5Widgets_INCLUDE_DIRS}
++    ${Qt${QT_VERSION_MAJOR}Widgets_INCLUDE_DIRS}
+   )
+   ament_include_directories_order(TEST_INCLUDE_DIRS ${TEST_INCLUDE_DIRS})
+ 
+@@ -364,7 +371,7 @@ if(BUILD_TESTING)
+   set(TEST_LINK_LIBRARIES
+     display_test_fixture
+     rviz_default_plugins
+-    Qt5::Widgets
++    Qt${QT_VERSION_MAJOR}::Widgets
+   )
+ 
+   # This code is used by many tests, so compile it just once
+diff --git a/rviz_default_plugins-extras.cmake b/rviz_default_plugins-extras.cmake
+index c3c89008..a24df762 100644
+--- a/rviz_default_plugins-extras.cmake
++++ b/rviz_default_plugins-extras.cmake
+@@ -27,4 +27,5 @@
+ 
+ # find package Qt5 because otherwise using the rviz_default_plugins::rviz_default_plugins
+ # exported target will complain that the Qt5::Widgets target does not exist
+-find_package(Qt5 REQUIRED QUIET COMPONENTS Widgets)
++find_package(QT NAMES Qt6 Qt5 QUIET COMPONENTS Widgets)
++find_package(Qt${QT_VERSION_MAJOR} QUIET COMPONENTS Widgets)
+diff --git a/src/rviz_default_plugins/displays/depth_cloud/depth_cloud_display.cpp b/src/rviz_default_plugins/displays/depth_cloud/depth_cloud_display.cpp
+index 1b09e0b9..e477db52 100644
+--- a/src/rviz_default_plugins/displays/depth_cloud/depth_cloud_display.cpp
++++ b/src/rviz_default_plugins/displays/depth_cloud/depth_cloud_display.cpp
+@@ -33,7 +33,8 @@
+ #include <Ogre.h>
+ #include <tf2_ros/message_filter.h>
+ 
+-#include <QRegExp>
++#include <QRegularExpression>
++#include <QString>
+ 
+ #include <iostream>
+ #include <functional>
+@@ -81,8 +82,8 @@ DepthCloudDisplay::DepthCloudDisplay()
+ {
+   ml_depth_data_ = std::make_unique<rviz_common::MultiLayerDepth>();
+   // Depth map properties
+-  QRegExp depth_filter("depth");
+-  depth_filter.setCaseSensitivity(Qt::CaseInsensitive);
++  QRegularExpression depth_filter("depth");
++  depth_filter.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
+ 
+   reliability_policy_property_ = new rviz_common::properties::EditableEnumProperty(
+     "Reliability Policy",
+@@ -123,8 +124,8 @@ DepthCloudDisplay::DepthCloudDisplay()
+   depth_transport_property_->setStdString("raw");
+ 
+   // color image properties
+-  QRegExp color_filter("color|rgb|bgr|gray|mono");
+-  color_filter.setCaseSensitivity(Qt::CaseInsensitive);
++  QRegularExpression color_filter("color|rgb|bgr|gray|mono");
++  color_filter.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
+ 
+   color_topic_property_ = new rviz_common::properties::RosFilteredTopicProperty(
+     "Color Image Topic", "",

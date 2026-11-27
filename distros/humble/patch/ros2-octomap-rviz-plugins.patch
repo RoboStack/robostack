@@ -1,0 +1,37 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index c16ebcc..68858e6 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -13,7 +13,7 @@ endif()
+ find_package(ament_cmake_auto REQUIRED)
+ ament_auto_find_build_dependencies()
+ 
+-find_package(Qt5 REQUIRED COMPONENTS Widgets)
++find_package(Qt6 REQUIRED COMPONENTS Widgets)
+ set(CMAKE_AUTOMOC ON)
+ 
+ set(octomap_rviz_plugins_headers_to_moc
+@@ -22,7 +22,7 @@ set(octomap_rviz_plugins_headers_to_moc
+ )
+ 
+ foreach(header "${octomap_rviz_plugins_headers_to_moc}")
+-  qt5_wrap_cpp(octomap_rviz_plugins_moc_files "${header}")
++  qt6_wrap_cpp(octomap_rviz_plugins_moc_files "${header}")
+ endforeach()
+ 
+ ament_auto_add_library(${PROJECT_NAME} SHARED
+@@ -32,12 +32,12 @@ ament_auto_add_library(${PROJECT_NAME} SHARED
+ )
+ 
+ target_link_libraries(${PROJECT_NAME}
+-  Qt5::Widgets
++  Qt6::Widgets
+   octomap
+ )
+ 
+ target_include_directories(${PROJECT_NAME} PUBLIC
+-  ${Qt5Widgets_INCLUDE_DIRS}
++  ${Qt6Widgets_INCLUDE_DIRS}
+ )
+ 
+ target_compile_definitions(${PROJECT_NAME} PUBLIC "PLUGINLIB__DISABLE_BOOST_FUNCTIONS")

@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 3e3d417fb..91c15c6b2 100644
+index 3e3d417fbc..2d374f169c 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -12,8 +12,7 @@ find_package(fmt REQUIRED)
@@ -8,10 +8,19 @@ index 3e3d417fb..91c15c6b2 100644
  find_package(moveit_ros_visualization REQUIRED)
 -find_package(Qt5Core REQUIRED)
 -find_package(Qt5Widgets REQUIRED)
-+find_package(Qt5 COMPONENTS Core Widgets REQUIRED)
++find_package(Qt6 COMPONENTS Core Widgets REQUIRED)
  find_package(pluginlib REQUIRED)
  find_package(rclcpp REQUIRED)
  find_package(rviz_common REQUIRED)
+@@ -23,7 +22,7 @@ find_package(urdf REQUIRED)
+ 
+ set(CMAKE_INCLUDE_CURRENT_DIR ON)
+ 
+-qt5_wrap_cpp(
++qt6_wrap_cpp(
+   MOC_FILES
+   include/moveit_setup_framework/qt/helper_widgets.hpp
+   include/moveit_setup_framework/qt/setup_step_widget.hpp
 @@ -43,6 +42,10 @@ add_library(
    src/utilities.cpp
    src/xml_syntax_highlighter.cpp
@@ -29,7 +38,7 @@ index 3e3d417fb..91c15c6b2 100644
    pluginlib
 -  Qt5Core
 -  Qt5Widgets
-+  Qt5
++  Qt6
    rclcpp
    rviz_common
    rviz_rendering
@@ -41,8 +50,19 @@ index 3e3d417fb..91c15c6b2 100644
  
  ament_export_targets(moveit_setup_frameworkTargets HAS_LIBRARY_TARGET)
  install(
+@@ -80,8 +83,8 @@ install(
+ 
+ ament_export_dependencies(fmt)
+ ament_export_dependencies(rclcpp)
+-ament_export_dependencies(Qt5Core)
+-ament_export_dependencies(Qt5Widgets)
++ament_export_dependencies(Qt6Core)
++ament_export_dependencies(Qt6Widgets)
+ ament_export_dependencies(moveit_common)
+ ament_export_dependencies(moveit_core)
+ ament_export_dependencies(moveit_ros_planning)
 diff --git a/include/moveit_setup_framework/qt/setup_step_widget.hpp b/include/moveit_setup_framework/qt/setup_step_widget.hpp
-index f32e7b5ad..c6f472682 100644
+index f32e7b5ad3..c6f472682d 100644
 --- a/include/moveit_setup_framework/qt/setup_step_widget.hpp
 +++ b/include/moveit_setup_framework/qt/setup_step_widget.hpp
 @@ -40,12 +40,14 @@
@@ -61,8 +81,21 @@ index f32e7b5ad..c6f472682 100644
  {
    Q_OBJECT
  public:
+diff --git a/include/moveit_setup_framework/qt/xml_syntax_highlighter.hpp b/include/moveit_setup_framework/qt/xml_syntax_highlighter.hpp
+index 5a5fbdd297..494d751e44 100644
+--- a/include/moveit_setup_framework/qt/xml_syntax_highlighter.hpp
++++ b/include/moveit_setup_framework/qt/xml_syntax_highlighter.hpp
+@@ -63,7 +63,7 @@ private:
+   using Rules = std::map<int, Rule>;
+   Rules rules_;
+ 
+-  Rules::const_iterator highlight(Rules::const_iterator active, QStringRef text, int start, bool search_end, int& end);
++  Rules::const_iterator highlight(Rules::const_iterator active, QStringView text, int start, bool search_end, int& end);
+ };
+ 
+ }  // namespace moveit_setup
 diff --git a/include/moveit_setup_framework/templates.hpp b/include/moveit_setup_framework/templates.hpp
-index 1555eee16..b02d52024 100644
+index 1555eee16b..b02d520243 100644
 --- a/include/moveit_setup_framework/templates.hpp
 +++ b/include/moveit_setup_framework/templates.hpp
 @@ -38,6 +38,8 @@
@@ -84,7 +117,7 @@ index 1555eee16..b02d52024 100644
  
  }  // namespace moveit_setup
 diff --git a/src/urdf_config.cpp b/src/urdf_config.cpp
-index 72d9bf4af..3ca176656 100644
+index eab6823260..5d17cec951 100644
 --- a/src/urdf_config.cpp
 +++ b/src/urdf_config.cpp
 @@ -36,6 +36,7 @@
@@ -95,3 +128,25 @@ index 72d9bf4af..3ca176656 100644
  
  namespace moveit_setup
  {
+diff --git a/src/xml_syntax_highlighter.cpp b/src/xml_syntax_highlighter.cpp
+index 1733943ce2..600deae8d1 100644
+--- a/src/xml_syntax_highlighter.cpp
++++ b/src/xml_syntax_highlighter.cpp
+@@ -64,7 +64,7 @@ void XmlSyntaxHighlighter::addTag(const QString& tag, const QTextCharFormat& for
+ }
+ 
+ XmlSyntaxHighlighter::Rules::const_iterator
+-XmlSyntaxHighlighter::highlight(Rules::const_iterator active, QStringRef text, int start, bool search_end, int& end)
++XmlSyntaxHighlighter::highlight(Rules::const_iterator active, QStringView text, int start, bool search_end, int& end)
+ {
+   int offset = end;    // when passed, end indicates the end of the opening expression
+   auto next = active;  // return value: active rule at end of text
+@@ -121,7 +121,7 @@ void XmlSyntaxHighlighter::highlightBlock(const QString& text)
+ {
+   Rules::const_iterator active = previousBlockState() < 0 ? rules_.end() : rules_.find(previousBlockState());
+   int unused = 0;
+-  active = highlight(active, QStringRef(&text, 0, text.size()), 0, active != rules_.cend(), unused);
++  active = highlight(active, QStringView(text), 0, active != rules_.cend(), unused);
+   setCurrentBlockState(active != rules_.cend() ? active->first : -1);
+ }
+ 

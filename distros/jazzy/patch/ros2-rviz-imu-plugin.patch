@@ -1,0 +1,45 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 993a835..3ca9997 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -12,7 +12,7 @@ endif()
+ 
+ find_package(ament_cmake REQUIRED COMPONENTS rviz)
+ find_package(message_filters REQUIRED)
+-find_package(Qt5 REQUIRED COMPONENTS Widgets Test)
++find_package(Qt6 REQUIRED COMPONENTS Widgets Test)
+ find_package(rviz_common REQUIRED)
+ find_package(rviz_ogre_vendor REQUIRED)
+ find_package(rviz_rendering REQUIRED)
+@@ -34,7 +34,7 @@ include_directories(include)
+ 
+ set(dependencies
+     message_filters
+-    Qt5
++    Qt6
+     rviz_common
+     rviz_ogre_vendor
+     rviz_rendering
+@@ -59,11 +59,11 @@ add_library(${PROJECT_NAME} SHARED ${SRC_FILES})
+ 
+ ## Link the library with whatever Qt libraries have been defined by
+ ## the ``find_package(Qt4 ...)`` line above, or by the
+-## ``set(QT_LIBRARIES Qt5::Widgets)``, and with whatever libraries
++## ``set(QT_LIBRARIES Qt6::Widgets)``, and with whatever libraries
+ ## catkin has included.
+ ament_target_dependencies(${PROJECT_NAME} PUBLIC ${dependencies})
+ 
+-target_link_libraries(${PROJECT_NAME} PUBLIC rviz_ogre_vendor::OgreMain rviz_ogre_vendor::OgreOverlay Qt5::Widgets)
++target_link_libraries(${PROJECT_NAME} PUBLIC rviz_ogre_vendor::OgreMain rviz_ogre_vendor::OgreOverlay Qt6::Widgets)
+ 
+ # prevent pluginlib from using boost
+ target_compile_definitions(${PROJECT_NAME} PUBLIC "PLUGINLIB__DISABLE_BOOST_FUNCTIONS")
+@@ -74,7 +74,7 @@ pluginlib_export_plugin_description_file(rviz_common plugin_description.xml)
+ ament_export_include_directories(include)
+ ament_export_libraries(${PROJECT_NAME})
+ ament_export_dependencies(
+-    Qt5
++    Qt6
+     rviz_common
+     sensor_msgs
+     tf2

@@ -1,7 +1,7 @@
-diff --git a/nav2_rviz_plugins/CMakeLists.txt b/nav2_rviz_plugins/CMakeLists.txt
-index 39bdbabae4..659acd06fc 100644
---- a/nav2_rviz_plugins/CMakeLists.txt
-+++ b/nav2_rviz_plugins/CMakeLists.txt
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 39bdbabae..72d373139 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
 @@ -6,10 +6,6 @@ if(NOT CMAKE_CXX_STANDARD)
    set(CMAKE_CXX_STANDARD 17)
  endif()
@@ -13,3 +13,57 @@ index 39bdbabae4..659acd06fc 100644
  # Qt5 boilerplate options from http://doc.qt.io/qt-5/cmake-manual.html
  set(CMAKE_INCLUDE_CURRENT_DIR ON)
  set(CMAKE_AUTOMOC ON)
+@@ -21,7 +17,7 @@ find_package(nav2_lifecycle_manager REQUIRED)
+ find_package(nav2_msgs REQUIRED)
+ find_package(nav_msgs REQUIRED)
+ find_package(pluginlib REQUIRED)
+-find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets Test Concurrent)
++find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets StateMachine Test Concurrent)
+ find_package(rclcpp REQUIRED)
+ find_package(rclcpp_lifecycle REQUIRED)
+ find_package(rviz_common REQUIRED)
+@@ -62,7 +58,7 @@ set(dependencies
+   nav2_msgs
+   nav_msgs
+   pluginlib
+-  Qt5
++  Qt6
+   rclcpp
+   rclcpp_lifecycle
+   rviz_common
+@@ -78,12 +74,13 @@ ament_target_dependencies(${library_name}
+ )
+ 
+ target_include_directories(${library_name} PUBLIC
+-  ${Qt5Widgets_INCLUDE_DIRS}
++  ${Qt6Widgets_INCLUDE_DIRS}
+   ${OGRE_INCLUDE_DIRS}
+ )
+ 
+ target_link_libraries(${library_name}
+   rviz_common::rviz_common
++  Qt6::StateMachine  # QStateMachine is its own module in Qt 6
+ )
+ 
+ # Causes the visibility macros to use dllexport rather than dllimport,
+@@ -115,7 +112,7 @@ endif()
+ ament_export_include_directories(include)
+ ament_export_targets(${library_name} HAS_LIBRARY_TARGET)
+ ament_export_dependencies(
+-  Qt5
++  Qt6
+   rviz_common
+   geometry_msgs
+   map_msgs
+diff --git a/include/nav2_rviz_plugins/nav2_panel.hpp b/include/nav2_rviz_plugins/nav2_panel.hpp
+index b875c982e..59aff20a6 100644
+--- a/include/nav2_rviz_plugins/nav2_panel.hpp
++++ b/include/nav2_rviz_plugins/nav2_panel.hpp
+@@ -15,6 +15,7 @@
+ #ifndef NAV2_RVIZ_PLUGINS__NAV2_PANEL_HPP_
+ #define NAV2_RVIZ_PLUGINS__NAV2_PANEL_HPP_
+ 
++#include <QtStateMachine>  // QStateMachine, QState, QSignalTransition: their own module in Qt 6
+ #include <QtWidgets>
+ #include <QBasicTimer>
+ #undef NO_ERROR

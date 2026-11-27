@@ -1,0 +1,35 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 2c30763937..32d353ece5 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -12,8 +12,8 @@ find_package(Boost REQUIRED program_options)
+ find_package(moveit_setup_framework REQUIRED)
+ find_package(moveit_setup_srdf_plugins REQUIRED)
+ find_package(pluginlib REQUIRED)
+-find_package(Qt5Core REQUIRED)
+-find_package(Qt5Widgets REQUIRED)
++find_package(Qt6Core REQUIRED)
++find_package(Qt6Widgets REQUIRED)
+ find_package(rclcpp REQUIRED)
+ 
+ set(THIS_PACKAGE_INCLUDE_DEPENDS
+@@ -21,8 +21,8 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
+   moveit_setup_framework
+   moveit_setup_srdf_plugins
+   pluginlib
+-  Qt5Core
+-  Qt5Widgets
++  Qt6Core
++  Qt6Widgets
+   rclcpp
+ )
+ 
+@@ -35,7 +35,7 @@ set(HEADERS
+ set(CMAKE_AUTOMOC ON)
+ add_definitions(-DQT_NO_KEYWORDS)
+ 
+-qt5_wrap_cpp(MOC_FILES
++qt6_wrap_cpp(MOC_FILES
+   ${HEADERS}
+ )
+ 

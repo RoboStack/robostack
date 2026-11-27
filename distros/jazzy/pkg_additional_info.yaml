@@ -96,6 +96,7 @@ py_trees:
     dep_name: py-trees
     max_pin: 'x.x.x'
     override_version: '2.6.0'
+qt_gui_cpp:  # rqt on PyQt6 / Qt 6
 roboplan:
   generate_dummy_package_with_run_deps:
     dep_name: roboplan-python
@@ -158,11 +159,49 @@ cartographer_ros:
   build_number: 32  # offline_node.cpp out of the shared library (duplicate gflags abort)
 class_loader:  # console_bridge outlives the class loaders (exit abort on macOS)
   build_number: 32
+fuse_viz:  # rviz on Qt 6
+  build_number: 32
+grid_map_rviz_plugin:  # rviz on Qt 6
+  build_number: 32
 gz_dartsim_vendor:  # bullet rosdep mapped to bullet-cpp (no pybullet)
+  build_number: 32
+gz_gui_vendor:  # only qt-main now (the Qt rosdep keys map to Qt 6); was mixed qt-main + qt6-main
   build_number: 32
 gz_physics_vendor:  # bullet rosdep mapped to bullet-cpp (no pybullet)
   build_number: 32
 moveit_core:  # bullet rosdep mapped to bullet-cpp (no pybullet)
+  build_number: 32
+moveit_ros_visualization:  # rviz on Qt 6
+  build_number: 32
+moveit_setup_app_plugins:  # rviz on Qt 6
+  build_number: 32
+moveit_setup_assistant:  # rviz on Qt 6
+  build_number: 32
+moveit_setup_controllers:  # rviz on Qt 6
+  build_number: 32
+moveit_setup_core_plugins:  # rviz on Qt 6
+  build_number: 32
+moveit_setup_framework:  # rviz on Qt 6
+  build_number: 32
+moveit_setup_srdf_plugins:  # rviz on Qt 6
+  build_number: 32
+moveit_task_constructor_visualization:  # rviz on Qt 6
+  build_number: 32
+mrpt_gui:  # Qt rosdep keys on Qt 6 (MRPT's optional Qt 5 support off, as in lyrical)
+  build_number: 32
+nav2_rviz_plugins:  # rviz on Qt 6
+  build_number: 32
+navmap_rviz_plugin:  # rviz on Qt 6
+  build_number: 32
+octomap_rviz_plugins:  # rviz on Qt 6
+  build_number: 32
+plansys2_tools:  # rqt on PyQt6 / Qt 6
+  build_number: 32
+py_trees_ros_tutorials:  # rqt on PyQt6 / Qt 6
+  build_number: 32
+python_qt_binding:  # rqt on PyQt6 / Qt 6
+  build_number: 32
+qt_gui:  # rqt on PyQt6 / Qt 6
   build_number: 32
 rclcpp:  # avoid GCC 15 -Werror=uninitialized in MessageMemoryStrategy::create_default()
   build_number: 32
@@ -172,5 +211,49 @@ ros_gz_bridge:  # libabseil/libprotobuf in host: _31 links libabseil 20260817 wi
   build_number: 32
 ros_gz_image:  # same as ros_gz_bridge
   build_number: 32
+ros_image_to_qimage:  # rqt on PyQt6 / Qt 6
+  build_number: 32
+rqt_gui_cpp:  # rqt on PyQt6 / Qt 6
+  build_number: 32
+rqt_image_overlay:  # rqt on PyQt6 / Qt 6
+  build_number: 32
+rqt_image_overlay_layer:  # rqt on PyQt6 / Qt 6
+  build_number: 32
+rqt_image_view:  # rqt on PyQt6 / Qt 6
+  build_number: 32
+rqt_msg:  # rqt_msg#37 (constants helper)
+  build_number: 32
+rqt_py_common:  # rqt on PyQt6 / Qt 6
+  build_number: 32
+rtabmap_rviz_plugins:  # rviz on Qt 6
+  build_number: 32
+rviz2:  # rviz on Qt 6
+  build_number: 32
+rviz_2d_overlay_plugins:  # rviz on Qt 6
+  build_number: 32
+rviz_common:  # rviz on Qt 6
+  build_number: 32
+rviz_default_plugins:  # rviz on Qt 6
+  build_number: 32
+rviz_imu_plugin:  # rviz on Qt 6
+  build_number: 32
+rviz_rendering:  # rviz on Qt 6
+  build_number: 32
+rviz_rendering_tests:  # rviz on Qt 6
+  build_number: 32
+rviz_satellite:  # rviz on Qt 6
+  build_number: 32
+rviz_visual_testing_framework:  # rviz on Qt 6
+  build_number: 32
+rviz_visual_tools:  # rviz on Qt 6
+  build_number: 32
+slam_toolbox:  # rviz on Qt 6
+  build_number: 32
+swri_console:  # Qt 6
+  build_number: 32
 tf2_bullet:  # bullet rosdep mapped to bullet-cpp (no pybullet)
+  build_number: 32
+turtlesim:  # Qt 6
+  build_number: 32
+vision_msgs_rviz_plugins:  # rviz on Qt 6
   build_number: 32

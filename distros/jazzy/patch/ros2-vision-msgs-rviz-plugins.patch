@@ -1,0 +1,31 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index d199135..7e55b13 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -16,7 +16,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+ endif()
+ 
+ # find dependencies
+-find_package(Qt5 REQUIRED COMPONENTS Widgets Core)
++find_package(Qt6 REQUIRED COMPONENTS Widgets Core)
+ find_package(yaml_cpp_vendor REQUIRED)
+ 
+ find_package(ament_cmake REQUIRED)
+@@ -46,7 +46,7 @@ set(vision_msgs_rviz_plugins_headers_to_moc
+ )
+ 
+ foreach(header "${vision_msgs_rviz_plugins_headers_to_moc}")
+-  qt5_wrap_cpp(vision_msgs_rviz_plugins_moc_files "${header}")
++  qt6_wrap_cpp(vision_msgs_rviz_plugins_moc_files "${header}")
+ endforeach()
+ 
+ 
+@@ -68,7 +68,7 @@ add_library(${PROJECT_NAME} SHARED
+ target_include_directories(${PROJECT_NAME} PUBLIC
+   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+   $<INSTALL_INTERFACE:include/${PROJECT_NAME}>
+-  ${Qt5Widgets_INCLUDE_DIRS}
++  ${Qt6Widgets_INCLUDE_DIRS}
+ )
+ 
+ target_link_libraries(${PROJECT_NAME} PUBLIC

@@ -1,0 +1,13 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index a5a9fbb070..87f2f6bd4f 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -17,7 +17,7 @@ find_package(rclcpp REQUIRED)
+ set(CMAKE_AUTOMOC ON)
+ add_definitions(-DQT_NO_KEYWORDS)
+ 
+-qt5_wrap_cpp(MOC_FILES
++qt6_wrap_cpp(MOC_FILES
+     include/moveit_setup_app_plugins/launches_widget.hpp
+     include/moveit_setup_app_plugins/perception_widget.hpp
+ )

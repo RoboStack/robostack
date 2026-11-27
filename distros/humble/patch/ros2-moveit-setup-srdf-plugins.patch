@@ -1,0 +1,57 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index df0c7f104c..35b2d38114 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -10,7 +10,7 @@ find_package(ament_cmake_ros REQUIRED)
+ find_package(moveit_setup_framework REQUIRED)
+ find_package(pluginlib REQUIRED)
+ 
+-qt5_wrap_cpp(MOC_FILES
++qt6_wrap_cpp(MOC_FILES
+     include/moveit_setup_srdf_plugins/collision_linear_model.hpp
+     include/moveit_setup_srdf_plugins/collision_matrix_model.hpp
+     include/moveit_setup_srdf_plugins/default_collisions_widget.hpp
+diff --git a/src/collision_linear_model.cpp b/src/collision_linear_model.cpp
+index 0018752460..c9720dc996 100644
+--- a/src/collision_linear_model.cpp
++++ b/src/collision_linear_model.cpp
+@@ -37,6 +37,7 @@
+ #include <moveit_setup_srdf_plugins/collision_linear_model.hpp>
+ #include <moveit_setup_srdf_plugins/collision_matrix_model.hpp>
+ 
++#include <QRegularExpression>
+ #include <QItemSelection>
+ #include <QPainter>
+ #include <cmath>
+@@ -244,8 +245,8 @@ bool SortFilterProxyModel::filterAcceptsRow(int source_row, const QModelIndex& s
+         m->data(m->index(source_row, 2), Qt::CheckStateRole) == Qt::Checked))
+     return false;  // not accepted due to check state
+ 
+-  const QRegExp regexp = this->filterRegExp();
+-  if (regexp.isEmpty())
++  const QRegularExpression regexp = this->filterRegularExpression();
++  if (regexp.pattern().isEmpty())
+     return true;
+ 
+   return m->data(m->index(source_row, 0, source_parent), Qt::DisplayRole).toString().contains(regexp) ||
+diff --git a/src/collision_matrix_model.cpp b/src/collision_matrix_model.cpp
+index 6d8ed29559..2e9b1dffb2 100644
+--- a/src/collision_matrix_model.cpp
++++ b/src/collision_matrix_model.cpp
+@@ -36,6 +36,7 @@
+ 
+ #include <moveit_setup_srdf_plugins/collision_matrix_model.hpp>
+ #include <boost/assign.hpp>
++#include <QRegularExpression>
+ #include <QVector>
+ #include <QBrush>
+ #include <QColor>
+@@ -193,7 +194,7 @@ void CollisionMatrixModel::setEnabled(const QModelIndexList& indexes, bool value
+ void CollisionMatrixModel::setFilterRegExp(const QString& filter)
+ {
+   beginResetModel();
+-  QRegExp regexp(filter);
++  QRegularExpression regexp(filter);
+   visual_to_index.clear();
+   for (int idx = 0, end = q_names.size(); idx != end; ++idx)
+   {

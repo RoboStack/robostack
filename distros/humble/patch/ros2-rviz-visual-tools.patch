@@ -1,0 +1,14 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index de15d1b..fe4fc55 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -44,7 +44,8 @@ find_package(rviz_default_plugins REQUIRED)
+ # land until that patch release; 15.1.13 and earlier are still Qt5).
+ # Gate on rviz's version rather than Qt6 availability -- Ubuntu 24.04 ships both
+ # Qt5 and Qt6, and linking a Qt6 build against a Qt5 rviz is an ABI mismatch.
+-if(rviz_common_VERSION VERSION_GREATER_EQUAL 15.1.14)
++# RoboStack: rviz_common built with Qt 6 (its extras import Qt6::Widgets)
++if(rviz_common_VERSION VERSION_GREATER_EQUAL 15.1.14 OR TARGET Qt6::Widgets)
+   find_package(Qt6 REQUIRED COMPONENTS Widgets)
+   set(QT_VERSION_MAJOR 6)
+   # Hint for transitive deps that use find_package(QT NAMES Qt6 Qt5 ...) which

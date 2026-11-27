@@ -1,7 +1,43 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index 3880aa7..90ee2a6 100644
+index 3880aa7..5dd3501 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
+@@ -34,7 +34,7 @@ find_package(rviz_default_plugins REQUIRED)
+ find_package(rviz_ogre_vendor REQUIRED)
+ find_package(rviz_rendering REQUIRED)
+ find_package(interactive_markers REQUIRED)
+-find_package(Qt5 REQUIRED COMPONENTS Core Gui Widgets Test Concurrent)
++find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets Test Concurrent)
+ find_package(rclcpp_components REQUIRED)
+ 
+ #karto_sdk lib
+@@ -66,7 +66,7 @@ set(dependencies
+   rviz_ogre_vendor
+   rviz_rendering
+   interactive_markers
+-  Qt5
++  Qt6
+   rclcpp_components
+ )
+ 
+@@ -91,7 +91,7 @@ find_package(Ceres REQUIRED COMPONENTS SuiteSparse)
+ 
+ set(CMAKE_INCLUDE_CURRENT_DIR ON)
+ add_definitions(-DQT_NO_KEYWORDS)
+-find_package(Boost REQUIRED system serialization filesystem thread)
++find_package(Boost REQUIRED serialization filesystem thread)
+ 
+ include_directories(include lib/karto_sdk/include
+                             ${EIGEN3_INCLUDE_DIRS}
+@@ -118,7 +118,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
+ )
+ 
+ #### rviz Plugin
+-qt5_wrap_cpp(MOC_FILES rviz_plugin/slam_toolbox_rviz_plugin.hpp)
++qt6_wrap_cpp(MOC_FILES rviz_plugin/slam_toolbox_rviz_plugin.hpp)
+ add_library(SlamToolboxPlugin SHARED
+   rviz_plugin/slam_toolbox_rviz_plugin.cpp
+   ${MOC_FILES})
 @@ -147,6 +147,11 @@ rosidl_get_typesupport_target(cpp_typesupport_target ${PROJECT_NAME} "rosidl_typ
  target_link_libraries(ceres_solver_plugin "${cpp_typesupport_target}")
  pluginlib_export_plugin_description_file(slam_toolbox solver_plugins.xml)
@@ -73,7 +109,7 @@ index 95c9931..c159ab8 100644
  #include <map>
  #include <memory>
 diff --git a/include/slam_toolbox/slam_toolbox_common.hpp b/include/slam_toolbox/slam_toolbox_common.hpp
-index 96bd049..d6e9630 100644
+index 04f8446..f0c0e5d 100644
 --- a/include/slam_toolbox/slam_toolbox_common.hpp
 +++ b/include/slam_toolbox/slam_toolbox_common.hpp
 @@ -19,7 +19,9 @@
@@ -96,10 +132,10 @@ index 96bd049..d6e9630 100644
  #include "tf2_ros/transform_listener.h"
  #include "tf2_ros/create_timer_ros.h"
 diff --git a/lib/karto_sdk/CMakeLists.txt b/lib/karto_sdk/CMakeLists.txt
-index a620bfd..196aab5 100644
+index a620bfd..b59b516 100644
 --- a/lib/karto_sdk/CMakeLists.txt
 +++ b/lib/karto_sdk/CMakeLists.txt
-@@ -5,7 +5,9 @@ if(NOT CMAKE_CXX_STANDARD)
+@@ -5,13 +5,15 @@ if(NOT CMAKE_CXX_STANDARD)
    set(CMAKE_CXX_STANDARD 17)
  endif()
  set(CMAKE_BUILD_TYPE Release) #None, Debug, Release, RelWithDebInfo, MinSizeRel
@@ -110,13 +146,14 @@ index a620bfd..196aab5 100644
  set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
  
  find_package(ament_cmake REQUIRED)
-@@ -12,4 +14,4 @@ find_package(ament_cmake REQUIRED)
  find_package(rclcpp REQUIRED)
  find_package(Eigen3 REQUIRED)
 -find_package(Boost REQUIRED system serialization filesystem thread)
 +find_package(Boost REQUIRED serialization filesystem thread)
  find_package(TBB REQUIRED NO_CMAKE_PACKAGE_REGISTRY)
-@@ -29,6 +31,7 @@ add_definitions(${EIGEN3_DEFINITIONS})
+ 
+ set(dependencies
+@@ -29,8 +31,9 @@ add_definitions(${EIGEN3_DEFINITIONS})
  
  include_directories(include ${EIGEN3_INCLUDE_DIRS} ${TBB_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
  add_library(kartoSlamToolbox SHARED src/Karto.cpp src/Mapper.cpp)
@@ -125,8 +162,10 @@ index a620bfd..196aab5 100644
 -target_link_libraries(kartoSlamToolbox ${Boost_LIBRARIES} TBB::tbb)
 +target_link_libraries(kartoSlamToolbox Eigen3::Eigen ${Boost_LIBRARIES} TBB::tbb)
  
+ install(DIRECTORY include/
+ 	DESTINATION include/
 diff --git a/lib/karto_sdk/src/Mapper.cpp b/lib/karto_sdk/src/Mapper.cpp
-index e969404..d87d33f 100644
+index 6ef0688..d42fb55 100644
 --- a/lib/karto_sdk/src/Mapper.cpp
 +++ b/lib/karto_sdk/src/Mapper.cpp
 @@ -405,7 +405,7 @@ void MapperSensorManager::SetRunningScanBufferSize(kt_int32u rScanBufferSize)
@@ -156,7 +195,7 @@ index e969404..d87d33f 100644
      rtn_vertices.push_back(vertices_to_search[ret_matches[i].first]);
    }
    return rtn_vertices;
-@@ -2984,7 +2984,7 @@ void Mapper::ClearLocalizationBuffer()
+@@ -2989,7 +2989,7 @@ void Mapper::ClearLocalizationBuffer()
    }
  
    std::vector<Name> names = m_pMapperSensorManager->GetSensorNames();
@@ -194,10 +233,10 @@ index 3ee0bde..cc8e505 100644
    nav_msgs::srv::GetMap::Response map;
    nav_msgs::msg::OccupancyGrid & og = map.map;
 diff --git a/src/slam_toolbox_common.cpp b/src/slam_toolbox_common.cpp
-index 916a207..18c2fa2 100644
+index 89bc024..f08f556 100644
 --- a/src/slam_toolbox_common.cpp
 +++ b/src/slam_toolbox_common.cpp
-@@ -52,6 +52,11 @@ SlamToolbox::SlamToolbox(rclcpp::NodeOptions options)
+@@ -51,6 +51,11 @@ SlamToolbox::SlamToolbox(rclcpp::NodeOptions options)
      this->declare_parameter(
        "stack_size_to_use", rclcpp::ParameterType::PARAMETER_INTEGER, descriptor);
      if (this->get_parameter("stack_size_to_use", stack_size)) {
@@ -209,7 +248,7 @@ index 916a207..18c2fa2 100644
        RCLCPP_INFO(get_logger(), "Node using stack size %i", (int)stack_size);
        const rlim_t max_stack_size = stack_size;
        struct rlimit stack_limit;
-@@ -60,6 +65,7 @@ SlamToolbox::SlamToolbox(rclcpp::NodeOptions options)
+@@ -59,6 +64,7 @@ SlamToolbox::SlamToolbox(rclcpp::NodeOptions options)
          stack_limit.rlim_cur = stack_size;
        }
        setrlimit(RLIMIT_STACK, &stack_limit);
@@ -217,10 +256,3 @@ index 916a207..18c2fa2 100644
      }
    }
    // server side never times out from lifecycle manager
-diff --git a/CMakeLists.txt b/CMakeLists.txt
---- a/CMakeLists.txt
-+++ b/CMakeLists.txt
-@@ -93,2 +93,2 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
- add_definitions(-DQT_NO_KEYWORDS)
--find_package(Boost REQUIRED system serialization filesystem thread)
-+find_package(Boost REQUIRED serialization filesystem thread)

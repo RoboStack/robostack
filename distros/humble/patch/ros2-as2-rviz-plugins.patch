@@ -1,0 +1,22 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index deaeab8f..ef713b9f 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -30,7 +30,7 @@ set(PROJECT_DEPENDENCIES
+   as2_motion_reference_handlers
+ )
+ 
+-find_package(Qt5 REQUIRED COMPONENTS Widgets)
++find_package(Qt6 REQUIRED COMPONENTS Widgets)
+ 
+ foreach(DEPENDENCY ${PROJECT_DEPENDENCIES})
+   find_package(${DEPENDENCY} REQUIRED)
+@@ -53,7 +53,7 @@ set(SRC_FILES
+ add_library(${PROJECT_NAME} SHARED ${SRC_FILES})
+ ament_target_dependencies(${PROJECT_NAME} ${PROJECT_DEPENDENCIES})
+ target_include_directories(${PROJECT_NAME} PUBLIC
+-  ${Qt5Widgets_INCLUDE_DIRS})
++  ${Qt6Widgets_INCLUDE_DIRS})
+ 
+ ## Here we export the plugins and meshes so they can be found by RViz at runtime.
+ pluginlib_export_plugin_description_file(rviz_common plugin_description.xml)

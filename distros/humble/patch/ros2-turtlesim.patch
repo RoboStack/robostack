@@ -1,0 +1,36 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index bebab82..c42d1e5 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -12,14 +12,14 @@ endif()
+ find_package(ament_cmake REQUIRED)
+ find_package(ament_index_cpp REQUIRED)
+ find_package(geometry_msgs REQUIRED)
+-find_package(Qt5 REQUIRED COMPONENTS Widgets)
++find_package(Qt6 REQUIRED COMPONENTS Widgets)
+ find_package(rclcpp REQUIRED)
+ find_package(rclcpp_action REQUIRED)
+ find_package(rosidl_default_generators REQUIRED)
+ find_package(std_msgs REQUIRED)
+ find_package(std_srvs REQUIRED)
+ 
+-include_directories(include ${Qt5Widgets_INCLUDE_DIRS})
++include_directories(include ${Qt6Widgets_INCLUDE_DIRS})
+ 
+ rosidl_generate_interfaces(${PROJECT_NAME}
+   "action/RotateAbsolute.action"
+@@ -42,12 +42,12 @@ set(turtlesim_node_HDRS
+   include/turtlesim/turtle_frame.h
+ )
+ 
+-qt5_wrap_cpp(turtlesim_node_MOCS ${turtlesim_node_HDRS})
++qt6_wrap_cpp(turtlesim_node_MOCS ${turtlesim_node_HDRS})
+ 
+ rosidl_get_typesupport_target(cpp_typesupport_target "${PROJECT_NAME}" "rosidl_typesupport_cpp")
+ 
+ add_executable(turtlesim_node ${turtlesim_node_SRCS} ${turtlesim_node_MOCS})
+-target_link_libraries(turtlesim_node Qt5::Widgets)
++target_link_libraries(turtlesim_node Qt6::Widgets)
+ ament_target_dependencies(turtlesim_node ${dependencies})
+ target_link_libraries(turtlesim_node "${cpp_typesupport_target}")
+ 
