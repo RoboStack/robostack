@@ -28,4 +28,10 @@ pinning_overrides:
   # the newest onnxruntime-cpp (1.32) needs libabseil 20260817, which the pinning hasn't
   # migrated to yet; 1.31.1 has builds for the pinned 20260526
   onnxruntime_cpp: [1.31.1]
+  # ffmpeg 9.1 on macOS needs fontconfig/cairo built for libintl 1.0 and icu 79, which no
+  # qt-main 5.15 accepts (it needs libintl 0.25 via gst-plugins-base): mrpt_hwdrivers built
+  # with 9.1 couldn't be installed next to mrpt_gui (mola). 9.0 still works with Qt 5.
+  ffmpeg:
+    - '9.0'  # [osx]
+    - '9'  # [not osx]
 rosdistro_sync: humble/2026-11-23
