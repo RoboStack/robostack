@@ -1,13 +1,17 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index f0f5ca6..95d02a1 100644
+index f0f5ca6..55dfb17 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
-@@ -1,6 +1,9 @@
+@@ -1,6 +1,13 @@
  cmake_minimum_required(VERSION 3.10)
  project(mocap4r2_robot_gt)
  
 +# no dllexport annotations: export everything so MSVC writes the import libraries (LNK1181)
 +set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
++# M_PI in robot_gt.cpp: MSVC's <cmath> only defines it with _USE_MATH_DEFINES
++if(MSVC)
++  add_compile_definitions(_USE_MATH_DEFINES)
++endif()
 +
  if(NOT CMAKE_CXX_STANDARD)
    set(CMAKE_CXX_STANDARD 17)
