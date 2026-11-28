@@ -96,44 +96,14 @@ py_trees:
     dep_name: py-trees
     max_pin: 'x.x.x'
     override_version: '2.6.0'
-roboplan:
-  generate_dummy_package_with_run_deps:
-    dep_name: roboplan-python
-    max_pin: 'x.x'
-roboplan_cartesian_planning:
-  generate_dummy_package_with_run_deps:
-    dep_name: roboplan-cartesian-planning-python
-    max_pin: 'x.x'
 roboplan_common:
   generate_dummy_package_with_run_deps:
     dep_name: roboplan-common
-    max_pin: 'x.x'
-roboplan_core:
-  generate_dummy_package_with_run_deps:
-    dep_name: roboplan-core-python
     max_pin: 'x.x'
 roboplan_example_models:
   generate_dummy_package_with_run_deps:
     dep_name: roboplan-example-models-python
     max_pin: 'x.x'
-roboplan_oink:
-  generate_dummy_package_with_run_deps:
-    dep_name: roboplan-oink-python
-    max_pin: 'x.x'
-roboplan_rrt:
-  generate_dummy_package_with_run_deps:
-    dep_name: roboplan-rrt-python
-    max_pin: 'x.x'
-roboplan_simple_ik:
-  generate_dummy_package_with_run_deps:
-    dep_name: roboplan-simple-ik-python
-    max_pin: 'x.x'
-roboplan_toppra:
-  generate_dummy_package_with_run_deps:
-    dep_name: roboplan-toppra-python
-    max_pin: 'x.x'
-rtabmap:
-  additional_cmake_args: -DBUILD_TESTING=OFF
 rviz_ogre_vendor:
   additional_cmake_args: "-DRVIZ_OGRE_VENDOR_MANGLE_NAME_OF_LIBRARIES_USED_BY_RVIZ=ON"
 turtlebot3_node:  # 2.3.7's odometry.cpp uses M_PI
@@ -156,21 +126,371 @@ zenoh_cpp_vendor:
 cartographer_ros:
   additional_cmake_args: "-DCMAKE_WINDOWS_EXPORT_ALL_SYMBOLS=ON"
   build_number: 32  # offline_node.cpp out of the shared library (duplicate gflags abort)
+chomp_motion_planner:
+  build_number: 33
 class_loader:  # console_bridge outlives the class loaders (exit abort on macOS)
   build_number: 32
+clearpath_common:
+  build_number: 33
+clearpath_generator_common:
+  build_number: 33
+clearpath_manipulators:
+  build_number: 33
+coal:
+  build_number: 33
+desktop_full:
+  build_number: 33
+easynav_octomap_maps_manager:
+  build_number: 33
+easynav_playground_kobuki:
+  build_number: 33
+easynav_playground_kobuki_worlds:
+  build_number: 33
+easynav_playground_omni:
+  build_number: 33
+easynav_playground_omni_worlds:
+  build_number: 33
+easynav_playground_summit:
+  build_number: 33
+easynav_playground_summit_worlds:
+  build_number: 33
+easynav_playground_tiago:
+  build_number: 33
+easynav_playground_tiago_worlds:
+  build_number: 33
+geometric_shapes:
+  build_number: 33
+grid_map:
+  build_number: 33
+grid_map_demos:
+  build_number: 33
 gz_dartsim_vendor:  # bullet rosdep mapped to bullet-cpp (no pybullet)
   build_number: 32
+gz_gui_vendor:
+  build_number: 33
+gz_ogre_next_vendor:
+  build_number: 33
 gz_physics_vendor:  # bullet rosdep mapped to bullet-cpp (no pybullet)
   build_number: 32
+gz_rendering_vendor:
+  build_number: 33
+gz_ros2_control:
+  build_number: 33
+gz_ros2_control_demos:
+  build_number: 33
+gz_sensors_vendor:
+  build_number: 33
+gz_sim_vendor:
+  build_number: 33
+iiwa14_moveit_config:
+  build_number: 33
+iiwa7_moveit_config:
+  build_number: 33
+irobot_create_gz_bringup:
+  build_number: 33
+irobot_create_gz_plugins:
+  build_number: 33
+irobot_create_gz_sim:
+  build_number: 33
+kinova_gen3_6dof_robotiq_2f_85_moveit_config:
+  build_number: 33
+kinova_gen3_7dof_robotiq_2f_85_moveit_config:
+  build_number: 33
+kinova_gen3_lite_moveit_config:
+  build_number: 33
+kortex_bringup:
+  build_number: 33
+kortex_description:
+  build_number: 33
+lbr_bringup:
+  build_number: 33
+lbr_demos_advanced_cpp:
+  build_number: 33
+lbr_demos_advanced_py:
+  build_number: 33
+lbr_demos_cpp:
+  build_number: 33
+lbr_demos_py:
+  build_number: 33
+lbr_description:
+  build_number: 33
+lbr_fri_ros2:
+  build_number: 33
+lbr_fri_ros2_stack:
+  build_number: 33
+lbr_moveit_cpp:
+  build_number: 33
+lbr_ros2_control:
+  build_number: 33
+med14_moveit_config:
+  build_number: 33
+med7_moveit_config:
+  build_number: 33
+mola:
+  build_number: 33
+mola_bridge_ros2:
+  build_number: 33
+mola_input_rawlog:
+  build_number: 33
+mola_input_rosbag2:
+  build_number: 33
+mola_input_video:
+  build_number: 33
+mola_kernel:
+  build_number: 33
+mola_launcher:
+  build_number: 33
+mola_metric_maps:
+  build_number: 33
+mola_pose_list:
+  build_number: 33
+mola_relocalization:
+  build_number: 33
+mola_viz:
+  build_number: 33
+moveit:
+  build_number: 33
+moveit2_tutorials:
+  build_number: 33
 moveit_core:  # bullet rosdep mapped to bullet-cpp (no pybullet)
-  build_number: 32
+  build_number: 33
+moveit_hybrid_planning:
+  build_number: 33
+moveit_kinematics:
+  build_number: 33
+moveit_planners:
+  build_number: 33
+moveit_planners_chomp:
+  build_number: 33
+moveit_planners_ompl:
+  build_number: 33
+moveit_planners_stomp:
+  build_number: 33
+moveit_plugins:
+  build_number: 33
+moveit_py:
+  build_number: 33
+moveit_resources_prbt_ikfast_manipulator_plugin:
+  build_number: 33
+moveit_resources_prbt_moveit_config:
+  build_number: 33
+moveit_resources_prbt_pg70_support:
+  build_number: 33
+moveit_ros:
+  build_number: 33
+moveit_ros_benchmarks:
+  build_number: 33
+moveit_ros_control_interface:
+  build_number: 33
+moveit_ros_move_group:
+  build_number: 33
+moveit_ros_occupancy_map_monitor:
+  build_number: 33
+moveit_ros_perception:
+  build_number: 33
+moveit_ros_planning:
+  build_number: 33
+moveit_ros_planning_interface:
+  build_number: 33
+moveit_ros_robot_interaction:
+  build_number: 33
+moveit_ros_trajectory_cache:
+  build_number: 33
+moveit_ros_visualization:
+  build_number: 33
+moveit_ros_warehouse:
+  build_number: 33
+moveit_runtime:
+  build_number: 33
+moveit_servo:
+  build_number: 33
+moveit_setup_app_plugins:
+  build_number: 33
+moveit_setup_assistant:
+  build_number: 33
+moveit_setup_controllers:
+  build_number: 33
+moveit_setup_core_plugins:
+  build_number: 33
+moveit_setup_framework:
+  build_number: 33
+moveit_setup_srdf_plugins:
+  build_number: 33
+moveit_simple_controller_manager:
+  build_number: 33
+moveit_task_constructor_capabilities:
+  build_number: 33
+moveit_task_constructor_core:
+  build_number: 33
+moveit_task_constructor_demo:
+  build_number: 33
+moveit_task_constructor_visualization:
+  build_number: 33
+moveit_visual_tools:
+  build_number: 33
+mp2p_icp:
+  build_number: 33
+mp2p_icp_core:
+  build_number: 33
+mp2p_icp_viz:
+  build_number: 33
+mrpt_hwdrivers:
+  build_number: 33
+mrpt_libros_bridge:
+  build_number: 33
+mrpt_maps:
+  build_number: 33
+nav2_bringup:
+  build_number: 33
+nav2_minimal_tb3_sim:
+  build_number: 33
+nav2_minimal_tb4_sim:
+  build_number: 33
+nav2_mppi_controller:
+  build_number: 33
+nav2_route:
+  build_number: 33
+nav2_rviz_plugins:
+  build_number: 33
+navigation2:
+  build_number: 33
+octomap_ros:
+  build_number: 33
+octomap_rviz_plugins:
+  build_number: 33
+octomap_server:
+  build_number: 33
+onnxruntime_vendor:
+  build_number: 33
+pick_ik:
+  build_number: 33
+pilz_industrial_motion_planner:
+  build_number: 33
+pilz_industrial_motion_planner_testutils:
+  build_number: 33
+pinocchio:
+  build_number: 33
 rclcpp:  # avoid GCC 15 -Werror=uninitialized in MessageMemoryStrategy::create_default()
   build_number: 32
+rmf_building_sim_gz_plugins:
+  build_number: 33
+rmf_dev:
+  build_number: 33
+rmf_robot_sim_gz_plugins:
+  build_number: 33
 rmf_utils:  # its DLL moved from lib to bin (Windows)
   build_number: 32
+roboplan:
+  generate_dummy_package_with_run_deps:
+    dep_name: roboplan-python
+    max_pin: 'x.x'
+  build_number: 33
+roboplan_cartesian_planning:
+  generate_dummy_package_with_run_deps:
+    dep_name: roboplan-cartesian-planning-python
+    max_pin: 'x.x'
+  build_number: 33
+roboplan_core:
+  generate_dummy_package_with_run_deps:
+    dep_name: roboplan-core-python
+    max_pin: 'x.x'
+  build_number: 33
+roboplan_examples:
+  build_number: 33
+roboplan_oink:
+  generate_dummy_package_with_run_deps:
+    dep_name: roboplan-oink-python
+    max_pin: 'x.x'
+  build_number: 33
+roboplan_ros_cpp:
+  build_number: 33
+roboplan_ros_examples:
+  build_number: 33
+roboplan_ros_franka:
+  build_number: 33
+roboplan_ros_py:
+  build_number: 33
+roboplan_ros_visualization:
+  build_number: 33
+roboplan_rrt:
+  generate_dummy_package_with_run_deps:
+    dep_name: roboplan-rrt-python
+    max_pin: 'x.x'
+  build_number: 33
+roboplan_simple_ik:
+  generate_dummy_package_with_run_deps:
+    dep_name: roboplan-simple-ik-python
+    max_pin: 'x.x'
+  build_number: 33
+roboplan_toppra:
+  generate_dummy_package_with_run_deps:
+    dep_name: roboplan-toppra-python
+    max_pin: 'x.x'
+  build_number: 33
+ros_gz:
+  build_number: 33
 ros_gz_bridge:  # libabseil/libprotobuf in host: _31 links libabseil 20260817 without depending on it
   build_number: 32
 ros_gz_image:  # same as ros_gz_bridge
   build_number: 32
+ros_gz_sim:
+  build_number: 33
+ros_gz_sim_demos:
+  build_number: 33
+rtabmap:
+  additional_cmake_args: -DBUILD_TESTING=OFF
+  build_number: 33
+rtabmap_conversions:
+  build_number: 33
+rtabmap_demos:
+  build_number: 33
+rtabmap_examples:
+  build_number: 33
+rtabmap_launch:
+  build_number: 33
+rtabmap_odom:
+  build_number: 33
+rtabmap_ros:
+  build_number: 33
+rtabmap_rviz_plugins:
+  build_number: 33
+rtabmap_slam:
+  build_number: 33
+rtabmap_sync:
+  build_number: 33
+rtabmap_util:
+  build_number: 33
+rtabmap_viz:
+  build_number: 33
+simulation:
+  build_number: 33
 tf2_bullet:  # bullet rosdep mapped to bullet-cpp (no pybullet)
   build_number: 32
+trac_ik:
+  build_number: 33
+trac_ik_kinematics_plugin:
+  build_number: 33
+turtlebot3:
+  build_number: 33
+turtlebot3_gazebo:
+  build_number: 33
+turtlebot3_navigation2:
+  build_number: 33
+turtlebot3_simulations:
+  build_number: 33
+turtlebot4_gz_bringup:
+  build_number: 33
+turtlebot4_gz_gui_plugins:
+  build_number: 33
+turtlebot4_navigation:
+  build_number: 33
+turtlebot4_simulator:
+  build_number: 33
+ur:
+  build_number: 33
+ur_moveit_config:
+  build_number: 33
+ur_simulation_gz:
+  build_number: 33
+visp:
+  build_number: 33
